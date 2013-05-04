@@ -1,0 +1,125 @@
+<!DOCTYPE UI><UI version="3.3" stdsetdef="1">
+<class>PEDetectionDialog</class>
+<widget class="QDialog">
+    <property name="name">
+        <cstring>PEDetectionDialog</cstring>
+    </property>
+    <property name="geometry">
+        <rect>
+            <x>0</x>
+            <y>0</y>
+            <width>273</width>
+            <height>201</height>
+        </rect>
+    </property>
+    <property name="caption">
+        <string>Pulmonary Embolus Detection</string>
+    </property>
+    <grid>
+        <property name="name">
+            <cstring>unnamed</cstring>
+        </property>
+        <widget class="QCheckBox" row="0" column="0" rowspan="1" colspan="2">
+            <property name="name">
+                <cstring>m_RunRemotely</cstring>
+            </property>
+            <property name="text">
+                <string>Run remotely</string>
+            </property>
+        </widget>
+        <widget class="QGroupBox" row="1" column="0" rowspan="1" colspan="2">
+            <property name="name">
+                <cstring>m_RemoteComputationGroup</cstring>
+            </property>
+            <property name="enabled">
+                <bool>false</bool>
+            </property>
+            <property name="title">
+                <string>Remote Computation</string>
+            </property>
+            <grid>
+                <property name="name">
+                    <cstring>unnamed</cstring>
+                </property>
+                <widget class="QLabel" row="0" column="0">
+                    <property name="name">
+                        <cstring>m_HostnameText</cstring>
+                    </property>
+                    <property name="text">
+                        <string>Hostname:</string>
+                    </property>
+                </widget>
+                <widget class="QLineEdit" row="0" column="1">
+                    <property name="name">
+                        <cstring>m_Hostname</cstring>
+                    </property>
+                </widget>
+                <widget class="QLabel" row="1" column="0">
+                    <property name="name">
+                        <cstring>m_PortText</cstring>
+                    </property>
+                    <property name="text">
+                        <string>Port:</string>
+                    </property>
+                </widget>
+                <widget class="QLineEdit" row="1" column="1">
+                    <property name="name">
+                        <cstring>m_Port</cstring>
+                    </property>
+                </widget>
+                <widget class="QLabel" row="2" column="0">
+                    <property name="name">
+                        <cstring>m_RemoteFileText</cstring>
+                    </property>
+                    <property name="text">
+                        <string>Remote File:</string>
+                    </property>
+                </widget>
+                <widget class="QLineEdit" row="2" column="1">
+                    <property name="name">
+                        <cstring>m_RemoteFile</cstring>
+                    </property>
+                </widget>
+            </grid>
+        </widget>
+        <widget class="QPushButton" row="2" column="0">
+            <property name="name">
+                <cstring>m_Run</cstring>
+            </property>
+            <property name="text">
+                <string>Run</string>
+            </property>
+        </widget>
+        <widget class="QPushButton" row="2" column="1">
+            <property name="name">
+                <cstring>m_Cancel</cstring>
+            </property>
+            <property name="text">
+                <string>Cancel</string>
+            </property>
+        </widget>
+    </grid>
+</widget>
+<connections>
+    <connection>
+        <sender>m_RunRemotely</sender>
+        <signal>toggled(bool)</signal>
+        <receiver>m_RemoteComputationGroup</receiver>
+        <slot>setEnabled(bool)</slot>
+    </connection>
+    <connection>
+        <sender>m_Run</sender>
+        <signal>clicked()</signal>
+        <receiver>PEDetectionDialog</receiver>
+        <slot>accept()</slot>
+    </connection>
+    <connection>
+        <sender>m_Cancel</sender>
+        <signal>clicked()</signal>
+        <receiver>PEDetectionDialog</receiver>
+        <slot>reject()</slot>
+    </connection>
+</connections>
+<pixmapinproject/>
+<layoutdefaults spacing="6" margin="11"/>
+</UI>

@@ -1,0 +1,333 @@
+/*
+  Copyright 2008 The University of Texas at Austin
+
+        Authors: Samrat Goswami <samrat@ices.utexas.edu>
+        Advisor: Chandrajit Bajaj <bajaj@cs.utexas.edu>
+
+  This file is part of PocketTunnel.
+
+  PocketTunnel is free software; you can redistribute it and/or
+  modify it under the terms of the GNU Lesser General Public
+  License version 2.1 as published by the Free Software Foundation.
+
+  PocketTunnel is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+  Lesser General Public License for more details.
+
+  You should have received a copy of the GNU Lesser General Public
+  License along with this library; if not, write to the Free Software
+  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+*/
+
+#include <PocketTunnel/datastruct.h>
+#include <Curation/mesh_io.h>
+#include <PocketTunnel/tcocone.h>
+#include <PocketTunnel/rcocone.h>
+#include <PocketTunnel/util.h>
+#include <PocketTunnel/op.h>
+#include <PocketTunnel/init.h>
+// #include "s2.h"
+#include <PocketTunnel/smax.h>
+#include <PocketTunnel/handle.h>
+// #include "medax.h"
+
+
+// -----------------------------------------------------------------------
+// Constants
+// -----------------------------------------------------------------------
+// ------- cocone -----
+const double DEFAULT_ANGLE = M_PI / 8.0;      // Half of the co-cone angle. 
+const double DEFAULT_SHARP = 2 * M_PI / 3.0;  // Angle of sharp edges.
+const double DEFAULT_RATIO = 1.2 * 1.2;       // Squared thinness factor. 
+const double DEFAULT_FLAT  = M_PI / 3.0;      // Angle for flatness Test
+
+// -- medial axis ---
+const double DEFAULT_MED_THETA = M_PI*22.5/180.0; // original: M_PI*22.5/180.0;
+const double DEFAULT_MED_RATIO = 8.0*8.0; // original: 8.0*8.0;
+
+// --- segmentation output ---
+const int DEFAULT_OUTPUT_SEG_COUNT = 20;
+
+// -- robust cocone ---
+const double DEFAULT_BIGBALL_RATIO  = 4.*4.;  // parameter to choose big balls.
+const double DEFAULT_THETA_IF_d  = 5.0;       // parameter for infinite-finite deep intersection.
+const double DEFAULT_THETA_FF_d  = 10.0;      // parameter for finite-finite deep intersection.
+const double DEFAULT_THETA_II_d  = 30.0;      // parameter for infinite-infinite deep intersection.
+
+using namespace PocketTunnel;
+
+// -----------------------------------------------------------------------
+// main
+// ----
+// Parses commandline arguments and calls cocone and writes the output.
+// -----------------------------------------------------------------------
+
+int 
+main( int argc, char **argv) {
+
+  map<int, cell_cluster> cluster_set;
+  int output_seg_count = DEFAULT_OUTPUT_SEG_COUNT;
+  // robust cocone parameters.
+  double bb_ratio = DEFAULT_BIGBALL_RATIO;
+  double theta_ff = M_PI/180.0*DEFAULT_THETA_FF_d;
+  double theta_if = M_PI/180.0*DEFAULT_THETA_IF_d;
+  //For medial axis
+  // double theta = DEFAULT_MED_THETA;
+  // double medial_ratio = DEFAULT_MED_RATIO;
+  // input and output filenames.
+  char ifname[90];
+  char output_file_prefix[90];
+  FILE_TYPE ftype = PTS; // default input: set of points.
+  // Check commandline options.
+  bool help = false;
+  // If do_robust_cocone flag is true
+  // then it does a pre-processing stage
+  bool do_robust_cocone = false;
+  if(argc == 1)
+	  help = true;
+  for (int i = 1; i < argc; i++) {
+    if ( argc < 3 ) {
+      help = true;
+      break;
+    }
+    
+    if ( (strcmp( "-h", argv[i]) == 0) || 
+	 (strcmp( "-help", argv[i]) == 0)) {
+      help = true;
+      break;
+    }
+    else if(strcmp( "-rc", argv[i]) == 0)
+    {
+	do_robust_cocone = true;
+    }
+    else if ( strcmp( "-thif", argv[i]) == 0) {
+      ++i;
+      if ( i >= argc) 
+      {
+	cerr << "Error: option -thif requires "
+	     << "a second argument." << endl;
+	help = true;
+      } 
+      else
+	theta_if = M_PI/180.*atof(argv[i]);
+    }
+    else if ( strcmp( "-thff", argv[i]) == 0) {
+      ++i;
+      if ( i >= argc) 
+      {
+	cerr << "Error: option -thff requires "
+	     << "a second argument." << endl;
+	help = true;
+      } 
+      else
+	theta_ff = M_PI/180.*atof(argv[i]);
+    }
+    else if ( strcmp( "-opc", argv[i]) == 0) {
+      ++i;
+      if ( i >= argc) 
+      {
+	cerr << "Error: option -opc requires "
+	     << "a second argument." << endl;
+	help = true;
+      } 
+      else
+	output_seg_count = atoi(argv[i]);
+    }
+    else if(strcmp("-off", argv[i]) == 0 ||
+            strcmp("-OFF", argv[i]) == 0)
+    {
+       ftype = OFF;
+    }
+    else if(strcmp("-raw", argv[i]) == 0 ||
+            strcmp("-RAW", argv[i]) == 0)
+    {
+       ftype = RAW;
+    }
+    else if(strcmp("-rawc", argv[i]) == 0 ||
+            strcmp("-RAWC", argv[i]) == 0)
+    {
+       ftype = RAWC;
+    }
+    else if(strcmp("-rawnc", argv[i]) == 0 ||
+            strcmp("-RAWNC", argv[i]) == 0)
+    {
+       ftype = RAWNC;
+    }
+    else if ( i+1 >= argc) {
+      help = true;
+    } 
+    else 
+    {
+       strcpy(ifname, argv[i]);
+       strcpy(output_file_prefix, argv[i+1]);
+       i++;
+    }
+  }
+
+  if ( help) {
+    cerr << "Usage: " << argv[0] 
+	 << " [ -rc | -thif <angle> | -thff <angle> | -opc <int value> ]"
+	 << " infile outfile_prefix " << endl;
+    exit( 1);
+  }
+
+  vector<Point> pts_list;
+
+  if( ftype == PTS )
+  {
+     ifstream fin;
+     fin.open(ifname);
+     istream_iterator<double> input( fin);
+     istream_iterator<double> beyond;
+     while ( input != beyond) {
+        double x = *input; 
+        ++input;
+        if ( input == beyond) {
+            cerr << "Error: inconsistent triangulation file." << endl;
+            exit( 1);
+        }
+        double y = *input; 
+        ++input;
+        if ( input == beyond) {
+            cerr << "Error: inconsistent triangulation file." << endl;
+            exit( 1);
+        }
+        double z = *input; 
+        ++input;
+        pts_list.push_back(Point(x,y,z));
+     }
+     fin.close();
+  }
+  else
+     extract_pts_from_input_surf(pts_list, ifname, ftype);
+
+  CGAL::Timer timer;
+  timer.start();
+
+  cerr << "Delaunay triangulation " << flush;  
+  Triangulation triang;
+  triang.insert(pts_list.begin(), pts_list.end());
+  cerr << " done." << endl;
+  cerr << "Time : " << timer.time() << endl;
+  timer.reset();
+
+  if(do_robust_cocone)
+  {
+       // -------------------------------------------
+       // Robust Cocone.
+       // When we deal with noisy data we need a tool
+       // to pre-process the data before doing
+       // the surface reconstruction. Robust Cocone
+       // is a tool to do that. 
+       // -------------------------------------------
+
+       // Robust cocone will take the triangulation and
+       // will output a subset of points which it thinks
+       // lies on a smooth underlying surface.
+       // The pointset will be output in a file called
+       // "output_file_prefix.tcip".
+       cerr << "\t" << "Robust Cocone ";
+       robust_cocone(bb_ratio, theta_ff, theta_if, triang, output_file_prefix);
+       cerr << " done." << endl;
+
+       cerr << "\t" << "Time : " << timer.time() << endl;
+
+       timer.reset();
+
+       // Create a new triangulation from the pointset taken 
+       // from "output_file_prefix.tcip".
+       // Delete the earlier triangulation.
+       triang.clear();
+
+       char robust_ifname[100];
+       strcat(strcpy(robust_ifname,output_file_prefix),".tcip");
+
+       ifstream robust_fin;
+       robust_fin.open(robust_ifname);
+
+       if(! robust_fin)
+       {
+	       cerr << "Cannot open the file " 
+		    << robust_ifname 
+		    << " for reading. " << endl;
+	       exit(1);
+       }
+
+       cerr << "\t" << "Rebuilding Delaunay Triangulation ";
+
+       istream_iterator<double> r_input(robust_fin);
+       istream_iterator<double> r_beyond;
+       while ( r_input != r_beyond) {
+           double x = *r_input; 
+           ++r_input;
+           if ( r_input == r_beyond) {
+              cerr << "Error: inconsistent triangulation file." << endl;
+              exit( 1);
+           }
+           double y = *r_input; 
+           ++r_input;
+           if ( r_input == r_beyond) {
+              cerr << "Error: inconsistent triangulation file." << endl;
+              exit( 1);
+           }
+           double z = *r_input; 
+           ++r_input;
+           Point p = Point( x, y, z);
+           triang.insert( p);
+       }
+       cerr << " done." << endl;
+       cerr << "\t" << "Time : " << timer.time() << endl;
+       timer.reset();
+       robust_fin.close();
+  }
+
+  // ------------------------------------------
+  // Initialization of all the required fields
+  // needed for Tight Cocone and Segmentation
+  // ------------------------------------------
+  cerr << "Initialization ";
+  initialize(triang);
+  cerr << ".";
+
+  // compute voronoi vertex
+  compute_voronoi_vertex_and_cell_radius(triang);
+  cerr << ". done." << endl;
+
+  cerr << "Time : " << timer.time() << endl;
+
+  timer.reset();
+
+  // ------------------------------------------
+  // Surface Reconstruction using Tight Cocone
+  // ------------------------------------------
+  cerr << "Surface Reconstruction ";
+  tcocone(DEFAULT_ANGLE, DEFAULT_SHARP, DEFAULT_FLAT, DEFAULT_RATIO, triang);
+  cerr << " done." << endl;
+  cerr << "Time : " << timer.time() << endl;
+
+  // cerr << "Medial axis computation ";
+  // compute_medial_axis(triang, theta, medial_ratio);
+  // cerr << "done." << endl;
+  // write the water-tight surface.
+  write_wt(triang, output_file_prefix);
+  timer.reset();
+
+  cerr << "Computing S_MAX ";
+  double mr = 1.3; // not used in this routine.
+  vector<int> sorted_smax_index_vector = compute_smax(triang, cluster_set, mr);
+  cerr << " done." << endl;
+
+  // detect pocket, tunnel, void.
+  cerr << "Detecting Handles ";
+  detect_handle(triang, cluster_set);
+  cerr << " done." << endl;
+  timer.stop();
+
+  // ---------- End of Segmentation ------------
+
+  // write the outside pockets of the dataset
+  write_handle(triang, cluster_set, sorted_smax_index_vector, output_seg_count, output_file_prefix);
+
+  return 0;
+}

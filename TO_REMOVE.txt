@@ -1,0 +1,28 @@
+
+This is a list of subdirectories that I think should be removed
+since they are outdated and not being used with VolumeRover2.
+
+If there is anything that belongs, feel free to take it off the list.
+
+-- arand, 4-25-2011
+
+AnimationMaker DONE
+arithlib DONE
+c2c_codec DONE
+ColorTable DONE
+dataCutterClient DONE
+duallib DONE
+GeometryFileTypes DONE
+libdjvupp DONE
+libiso DONE
+multi_sdf DONE
+RenderServers DONE
+volren DONE
+VolumeFileTypes DONE
+VolumeRover 
+VolumeViewer DONE
+VolumeWidget DONE
+
+-- arand, 5-6-2011
+
+All the above libraries have been removed from the build.

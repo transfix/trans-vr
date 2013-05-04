@@ -1,0 +1,137 @@
+<!DOCTYPE UI><UI version="3.3" stdsetdef="1">
+<class>DimensionModifyBase</class>
+<widget class="QDialog">
+    <property name="name">
+        <cstring>DimensionModifyBase</cstring>
+    </property>
+    <property name="geometry">
+        <rect>
+            <x>0</x>
+            <y>0</y>
+            <width>363</width>
+            <height>84</height>
+        </rect>
+    </property>
+    <property name="caption">
+        <string>Change Dimension</string>
+    </property>
+    <grid>
+        <property name="name">
+            <cstring>unnamed</cstring>
+        </property>
+        <property name="resizeMode">
+            <enum>Fixed</enum>
+        </property>
+        <widget class="QLayoutWidget" row="0" column="0" rowspan="1" colspan="3">
+            <property name="name">
+                <cstring>layout1</cstring>
+            </property>
+            <grid>
+                <property name="name">
+                    <cstring>unnamed</cstring>
+                </property>
+                <widget class="QLabel" row="0" column="0">
+                    <property name="name">
+                        <cstring>_dimensionLabel</cstring>
+                    </property>
+                    <property name="text">
+                        <string>New Dimension:</string>
+                    </property>
+                </widget>
+                <widget class="QLineEdit" row="0" column="2">
+                    <property name="name">
+                        <cstring>_dimensionY</cstring>
+                    </property>
+                    <property name="text">
+                        <string>1</string>
+                    </property>
+                    <property name="readOnly">
+                        <bool>false</bool>
+                    </property>
+                </widget>
+                <widget class="QLineEdit" row="0" column="3">
+                    <property name="name">
+                        <cstring>_dimensionZ</cstring>
+                    </property>
+                    <property name="text">
+                        <string>1</string>
+                    </property>
+                    <property name="readOnly">
+                        <bool>false</bool>
+                    </property>
+                </widget>
+                <widget class="QLineEdit" row="0" column="1">
+                    <property name="name">
+                        <cstring>_dimensionX</cstring>
+                    </property>
+                    <property name="text">
+                        <string>1</string>
+                    </property>
+                    <property name="readOnly">
+                        <bool>false</bool>
+                    </property>
+                </widget>
+            </grid>
+        </widget>
+        <widget class="QPushButton" row="1" column="2">
+            <property name="name">
+                <cstring>_ok</cstring>
+            </property>
+            <property name="text">
+                <string>Ok</string>
+            </property>
+        </widget>
+        <widget class="QPushButton" row="1" column="1">
+            <property name="name">
+                <cstring>_cancel</cstring>
+            </property>
+            <property name="text">
+                <string>Cancel</string>
+            </property>
+        </widget>
+        <spacer row="1" column="0">
+            <property name="name">
+                <cstring>spacer5</cstring>
+            </property>
+            <property name="orientation">
+                <enum>Horizontal</enum>
+            </property>
+            <property name="sizeType">
+                <enum>Expanding</enum>
+            </property>
+            <property name="sizeHint">
+                <size>
+                    <width>171</width>
+                    <height>31</height>
+                </size>
+            </property>
+        </spacer>
+    </grid>
+</widget>
+<connections>
+    <connection>
+        <sender>_cancel</sender>
+        <signal>clicked()</signal>
+        <receiver>DimensionModifyBase</receiver>
+        <slot>reject()</slot>
+    </connection>
+    <connection>
+        <sender>_ok</sender>
+        <signal>clicked()</signal>
+        <receiver>DimensionModifyBase</receiver>
+        <slot>okSlot()</slot>
+    </connection>
+</connections>
+<tabstops>
+    <tabstop>_dimensionX</tabstop>
+    <tabstop>_dimensionY</tabstop>
+    <tabstop>_dimensionZ</tabstop>
+    <tabstop>_cancel</tabstop>
+    <tabstop>_ok</tabstop>
+</tabstops>
+<slots>
+    <slot>okSlot()</slot>
+</slots>
+<pixmapinproject/>
+<layoutdefaults spacing="6" margin="11"/>
+</UI>

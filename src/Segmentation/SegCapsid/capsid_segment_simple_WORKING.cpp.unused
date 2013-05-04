@@ -1,0 +1,621 @@
+/******************************************************************************
+Copyright   
+
+This code is developed within the Computational Visualization Center at The 
+University of Texas at Austin.
+  
+This code has been made available to you under the auspices of a Lesser General 
+Public License (LGPL) (http://www.ices.utexas.edu/cvc/software/license.html) 
+and terms that you have agreed to.
+	
+Upon accepting the LGPL, we request you agree to acknowledge the use of use of 
+the code that results in any published work, including scientific papers, 
+films, and videotapes by citing the following references:
+	  
+C. Bajaj, Z. Yu, M. Auer
+Volumetric Feature Extraction and Visualization of Tomographic Molecular Imaging
+Journal of Structural Biology, Volume 144, Issues 1-2, October 2003, Pages 
+132-143.
+	
+If you desire to use this code for a profit venture, or if you do not wish to 
+accept LGPL, but desire usage of this code, please contact Chandrajit Bajaj 
+(bajaj@ices.utexas.edu) at the Computational Visualization Center at The 
+University of Texas at Austin for a different license.
+******************************************************************************/
+
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <math.h>
+#include <memory.h>
+#include <vector>
+#include <stack>
+
+#define max2(x, y) ((x>y) ? (x):(y))
+#define min2(x, y) ((x<y) ? (x):(y))
+#define PIE           3.1415926f
+#define ANGL1         1.107149f //63.435 degrees
+#define ANGL2         2.034444f //116.565 degrees
+
+#define IndexVect(i,j,k) ((k)*XDIM*YDIM + (j)*XDIM + (i))
+
+namespace SegCapsid {
+
+typedef struct {
+	float x;
+	float y;
+	float z;
+}VECTOR;
+
+
+typedef struct {
+	unsigned short x;
+	unsigned short y;
+	unsigned short z;
+}SVECTOR;
+
+typedef struct CriticalPoint CPNT;
+struct CriticalPoint{
+	unsigned short x;
+	unsigned short y;
+	unsigned short z;
+	CPNT *next;
+};
+
+static int XDIM, YDIM, ZDIM;
+static float *dataset;
+static VECTOR *FiveFold;
+
+VECTOR Rotate(float, float, float, float, float, float);
+VECTOR Rotate(float, float, float, float, float, float, int, int, int);
+VECTOR RotateDouble(double, double, double, double, double, double);
+void SetSeedIndexSimple(int,int,int);
+void bubbleStopperSimple(unsigned char *segmentIndex, unsigned int maxVoxelDiamater);
+
+
+void SimpleCapsidSegment(int xd, int yd, int zd, float *data, float tlow, 
+						 int sx, int sy, int sz,/*CPNT *critical,*/VECTOR *five_fold)
+{
+	int i,j,k;
+	int x,y,z;
+	int InitSeed_x, InitSeed_y, InitSeed_z;
+	unsigned char index;
+	SVECTOR *stack;
+	int stack_size;
+	
+	
+	XDIM = xd;
+	YDIM = yd;
+	ZDIM = zd;
+	dataset = data;
+	FiveFold = five_fold;
+	
+	/*-Jesse-**********************************************************************
+	Initially mark all voxels with density below the minimum threshold for deletion.
+	Then run bubbleStopper to save some of the voxels that we may want to keep.  
+	Then delete the voxels that are still marked and proceed with the rest of the
+	algorithm.
+	*/
+	unsigned char *segmentIndex;
+	segmentIndex = (unsigned char *)malloc(sizeof(unsigned char)*XDIM*YDIM*ZDIM);
+	for (k=0; k<ZDIM; k++){
+		for (j=0; j<YDIM; j++){
+			for (i=0; i<XDIM; i++) {
+				if(dataset[IndexVect(i,j,k)] < tlow){
+					segmentIndex[IndexVect(i,j,k)] = 0;
+				}else
+					segmentIndex[IndexVect(i,j,k)] = 2;
+			}
+		}
+	}
+	//bubbleStopperSimple(segmentIndex, 5);
+	for (k=0; k<ZDIM; k++){
+		for (j=0; j<YDIM; j++){
+			for (i=0; i<XDIM; i++){
+				if (segmentIndex[IndexVect(i,j,k)] != 2)
+					dataset[IndexVect(i,j,k)] = 0; 
+			}
+		}
+	}
+	free(segmentIndex);
+
+	InitSeed_x = sx;
+	InitSeed_y = sy;
+	InitSeed_z = sz;
+	//printf("Capsid seed point: %d %d %d\n",InitSeed_x, InitSeed_y, InitSeed_z);
+	
+	
+	stack = (SVECTOR*)malloc(sizeof(SVECTOR)*XDIM*YDIM*ZDIM/3);
+	stack[0].x = InitSeed_x;
+	stack[0].y = InitSeed_y;
+	stack[0].z = InitSeed_z;
+	stack_size = 1;
+	
+	/*************************************************************************
+	(x,y,z) is the voxel on the top of the stack.  While the stack is nonempty, 
+	pop the stack and run SetSeedIndexSimple() on (x,y,z).  Then push onto the 
+	stack all the voxels near (x,y,z) that are above tlow.*/
+	while (stack_size > 0) {
+//TODO: change this to output directly to the UI and then to not exit the program.
+		if (stack_size >= XDIM*YDIM*ZDIM/3){
+			printf("too small tlow...\n");
+			exit(0);
+		}
+		stack_size--;
+		x = stack[stack_size].x;
+		y = stack[stack_size].y;
+		z = stack[stack_size].z;
+		SetSeedIndexSimple(x,y,z);
+		
+		for (k=max2(z-1,0); k<=min2(z+1,ZDIM-1); k++) {
+			for (j=max2(y-1,0); j<=min2(y+1,YDIM-1); j++) {
+				for (i=max2(x-1,0); i<=min2(x+1,XDIM-1); i++) {
+					if (dataset[IndexVect(i,j,k)] > tlow) {
+						stack[stack_size].x = i;
+						stack[stack_size].y = j;
+						stack[stack_size].z = k;
+						stack_size++;
+					}
+				}
+			}
+		}
+	}   
+	
+	/****************************************************************************
+	For all voxels (x,y,z), if the density at (x,y,z) is above tlow, and if there
+	exists another voxel near (x,y,z) whose density is negative, then set density at
+	(x,y,z) to be negative.*/
+	int window_radius = 1;
+	for (z=0; z<ZDIM; z++) {
+		for (y=0; y<YDIM; y++) {
+			for (x=0; x<XDIM; x++) {
+				if (dataset[IndexVect(x,y,z)] > tlow) {
+					index = 0;
+					for (k=max2(z-window_radius,0); k<=min2(z+window_radius,ZDIM-1); k++) {
+						for (j=max2(y-window_radius,0); j<=min2(y+window_radius,YDIM-1); j++) {
+							for (i=max2(x-window_radius,0); i<=min2(x+window_radius,XDIM-1); i++) {
+								if (dataset[IndexVect(i,j,k)] < 0) {
+									index = 1;
+								}
+							}
+							if (index) {
+								dataset[IndexVect(x,y,z)] = -dataset[IndexVect(x,y,z)];
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+	
+	/*******************************************************************************
+	Set all remaining positive voxels to be zero and then set all negative voxels to 
+	be positive.*/
+	for (k=0; k<ZDIM; k++) {
+		for (j=0; j<YDIM; j++) {
+			for (i=0; i<XDIM; i++) {
+				if (dataset[IndexVect(i,j,k)] > -tlow) {
+					dataset[IndexVect(i,j,k)] = 0; 
+				}else{
+					dataset[IndexVect(i,j,k)] = -dataset[IndexVect(i,j,k)];
+				}
+			}
+		}
+	}
+	free(stack);
+}
+
+VECTOR Rotate(float x, float y, float z, float theta, float phi, float alpha, int xd, int yd, int zd){
+	float _cos_theta_, _sin_theta_, _cos_phi_, _sin_phi_, _cos_alpha_, _sin_alpha_;
+	VECTOR returnValue;
+
+	_cos_theta_ = cos(theta);
+	_sin_theta_ = sin(theta);
+	_cos_phi_ = cos(phi);
+	_sin_phi_ = sin(phi);
+	_cos_alpha_ = cos(alpha);
+	_sin_alpha_ = sin(alpha);
+
+	x -= xd/2;
+	y -= yd/2;
+	z -= zd/2;
+
+	returnValue.x = -x*_cos_theta_*_cos_theta_*_cos_alpha_*_cos_phi_*_cos_phi_+x*_cos_theta_*_cos_theta_*_cos_phi_*_cos_phi_+x*_cos_alpha_-y*_sin_theta_*_cos_theta_*_cos_alpha_*_cos_phi_*_cos_phi_-y*_sin_phi_*_sin_alpha_+y*_cos_theta_*_sin_theta_*_cos_phi_*_cos_phi_-z*_cos_theta_*_cos_phi_*_cos_alpha_*_sin_phi_+z*_cos_phi_*_sin_alpha_*_sin_theta_+z*_cos_theta_*_cos_phi_*_sin_phi_;
+	returnValue.y = -x*_sin_theta_*_cos_theta_*_cos_alpha_*_cos_phi_+_cos_phi_+x*_cos_theta_*_sin_theta_*_cos_phi_*_cos_phi_+x*_sin_phi_*_sin_alpha_+y*_cos_alpha_-y*_cos_alpha_*_cos_phi_*_cos_phi_+y*_cos_alpha_*_cos_theta_*_cos_theta_*_cos_phi_*_cos_phi_+y*_cos_phi_*_cos_phi_-y*_cos_phi_*_cos_phi_*_cos_theta_*_cos_theta_-z*_cos_phi_*_sin_theta_*_sin_phi_*_cos_alpha_-z*_cos_phi_*_sin_alpha_*_cos_theta_+z*_sin_theta_*_cos_phi_*_sin_phi_;
+	returnValue.z = -x*_cos_theta_*_cos_phi_*_cos_alpha_*_sin_phi_+x*_cos_theta_*_cos_phi_*_sin_phi_-x*_cos_phi_*_sin_alpha_*_sin_theta_-y*_cos_phi_*_sin_theta_*_sin_phi_*_cos_alpha_+y*_sin_theta_*_cos_phi_*_sin_phi_+y*_cos_phi_*_sin_alpha_*_cos_theta_+z*_cos_phi_*_cos_phi_*_cos_alpha_+z-z*_cos_phi_*_cos_phi_;
+
+	returnValue.x += xd/2;
+	returnValue.y += yd/2;
+	returnValue.z += zd/2;
+
+	return(returnValue);
+}
+
+
+VECTOR Rotate(float sx, float sy, float sz, float theta, float phi, float angle)
+{
+	printf("ERROR this rotation function returns bad results because of its use of global variables\n");
+
+	float x,y,z;
+	float xx,yy,zz;
+	float a[3][3],b[3][3];
+	VECTOR tmp;
+	
+	
+	a[0][0] = (float)(cos(0.5*PIE-phi)*cos(theta));
+	a[0][1] = (float)(cos(0.5*PIE-phi)*sin(theta));
+	a[0][2] = (float)-sin(0.5*PIE-phi);
+	a[1][0] = (float)-sin(theta);
+	a[1][1] = (float)cos(theta);
+	a[1][2] = 0.f;
+	a[2][0] = (float)(sin(0.5*PIE-phi)*cos(theta));
+	a[2][1] = (float)(sin(0.5*PIE-phi)*sin(theta));
+	a[2][2] = (float)cos(0.5*PIE-phi);
+	
+	b[0][0] = (float)(cos(0.5*PIE-phi)*cos(theta));
+	b[0][1] = (float)-sin(theta); 
+	b[0][2] = (float)(sin(0.5*PIE-phi)*cos(theta)); 
+	b[1][0] = (float)(cos(0.5*PIE-phi)*sin(theta));
+	b[1][1] = (float)cos(theta);
+	b[1][2] = (float)(sin(0.5*PIE-phi)*sin(theta));
+	b[2][0] = (float)-sin(0.5*PIE-phi);
+	b[2][1] = 0.f;
+	b[2][2] = (float)cos(0.5*PIE-phi);
+	
+	
+	sx = sx-XDIM/2;
+	sy = sy-YDIM/2;
+	sz = sz-ZDIM/2;
+	
+	x = a[0][0]*sx+a[0][1]*sy+a[0][2]*sz;
+	y = a[1][0]*sx+a[1][1]*sy+a[1][2]*sz;
+	z = a[2][0]*sx+a[2][1]*sy+a[2][2]*sz;
+	
+	xx = (float)(cos(angle)*x - sin(angle)*y);
+	yy = (float)(sin(angle)*x + cos(angle)*y);
+	zz = z;
+	
+	tmp.x = b[0][0]*xx+b[0][1]*yy+b[0][2]*zz+XDIM/2;
+	tmp.y = b[1][0]*xx+b[1][1]*yy+b[1][2]*zz+YDIM/2;
+	tmp.z = b[2][0]*xx+b[2][1]*yy+b[2][2]*zz+ZDIM/2;
+	
+	return(tmp);
+	
+}
+
+
+VECTOR RotateDouble(double x, double y, double z, 
+					double theta, double phi, double alpha){
+	double _cos_theta_, _sin_theta_, _cos_phi_, _sin_phi_, _cos_alpha_, _sin_alpha_;
+	VECTOR returnValue;
+
+	_cos_theta_ = cos(theta);
+	_sin_theta_ = sin(theta);
+	_cos_phi_ = cos(phi);
+	_sin_phi_ = sin(phi);
+	_cos_alpha_ = cos(alpha);
+	_sin_alpha_ = sin(alpha);
+	returnValue.x = (float)(-x*_cos_theta_*_cos_theta_*_cos_alpha_*_cos_phi_*_cos_phi_+x*_cos_theta_*_cos_theta_*_cos_phi_*_cos_phi_+x*_cos_alpha_-y*_sin_theta_*_cos_theta_*_cos_alpha_*_cos_phi_*_cos_phi_-y*_sin_phi_*_sin_alpha_+y*_cos_theta_*_sin_theta_*_cos_phi_*_cos_phi_-z*_cos_theta_*_cos_phi_*_cos_alpha_*_sin_phi_+z*_cos_phi_*_sin_alpha_*_sin_theta_+z*_cos_theta_*_cos_phi_*_sin_phi_);
+	returnValue.y = (float)(-x*_sin_theta_*_cos_theta_*_cos_alpha_*_cos_phi_+_cos_phi_+x*_cos_theta_*_sin_theta_*_cos_phi_*_cos_phi_+x*_sin_phi_*_sin_alpha_+y*_cos_alpha_-y*_cos_alpha_*_cos_phi_*_cos_phi_+y*_cos_alpha_*_cos_theta_*_cos_theta_*_cos_phi_*_cos_phi_+y*_cos_phi_*_cos_phi_-y*_cos_phi_*_cos_phi_*_cos_theta_*_cos_theta_-z*_cos_phi_*_sin_theta_*_sin_phi_*_cos_alpha_-z*_cos_phi_*_sin_alpha_*_cos_theta_+z*_sin_theta_*_cos_phi_*_sin_phi_);
+	returnValue.z = (float)(-x*_cos_theta_*_cos_phi_*_cos_alpha_*_sin_phi_+x*_cos_theta_*_cos_phi_*_sin_phi_-x*_cos_phi_*_sin_alpha_*_sin_theta_-y*_cos_phi_*_sin_theta_*_sin_phi_*_cos_alpha_+y*_sin_theta_*_cos_phi_*_sin_phi_+y*_cos_phi_*_sin_alpha_*_cos_theta_+z*_cos_phi_*_cos_phi_*_cos_alpha_+z-z*_cos_phi_*_cos_phi_);
+
+	return(returnValue);
+}
+
+
+/*VECTOR RotateDouble(double sx, double sy, double sz, 
+			  double theta, double phi, double angle){
+	double x,y,z;
+	double xx,yy,zz;
+	double a[3][3],b[3][3];
+	VECTOR tmp;
+	
+	
+	a[0][0] = cos(0.5*PIE-phi)*cos(theta);
+	a[0][1] = cos(0.5*PIE-phi)*sin(theta);
+	a[0][2] = -sin(0.5*PIE-phi);
+	a[1][0] = -sin(theta);
+	a[1][1] = cos(theta);
+	a[1][2] = 0.0;
+	a[2][0] = sin(0.5*PIE-phi)*cos(theta);
+	a[2][1] = sin(0.5*PIE-phi)*sin(theta);
+	a[2][2] = cos(0.5*PIE-phi);
+	
+	b[0][0] = cos(0.5*PIE-phi)*cos(theta);
+	b[0][1] = -sin(theta); 
+	b[0][2] = sin(0.5*PIE-phi)*cos(theta); 
+	b[1][0] = cos(0.5*PIE-phi)*sin(theta);
+	b[1][1] = cos(theta);
+	b[1][2] = sin(0.5*PIE-phi)*sin(theta);
+	b[2][0] = -sin(0.5*PIE-phi);
+	b[2][1] = 0.0;
+	b[2][2] = cos(0.5*PIE-phi);
+	
+	
+	sx = sx-XDIM/2;
+	sy = sy-YDIM/2;
+	sz = sz-ZDIM/2;
+	
+	x = a[0][0]*sx+a[0][1]*sy+a[0][2]*sz;
+	y = a[1][0]*sx+a[1][1]*sy+a[1][2]*sz;
+	z = a[2][0]*sx+a[2][1]*sy+a[2][2]*sz;
+	
+	xx = cos(angle)*x - sin(angle)*y;
+	yy = sin(angle)*x + cos(angle)*y;
+	zz = z;
+	
+	tmp.x = (float)(b[0][0]*xx+b[0][1]*yy+b[0][2]*zz+XDIM/2);
+	tmp.y = (float)(b[1][0]*xx+b[1][1]*yy+b[1][2]*zz+YDIM/2);
+	tmp.z = (float)(b[2][0]*xx+b[2][1]*yy+b[2][2]*zz+ZDIM/2);
+	
+	return(tmp);	
+}
+*/
+
+void SetSeedIndexSimple(int ax, int ay,int az)
+{
+	int i,j,k;
+	int m,n;
+	float cx,cy,cz;
+	float mx,my,mz;
+	float sx,sy,sz;
+	float theta,phi;
+	VECTOR sv;
+	
+	/***********************************************************************
+	(cx,cy,cz) is set to be a point on the first symmetry axis in FiveFold[].  
+	We whift the point so that the axis goes through the origin.*/
+	cx = FiveFold[0].x-XDIM/2;
+	cy = FiveFold[0].y-YDIM/2;
+	cz = FiveFold[0].z-ZDIM/2;
+	i = ax;
+	j = ay;
+	k = az;
+	if (i < 0 || i >= XDIM || j < 0 || 
+		j >= YDIM || k < 0 || k >= ZDIM) {
+		printf("check the correctness of global symmetry ... 111\n");
+		exit(0);
+	}
+	
+	/****************************
+	Set (i,j,k) to be negative.*/
+	if (dataset[IndexVect(i,j,k)] > 0)
+		dataset[IndexVect(i,j,k)] = -dataset[IndexVect(i,j,k)];
+	/******************************************************************************
+	theta and phi are the spherical angles corresponding to the voxel (cx,cy,cz).*/
+	theta = (float)atan2(cy,cx);
+	phi = (float)atan2(cz, sqrt(cx*cx+cy*cy));
+	/************************************************************************************
+	(i,j,k) is set to be the initial point passed to the function rotated about the first
+	5-fold axis.*/
+	for (n = 1; n < 5; n++) {
+		sv = Rotate((float)ax,(float)ay,(float)az,theta,phi,n*2.0f*PIE/5.0f,XDIM,YDIM,ZDIM);
+		i = (int)(sv.x+0.5);
+		j = (int)(sv.y+0.5);
+		k = (int)(sv.z+0.5);
+		/******************************************************************************
+		It is possible for the rotation to return a point outside our data set.  If the
+		rotation gives us a valid point we set it to be negative.*/
+		if(i >= 0 && i < XDIM && j >= 0 && j < YDIM && k >= 0 && k < ZDIM &&
+			dataset[IndexVect(i,j,k)] > 0) {
+			dataset[IndexVect(i,j,k)] = -dataset[IndexVect(i,j,k)];
+		}
+	}
+	/***********************************************************
+	(mx,my,mz) is the m'th 5-fold axis centered at the origin.*/
+	for (m = 1; m < 11; m++) {
+		mx = FiveFold[m].x-XDIM/2;
+		my = FiveFold[m].y-YDIM/2;
+		mz = FiveFold[m].z-ZDIM/2;
+		/***********************************
+		(sx,sy,sz) = (cx,cy,cz)X(mx,my,mz)*/
+		sx = mz*cy-my*cz;
+		sy = mx*cz-mz*cx;
+		sz = my*cx-mx*cy;
+		theta = (float)atan2(sy,sx);
+		phi = (float)atan2(sz,sqrt(sx*sx+sy*sy));
+		if (m < 6)
+			sv = Rotate((float)ax,(float)ay,(float)az,theta,phi,ANGL1,XDIM,YDIM,ZDIM);
+		else
+			sv = Rotate((float)ax,(float)ay,(float)az,theta,phi,ANGL2,XDIM,YDIM,ZDIM);
+		/**********************************************************************
+		(sx,sy,sz) = (ax,ay,az) rotated about (cx,cy,cz)X(mx,my,mz) by angle.*/
+		sx = sv.x;
+		sy = sv.y;
+		sz = sv.z;
+		theta = (float)atan2(my,mx);
+		phi = (float)atan2(mz, sqrt(mx*mx+my*my));
+		for (n = 0; n < 5; n++) {
+			sv = Rotate(sx,sy,sz,theta,phi,n*2.0f*PIE/5.0f+PIE/5.0f,XDIM,YDIM,ZDIM);
+			/*************************************************************************
+			(i,j,k) = (ax,ay,az) rotated about (cx,xy,xz)X(mx,my,mz) by angle and then
+			rotated about (mx,my,mz)*/
+			i = (int)(sv.x+0.5);
+			j = (int)(sv.y+0.5);
+			k = (int)(sv.z+0.5);
+			if(i >= 0 && i < XDIM && j >= 0 && j < YDIM && k >= 0 && k < ZDIM && 
+				dataset[IndexVect(i,j,k)] > 0) {
+				dataset[IndexVect(i,j,k)] = -dataset[IndexVect(i,j,k)];
+			}
+		}
+		
+	}
+	
+	
+	/********************************
+	(mx,my,mz) = second 5-fold axis*/
+	mx = FiveFold[1].x-XDIM/2;
+	my = FiveFold[1].y-YDIM/2;
+	mz = FiveFold[1].z-ZDIM/2;
+	/***********************************
+	(sx,sy,sz) = (cx,cy,cz)X(mx,my,mz)*/
+	sx = mz*cy-my*cz;
+	sy = mx*cz-mz*cx;
+	sz = my*cx-mx*cy;
+	theta = (float)atan2(sy,sx);
+	phi = (float)atan2(sz,sqrt(sx*sx+sy*sy));
+	sv = Rotate((float)ax,(float)ay,(float)az,theta,phi,PIE,XDIM,YDIM,ZDIM);
+	sx = sv.x;
+	sy = sv.y;
+	sz = sv.z;
+	/************************************************************************
+	(i,j,k) = (ax,ay,az) rotated about (cx,cy,cz)X(mx,my,mz) by 180 degrees*/
+	i = (int)(sx+0.5);
+	j = (int)(sy+0.5);
+	k = (int)(sz+0.5);
+	if(i >= 0 && i < XDIM && j >= 0 && j < YDIM && k >= 0 && k < ZDIM &&
+		dataset[IndexVect(i,j,k)] > 0) {
+		dataset[IndexVect(i,j,k)] = -dataset[IndexVect(i,j,k)];
+	}
+	
+	/******************************
+	(mx,my,mz) = last 5-fold axis*/
+	mx = FiveFold[11].x-XDIM/2;
+	my = FiveFold[11].y-YDIM/2;
+	mz = FiveFold[11].z-ZDIM/2;
+	theta = (float)atan2(my,mx);
+	phi = (float)atan2(mz, sqrt(mx*mx+my*my));
+	for (n = 1; n < 5; n++) {
+		sv = Rotate(sx,sy,sz,theta,phi,n*2.0f*PIE/5.0f,XDIM,YDIM,ZDIM);
+		/******************************************************************************************
+		(i,j,k) = (cx,cy,cz)X[(cx,cy,cz)X(second 5-fold axis)] rotated about the last 5-fold axis*/
+		i = (int)(sv.x+0.5);
+		j = (int)(sv.y+0.5);
+		k = (int)(sv.z+0.5);
+		if(i >= 0 && i < XDIM && j >= 0 && j < YDIM && k >= 0 && k < ZDIM &&
+			dataset[IndexVect(i,j,k)] > 0) {
+			dataset[IndexVect(i,j,k)] = -dataset[IndexVect(i,j,k)];
+		}
+	}
+	
+}
+
+/*-Jesse-******************************************************************
+This algorithm is intended to clean up the data after it has been processed 
+by removing bubbles.  segmentIndex is an array that stores an index value for 
+each voxel that determines a partitioning of the data.  Suppose we have a small
+pocket of voxels with index 2 completely surrounded by voxels with index 0,
+then bubbleStopper will set the indices of the voxels in the pocket to be 0.
+If the pocket is found to have a diamater larger than maxVoxelDiamater then we 
+do nothing.  Also, suppose we find a small bubble with indices 0 that borders 
+on a region with index 1, and then we discover that it also borders on a region
+with index 2.  Since it is unclear whether we should set the pocket index to 1 or 2
+we leave it untouched as 0.*/
+void bubbleStopperSimple(unsigned char *segmentIndex, unsigned int maxVoxelDiamater){
+	int i, j, k, n, m, p;
+	int tempBorder_i, tempBorder_j, tempBorder_k;
+	double maxBubbleSize = (4/3)*PIE*pow((double)maxVoxelDiamater/2,3);
+	unsigned char thisIndex;
+	unsigned char borderIndex;
+	std::vector<std::stack<int> > borderIndices(3);
+	std::stack<int> bubbleIndices;
+	std::vector<bool> visited(XDIM*YDIM*ZDIM, false);
+
+	for (k=0; k<ZDIM; k++){
+		for (j=0; j<YDIM; j++){
+			for (i=0; i<XDIM; i++){
+				if(visited.at(IndexVect(i,j,k)) == false){
+					visited.at(IndexVect(i,j,k)) = true;
+					thisIndex = segmentIndex[IndexVect(i,j,k)];
+					borderIndex = segmentIndex[IndexVect(i,j,k)];
+					bubbleIndices.push(IndexVect(i,j,k));
+					borderIndices.at(0).push(i);
+					borderIndices.at(1).push(j);
+					borderIndices.at(2).push(k);
+					while(!borderIndices.at(0).empty()){
+						tempBorder_i = borderIndices.at(0).top();
+						tempBorder_j = borderIndices.at(1).top();
+						tempBorder_k = borderIndices.at(2).top();
+						borderIndices.at(0).pop();
+						borderIndices.at(1).pop();
+						borderIndices.at(2).pop();
+						for(p=max2(0,tempBorder_k-1); p<min2(ZDIM,tempBorder_k+2); p++){
+							for(m=max2(0,tempBorder_j-1); m<min2(YDIM,tempBorder_j+2); m++){
+								for(n=max2(0,tempBorder_i-1); n<min2(XDIM,tempBorder_i+2); n++){
+									if(n!=tempBorder_i || m!=tempBorder_j || p!=tempBorder_k){
+										if(segmentIndex[IndexVect(n,m,p)] == thisIndex){
+											if( sqrt((double)((n-i)*(n-i)+(m-j)*(m-j)+(p-k)*(p-k))) > maxVoxelDiamater/2){
+												//stop growing the bubble
+												borderIndex = thisIndex;
+												p = ZDIM;
+												m = YDIM;
+												n = XDIM;
+												while(!borderIndices.at(0).empty()){
+													borderIndices.at(0).pop();
+													borderIndices.at(1).pop();
+													borderIndices.at(2).pop();
+												}
+												while(!bubbleIndices.empty()){
+													visited.at(bubbleIndices.top()) = false;
+													bubbleIndices.pop();
+												}
+											}else{
+												if( !visited.at(IndexVect(n,m,p)) ){
+													visited.at(IndexVect(n,m,p)) = true;
+													bubbleIndices.push(IndexVect(n,m,p));
+													borderIndices.at(0).push(n);
+													borderIndices.at(1).push(m);
+													borderIndices.at(2).push(p);
+													if(bubbleIndices.size() > maxBubbleSize){
+														borderIndex = thisIndex;
+														//stop growing the bubble
+														p = ZDIM;
+														m = YDIM;
+														n = XDIM;
+														while(!borderIndices.at(0).empty()){
+															borderIndices.at(0).pop();
+															borderIndices.at(1).pop();
+															borderIndices.at(2).pop();
+														}
+														while(!bubbleIndices.empty()){
+															visited.at(bubbleIndices.top()) = false;
+															bubbleIndices.pop();
+														}
+													}
+												}
+											}
+										}else{//segmentIndex[IndexVect(n,m,p)] != thisIndex)
+											if(borderIndex == thisIndex){
+												borderIndex = segmentIndex[IndexVect(n,m,p)];
+											}else if(borderIndex != segmentIndex[IndexVect(n,m,p)]){
+												borderIndex = thisIndex;
+												//stop growing the bubble
+												p = ZDIM;
+												m = YDIM;
+												n = XDIM;
+												while(!borderIndices.at(0).empty()){
+													borderIndices.at(0).pop();
+													borderIndices.at(1).pop();
+													borderIndices.at(2).pop();
+												}
+												while(!bubbleIndices.empty()){
+													visited.at(bubbleIndices.top()) = false;
+													bubbleIndices.pop();
+												}
+											}
+										}
+									}
+								}
+							}
+						}
+					}
+					/*-Jesse-**********************************************************************
+					At this point, we're done growing the bubble.  If borderIndex != thisIndex then
+					we have a bubble and we set the segmentIndex of every voxel in the bubble 
+					to match the index of the surrounding voxels.  If borderIndex = thisIndex then we 
+					do not have a bubble and we do nothing.*/
+					if(borderIndex != thisIndex){
+						while(!bubbleIndices.empty()){
+							segmentIndex[bubbleIndices.top()] = borderIndex;
+							visited.at(bubbleIndices.top()) = false;
+							bubbleIndices.pop();
+						}
+					}
+				}
+			}
+		}
+	}
+}
+
+};

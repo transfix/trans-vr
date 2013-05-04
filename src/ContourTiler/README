@@ -1,0 +1,129 @@
+--------------------------------------------------------------------------------
+The GOAL
+--------------------------------------------------------------------------------
+./ContourTiler -e 1e-15 -C 0.01 -d output -o raw -s 59 160 -z .05 -n data -r AxonsDendrites
+
+--------------------------------------------------------------------------------
+ecs
+--------------------------------------------------------------------------------
+Mesh is wrong:
+ecs -b 4 4 3.2 5 5 4.2 ~/data/neuropil/CA1/20070926/john_tiled/curated/a050.rawc out.off
+
+--------------------------------------------------------------------------------
+Failures
+--------------------------------------------------------------------------------
+failed to trace untiled region - due to nested contour of a006
+./ContourTilerBin -e 1e-15 -C 0.01 -d output -o raw -z 0.05 -n data -s 107 108 -c a006 AxonsDendrites
+
+produces holes
+./ContourTilerBin -e 1e-15 -C 0.01 -d output -o raw -z 0.05 -n data -s 59 160 -c a004 AxonsDendrites
+
+
+
+failed to make triangle
+./ContourTilerBin -e 1e-15 -C 0.01 -d output -o raw -z 0.05 -n data -s 142 143 -c d000 AxonsDendrites
+
+ERROR intersection.get_intersections -  y_z_home = 61 g_z_home = 61
+./ContourTilerBin -e 1e-15 -C 0.01 -d output -o raw -z 0.05 -n data -s 61 62 -c a392 -c d032 -r AxonsDendrites | tee out
+
+WARN  intersection.find_exit - Exit point error: gn0 == gn1: skipping point
+./ContourTilerBin -e 1e-15 -C 0.01 -d output -o raw -z 0.05 -n data -s 61 62 -c a427 -c a400 -c d021 -r AxonsDendrites
+
+--------------------------------------------------------------------------------
+Fixed
+--------------------------------------------------------------------------------
+nonsimple
+./ContourTilerBin -e 1e-15 -C 0.01 -d output -o raw -z 0.05 -n data -s 59 62 -c d000 AxonsDendrites
+
+Bad interpolation - this appears to have been fixed (jme 7/9/12)
+./ContourTilerBin -e 1e-15 -C 0.01 -d output -o raw -z 0.05 -n data -s 61 63 -c a372 -c a368 AxonsDendrites | tee out
+
+Bad interpolation
+./ContourTilerBin -e 1e-15 -C 0.01 -d output -o raw -z 0.05 -n data -s 61 62 -c a406 -c a224 AxonsDendrites
+Original (this one has two bad interpolations, so use it to check after the previous is fixed):
+./ContourTilerBin -e 1e-15 -C 0.01 -d output -o raw -z 0.05 -n data -s 61 62 -c a406 -c a044 -c a050 -c a071 -c a149 -c a224 -c a225 -c a230 -c d000 -c d004 -c d088 AxonsDendrites
+
+--------------------------------------------------------------------------------
+How to build:
+--------------------------------------------------------------------------------
+make -k -j8 -C ~/projects/VolumeRover-release ContourTilerBin
+
+--------------------------------------------------------------------------------
+How to run:
+--------------------------------------------------------------------------------
+Using dat files:
+./ContourTiler -b "" -d output -i gnuplot -o gnuplot -o raw -O -P -U -B -T -V -n ../test_data -f dat -s 90 91 a001_90.dat a001_91.dat
+
+./ContourTiler -r -d output -f dat -o raw -n ../test_data a001_116.dat a020_116.dat a001_117.dat a020_117.dat 
+
+Using ser files:
+./ContourTiler -b "" -d output -i gnuplot -o gnuplot -o raw -O -P -U -B -T -V -n data -z .05 -c a001 -c a002 -s 90 91 Volumejosef
+
+Run a unit test called close_pts1
+./ContourTilerTest --data ../test_data --out output --test close_pts1
+
+Currently successful:
+./ContourTiler -d output -o raw -c a001 -c a002 -c a003 -c a004 -c a005 -c a006 -c a007 -c a008 -c a009 -c a010 -c a011 -s 60 161 -z .05 -n data Volumejosef
+
+Standard colors (--color):
+dendrite: 255 224 192 (from existing reconstructions: 1.000000 0.878431 0.752941)
+dendrite (old color): 240 210 195
+axon: 0 255 0
+yellow: 255 255 0
+green: 0 255 0
+
+--------------------------------------------------------------------------------
+How to plot in gnuplot
+--------------------------------------------------------------------------------
+set style data linespoints
+plot "a007_113.dat", "a007_114.dat"
+
+splot "./a0030_tiles_phase1.g", "a0030_verts.g" with labels
+
+--------------------------------------------------------------------------------
+Nice examples:
+--------------------------------------------------------------------------------
+VolumeRover2 GUI: -C 0.01 -e 1e-15 -d output -o raw -z .05
+
+
+./ContourTiler -C 0.01 -d output -o raw -c a001 -c a020 -s 116 117 -z .05 -n data Volumejosef
+./ContourTiler -C 0.01 -d output -o raw -c a001 -c a020 -s 116 117 -z .05 -n data -r Volumejosef
+./ContourTiler -C 0.01 -d output -o raw -c a007 -s 113 114 -z .05 -n data Volumejosef
+
+This one is from the SPM talk
+./ContourTiler -e 1e-15 -C 0.01 -d output_116_color -o raw -c a001 -c a020 -c a046 -c a002 -c a008 -c a124 -c a171 -s 90 116 -z .05 -n data Volumejosef
+
+This one has a lot of nice, complicated intersections
+./ContourTiler -r -d output -e 1e-15 -C 0.01 -o raw -s 115 116 -z .05 -n data -c a085 -c a066 -c a020 -c a002 -c a004 -c a008 -c a065 Volumejosef
+
+./ContourTiler -C 0.01 -d output -o raw -c a001 -c a002 -c a003 -c a004 -c a005 -c a006 -c a007 -c a008 -c a009 -c a010 -c a011 -c a012 -c a013 -c a014 -c a015 -c a016 -c a017 -c a018 -s 60 161 -z .05 -n data -r Volumejosef
+
+./ContourTiler -C 0.01 -e 1e-15 -b d000 -d output -o raw -c "d000_apical_" -s 61 160 -z .05 -n  /org/centers/cvc/edwardsj/data/neuropil/CA1/20070926/r34_perfused_CA1-reconstruct Volumejosef
+
+./ContourTiler -C 0.01 -e 1e-15 -b d -d output -o raw -c d001 -c d002 -c d003 -c d004 -c d005 -c d006 -s 61 161 -z .05 -n /org/centers/cvc/edwardsj/data/neuropil/CA1/20070926/SC-CA1-dendrites Volumejosef
+
+./ContourTiler --printcomponents -n /org/centers/cvc/edwardsj/data/neuropil/CA1/20101022 RDVLT
+
+./ContourTiler -C 0.01 -e 1e-15 -b d -d output -o raw -c d01 -s 1 118 -z .069 -n /org/centers/cvc/edwardsj/data/neuropil/CA1/20101022 RDVLT
+
+./ContourTiler --printcomponents -s 72 204 -n /org/centers/cvc/edwardsj/data/neuropil/CA3/20090910/traces mossy_fiber_aligned
+
+./ContourTiler -C 0.01 -e 1e-15 -d output -o raw -c d01 -s 72 204 -z .05 -n /org/centers/cvc/edwardsj/data/neuropil/CA3/20090910/traces mossy_fiber_aligned
+
+./ContourTiler -b bad -e 1e-15 -C 0.005 -d output_116_color/test -o raw -x a144 -s 112 116 -z .05 -n data Volumejosef
+./ContourTiler -b fixed -e 1e-15 -C 0.005 -d output_116_color/test -o raw -x a144 -s 112 116 -z .05 -n data -r Volumejosef
+
+Ciliary ganglion sent by Justin
+./ContourTiler -d output -o raw -e 1e-15 -z 0.05 -n /org/centers/cvc/edwardsj/data/neuropil/ciliary_ganglion/recon -s 101 104 -c Post cg
+
+Contour curation/intersection removal
+./ContourTiler -e 1e-15 -C 0.01 -d output_2d -o raw -c a[0-9][0-9][0-9] -s 87 87 -z .05 -n /org/centers/cvc/data/neuropil/CA1/20070926/beth_bell_traces -I Volumejosef
+
+ln -s /org/centers/cvc/edwardsj/data/neuropil/CA1/20070926/john_traces data
+./ContourTiler -C 0.01 -e 1e-15 -b a -d output -o raw -c apical -s 72 73 -z .05 -n data/working apical
+
+ln -s /org/centers/cvc/edwardsj/data/neuropil/CA3/20090910/traces mossy
+./ContourTilerBin -b mossy -C 0.01 -e 1e-15 -d output -o raw -c MFB01 -s 72 204 -z .05 -n mossy MFB01
+
+This one has some nice problems
+./ContourTilerBin -b mossy -C 0.01 -e 1e-15 -d output -o raw -c MFB01 -s 190 191 -z .05 -n mossy MFB01

@@ -1,0 +1,24 @@
+CMAKE_MINIMUM_REQUIRED (VERSION 2.6)
+
+FILE(GLOB SOURCE_FILES *.cpp)
+FILE(GLOB INCLUDE_FILES ../../inc/SimpleExample/*.[Hh])
+
+SOURCE_GROUP("Source Files" FILES ${SOURCE_FILES})
+SOURCE_GROUP("Header Files" FILES ${INCLUDE_FILES})
+
+find_package(GLUT)
+
+INCLUDE_DIRECTORIES(
+  ../../inc
+  ${GLUT_INCLUDE_DIR}
+)
+
+ADD_EXECUTABLE (SimpleExample 
+  ${SOURCE_FILES} ${INCLUDE_FILES}
+)
+
+TARGET_LINK_LIBRARIES(SimpleExample
+  VolumeLibrary
+  ${GLUT_LIBRARIES}
+  glew
+)

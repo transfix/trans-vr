@@ -1,0 +1,332 @@
+#include <dataCutterClient/imageclient.h>
+#include <dataCutterClient/message.h>
+#include<stdio.h>
+#include<fstream>
+//#include<unistd.h>
+#include <dataCutterClient/dsentry.h>
+#include "string.h"
+#include "stdlib.h"
+
+using namespace std;
+
+#ifdef DEBUG1 /* top level debug */
+
+#define DEBUG2
+
+#endif
+
+
+ImageClient::ImageClient()
+	{
+	sockfd=-1;
+
+	pmess=NULL;
+	phm=NULL;
+	phma=NULL;
+	pgetdsd=NULL;
+	pgetdsda=NULL;
+	pgetds=NULL;
+	pgetdsa=NULL;
+	perr=NULL;
+	pbye=NULL;
+
+	filename=NULL;
+	dsname=NULL;
+	}
+
+void ImageClient::setSockfd(int sfd)
+	{
+	sockfd=sfd;
+	}
+
+void ImageClient::setFilename(char *fn)
+	{
+	filename=fn;
+	}
+
+void ImageClient::setSpec(DSDetails *sp)
+	{
+	spec=sp;
+	}
+
+void ImageClient::setDSName(char *ldsname)
+	{
+	dsname=ldsname;
+	}
+
+void ImageClient::request() /* request for dataset and write to filename */
+	{
+
+	requestHello();
+	recvMessage();
+	if (perr!=NULL)
+		processError();
+	
+	processHelloAck();
+
+	cout<<"STEP 1--------------------"<<endl;
+	
+	requestGetDSDetails();
+	recvMessage();
+	if (perr!=NULL)
+		processError();
+	processGetDSDetailsAck();
+
+	cout<<"STEP 2--------------------"<<endl;
+
+	requestGetDS();
+
+	cout<<"STEP 2.1---"<<endl;
+	recvMessage();
+
+	cout<<"STEP 2.2---"<<endl;
+	
+	if (perr!=NULL)
+		processError();
+	processGetDSAck();
+
+	cout<<"STEP 3--------------------"<<endl;
+	
+	requestBye();
+	recvMessage();
+	if (perr!=NULL)
+		processError();
+	processBye();
+
+
+	cout<<"STEP 4--------------------"<<endl;
+	return;
+	}
+
+void ImageClient::requestHello()
+	{
+	phm=new HelloMessage();
+	memset(buffer,'A',BUFSIZE);
+
+	phm->serialize(buffer);
+	sendMessage();
+	}
+
+void ImageClient::requestGetDSDetails()
+	{
+	pgetdsd=new GetDSDetailsMessage();
+
+#ifdef DEBUG2
+	cout<<"going to request for "<<dsname<<" details"<<endl;
+#endif
+
+	pgetdsd->setName((uchar *) dsname);
+	pgetdsd->serialize(buffer);
+	sendMessage();
+	}
+
+void ImageClient::requestGetDS()
+	{
+	pgetds=new GetDSMessage();
+
+#ifdef DEBUG2
+	cout<<"requesting ds!"<<endl;
+#endif
+
+	pgetds->setName((uchar *)dsname);
+
+	cout<<"\nRequesting specs: "<<endl;
+	spec->display();
+	
+	pgetds->setSpec(spec);
+
+	pgetds->serialize(buffer);
+
+	sendMessage();
+	}
+
+void ImageClient::requestBye()
+	{
+	pbye=new ByeMessage();
+
+#ifdef DEBUG2
+	cout<<"requesting bye!"<<endl;
+#endif
+
+	pbye->serialize(buffer);
+	sendMessage();
+	}
+
+void ImageClient::requestError()
+	{
+	}
+
+void ImageClient::processHelloAck()
+	{
+	int i;
+	int n;
+	char lname[100];
+	char ldesc[200];
+
+#ifdef DEBUG2
+	cout<<"processing hello ack"<<endl;
+#endif
+
+	phma->reset();
+	n=phma->getNsets();
+
+	for (i=0;i<n;i++)
+		{
+		phma->getNext((uchar*)lname,(uchar*)ldesc);
+		cout<<"\nName="<<lname<<endl;
+		cout<<"\nDescription="<<ldesc<<endl;
+		}
+
+	}
+
+void ImageClient::processGetDSDetailsAck()
+	{
+
+	cout<<"\nName: "<<pgetdsda->getName()<<endl;
+	cout<<"\nDetails: "<<endl;
+	(pgetdsda->getDetails())->display();
+
+	cout<<endl;
+	}
+
+
+void ImageClient::processGetDSAck()
+	{
+#ifdef DEBUG2
+	cout<<"processing getds ack"<<endl;
+#endif
+
+	cout<<"name of dataset = "<<pgetdsa->getName()<<endl;
+	cout<<"type of dataset = "<<(int) pgetdsa->getDataType()<<endl;
+
+	cout<<"Going to receive data from server... and writing to file "<<filename<<endl;
+
+	ofstream of(filename,ios::out);
+
+	uchar *pbuffer=buffer;
+	int nbytesleft=pgetdsa->getNBytes();
+	cout<<"NBytes left = "<<nbytesleft<<endl;
+
+	int nbytesread;
+
+	nbytesread=read(sockfd,pbuffer,BUFSIZE);
+
+	while(nbytesread>0)
+		{
+		nbytesleft -= nbytesread;
+		of.write((char*)pbuffer,nbytesread);
+		if (nbytesleft <=0) break;
+		nbytesread=read(sockfd,pbuffer,BUFSIZE);
+		}
+
+	of.close();
+	}
+
+void ImageClient::processBye()
+	{
+	cout<<"recd bye from server!"<<endl;
+	}
+
+void ImageClient::processError() 
+	{
+	cout<<"Received error message from server!"<<endl;
+	cout<<"Message responsible: "<<(int)perr->getOriginalMType()<<endl;
+	cout<<"Description: "<<perr->getDescription()<<endl;
+	cout<<"Exiting!"<<endl;
+	close(sockfd);
+	exit(1);
+	}
+
+void ImageClient::recvMessage()
+	{
+#define DEBUG2
+	uchar *pbuffer=buffer;
+	int nbytesleft=BUFSIZE;
+	int nbytesread;
+
+	freeAll();
+
+#ifdef DEBUG2
+	cout<<"client waiting for message !"<<endl;
+#endif
+
+	while(nbytesleft>0)
+		{
+
+		nbytesread=read(sockfd,pbuffer,nbytesleft);
+		if (nbytesread<=0) return;
+		pbuffer+=nbytesread;
+		nbytesleft-=nbytesread;
+		}
+
+
+	pmess=new Message(buffer);
+
+#ifdef DEBUG2
+	cout<<"Client recd message of type: "<<(int) pmess->getMType()<<endl;
+	Message::displayMessage(buffer,50);
+#endif
+
+	switch(pmess->getMType())
+		{
+		case HELLOACK: phma=new HelloMessageAck(buffer);break;
+		case DSDETAILSACK: pgetdsda=new GetDSDetailsMessageAck(buffer); break;
+		case GETDSACK: pgetdsa=new GetDSMessageAck(buffer); break;
+		case ERRORMASK: perr=new ErrorMessage(buffer); break;
+		case BYE: pbye=new ByeMessage(buffer); break;
+		default: break;
+		}
+
+#ifdef DEBUG2
+	cout<<"Successful return from RecvMessage()"<<endl;
+#endif
+	
+	return;
+#undef DEBUG2
+	}
+
+void ImageClient::sendMessage()
+	{
+	int bytesleft=BUFSIZE;
+	int byteswritten=0;
+
+#ifdef DEBUG2
+	cout<<"Client writing message:"<<endl;
+	Message::displayMessage(buffer,10);
+#endif
+
+	char *pbuffer=(char *)buffer;
+
+	while(bytesleft>0)
+		{
+		byteswritten=write(sockfd,pbuffer,bytesleft);
+		bytesleft-=byteswritten;
+		pbuffer+=byteswritten;
+		}
+	}
+
+void ImageClient::freeAll()
+	{
+	if (pmess!=NULL) delete pmess;
+	if (phm!=NULL) delete phm;
+	if (phma!=NULL) delete phma;
+	if (pgetdsd!=NULL) delete pgetdsd;
+	if (pgetdsda!=NULL) delete pgetdsda;
+	if (pgetds!=NULL) delete pgetds;
+	if (pgetdsa!=NULL) delete pgetdsa;
+	if (perr!=NULL) delete perr;
+	if (pbye!=NULL) delete pbye;
+
+	pmess=NULL;
+	phm=NULL;
+	phma=NULL;
+	pgetdsd=NULL;
+	pgetdsda=NULL;
+	pgetds=NULL;
+	pgetdsa=NULL;
+	perr=NULL;
+	pbye=NULL;
+
+	}
+
+ImageClient::~ImageClient()	{ freeAll(); }

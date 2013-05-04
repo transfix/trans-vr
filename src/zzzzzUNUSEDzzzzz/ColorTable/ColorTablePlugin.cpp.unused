@@ -1,0 +1,102 @@
+#include <ColorTable/ColorTablePlugin.h>
+#include <ColorTable/ColorTable.h>
+
+using namespace CVC;
+
+static const char *colortable_pixmap[] = {
+    "22 22 8 1",
+    "  c Gray100",
+    ". c Gray97",
+    "X c #4f504f",
+    "o c #00007f",
+    "O c Gray0",
+    "+ c none",
+    "@ c Gray0",
+    "# c Gray0",
+    "++++++++++++++++++++++",
+    "++++++++++++++++++++++",
+    "++++++++++++++++++++++",
+    "++++++++++++++++++++++",
+    "+OOOOOOOOOOOOOOOOOOOO+",
+    "OOXXXXXXXXXXXXXXXXXXOO",
+    "OXX.                 O",
+    "OX.                  O",
+    "OX.                 .O",
+    "OX                   O",
+    "OX                   O",
+    "OX                   O",
+    "OX                   O",
+    "OX                   O",
+    "OX                   O",
+    "OX                   O",
+    "OO..................OO",
+    "+OOOOOOOOOOOOOOOOOOOO+",
+    "++++++++++++++++++++++",
+    "++++++++++++++++++++++",
+    "++++++++++++++++++++++",
+    "++++++++++++++++++++++"
+};
+
+ColorTablePlugin::ColorTablePlugin()
+{
+}
+
+ColorTablePlugin::~ColorTablePlugin()
+{
+}
+
+QStringList ColorTablePlugin::keys() const
+{
+    QStringList list;
+    list << "ColorTable";
+    return list;
+}
+
+QWidget* ColorTablePlugin::create( const QString &key, QWidget* parent, const char* name )
+{
+    if ( key == "ColorTable" )
+	return new ColorTable( parent, name );
+    return 0;
+}
+
+QString ColorTablePlugin::group( const QString& feature ) const
+{
+    if ( feature == "ColorTable" )
+	return "Display";
+    return QString::null;
+}
+
+QIconSet ColorTablePlugin::iconSet( const QString& ) const
+{
+    return QIconSet( QPixmap( colortable_pixmap ) );
+}
+
+QString ColorTablePlugin::includeFile( const QString& feature ) const
+{
+    if ( feature == "ColorTable" )
+	return "ColorTable.h";
+    return QString::null;
+}
+
+QString ColorTablePlugin::toolTip( const QString& feature ) const
+{
+    if ( feature == "ColorTable" )
+	return "Color Table Widget";
+    return QString::null;
+}
+
+QString ColorTablePlugin::whatsThis( const QString& feature ) const
+{
+    if ( feature == "ColorTable" )
+	return "A widget to interactively edit a color and alpha map";
+    return QString::null;
+}
+
+bool ColorTablePlugin::isContainer( const QString& ) const
+{
+    return FALSE;
+    //return TRUE;
+}
+
+Q_EXPORT_PLUGIN( ColorTablePlugin )
+

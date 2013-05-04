@@ -1,0 +1,725 @@
+<!DOCTYPE UI><UI version="3.3" stdsetdef="1">
+<class>MSLevelSetDialog</class>
+<widget class="QDialog">
+    <property name="name">
+        <cstring>MSLevelSetDialog</cstring>
+    </property>
+    <property name="geometry">
+        <rect>
+            <x>0</x>
+            <y>0</y>
+            <width>449</width>
+            <height>427</height>
+        </rect>
+    </property>
+    <property name="caption">
+        <string>Mumford-Shah Level Set Segmentation</string>
+    </property>
+    <grid>
+        <property name="name">
+            <cstring>unnamed</cstring>
+        </property>
+        <property name="resizeMode">
+            <enum>Fixed</enum>
+        </property>
+        <spacer row="2" column="1">
+            <property name="name">
+                <cstring>spacer5</cstring>
+            </property>
+            <property name="orientation">
+                <enum>Horizontal</enum>
+            </property>
+            <property name="sizeType">
+                <enum>Expanding</enum>
+            </property>
+            <property name="sizeHint">
+                <size>
+                    <width>60</width>
+                    <height>20</height>
+                </size>
+            </property>
+        </spacer>
+        <widget class="QLayoutWidget" row="2" column="2">
+            <property name="name">
+                <cstring>layout2</cstring>
+            </property>
+            <hbox>
+                <property name="name">
+                    <cstring>unnamed</cstring>
+                </property>
+                <widget class="QPushButton">
+                    <property name="name">
+                        <cstring>m_CancelButton</cstring>
+                    </property>
+                    <property name="text">
+                        <string>Cancel</string>
+                    </property>
+                </widget>
+                <widget class="QPushButton">
+                    <property name="name">
+                        <cstring>m_RunButton</cstring>
+                    </property>
+                    <property name="text">
+                        <string>Run</string>
+                    </property>
+                </widget>
+            </hbox>
+        </widget>
+        <widget class="QGroupBox" row="1" column="0" rowspan="1" colspan="3">
+            <property name="name">
+                <cstring>m_CUDAParamsGroupBox</cstring>
+            </property>
+            <property name="title">
+                <string>CUDA Parameters</string>
+            </property>
+            <grid>
+                <property name="name">
+                    <cstring>unnamed</cstring>
+                </property>
+                <widget class="QLabel" row="1" column="0">
+                    <property name="name">
+                        <cstring>m_BlockDimText</cstring>
+                    </property>
+                    <property name="text">
+                        <string>Block dimension</string>
+                    </property>
+                </widget>
+                <widget class="QComboBox" row="1" column="1">
+                    <item>
+                        <property name="text">
+                            <string>SDT kernel</string>
+                        </property>
+                    </item>
+                    <item>
+                        <property name="text">
+                            <string>Averaging kernel</string>
+                        </property>
+                    </item>
+                    <item>
+                        <property name="text">
+                            <string>Median kernel</string>
+                        </property>
+                    </item>
+                    <item>
+                        <property name="text">
+                            <string>PDE kernel</string>
+                        </property>
+                    </item>
+                    <property name="name">
+                        <cstring>m_BlockDimComboBox</cstring>
+                    </property>
+                </widget>
+                <widget class="QLabel" row="0" column="0" rowspan="1" colspan="2">
+                    <property name="name">
+                        <cstring>m_SubvolDimText</cstring>
+                    </property>
+                    <property name="text">
+                        <string>Subvolume dimension</string>
+                    </property>
+                </widget>
+                <widget class="QLineEdit" row="0" column="2">
+                    <property name="name">
+                        <cstring>m_SubvolDimEdit</cstring>
+                    </property>
+                    <property name="text">
+                        <string>128</string>
+                    </property>
+                </widget>
+                <widget class="QLineEdit" row="1" column="2">
+                    <property name="name">
+                        <cstring>m_BlockDimEdit</cstring>
+                    </property>
+                    <property name="text">
+                        <string>4</string>
+                    </property>
+                </widget>
+            </grid>
+        </widget>
+        <widget class="QGroupBox" row="0" column="0" rowspan="1" colspan="3">
+            <property name="name">
+                <cstring>m_LevelSetParamsGroupBox</cstring>
+            </property>
+            <property name="title">
+                <string>Level Set Parameters</string>
+            </property>
+            <grid>
+                <property name="name">
+                    <cstring>unnamed</cstring>
+                </property>
+                <widget class="QLayoutWidget" row="0" column="0">
+                    <property name="name">
+                        <cstring>layout5</cstring>
+                    </property>
+                    <grid>
+                        <property name="name">
+                            <cstring>unnamed</cstring>
+                        </property>
+                        <widget class="QLabel" row="1" column="0">
+                            <property name="name">
+                                <cstring>m_Lambda2Text</cstring>
+                            </property>
+                            <property name="text">
+                                <string>λ&lt;font size="-1"&gt;2&lt;/font&gt;</string>
+                            </property>
+                        </widget>
+                        <widget class="QLineEdit" row="0" column="1">
+                            <property name="name">
+                                <cstring>m_Lambda1Edit</cstring>
+                            </property>
+                            <property name="text">
+                                <string>1.0</string>
+                            </property>
+                        </widget>
+                        <widget class="QLabel" row="1" column="4">
+                            <property name="name">
+                                <cstring>m_DeltaTText</cstring>
+                            </property>
+                            <property name="text">
+                                <string>Δt</string>
+                            </property>
+                            <property name="alignment">
+                                <set>AlignVCenter</set>
+                            </property>
+                        </widget>
+                        <widget class="QLineEdit" row="0" column="3">
+                            <property name="name">
+                                <cstring>m_MuEdit</cstring>
+                            </property>
+                            <property name="text">
+                                <string>32.5125</string>
+                            </property>
+                        </widget>
+                        <widget class="QLabel" row="0" column="2">
+                            <property name="name">
+                                <cstring>m_MuText</cstring>
+                            </property>
+                            <property name="text">
+                                <string>μ</string>
+                            </property>
+                        </widget>
+                        <widget class="QLabel" row="1" column="2">
+                            <property name="name">
+                                <cstring>m_NuText</cstring>
+                            </property>
+                            <property name="text">
+                                <string>ν</string>
+                            </property>
+                        </widget>
+                        <widget class="QLabel" row="0" column="4">
+                            <property name="name">
+                                <cstring>m_EpsilonText</cstring>
+                            </property>
+                            <property name="text">
+                                <string>ϵ</string>
+                            </property>
+                        </widget>
+                        <widget class="QLineEdit" row="1" column="1">
+                            <property name="name">
+                                <cstring>m_Lambda2Edit</cstring>
+                            </property>
+                            <property name="text">
+                                <string>1.0</string>
+                            </property>
+                        </widget>
+                        <widget class="QLineEdit" row="1" column="3">
+                            <property name="name">
+                                <cstring>m_NuEdit</cstring>
+                            </property>
+                            <property name="text">
+                                <string>0.0</string>
+                            </property>
+                        </widget>
+                        <widget class="QLineEdit" row="1" column="5">
+                            <property name="name">
+                                <cstring>m_DeltaTEdit</cstring>
+                            </property>
+                            <property name="text">
+                                <string>0.01</string>
+                            </property>
+                        </widget>
+                        <widget class="QLineEdit" row="0" column="5">
+                            <property name="name">
+                                <cstring>m_EpsilonEdit</cstring>
+                            </property>
+                            <property name="text">
+                                <string>1.0</string>
+                            </property>
+                        </widget>
+                        <widget class="QLabel" row="0" column="0">
+                            <property name="name">
+                                <cstring>m_Lambda1Text</cstring>
+                            </property>
+                            <property name="text">
+                                <string>λ&lt;font size="-1"&gt;1&lt;/font&gt;</string>
+                            </property>
+                        </widget>
+                    </grid>
+                </widget>
+                <widget class="QLayoutWidget" row="1" column="0">
+                    <property name="name">
+                        <cstring>layout3</cstring>
+                    </property>
+                    <hbox>
+                        <property name="name">
+                            <cstring>unnamed</cstring>
+                        </property>
+                        <widget class="QLabel">
+                            <property name="name">
+                                <cstring>m_MaxSolverIterText</cstring>
+                            </property>
+                            <property name="text">
+                                <string>Maximum solver iterations</string>
+                            </property>
+                        </widget>
+                        <spacer>
+                            <property name="name">
+                                <cstring>spacer1</cstring>
+                            </property>
+                            <property name="orientation">
+                                <enum>Horizontal</enum>
+                            </property>
+                            <property name="sizeType">
+                                <enum>Expanding</enum>
+                            </property>
+                            <property name="sizeHint">
+                                <size>
+                                    <width>16</width>
+                                    <height>20</height>
+                                </size>
+                            </property>
+                        </spacer>
+                        <widget class="QLineEdit">
+                            <property name="name">
+                                <cstring>m_MaxSolverIterEdit</cstring>
+                            </property>
+                            <property name="sizePolicy">
+                                <sizepolicy>
+                                    <hsizetype>0</hsizetype>
+                                    <vsizetype>0</vsizetype>
+                                    <horstretch>0</horstretch>
+                                    <verstretch>0</verstretch>
+                                </sizepolicy>
+                            </property>
+                            <property name="text">
+                                <string>15</string>
+                            </property>
+                        </widget>
+                    </hbox>
+                </widget>
+                <widget class="QLayoutWidget" row="3" column="0">
+                    <property name="name">
+                        <cstring>layout5</cstring>
+                    </property>
+                    <hbox>
+                        <property name="name">
+                            <cstring>unnamed</cstring>
+                        </property>
+                        <widget class="QLabel">
+                            <property name="name">
+                                <cstring>m_MaxMedianIterText</cstring>
+                            </property>
+                            <property name="text">
+                                <string>Maximum weighted median iterations</string>
+                            </property>
+                            <property name="alignment">
+                                <set>AlignVCenter</set>
+                            </property>
+                        </widget>
+                        <spacer>
+                            <property name="name">
+                                <cstring>spacer3</cstring>
+                            </property>
+                            <property name="orientation">
+                                <enum>Horizontal</enum>
+                            </property>
+                            <property name="sizeType">
+                                <enum>Expanding</enum>
+                            </property>
+                            <property name="sizeHint">
+                                <size>
+                                    <width>16</width>
+                                    <height>20</height>
+                                </size>
+                            </property>
+                        </spacer>
+                        <widget class="QLineEdit">
+                            <property name="name">
+                                <cstring>m_MaxMedianIterEdit</cstring>
+                            </property>
+                            <property name="sizePolicy">
+                                <sizepolicy>
+                                    <hsizetype>0</hsizetype>
+                                    <vsizetype>0</vsizetype>
+                                    <horstretch>0</horstretch>
+                                    <verstretch>0</verstretch>
+                                </sizepolicy>
+                            </property>
+                            <property name="text">
+                                <string>10</string>
+                            </property>
+                        </widget>
+                    </hbox>
+                </widget>
+                <widget class="QLayoutWidget" row="4" column="0">
+                    <property name="name">
+                        <cstring>layout6</cstring>
+                    </property>
+                    <hbox>
+                        <property name="name">
+                            <cstring>unnamed</cstring>
+                        </property>
+                        <widget class="QLabel">
+                            <property name="name">
+                                <cstring>m_MedianTolText</cstring>
+                            </property>
+                            <property name="text">
+                                <string>Weighted median tolerance</string>
+                            </property>
+                            <property name="alignment">
+                                <set>AlignVCenter</set>
+                            </property>
+                        </widget>
+                        <spacer>
+                            <property name="name">
+                                <cstring>spacer4</cstring>
+                            </property>
+                            <property name="orientation">
+                                <enum>Horizontal</enum>
+                            </property>
+                            <property name="sizeType">
+                                <enum>Expanding</enum>
+                            </property>
+                            <property name="sizeHint">
+                                <size>
+                                    <width>16</width>
+                                    <height>20</height>
+                                </size>
+                            </property>
+                        </spacer>
+                        <widget class="QLineEdit">
+                            <property name="name">
+                                <cstring>m_MedianTolEdit</cstring>
+                            </property>
+                            <property name="sizePolicy">
+                                <sizepolicy>
+                                    <hsizetype>0</hsizetype>
+                                    <vsizetype>0</vsizetype>
+                                    <horstretch>0</horstretch>
+                                    <verstretch>0</verstretch>
+                                </sizepolicy>
+                            </property>
+                            <property name="text">
+                                <string>0.0005</string>
+                            </property>
+                        </widget>
+                    </hbox>
+                </widget>
+                <widget class="QLayoutWidget" row="5" column="0">
+                    <property name="name">
+                        <cstring>layout7</cstring>
+                    </property>
+                    <hbox>
+                        <property name="name">
+                            <cstring>unnamed</cstring>
+                        </property>
+                        <widget class="QLabel">
+                            <property name="name">
+                                <cstring>m_DTInitText</cstring>
+                            </property>
+                            <property name="text">
+                                <string>Distance field interface (ϕ) initialization</string>
+                            </property>
+                        </widget>
+                        <widget class="QComboBox">
+                            <item>
+                                <property name="text">
+                                    <string>Bounding box</string>
+                                </property>
+                            </item>
+                            <item>
+                                <property name="text">
+                                    <string>Super-ellipsoid</string>
+                                </property>
+                            </item>
+                            <property name="name">
+                                <cstring>m_DTInitComboBox</cstring>
+                            </property>
+                        </widget>
+                    </hbox>
+                </widget>
+                <widget class="QLayoutWidget" row="2" column="0">
+                    <property name="name">
+                        <cstring>layout10</cstring>
+                    </property>
+                    <hbox>
+                        <property name="name">
+                            <cstring>unnamed</cstring>
+                        </property>
+                        <widget class="QLabel">
+                            <property name="name">
+                                <cstring>m_DTWidthText</cstring>
+                            </property>
+                            <property name="text">
+                                <string>DT band width</string>
+                            </property>
+                        </widget>
+                        <spacer>
+                            <property name="name">
+                                <cstring>spacer2</cstring>
+                            </property>
+                            <property name="orientation">
+                                <enum>Horizontal</enum>
+                            </property>
+                            <property name="sizeType">
+                                <enum>Expanding</enum>
+                            </property>
+                            <property name="sizeHint">
+                                <size>
+                                    <width>180</width>
+                                    <height>20</height>
+                                </size>
+                            </property>
+                        </spacer>
+                        <widget class="QLineEdit">
+                            <property name="name">
+                                <cstring>m_DTWidthEdit</cstring>
+                            </property>
+                            <property name="sizePolicy">
+                                <sizepolicy>
+                                    <hsizetype>0</hsizetype>
+                                    <vsizetype>0</vsizetype>
+                                    <horstretch>0</horstretch>
+                                    <verstretch>0</verstretch>
+                                </sizepolicy>
+                            </property>
+                            <property name="text">
+                                <string>10</string>
+                            </property>
+                        </widget>
+                    </hbox>
+                </widget>
+                <widget class="QLayoutWidget" row="6" column="0">
+                    <property name="name">
+                        <cstring>layout9</cstring>
+                    </property>
+                    <hbox>
+                        <property name="name">
+                            <cstring>unnamed</cstring>
+                        </property>
+                        <spacer>
+                            <property name="name">
+                                <cstring>spacer6</cstring>
+                            </property>
+                            <property name="orientation">
+                                <enum>Horizontal</enum>
+                            </property>
+                            <property name="sizeType">
+                                <enum>Expanding</enum>
+                            </property>
+                            <property name="sizeHint">
+                                <size>
+                                    <width>77</width>
+                                    <height>20</height>
+                                </size>
+                            </property>
+                        </spacer>
+                        <widget class="QLabel">
+                            <property name="name">
+                                <cstring>m_EllipsoidPowerText</cstring>
+                            </property>
+                            <property name="text">
+                                <string>n</string>
+                            </property>
+                        </widget>
+                        <widget class="QLineEdit">
+                            <property name="name">
+                                <cstring>m_EllipsoidPowerEdit</cstring>
+                            </property>
+                            <property name="sizePolicy">
+                                <sizepolicy>
+                                    <hsizetype>0</hsizetype>
+                                    <vsizetype>0</vsizetype>
+                                    <horstretch>0</horstretch>
+                                    <verstretch>0</verstretch>
+                                </sizepolicy>
+                            </property>
+                            <property name="text">
+                                <string>8</string>
+                            </property>
+                        </widget>
+                        <widget class="QLabel">
+                            <property name="name">
+                                <cstring>m_BBoxOffsetText</cstring>
+                            </property>
+                            <property name="text">
+                                <string>BBox offset</string>
+                            </property>
+                        </widget>
+                        <widget class="QLineEdit">
+                            <property name="name">
+                                <cstring>m_BBoxOffsetEdit</cstring>
+                            </property>
+                            <property name="sizePolicy">
+                                <sizepolicy>
+                                    <hsizetype>0</hsizetype>
+                                    <vsizetype>0</vsizetype>
+                                    <horstretch>0</horstretch>
+                                    <verstretch>0</verstretch>
+                                </sizepolicy>
+                            </property>
+                            <property name="text">
+                                <string>5</string>
+                            </property>
+                        </widget>
+                    </hbox>
+                </widget>
+            </grid>
+        </widget>
+        <widget class="QCheckBox" row="2" column="0">
+            <property name="name">
+                <cstring>m_Preview</cstring>
+            </property>
+            <property name="text">
+                <string>Preview</string>
+            </property>
+            <property name="checked">
+                <bool>true</bool>
+            </property>
+        </widget>
+    </grid>
+</widget>
+<connections>
+    <connection>
+        <sender>m_DTInitComboBox</sender>
+        <signal>activated(int)</signal>
+        <receiver>MSLevelSetDialog</receiver>
+        <slot>on_DTInitComboBox_activated(int)</slot>
+    </connection>
+    <connection>
+        <sender>m_BlockDimEdit</sender>
+        <signal>textChanged(const QString&amp;)</signal>
+        <receiver>MSLevelSetDialog</receiver>
+        <slot>on_BlockDimEdit_textChangedSlot()</slot>
+    </connection>
+    <connection>
+        <sender>m_DTWidthEdit</sender>
+        <signal>textChanged(const QString&amp;)</signal>
+        <receiver>MSLevelSetDialog</receiver>
+        <slot>on_DTWidth_textChangedSlot()</slot>
+    </connection>
+    <connection>
+        <sender>m_DeltaTEdit</sender>
+        <signal>textChanged(const QString&amp;)</signal>
+        <receiver>MSLevelSetDialog</receiver>
+        <slot>on_DeltaTEdit_textChangedSlot()</slot>
+    </connection>
+    <connection>
+        <sender>m_EllipsoidPowerEdit</sender>
+        <signal>textChanged(const QString&amp;)</signal>
+        <receiver>MSLevelSetDialog</receiver>
+        <slot>on_EllipsoidPowerEdit_textChangedSlot()</slot>
+    </connection>
+    <connection>
+        <sender>m_EpsilonEdit</sender>
+        <signal>textChanged(const QString&amp;)</signal>
+        <receiver>MSLevelSetDialog</receiver>
+        <slot>on_EpsilonEdit_textChangedSlot()</slot>
+    </connection>
+    <connection>
+        <sender>m_Lambda1Edit</sender>
+        <signal>textChanged(const QString&amp;)</signal>
+        <receiver>MSLevelSetDialog</receiver>
+        <slot>on_Lambda1Edit_textChangedSlot()</slot>
+    </connection>
+    <connection>
+        <sender>m_Lambda2Edit</sender>
+        <signal>textChanged(const QString&amp;)</signal>
+        <receiver>MSLevelSetDialog</receiver>
+        <slot>on_Lambda2Edit_textChangedSlot()</slot>
+    </connection>
+    <connection>
+        <sender>m_MaxMedianIterEdit</sender>
+        <signal>textChanged(const QString&amp;)</signal>
+        <receiver>MSLevelSetDialog</receiver>
+        <slot>on_MaxMedianIterEdit_textChangedSlot()</slot>
+    </connection>
+    <connection>
+        <sender>m_MaxSolverIterEdit</sender>
+        <signal>textChanged(const QString&amp;)</signal>
+        <receiver>MSLevelSetDialog</receiver>
+        <slot>on_MaxSolverIterEdit_textChangedSlot()</slot>
+    </connection>
+    <connection>
+        <sender>m_MedianTolEdit</sender>
+        <signal>textChanged(const QString&amp;)</signal>
+        <receiver>MSLevelSetDialog</receiver>
+        <slot>on_MedianTolEdit_textChangedSlot()</slot>
+    </connection>
+    <connection>
+        <sender>m_MuEdit</sender>
+        <signal>textChanged(const QString&amp;)</signal>
+        <receiver>MSLevelSetDialog</receiver>
+        <slot>on_MuEdit_textChangedSLot()</slot>
+    </connection>
+    <connection>
+        <sender>m_NuEdit</sender>
+        <signal>textChanged(const QString&amp;)</signal>
+        <receiver>MSLevelSetDialog</receiver>
+        <slot>on_NuEdit_textChangedSLot()</slot>
+    </connection>
+    <connection>
+        <sender>m_SubvolDimEdit</sender>
+        <signal>textChanged(const QString&amp;)</signal>
+        <receiver>MSLevelSetDialog</receiver>
+        <slot>on_SubvolDimEdit_textChangedSlot()</slot>
+    </connection>
+    <connection>
+        <sender>m_BlockDimComboBox</sender>
+        <signal>activated(int)</signal>
+        <receiver>MSLevelSetDialog</receiver>
+        <slot>on_BlockDimComboBox_activatedSlot(int)</slot>
+    </connection>
+    <connection>
+        <sender>m_RunButton</sender>
+        <signal>clicked()</signal>
+        <receiver>MSLevelSetDialog</receiver>
+        <slot>accept()</slot>
+    </connection>
+    <connection>
+        <sender>m_CancelButton</sender>
+        <signal>clicked()</signal>
+        <receiver>MSLevelSetDialog</receiver>
+        <slot>reject()</slot>
+    </connection>
+</connections>
+<includes>
+    <include location="local" impldecl="in declaration">MSLevelSet/levelset3D.h</include>
+    <include location="global" impldecl="in implementation">qvalidator.h</include>
+</includes>
+<variables>
+    <variable access="private">MSLevelSetParams *MSLSParams;</variable>
+</variables>
+<slots>
+    <slot>on_DTInitComboBox_activated( int idx )</slot>
+    <slot>on_BlockDimEdit_textChangedSlot()</slot>
+    <slot>on_DTWidth_textChangedSlot()</slot>
+    <slot>on_DeltaTEdit_textChangedSlot()</slot>
+    <slot>on_EllipsoidPowerEdit_textChangedSlot()</slot>
+    <slot>on_EpsilonEdit_textChangedSlot()</slot>
+    <slot>on_Lambda1Edit_textChangedSlot()</slot>
+    <slot>on_Lambda2Edit_textChangedSlot()</slot>
+    <slot>on_MaxMedianIterEdit_textChangedSlot()</slot>
+    <slot>on_MaxSolverIterEdit_textChangedSlot()</slot>
+    <slot>on_MedianTolEdit_textChangedSlot()</slot>
+    <slot>on_MuEdit_textChangedSLot()</slot>
+    <slot>on_NuEdit_textChangedSLot()</slot>
+    <slot>on_SubvolDimEdit_textChangedSlot()</slot>
+    <slot>on_BlockDimComboBox_activatedSlot( int idx )</slot>
+    <slot>on_BBoxOffsetEdit_textChangedSlot()</slot>
+</slots>
+<functions>
+    <function>paramReference( MSLevelSetParams * mslsp )</function>
+    <function>init()</function>
+</functions>
+<layoutdefaults spacing="6" margin="11"/>
+</UI>

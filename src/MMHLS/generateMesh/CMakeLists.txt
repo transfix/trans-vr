@@ -1,0 +1,36 @@
+CMAKE_MINIMUM_REQUIRED (VERSION 2.6)
+
+SetupQt()
+
+FILE(GLOB SOURCE_FILES *.cpp)
+FILE(GLOB INCLUDE_FILES ../../../inc/MMHLS/*.[Hh])
+
+SOURCE_GROUP("Source Files" FILES ${SOURCE_FILES})
+SOURCE_GROUP("Header Files" FILES ${INCLUDE_FILES})
+
+INCLUDE_DIRECTORIES(
+	../../../inc
+	../../../inc/MMHLS/ExtMCMesher
+)
+
+
+
+ADD_LIBRARY (generateMesh STATIC ${SOURCE_FILES} ${INCLUDE_FILES})
+
+#ADD_EXECUTABLE (generateMesh main.cpp)
+#TARGET_LINK_LIBRARIES(generateMesh
+#	VolMagick
+#	ExtMCMesher
+#	FastContouring
+#	generatemesh
+#	HLevelSet
+#	${LIBS}
+#)
+
+#INSTALL(TARGETS generateMesh
+#		RUNTIME DESTINATION bin ${CMAKE_INSTALL_DESTINATION_ARGS}
+#		LIBRARY DESTINATION lib
+#		ARCHIVE DESTINATION lib
+#)
+
+

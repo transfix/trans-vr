@@ -1,0 +1,45 @@
+*********************************************************
+RawIVEditor README
+Maintained by: Anthony Thane (thanea@ices.utexas.edu)
+Last updated: November 12th 2003. 
+*********************************************************
+
+Contents of this README
+-----------------------
+
+1. How to compile RawIVEditor
+2. How to run RawIVEditor
+3. How to use RawIVEditor
+
+*********************************************************
+
+1. How to compile RawIVEditor
+
+Uses Trolltech's qmake. Volume Rover is compatible with QT 3.0.*
+
+- QT 3.0.+ needs to be installed
+
+Type:
+
+qmake; make
+
+*********************************************************
+
+2. How to run RawIVEditor
+
+Run 
+./RawIVEditor
+
+Data types that the RawIV Editor can view:
+	- rawiv. A description of the rawiv file format is here:
+	http://www.ticam.utexas.edu/~shrew/formats/
+
+*********************************************************
+
+3. How to use RawIVEditor
+
+When run, a file window will appear.  To modify the header
+of a RawIV file, select the file in the file window and
+press ok.  To create a new RawIV header, press cancel.
+Make any changes the the fields of the header, then press
+ok to save the header.

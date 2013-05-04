@@ -1,0 +1,5 @@
+
+Computed medial axis is not always homotopy equivalent. It has unnecessary holes etc.
+This code should use the same condition as in the paper by Dey and Zhao, but
+should (de)-select the Voronoi facets in such a way that there is never a hole
+in any intermediate stage of the medial axis.

@@ -1,0 +1,35 @@
+CMAKE_MINIMUM_REQUIRED (VERSION 2.6)
+
+FILE(GLOB SOURCE_FILES *.cpp)
+FILE(GLOB INCLUDE_FILES ../../../inc/MMHLS/*.[Hh])
+
+SetupQt()
+
+SOURCE_GROUP("Source Files" FILES ${SOURCE_FILES})
+SOURCE_GROUP("Header Files" FILES ${INCLUDE_FILES})
+
+INCLUDE_DIRECTORIES(
+	../../../inc
+	../../../inc/MMHLS
+)
+
+ADD_LIBRARY (generateRawV STATIC ${SOURCE_FILES} ${INCLUDE_FILES})
+
+
+#ADD_EXECUTABLE (generateRawV main.cpp)
+#TARGET_LINK_LIBRARIES(generateRawV
+#	VolMagick
+#	ExtMCMesher
+##	generateRawV
+#	cvcraw_geometry
+##	HLevelSet
+#	${LIBS}
+#)
+
+#INSTALL(TARGETS generateRawV
+#		RUNTIME DESTINATION bin ${CMAKE_INSTALL_DESTINATION_ARGS}
+#		LIBRARY DESTINATION lib
+#		ARCHIVE DESTINATION lib
+#)
+
+

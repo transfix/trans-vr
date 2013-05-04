@@ -1,0 +1,201 @@
+
+## Lung
+cd /work/smpark/test
+cp /work/smpark/data-Houston/C_D1-SRS01-uchar/D1-SRS01_136-255.raw .
+/home/utexas/ti/smpark/converters/RawTools/MakeRawiv D1-SRS01_136-255.raw 512 512 181 uchar ./D1-SRS01_136-255.rawiv no
+/home/utexas/ti/smpark/converters/RawTools/SplitDataRawIv D1-SRS01_136-255.rawiv 5 uchar ./D1-SRS01_136-255_ yes
+scp D1-SRS01_136-255.rawiv crom.cs.utexas.edu:/u/smpark/test
+
+
+## Engine
+cd /work/smpark/test
+rm *.raw *.tif *.rawiv
+cp /work/smpark/data-Engine/Class-Engine/Engine_161-255.raw .
+/home/utexas/ti/smpark/converters/RawTools/MakeRawiv Engine_161-255.raw 256 256 128 uchar ./Engine_161-255.rawiv no
+/home/utexas/ti/smpark/converters/RawTools/SplitDataRawIv Engine_161-255.rawiv 5 uchar ./Engine_ yes
+scp Engine_161-255.rawiv crom.cs.utexas.edu:/u/smpark/test
+
+
+cd /work/smpark/test
+cp /work/smpark/data-Engine/Class-Engine/Engine_119-161.raw .
+/home/utexas/ti/smpark/converters/RawTools/MakeRawiv Engine_119-161.raw 256 256 128 uchar ./Engine_119-161.rawiv no
+/home/utexas/ti/smpark/converters/RawTools/SplitDataRawIv Engine_119-161.rawiv 5 uchar ./Engine_ yes
+scp Engine_119-161.rawiv crom.cs.utexas.edu:/u/smpark/test
+
+
+cd /work/smpark/data-Engine/Skeletons
+cp /work/smpark/data-Engine/Class-Engine/Engine_Skeletons_119_161.raw .
+cp /work/smpark/data-Engine/Class-Engine/Engine_Skeletons_Thick_119_161.raw .
+MakeRawiv      Engine_Skeletons_119_161.raw 256 256 128 uchar ./Engine_Skeletons_119_161-161.rawiv no
+MakeRawiv      Engine_Skeletons_Thick_119_161.raw 256 256 128 uchar ./Engine_Skeletons_Thick_119_161-161.rawiv no
+SplitDataRawIv Engine_Skeletons_119_161-161.rawiv 5 uchar ./Slices-SK/Engine_Skeletons_ yes
+SplitDataRawIv Engine_Skeletons_Thick_119_161-161.rawiv 5 uchar ./Slices-SK/Engine_Skeletons_Thick_ yes
+cd /work/smpark/data-Engine/Skeletons/Slices-SK
+rm *.raw
+scp Engine_Skeletons_119_161.rawiv crom.cs.utexas.edu:/u/smpark/test
+scp Engine_Skeletons_Thick_119_161.rawiv crom.cs.utexas.edu:/u/smpark/test
+
+
+cd /work/smpark/test
+cp /work/smpark/data-Engine/Class-Engine/Engine_016-124.raw .
+/home/utexas/ti/smpark/converters/RawTools/MakeRawiv Engine_016-124.raw 256 256 128 uchar ./Engine_016-124.rawiv no
+scp Engine_016-124.rawiv crom.cs.utexas.edu:/u/smpark/test
+
+
+
+
+
+cd /work/smpark/test
+rm *.raw *.tif *.rawiv
+cp /work/smpark/data-Engine/Class-Engine/Engine_161-255Alpha.raw .
+/home/utexas/ti/smpark/converters/RawTools/MakeRawiv Engine_161-255Alpha.raw 256 256 128 uchar ./Engine_161-255Alpha.rawiv no
+/home/utexas/ti/smpark/converters/RawTools/SplitDataRawIv Engine_161-255Alpha.rawiv 5 uchar ./Engine_ yes
+
+
+## Zero Crossing Voxels 
+cd /work/smpark/test
+rm *.raw *.tif *.rawiv
+cp /work/smpark/data-Engine/Voxel_119_101_025.raw .
+/home/utexas/ti/smpark/converters/RawTools/MakeRawiv Voxel_119_101_025.raw 100 100 100 uchar ./Voxel_119_101_025.rawiv no
+/home/utexas/ti/smpark/converters/RawTools/SplitDataRawIv Voxel_119_101_025.rawiv 2 uchar ./Voxel_119_101_025_ yes
+scp Voxel_119_101_025.rawiv crom.cs.utexas.edu:/u/smpark/test
+
+
+
+cd /work/smpark/test
+rm *_119_101_025*.raw *_119_101_025*.raw.tif
+cp /work/smpark/data-Engine/Voxel_119_101_025.raw .
+/home/utexas/ti/smpark/converters/RawTools/MakeRawiv Voxel_119_101_025.raw 8 8 8 uchar ./Voxel_119_101_025.rawiv no
+/home/utexas/ti/smpark/converters/RawTools/SplitDataRawIv Voxel_119_101_025.rawiv 2 uchar ./Voxel_119_101_025_ yes
+
+rm *_113_104_025.raw *_113_104_025.raw.tif
+cp /work/smpark/data-Engine/Voxel_113_104_025.raw .
+/home/utexas/ti/smpark/converters/RawTools/MakeRawiv Voxel_113_104_025.raw 8 8 8 uchar ./Voxel_113_104_025.rawiv no
+/home/utexas/ti/smpark/converters/RawTools/SplitDataRawIv Voxel_113_104_025.rawiv 2 uchar ./Voxel_113_104_025_ yes
+
+rm *_091_107_025*.raw *_091_107_025*.raw.tif
+cp /work/smpark/data-Engine/Voxel_091_107_025.raw .
+/home/utexas/ti/smpark/converters/RawTools/MakeRawiv Voxel_091_107_025.raw 8 8 8 uchar ./Voxel_091_107_025.rawiv no
+/home/utexas/ti/smpark/converters/RawTools/SplitDataRawIv Voxel_091_107_025.rawiv 2 uchar ./Voxel_091_107_025_ yes
+
+rm *_092_107_025*.raw *_092_107_025*.raw.tif
+cp /work/smpark/data-Engine/Voxel_092_107_025.raw .
+/home/utexas/ti/smpark/converters/RawTools/MakeRawiv Voxel_092_107_025.raw 8 8 8 uchar ./Voxel_092_107_025.rawiv no
+/home/utexas/ti/smpark/converters/RawTools/SplitDataRawIv Voxel_092_107_025.rawiv 2 uchar ./Voxel_092_107_025_ yes
+
+rm *_124_105_025.raw *_124_105_025.raw.tif
+cp /work/smpark/data-Engine/Voxel_124_105_025.raw .
+/home/utexas/ti/smpark/converters/RawTools/MakeRawiv Voxel_124_105_025.raw 8 8 8 uchar ./Voxel_124_105_025.rawiv no
+/home/utexas/ti/smpark/converters/RawTools/SplitDataRawIv Voxel_124_105_025.rawiv 2 uchar ./Voxel_124_105_025_ yes
+
+
+cd /work/smpark/test
+rm *.raw *.tif *.rawiv
+cp /work/smpark/data-Engine/Voxel_091_107_025.raw .
+/home/utexas/ti/smpark/converters/RawTools/MakeRawiv Voxel_091_107_025.raw 100 100 100 uchar ./Voxel_091_107_025.rawiv no
+/home/utexas/ti/smpark/converters/RawTools/SplitDataRawIv Voxel_091_107_025.rawiv 2 uchar ./Voxel_091_107_025_ yes
+scp Voxel_091_107_025.rawiv crom.cs.utexas.edu:/u/smpark/test
+
+cd /work/smpark/test
+rm *.raw *.tif *.rawiv
+cp /work/smpark/data-Engine/Voxel_092_107_025.raw .
+/home/utexas/ti/smpark/converters/RawTools/MakeRawiv Voxel_092_107_025.raw 100 100 100 uchar ./Voxel_092_107_025.rawiv no
+/home/utexas/ti/smpark/converters/RawTools/SplitDataRawIv Voxel_092_107_025.rawiv 2 uchar ./Voxel_092_107_025_ yes
+scp Voxel_092_107_025.rawiv crom.cs.utexas.edu:/u/smpark/test
+
+
+
+PEDetect  ImageSet_0.rawiv 512 512 181 5 ushort  0.0  1  12 ./C_D1-SRS01/D1-SRS01 no > ./C_D1-SRS01/D1-SRS01-Mat12.txt
+
+
+cd /work/smpark/data-Houston/Slices_Voxel_330_250_100
+rm *.tif *.raw *.rawiv
+/home/utexas/ti/smpark/converters/RawTools/MakeRawiv ../Voxel_330_250_100.raw 640 640 640 uchar ./Voxel_330_250_100.rawiv no
+/home/utexas/ti/smpark/converters/RawTools/SplitDataRawIv ./Voxel_330_250_100.rawiv 5 uchar ./Voxel_330_250_100_ yes
+scp Voxel_330_250_100.rawiv crom.cs.utexas.edu:/u/smpark/test
+
+
+cd /work/smpark/data-Houston/Slices_Voxel_340_260_100
+cp /work/smpark/data-Houston/Voxel_340_260_100.raw .
+/home/utexas/ti/smpark/converters/RawTools/MakeRawiv Voxel_340_260_100.raw 640 640 640 uchar ./Voxel_340_260_100.rawiv no
+/home/utexas/ti/smpark/converters/RawTools/SplitDataRawIv Voxel_340_260_100.rawiv 5 uchar ./Voxel_340_260_100_ yes
+scp Voxel_340_260_100.rawiv crom.cs.utexas.edu:/u/smpark/test
+
+
+cd /work/smpark/data-Houston/VoxelVolume-CV
+cp /work/smpark/data-Houston/CV_Voxel_340_260_101.raw ./CV_Voxel_340_260_101.raw
+/home/utexas/ti/smpark/converters/RawTools/MakeRawiv CV_Voxel_340_260_101.raw 640 640 640 uchar ./CV_Voxel_340_260_101.rawiv no
+/home/utexas/ti/smpark/converters/RawTools/SplitDataRawIv CV_Voxel_340_260_101.rawiv 5 uchar ./CV_Voxel_340_260_101 yes
+
+
+cd /work/smpark/data-Houston/VoxelVolume-LZ
+cp /work/smpark/data-Houston/LZ_Voxel_307_227_035.raw ./LZ_Voxel_307_227_035.raw
+/home/utexas/ti/smpark/converters/RawTools/MakeRawiv LZ_Voxel_307_227_035.raw 640 640 640 uchar ./LZ_Voxel_307_227_035.rawiv no
+/home/utexas/ti/smpark/converters/RawTools/SplitDataRawIv LZ_Voxel_307_227_035.rawiv 5 uchar ./LZ_Voxel_307_227_035 yes
+
+
+cd /work/smpark/data-Houston/VoxelVolume-RK
+cp /work/smpark/data-Houston/RK_Voxel_292_292_074.raw ./RK_Voxel_292_292_074.raw
+/home/utexas/ti/smpark/converters/RawTools/MakeRawiv RK_Voxel_292_292_074.raw 640 640 640 uchar ./RK_Voxel_292_292_074.rawiv no
+/home/utexas/ti/smpark/converters/RawTools/SplitDataRawIv RK_Voxel_292_292_074.rawiv 5 uchar ./RK_Voxel_292_292_074 yes
+
+
+cd /work/smpark/data-Houston/Slices_Voxel_350_270_100
+rm *.tif *.raw *.rawiv
+cp /work/smpark/data-Houston/Voxel_350_270_100.raw .
+/home/utexas/ti/smpark/converters/RawTools/MakeRawiv Voxel_350_270_100.raw 640 640 640 uchar ./Voxel_350_270_100.rawiv no
+/home/utexas/ti/smpark/converters/RawTools/SplitDataRawIv Voxel_350_270_100.rawiv 5 uchar ./Voxel_350_270_100_ yes
+scp Voxel_350_270_100.rawiv crom.cs.utexas.edu:/u/smpark/test
+
+
+cd /work/smpark/data-Houston/Skeletons
+cp /work/smpark/data-Houston/C_D1-SRS01/D1-SRS01_Init_133_177.raw .
+MakeRawiv D1-SRS01_Init_133_177.raw 512 512 181 uchar ./D1-SRS01_Init_133_177.rawiv no
+SplitDataRawIv D1-SRS01_Init_133_177.rawiv 5 uchar ./Slices_D1-SRS01-Init/D1-SRS01_Init_133_177_ yes
+cd /work/smpark/data-Houston/Skeletons/Slices_D1-SRS01-Init; rm *.raw
+scp D1-SRS01_Init_Skeleton_133_177.rawiv crom.cs.utexas.edu:/u/smpark/test
+
+
+cd /work/smpark/data-Houston/Skeletons
+cp /work/smpark/data-Houston/C_D1-SRS01/D1-SRS01_Skeletons_133_177.raw .
+MakeRawiv D1-SRS01_Skeletons_133_177.raw 512 512 181 uchar ./D1-SRS01_Skeletons_133_177.rawiv no
+SplitDataRawIv D1-SRS01_Skeletons_133_177.rawiv 5 uchar ./Slices_D1-SRS01/D1-SRS01_Skeletons_133_177_ yes
+cd /work/smpark/data-Houston/Skeletons/Slices_D1-SRS01
+rm *.raw
+
+scp D1-SRS01_Skeleton_133_177.rawiv crom.cs.utexas.edu:/u/smpark/test
+rm ./Slices_D1-SRS01/*.tif
+
+cd /work/smpark/data-Houston/Skeletons
+cp /work/smpark/data-Houston/C_D1-SRS01/D1-SRS01_Skeletons_Thick_133_177.raw .
+MakeRawiv D1-SRS01_Skeletons_Thick_133_177.raw 512 512 181 uchar ./D1-SRS01_Skeletons_Thick_133_177.rawiv no
+SplitDataRawIv D1-SRS01_Skeletons_Thick_133_177.rawiv 5 uchar ./Slices_D1-SRS01/D1-SRS01_Skeletons_Thick_133_177_ yes
+cd /work/smpark/data-Houston/Skeletons/Slices_D1-SRS01
+rm *.raw
+
+scp D1-SRS01_Skeleton_133_177.rawiv crom.cs.utexas.edu:/u/smpark/test
+rm ./Slices_D1-SRS01/*.raw ./Slices_D1-SRS01/*.tif
+
+
+
+
+cd /work/smpark/data-Houston/Skeletons
+cp /work/smpark/data-Houston/C_D1-SRS01/D1-SRS01_SK_Read_133_177.raw .
+MakeRawiv D1-SRS01_SK_Read_133_177.raw 512 512 181 uchar ./D1-SRS01_SK_Read_133_177.rawiv no
+
+cd /work/smpark/data-Houston/Skeletons
+cp /work/smpark/data-Houston/C_D1-SRS01/D1-SRS01_SK_CC_133_177.raw .
+MakeRawiv D1-SRS01_SK_CC_133_177.raw 512 512 181 uchar ./D1-SRS01_SK_CC_133_177.rawiv no
+
+cd /work/smpark/data-Houston/Skeletons
+cp /work/smpark/data-Houston/C_D1-SRS01/D1-SRS01_SK_CC_Thick_133_177.raw .
+MakeRawiv D1-SRS01_SK_CC_Thick_133_177.raw 512 512 181 uchar ./D1-SRS01_SK_CC_Thick_133_177.rawiv no
+
+cd /work/smpark/data-Houston/Skeletons
+cp /work/smpark/data-Houston/C_D1-SRS01/D1-SRS01_SK_Vessel_133_177.raw .
+MakeRawiv D1-SRS01_SK_Vessel_133_177.raw 512 512 181 uchar ./D1-SRS01_SK_Vessel_133_177.rawiv no
+
+cd /work/smpark/data-Houston/Skeletons
+cp /work/smpark/data-Houston/C_D1-SRS01/D1-SRS01_SK_Vessel_Thick_133_177.raw .
+MakeRawiv D1-SRS01_SK_Vessel_Thick_133_177.raw 512 512 181 uchar ./D1-SRS01_SK_Vessel_Thick_133_177.rawiv no
+

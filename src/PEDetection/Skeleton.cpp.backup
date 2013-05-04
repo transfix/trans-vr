@@ -1,0 +1,1209 @@
+#include <stdlib.h>
+#include <stdio.h>
+#include <iostream.h>
+#include <math.h>
+#include <float.h>
+#include <sys/time.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <fcntl.h>
+#include <unistd.h>
+
+#include "Skeleton.h"
+#include "CompileOptions.h"
+
+#define	MIN(X, Y) { (((X)<(Y))? (return (X)): (return Y)); }
+#define	SWAP(A, B, Temp) { (Temp)=(A); (A)=(B); (B)=(Temp); }
+
+//----------------------------------------------------------------------------
+// cSkeleton Class Member Functions
+//----------------------------------------------------------------------------
+
+template <class _DataType>
+cSkeleton<_DataType>::cSkeleton()
+{
+	Distance_mi = NULL;
+	GradientVec_mf = NULL;
+	VoxelFlags_muc = NULL;
+	CCVolume_muc = NULL;
+}
+
+
+// destructor
+template <class _DataType>
+cSkeleton<_DataType>::~cSkeleton()
+{
+
+	delete [] Distance_mi;
+	delete [] GradientVec_mf;
+	delete [] VoxelFlags_muc;
+	delete [] CCVolume_muc;
+}
+
+
+template <class _DataType>
+void cSkeleton<_DataType>::setData(_DataType *Data, float Minf, float Maxf)
+{
+	MinData_mf = Minf;
+	MaxData_mf = Maxf;
+	Data_mT = Data;
+}
+
+
+template<class _DataType>
+void cSkeleton<_DataType>::setWHD(int W, int H, int D)
+{
+	Width_mi = W;
+	Height_mi = H;
+	Depth_mi = D;
+	
+	WtimesH_mi = W*H;
+	WHD_mi = W*H*D;
+	
+}
+
+template<class _DataType>
+void cSkeleton<_DataType>::setProbabilityHistogram(float *Prob, int NumMaterial, int *Histo, float HistoF)
+{
+	MaterialProb_mf = Prob;
+	Histogram_mi = Histo;
+	HistogramFactorI_mf = HistoF;
+	HistogramFactorG_mf = HistoF;
+	NumMaterial_mi = NumMaterial;
+}
+
+template <class _DataType>
+void cSkeleton<_DataType>::setGradient(float *Grad, float Minf, float Maxf)
+{
+	GradientMag_mf = Grad;
+	MinGrad_mf = Minf;
+	MaxGrad_mf = Maxf;
+}
+
+template<class _DataType>
+void cSkeleton<_DataType>::setSecondDerivative(float *SecondD, float Min, float Max)
+{ 
+	SecondDerivative_mf = SecondD; 
+	MinSecond_mf = Min;
+	MaxSecond_mf = Max;
+}
+
+template<class _DataType>
+void cSkeleton<_DataType>::setPEDClassObject(cPEDetection<_DataType> *PED)
+{ 
+	PED_m = PED;
+}
+
+template<class _DataType>
+void cSkeleton<_DataType>::setGradientVectors(float *GVec)
+{ 
+	GradientVec_mf = GVec;
+}
+
+
+template<class _DataType>
+void cSkeleton<_DataType>::Skeletonize(char *OutFileName, _DataType MatMin, _DataType MatMax)
+{
+
+	BinarySegment(MatMin, MatMax); // Make a binary segmented volume
+	SaveInitVolume();
+
+	ComputeDistance(); // Compute the distance from bondary field
+	SaveDistanceVolume();
+	
+	ComputeGVF(); // Allocate memory to "GradientVec_mf" and Compute GVF
+	
+	FlagNonUniformGradient();
+	SaveVolume(VoxelFlags_muc, (float)0.0, (float)FLAG_LOCAL_MAX, "Flagged");
+	printf ("The flagged voxel volume is saved\n"); fflush(stdout);
+
+
+	ConnectingFlaggedVoxels();
+	SaveVolume(VoxelFlags_muc, (float)0.0, (float)255.0, "Connected");
+	printf ("The Connected voxel volume is saved\n"); fflush(stdout);
+	
+	ConnectedComponents("CC");
+	SaveVolume(CCVolume_muc, (float)0.0, (float)255.0, "CCVolume");
+	printf ("The Connected Component volume is saved\n"); fflush(stdout);
+
+
+}
+
+
+
+template<class _DataType>
+void cSkeleton<_DataType>::BinarySegment(_DataType MatMin, _DataType MatMax)
+{
+	int		i, NumSegmentedVoxels;
+
+	
+	delete [] Distance_mi;
+	Distance_mi = new int[WHD_mi];
+	delete [] VoxelFlags_muc;
+	VoxelFlags_muc = new unsigned char[WHD_mi];
+	
+	for (i=0; i<WHD_mi; i++) {
+		Distance_mi[i] = 0;
+		VoxelFlags_muc[i] = (unsigned char)FLAG_EMPTY;
+	}
+
+	NumSegmentedVoxels = 0;
+	for (i=0; i<WHD_mi; i++) {
+		if (MatMin <= Data_mT[i] && Data_mT[i] <= MatMax) {
+			Distance_mi[i] = (int)255;
+			VoxelFlags_muc[i] = FLAG_SEGMENTED;
+			NumSegmentedVoxels++;
+		}
+		else Distance_mi[i] = (int)0;
+	}
+	// It is for the Index() function
+	Distance_mi[0] = (int)0;
+	VoxelFlags_muc[0] = (unsigned char)FLAG_EMPTY;
+	NumSegmentedVoxels_mi = NumSegmentedVoxels;
+	
+	printf ("Num. Segmented Voxels = %d\n", NumSegmentedVoxels_mi);
+	printf ("Total Num. Voxels = %d\n", WHD_mi);
+	printf ("Num. Segmented / Total Num. Voxels = %f %%\n", (double)NumSegmentedVoxels_mi/WHD_mi*100.0);
+	fflush(stdout);
+	
+}
+
+
+// Using second derivative
+// Removing segmented voxels that have zero-crossing second derivatives
+// Using FindZeroCrossingLocation() to get the zero 2nd derivative locations
+template<class _DataType>
+void cSkeleton<_DataType>::BinarySegment2(_DataType MatMin, _DataType MatMax)
+{
+	int		i, j, k, l, m, n, loc[8], Idx, NumSegmentedVoxels;
+	int		X_i, Y_i, Z_i, NumPosSecondD;
+	double	GradVec_d[3], CurrDataLoc_d[3], ZeroCrossingLoc_d[3], Tempd;
+	double	LocalMaxGradient_d, DataPosFromZeroCrossingLoc_d;
+	
+
+	delete [] Distance_mi;
+	Distance_mi = new int[WHD_mi];
+	delete [] VoxelFlags_muc;
+	VoxelFlags_muc = new unsigned char[WHD_mi];
+	
+
+	for (i=0; i<WHD_mi; i++) {
+		if (MatMin <= Data_mT[i] && Data_mT[i] <= MatMax) {
+			Distance_mi[i] = (int)255;
+			VoxelFlags_muc[i] = FLAG_SEGMENTED;
+		}
+		else {
+			Distance_mi[i] = (int)0;
+			VoxelFlags_muc[i] = (unsigned char)FLAG_EMPTY;
+		}
+	}
+	// It is for the Index() function
+	Distance_mi[0] = (int)0;
+	VoxelFlags_muc[0] = (unsigned char)FLAG_EMPTY;
+	
+
+	for (k=0; k<Depth_mi-1; k++) {
+		for (j=0; j<Height_mi-1; j++) {
+			for (i=0; i<Width_mi-1; i++) {
+				
+				loc[0] = Index(i, j, k);
+				if (Distance_mi[loc[0]]==0) continue;
+				
+				// Getting the gradient vector at the position
+				Tempd = 0.0;
+				for (k=0; k<3; k++) {
+					GradVec_d[k] = (double)GradientVec_mf[i*3 + k];
+					Tempd += GradVec_d[k]*GradVec_d[k];
+				}
+				Tempd = sqrt (Tempd);
+				if (fabs(Tempd)<1e-6) continue; // To skip zero-length vectors
+
+				for (k=0; k<3; k++) GradVec_d[k] /= Tempd; // Normalize the gradient vector
+				CurrDataLoc_d[0] = (double)i;
+				CurrDataLoc_d[1] = (double)j;
+				CurrDataLoc_d[2] = (double)k;
+				
+				FoundZeroCrossingLoc_i = PED_m->FindZeroCrossingLocation(CurrDataLoc_d, GradVec_d, 
+											ZeroCrossingLoc_d, LocalMaxGradient_d, DataPosFromZeroCrossingLoc_d);
+				
+				if (!FoundZeroCrossingLoc_i) continue;
+				
+				// Removing 8 voxels 
+				X_i = (int)(floor(ZeroCrossingLoc_d[0]));
+				Y_i = (int)(floor(ZeroCrossingLoc_d[1]));
+				Z_i = (int)(floor(ZeroCrossingLoc_d[2]));
+				for (n=Z_i; n<=Z_i+1; n++) {
+					for (m=Y_i; m<=Y_i+1; m++) {
+						for (l=X_i; l<=X_i+1; l++) {
+							loc[0] = Index(l, m, n);
+							Distance_mi[loc[0]] = (int)0;
+							VoxelFlags_muc[loc[0]] = (unsigned char)FLAG_EMPTY;
+						}
+					}
+				}
+
+			}
+		}
+	}
+
+	NumSegmentedVoxels = 0;
+	for (i=0; i<WHD_mi; i++) {
+
+		if (Distance_mi[i]==255) {
+			if (VoxelFlags_muc[i] != FLAG_SEGMENTED) {
+				printf ("Error!!!, VoxelFlags_muc[i] should be FLAG_SEGMENTED\n");
+				exit(1);
+			}
+			NumSegmentedVoxels++;
+		}
+		else {
+			if (VoxelFlags_muc[i] != FLAG_EMPTY) {
+				printf ("Error!!!, VoxelFlags_muc[i] should be FLAG_EMPTY\n");
+				exit(1);
+			}
+		}
+
+	}
+	NumSegmentedVoxels_mi = NumSegmentedVoxels;
+	
+	
+	printf ("Num. Segmented Voxels = %d\n", NumSegmentedVoxels_mi);
+	printf ("Total Num. Voxels = %d\n", WHD_mi);
+	printf ("Num. Segmented / Total Num. Voxels = %f %%\n", (double)NumSegmentedVoxels_mi/WHD_mi*100.0);
+	fflush(stdout);
+	
+}
+
+template<class _DataType>
+void cSkeleton<_DataType>::ComputeDistance()
+{
+	int		i, j, k, n, df_i, db_i,  d_i, Tempi;
+	int		MaxRes, *Buffer_i;
+	
+
+	printf ("Computing Distance ... \n"); fflush(stdout);
+	if (Distance_mi == NULL) { printf ("Distance_mi is NULL\n"); exit(1); }
+
+	MaxRes = (Width_mi>Height_mi)? Width_mi : Height_mi;
+	MaxRes = (MaxRes>Depth_mi)? MaxRes : Depth_mi;
+	Buffer_i = new int [MaxRes];
+	
+	
+	// Step 1: X-axis
+	// Forward scan
+	for (k=0; k<Depth_mi; k++) {
+		for (j=0; j<Height_mi; j++) {
+			df_i = Width_mi-1;
+			for (i=0; i<Width_mi; i++) {
+				if (Distance_mi[Index(i, j, k)]>0) df_i++;
+				else df_i = 0;
+				Distance_mi[Index(i, j, k)] = df_i*df_i;
+			}
+		}
+	}
+
+	// Backward scan
+	for (k=0; k<Depth_mi; k++) {
+		for (j=0; j<Height_mi; j++) {
+			db_i = Width_mi-1;
+			for (i=Width_mi-1; i>=0; i--) {
+				if (Distance_mi[Index(i, j, k)]>0) db_i++;
+				else db_i = 0;
+				Tempi = Distance_mi[Index(i, j, k)];
+				Distance_mi[Index(i, j, k)] = (Tempi < db_i*db_i)? Tempi : db_i*db_i;
+			}
+		}
+	}
+
+#ifdef	DEBUG_DIST_TF
+	printf ("\nStep 1:\n");
+	Display(31);
+
+	printf ("\nStep 1:\n");
+	Display(32);
+
+	printf ("\nStep 1:\n");
+	Display(33);
+
+	printf ("\nStep 1:\n");
+	Display(34);
+
+	printf ("\nStep 1:\n");
+	Display(35);
+#endif
+
+/*
+	// Step 2: Y-axis
+	int		l, a_i, b_i, m_i, 
+	
+	for (k=0; k<Depth_mi; k++) {
+		for (i=0; i<Width_mi; i++) {
+			for (j=0; j<Height_mi; j++) {
+				Buffer_i[k] = Distance_mi[Index(i, j, k)];
+			}
+
+			// Forward scan
+			a_i = 0;
+			for (j=1; j<Height_mi; j++) {
+				if (a_i>0) a_i--;
+				if (Buffer_i[j]>Buffer_i[j-1] + 1) {
+					b_i= (Buffer_i[j] - Buffer_i[j-1] - 1)/2;
+					if ((j+b_i)>Height_mi-1) b_i = Height_mi-1 - j;
+					for (n=a_i; n<=b_i; n++) {
+						m_i = Buffer_i[j-1] + (n+1)*(n+1);
+						if (Buffer_i[j+n] <= m_i) break;
+						if (m_i < Distance_mi[Index(i, j+n, k)]) 
+							Distance_mi[Index(i, j+n, k)] = m_i;
+					}
+					a_i = b_i;
+				}
+				else a_i = 0;
+			}
+
+			// Backward scan
+			a_i = 0;
+			for (j=Height_mi-2; j>=1; j--) {
+				if (a_i>0) a_i--;
+				if (Buffer_i[j] > Buffer_i[j+1]) {
+					b_i= (Buffer_i[j] - Buffer_i[j+1] - 1)/2;
+					if ((j-b_i) < 1) b_i = j - 1;
+					for (n=a_i; n<=b_i; n++) {
+						m_i = Buffer_i[j+1] + (n+1)*(n+1);
+						if (Buffer_i[j-n] <= m_i) break;
+						if (m_i < Distance_mi[Index(i, j-n, k)]) 
+							Distance_mi[Index(i, j-n, k)] = m_i;
+					}
+					a_i = b_i;
+				}
+				else a_i = 0;
+			}
+		}
+	}
+
+*/
+
+
+
+	// Step 2: Y-axis
+	int		w_i, rStart, rMax, rEnd;
+	
+
+	for (k=0; k<Depth_mi; k++) {
+		for (i=0; i<Width_mi; i++) {
+			for (j=0; j<Height_mi; j++) {
+				Buffer_i[j] = Distance_mi[Index(i, j, k)];
+			}
+			
+			for (j=0; j<Height_mi; j++) {
+				d_i = Buffer_i[j];
+				if (d_i>0) {
+					rMax = (int)(sqrt((double)d_i)) + 1;
+					rStart = (rMax<(j-1))? rMax : (j-1);
+					rEnd = (rMax<(Height_mi-1 - j))? rMax : (Height_mi-1 - j);
+					for (n=-rStart; n<=rEnd; n++) {
+						w_i = Buffer_i[j+n] + n*n;
+						if (w_i<d_i) d_i = w_i;
+					}
+				}
+				
+				Distance_mi[Index(i, j, k)] = d_i;
+			}
+		}
+	}
+
+#ifdef	DEBUG_DIST_TF
+	printf ("Step 2: \n");
+	Display(31);
+
+	printf ("Step 2: \n");
+	Display(32);
+
+	printf ("Step 2: \n");
+	Display(33);
+
+	printf ("Step 2: \n");
+	Display(34);
+
+	printf ("Step 2: \n");
+	Display(35);
+#endif
+
+	// Step 3: Z-axis
+
+	for (j=0; j<Height_mi; j++) {
+		for (i=0; i<Width_mi; i++) {
+			for (k=0; k<Depth_mi; k++) {
+				Buffer_i[k] = Distance_mi[Index(i, j, k)];
+			}
+			
+			for (k=0; k<Depth_mi; k++) {
+				d_i = Buffer_i[k];
+				if (d_i>0) {
+					rMax = (int)(sqrt((double)d_i)) + 1;
+					rStart = (rMax<(k-1))? rMax : (k-1);
+					rEnd = (rMax<(Depth_mi-1 - k))? rMax : (Depth_mi-1 - k);
+					for (n=-rStart; n<=rEnd; n++) {
+						w_i = Buffer_i[k+n] + n*n;
+						if (w_i<d_i) d_i = w_i;
+					}
+				}
+				
+				Distance_mi[Index(i, j, k)] = d_i;
+			}
+		}
+	}
+
+#ifdef	DEBUG_DIST_TF
+	printf ("Step 3: \n");
+	Display(31);
+
+	printf ("Step 3: \n");
+	Display(32);
+
+	printf ("Step 3: \n");
+	Display(33);
+
+	printf ("Step 3: \n");
+	Display(34);
+
+	printf ("Step 3: \n");
+	Display(35);
+#endif
+	
+	delete [] Buffer_i;
+	
+}
+
+
+
+template<class _DataType>
+void cSkeleton<_DataType>::ComputeDistanceVolume(double GradThreshold)
+{
+	int		i, k, DataCoor[3], FoundZeroCrossingLoc_i;
+	double	GradVec_d[3], CurrDataLoc_d[3], ZeroCrossingLoc_d[3], LocalMaxGradient_d;
+	double	DataPosFromZeroCrossingLoc_d, Tempd;
+	int		CurrZ = 0, Distance_i;
+	unsigned char	*DistanceVolume_uc = new unsigned char [WHD_mi];
+	
+
+	for (i=0; i<WHD_mi; i++) {
+	
+		if (GradientMag_mf[i] < GradThreshold) {
+			DistanceVolume_uc[i] = (unsigned char)255;
+			continue;
+		}
+
+		DataCoor[2] = i/WtimesH_mi;
+		DataCoor[1] = (i - DataCoor[2]*WtimesH_mi)/Width_mi;
+		DataCoor[0] = i % Width_mi;
+
+		if (CurrZ==DataCoor[2]) {
+			printf ("Z = %3d, ", DataCoor[2]);
+			printf ("\n");
+			fflush(stdout);
+			CurrZ++;
+		}
+		
+		//-------------------------------------------------------------------------------------------
+		// Finding the local maxima of gradient magnitudes along the gradient direction. 
+		// It climbs the mountain of gradient magnitudes to find the zero-crossing second derivative 
+		// Return ZeroCrossingLoc_d, LocalMaxGradient, DataPosFromZeroCrossingLoc_d
+		//-------------------------------------------------------------------------------------------
+		// Getting the gradient vector at the position
+		for (k=0; k<3; k++) GradVec_d[k] = (double)GradientVec_mf[i*3 + k];
+		Tempd = sqrt (GradVec_d[0]*GradVec_d[0] + GradVec_d[1]*GradVec_d[1] + GradVec_d[2]*GradVec_d[2]);
+		if (fabs(Tempd)<1e-6) {
+			DistanceVolume_uc[i] = (unsigned char)255;
+			continue; // To skip zero-length vectors
+		}
+		for (k=0; k<3; k++) GradVec_d[k] /= Tempd; // Normalize the gradient vector
+		for (k=0; k<3; k++) CurrDataLoc_d[k] = (double)DataCoor[k];
+		FoundZeroCrossingLoc_i = PED_m->FindZeroCrossingLocation(CurrDataLoc_d, GradVec_d, 
+									ZeroCrossingLoc_d, LocalMaxGradient_d, DataPosFromZeroCrossingLoc_d);
+		if (FoundZeroCrossingLoc_i) {
+			// Riversed Distance 0(opaque) - 254(transparent)
+			Distance_i = (int)(fabs(DataPosFromZeroCrossingLoc_d)/15.0*254.0);
+			DistanceVolume_uc[i] = (unsigned char)Distance_i;
+		}
+		else DistanceVolume_uc[i] = (unsigned char)255;
+
+	}
+
+	printf ("Computing Distance is done\n");
+	printf ("\n");
+	fflush(stdout);
+
+	SaveVolume(DistanceVolume_uc, (float)0.0, (float)255.0, "DistByVec");
+	printf ("Distance volume (DistByVec) is saved\n"); fflush (stdout);
+	
+	delete [] DistanceVolume_uc;
+
+}
+
+
+
+
+template<class _DataType>
+void cSkeleton<_DataType>::ComputeGVF()
+{
+	int		i, j, k, loc[3];
+	float	Vec_f[3];
+	double	Length_d;
+	
+
+	printf ("Computing GVF ... \n"); fflush(stdout);
+	
+	delete [] GradientVec_mf;
+	GradientVec_mf = new float[WHD_mi*3];
+
+	for (k=0; k<Depth_mi; k++) {
+		for (j=0; j<Height_mi; j++) {
+			for (i=0; i<Width_mi; i++) {
+
+				loc[0] = k*WtimesH_mi*3 + j*Width_mi*3 + i*3;
+
+				Vec_f[0] = Distance_mi[Index(i+1, j, k)] - Distance_mi[Index(i-1, j, k)];
+				Vec_f[1] = Distance_mi[Index(i, j+1, k)] - Distance_mi[Index(i, j-1, k)];
+				Vec_f[2] = Distance_mi[Index(i, j, k+1)] - Distance_mi[Index(i, j, k-1)];
+
+				// Normalize
+				Length_d = sqrt((double)Vec_f[0]*Vec_f[0] + Vec_f[1]*Vec_f[1] + Vec_f[2]*Vec_f[2]);
+				if (fabs(Length_d)<1e-7) {
+					GradientVec_mf[loc[0] + 0] = (float)0.0; 
+					GradientVec_mf[loc[0] + 1] = (float)0.0;
+					GradientVec_mf[loc[0] + 2] = (float)0.0;
+					
+					VoxelFlags_muc[Index(i, j, k)] = FLAG_ZERO_LENGTH;
+				}
+				else {
+					GradientVec_mf[loc[0] + 0] = (float)((double)Vec_f[0]/Length_d);
+					GradientVec_mf[loc[0] + 1] = (float)((double)Vec_f[1]/Length_d);
+					GradientVec_mf[loc[0] + 2] = (float)((double)Vec_f[2]/Length_d);
+				}
+			}
+		}
+	}
+
+	// For the Index() function
+	VoxelFlags_muc[0] = FLAG_ZERO_LENGTH;
+	
+	GradientVec_mf[0] = (float)(0.0);
+	GradientVec_mf[1] = (float)(0.0);
+	GradientVec_mf[2] = (float)(0.0);
+	
+}
+
+
+template<class _DataType>
+void cSkeleton<_DataType>::FlagNonUniformGradient()
+{
+	int				i, j, k, NumPosSigns, NumNegSigns;
+	int				NumMinVoxels, NumMaxVoxels;
+
+
+	printf ("Start the function, Flag NonUniformGradient() ... \n");
+	fflush(stdout);
+
+	for (k=1; k<Depth_mi-1; k++) {
+		for (j=1; j<Height_mi-1; j++) {
+			for (i=1; i<Width_mi-1; i++) {
+
+				if (VoxelFlags_muc[Index(i, j, k)] == FLAG_ZERO_LENGTH) continue;
+				
+				NumPosSigns = 0; // Pointing toward it
+
+				if (GradientVec_mf[Index(i+1, j, k)*3 + 0]*(-1.0) > 1e-6) NumPosSigns++;
+				if (GradientVec_mf[Index(i-1, j, k)*3 + 0]*( 1.0) > 1e-6) NumPosSigns++;
+				if (GradientVec_mf[Index(i, j+1, k)*3 + 1]*(-1.0) > 1e-6) NumPosSigns++;
+				if (GradientVec_mf[Index(i, j-1, k)*3 + 1]*( 1.0) > 1e-6) NumPosSigns++;
+				if (GradientVec_mf[Index(i, j, k+1)*3 + 2]*(-1.0) > 1e-6) NumPosSigns++;
+				if (GradientVec_mf[Index(i, j, k-1)*3 + 2]*( 1.0) > 1e-6) NumPosSigns++;
+
+/*
+				if (GradientVec_mf[Index(i+1, j, k)*3 + 0]*(-1.0) >= 0) NumPosSigns++;
+				if (GradientVec_mf[Index(i-1, j, k)*3 + 0]*( 1.0) >= 0) NumPosSigns++;
+				if (GradientVec_mf[Index(i, j+1, k)*3 + 1]*(-1.0) >= 0) NumPosSigns++;
+				if (GradientVec_mf[Index(i, j-1, k)*3 + 1]*( 1.0) >= 0) NumPosSigns++;
+				if (GradientVec_mf[Index(i, j, k+1)*3 + 2]*(-1.0) >= 0) NumPosSigns++;
+				if (GradientVec_mf[Index(i, j, k-1)*3 + 2]*( 1.0) >= 0) NumPosSigns++;
+*/
+				if (NumPosSigns==6) VoxelFlags_muc[Index(i, j, k)] = FLAG_LOCAL_MAX;
+
+
+				NumNegSigns = 0; // Pointing away from it
+
+				if (GradientVec_mf[Index(i+1, j, k)*3 + 0]*(-1.0) < -1e-6) NumNegSigns++;
+				if (GradientVec_mf[Index(i-1, j, k)*3 + 0]*( 1.0) < -1e-6) NumNegSigns++;
+				if (GradientVec_mf[Index(i, j+1, k)*3 + 1]*(-1.0) < -1e-6) NumNegSigns++;
+				if (GradientVec_mf[Index(i, j-1, k)*3 + 1]*( 1.0) < -1e-6) NumNegSigns++;
+				if (GradientVec_mf[Index(i, j, k+1)*3 + 2]*(-1.0) < -1e-6) NumNegSigns++;
+				if (GradientVec_mf[Index(i, j, k-1)*3 + 2]*( 1.0) < -1e-6) NumNegSigns++;
+
+/*
+				if (GradientVec_mf[Index(i+1, j, k)*3 + 0]*(-1.0) < 0) NumNegSigns++;
+				if (GradientVec_mf[Index(i-1, j, k)*3 + 0]*( 1.0) < 0) NumNegSigns++;
+				if (GradientVec_mf[Index(i, j+1, k)*3 + 1]*(-1.0) < 0) NumNegSigns++;
+				if (GradientVec_mf[Index(i, j-1, k)*3 + 1]*( 1.0) < 0) NumNegSigns++;
+				if (GradientVec_mf[Index(i, j, k+1)*3 + 2]*(-1.0) < 0) NumNegSigns++;
+				if (GradientVec_mf[Index(i, j, k-1)*3 + 2]*( 1.0) < 0) NumNegSigns++;
+*/
+				if (NumNegSigns==6) VoxelFlags_muc[Index(i, j, k)] = FLAG_LOCAL_MIN;
+				
+			}
+		}
+	}
+
+	NumMinVoxels = 0;
+	NumMaxVoxels = 0;
+	for (i=0; i<WHD_mi; i++) {
+		if (VoxelFlags_muc[i]==FLAG_LOCAL_MIN) NumMinVoxels++;
+		if (VoxelFlags_muc[i]==FLAG_LOCAL_MAX) NumMaxVoxels++;
+	}
+	
+	NumFlaggedVoxels_mi = NumMinVoxels + NumMaxVoxels;
+	printf ("Num Flagged Voxels = %d\n", NumFlaggedVoxels_mi);
+	printf ("Num Segmented Voxels = %d\n", NumSegmentedVoxels_mi);
+	printf ("NumFlagged / NumSegmented = %f %%\n", (float)NumFlaggedVoxels_mi/NumSegmentedVoxels_mi*100.0);
+	fflush (stdout);
+}
+
+template<class _DataType>
+void cSkeleton<_DataType>::FlagNonUniformGradient2()
+{
+	int				i, j, k, l, m, n, Idx, loc[3], LocalMax_i, LocalMin_i;
+	int				NumZeroVoxels, NumMinVoxels, NumMaxVoxels;
+	unsigned char	PSigns_uc[8], NSigns_uc[8];
+
+
+#ifdef	DEBUG_FLAG_NONUNIFORM	
+	printf ("Start the function, Flag NonUniformGradient() ... \n");
+	fflush(stdout);
+#endif
+
+	for (k=0; k<Depth_mi-1; k++) {
+		for (j=0; j<Height_mi-1; j++) {
+			for (i=0; i<Width_mi-1; i++) {
+
+				for (l=0; l<8; l++) PSigns_uc[l] = (unsigned char)0;
+				for (l=0; l<8; l++) NSigns_uc[l] = (unsigned char)0;
+				
+				Idx = 0;
+				NumZeroVoxels = 0;
+				for (n=k; n<=k+1; n++) {
+					for (m=j; m<=j+1; m++) {
+						for (l=i; l<=i+1; l++) {
+							loc[0] = n*WtimesH_mi*3 + m*Width_mi*3 + l*3;
+							if (GradientVec_mf[loc[0] + 0] > 1e-6) PSigns_uc[Idx] |= 0x01; // X = 0001
+							if (GradientVec_mf[loc[0] + 1] > 1e-6) PSigns_uc[Idx] |= 0x02; // Y = 0010
+							if (GradientVec_mf[loc[0] + 2] > 1e-6) PSigns_uc[Idx] |= 0x04; // Z = 0100
+
+							if (GradientVec_mf[loc[0] + 0] > -1e-6) NSigns_uc[Idx] |= 0x01; // X = 0001
+							if (GradientVec_mf[loc[0] + 1] > -1e-6) NSigns_uc[Idx] |= 0x02; // Y = 0010
+							if (GradientVec_mf[loc[0] + 2] > -1e-6) NSigns_uc[Idx] |= 0x04; // Z = 0100
+							Idx++;
+							
+							if (Distance_mi[Index(l, m, n)]==0) NumZeroVoxels++;
+							if (VoxelFlags_muc[Index(l, m, n)] == FLAG_ZERO_LENGTH) {
+								// 10 is an arbitray big number to escape these three piled up loops
+								NumZeroVoxels += 10; 
+								l+=2; m+=2; n+=2;
+							}
+						}
+					}
+				}
+				if (NumZeroVoxels>=8) continue;
+				
+				LocalMax_i = 0;
+				LocalMin_i = 0;
+				for (l=0; l<8; l++) {
+					if (PSigns_uc[l] == (7 - l)) LocalMax_i++;
+					if (NSigns_uc[l] != (7 - l)) LocalMin_i++;
+				}
+
+				if (LocalMax_i==8) {
+
+#ifdef	DEBUG_FLAG_NONUNIFORM	
+					printf ("Local Max = (%d, %d, %d)\n", i, j, k);
+					fflush(stdout);
+					Idx = 0;
+#endif
+
+					for (n=k; n<=k+1; n++) {
+						for (m=j; m<=j+1; m++) {
+							for (l=i; l<=i+1; l++) {
+							
+								if (VoxelFlags_muc[Index(l, m, n)] != FLAG_ZERO_LENGTH) {
+									VoxelFlags_muc[Index(l, m, n)] = FLAG_LOCAL_MAX;
+
+#ifdef	DEBUG_FLAG_NONUNIFORM
+									loc[0] = n*WtimesH_mi*3 + m*Width_mi*3 + l*3;
+									printf ("Normal Vector = (%9.6f, %9.6f, %9.6f) ", 
+											GradientVec_mf[loc[0] + 0], GradientVec_mf[loc[0] + 1], 
+											GradientVec_mf[loc[0] + 2]);
+									printf ("Pos Sign = %d ", PSigns_uc[Idx]);
+									fflush(stdout);
+#endif
+
+								}
+								
+#ifdef	DEBUG_FLAG_NONUNIFORM
+									printf ("/ %d\n", 7-Idx);
+									Idx++;
+#endif
+
+							}
+						}
+					}
+				}
+
+				if (LocalMin_i==8) {
+#ifdef	DEBUG_FLAG_NONUNIFORM	
+					printf ("Local Min = (%d, %d, %d)\n", i, j, k);
+					fflush(stdout);
+					Idx = 0;
+#endif
+					for (n=k; n<=k+1; n++) {
+						for (m=j; m<=j+1; m++) {
+							for (l=i; l<=i+1; l++) {
+								if (VoxelFlags_muc[Index(l, m, n)] != FLAG_ZERO_LENGTH) {
+									VoxelFlags_muc[Index(l, m, n)] = FLAG_LOCAL_MIN;
+#ifdef	DEBUG_FLAG_NONUNIFORM
+									loc[0] = n*WtimesH_mi*3 + m*Width_mi*3 + l*3;
+									printf ("Normal Vector = (%9.6f, %9.6f, %9.6f) ", 
+											GradientVec_mf[loc[0] + 0], GradientVec_mf[loc[0] + 1], 
+											GradientVec_mf[loc[0] + 2]);
+									printf ("Neg. Sign = %d ", NSigns_uc[Idx]);
+									fflush(stdout);
+
+#endif
+								}
+#ifdef	DEBUG_FLAG_NONUNIFORM
+									printf ("/ %d\n", 7-Idx);
+									Idx++;
+#endif
+							}
+						}
+					}
+				} // the end of if (LocalMin_i==8)
+				
+			}
+		}
+	}
+
+	NumMinVoxels = 0;
+	NumMaxVoxels = 0;
+	for (i=0; i<WHD_mi; i++) {
+		if (VoxelFlags_muc[i]==FLAG_LOCAL_MIN) NumMinVoxels++;
+		if (VoxelFlags_muc[i]==FLAG_LOCAL_MAX) NumMaxVoxels++;
+	}
+	
+	NumFlaggedVoxels_mi = NumMinVoxels + NumMaxVoxels;
+	printf ("Num Flagged Voxels = %d\n", NumFlaggedVoxels_mi);
+	printf ("Num Segmented Voxels = %d\n", NumSegmentedVoxels_mi);
+	printf ("NumFlagged / NumSegmented = %f\n", (float)NumFlaggedVoxels_mi/NumSegmentedVoxels_mi);
+	fflush (stdout);
+}
+
+
+template<class _DataType>
+void cSkeleton<_DataType>::ConnectingFlaggedVoxels()
+{
+	int				i, j, k, loc[3], NextPos_i[3], NumContinuousVoxels;
+	int				Pos_i[3], Tempi;
+	unsigned char	VoxelFlag_uc;
+	map<int, int>::iterator	MinLoc_it;
+
+
+	printf ("Connecting Flagged Voxels ... \n");
+	fflush(stdout);
+
+	MinLoc_mm.clear();
+	
+
+#ifdef	DEBUG_CONNECTING
+//	int		MaxNumContinuousVoxels = 0;
+#endif
+
+	for (k=1; k<Depth_mi-1; k++) {
+		for (j=1; j<Height_mi-1; j++) {
+			for (i=1; i<Width_mi-1; i++) {
+	
+				loc[0] = loc[1] = loc[2] = k*WtimesH_mi + j*Width_mi + i;
+				if (VoxelFlags_muc[loc[0]]==FLAG_LOCAL_MIN) {
+
+
+#ifdef	DEBUG_CONNECTING
+					printf ("Start (%d %d %d)\n", i, j, k);
+#endif
+					NextPos_i[0] = i;
+					NextPos_i[1] = j;
+					NextPos_i[2] = k;
+					VoxelFlag_uc = VoxelFlags_muc[loc[0]];
+					NumContinuousVoxels = 0;
+					
+					while (VoxelFlag_uc != FLAG_LOCAL_MAX) {
+
+						NextPos_i[0] = (int)((float)NextPos_i[0] + GradientVec_mf[loc[0]*3 + 0] + 0.5);
+						NextPos_i[1] = (int)((float)NextPos_i[1] + GradientVec_mf[loc[0]*3 + 1] + 0.5);
+						NextPos_i[2] = (int)((float)NextPos_i[2] + GradientVec_mf[loc[0]*3 + 2] + 0.5);
+
+						loc[0] = NextPos_i[2]*WtimesH_mi + NextPos_i[1]*Width_mi + NextPos_i[0];
+						NumContinuousVoxels++;
+						
+#ifdef	DEBUG_CONNECTING
+						printf ("(%d %d %d)", NextPos_i[0], NextPos_i[1], NextPos_i[2]);
+						DisplayFlag(VoxelFlags_muc[loc[0]]);
+						printf (",  ");
+#endif
+						
+						VoxelFlag_uc = VoxelFlags_muc[loc[0]];
+						if (VoxelFlag_uc == FLAG_CONNECTED || VoxelFlag_uc == FLAG_EMPTY) break;
+						
+						VoxelFlags_muc[loc[0]] = FLAG_CONNECTED;
+					}
+					
+					MinLoc_it = MinLoc_mm.find(loc[2]);
+					if (MinLoc_it==MinLoc_mm.end()) MinLoc_mm[loc[2]] = NumContinuousVoxels;
+					else {
+						Tempi = (*MinLoc_it).second;
+						MinLoc_mm[loc[2]] = (Tempi>NumContinuousVoxels)? Tempi:NumContinuousVoxels;
+					}
+
+
+#ifdef	DEBUG_CONNECTING
+					printf (" Negative direction: \n");
+#endif
+
+					NextPos_i[0] = i;
+					NextPos_i[1] = j;
+					NextPos_i[2] = k;
+					VoxelFlag_uc = VoxelFlags_muc[loc[1]];
+					NumContinuousVoxels = 0;
+					
+					while (VoxelFlag_uc != FLAG_LOCAL_MAX) {
+
+						NextPos_i[0] = (int)((float)NextPos_i[0] + GradientVec_mf[loc[1]*3 + 0]*(-1.0) + 0.5);
+						NextPos_i[1] = (int)((float)NextPos_i[1] + GradientVec_mf[loc[1]*3 + 1]*(-1.0) + 0.5);
+						NextPos_i[2] = (int)((float)NextPos_i[2] + GradientVec_mf[loc[1]*3 + 2]*(-1.0) + 0.5);
+
+						loc[1] = NextPos_i[2]*WtimesH_mi + NextPos_i[1]*Width_mi + NextPos_i[0];
+						NumContinuousVoxels++;
+						
+#ifdef	DEBUG_CONNECTING
+						printf ("(%d %d %d)", NextPos_i[0], NextPos_i[1], NextPos_i[2]);
+						DisplayFlag(VoxelFlags_muc[loc[1]]);
+						printf (",  ");
+#endif
+
+						VoxelFlag_uc = VoxelFlags_muc[loc[1]];
+						if (VoxelFlag_uc == FLAG_CONNECTED || VoxelFlag_uc == FLAG_EMPTY) break;
+
+						VoxelFlags_muc[loc[1]] = FLAG_CONNECTED;
+					}
+					
+#ifdef	DEBUG_CONNECTING
+				printf ("\n\n");
+#endif	
+
+					MinLoc_it = MinLoc_mm.find(loc[2]);
+					if (MinLoc_it==MinLoc_mm.end()) MinLoc_mm[loc[2]] = NumContinuousVoxels;
+					else {
+						Tempi = (*MinLoc_it).second;
+						MinLoc_mm[loc[2]] = (Tempi>NumContinuousVoxels)? Tempi:NumContinuousVoxels;
+					}
+
+
+					VoxelFlags_muc[loc[2]] = FLAG_CONNECTED;
+
+				}
+			}
+		}
+	}
+
+
+	int		MinLength = 999999, MaxLength = -999999;
+	MinLoc_it = MinLoc_mm.begin();
+	for (i=0; i<MinLoc_mm.size(); i++, MinLoc_it++) {
+
+		loc[0] = (*MinLoc_it).first;
+		Pos_i[2] = loc[0]/WtimesH_mi;
+		Pos_i[1] = (loc[0] - Pos_i[2]*WtimesH_mi)/Width_mi;
+		Pos_i[0] = loc[0] % Width_mi;
+		
+		NumContinuousVoxels = (*MinLoc_it).second;
+		if (MinLength > NumContinuousVoxels) MinLength = NumContinuousVoxels;
+		if (MaxLength < NumContinuousVoxels) MaxLength = NumContinuousVoxels;
+		
+//		printf ("Pos = (%d %d %d), ", Pos_i[0], Pos_i[1], Pos_i[2]);
+//		printf ("Length = %d\n", NumContinuousVoxels);
+		fflush(stdout);
+		
+	}
+//	printf ("Min & Max Length = %d %d\n", MinLength, MaxLength);
+	
+
+	for (i=0; i<WHD_mi; i++) {
+		if (VoxelFlags_muc[i]==FLAG_LOCAL_MIN) VoxelFlags_muc[i] = FLAG_CONNECTED;
+		if (VoxelFlags_muc[i]==FLAG_LOCAL_MAX) VoxelFlags_muc[i] = FLAG_CONNECTED;
+		
+//		if (VoxelFlags_muc[i]!=FLAG_CONNECTED) VoxelFlags_muc[i] = FLAG_EMPTY;
+	}
+	
+}
+
+
+template<class _DataType>
+void cSkeleton<_DataType>::ConnectedComponents(char *OutFileName)
+{
+	int 			i, j, k, X_i, Y_i, Z_i, loc[3], NumCCVoxels;
+	map<int, int>				CCList_m;
+	map<int, int>::iterator		CCList_it;
+	map<int, unsigned char>				CC_m;
+	map<int, unsigned char>::iterator	CC_it;
+	
+
+
+	CCVolume_muc = new unsigned char[WHD_mi];
+	
+	// Copying the voxel flag volume
+	for (i=0; i<WHD_mi; i++) {
+		if (VoxelFlags_muc[i]==FLAG_CONNECTED) CCVolume_muc[i] = VoxelFlags_muc[i];
+		else CCVolume_muc[i] = (unsigned char)FLAG_EMPTY;
+	}
+	
+	CCList_m.clear();
+	CC_m.clear();
+	for (k=1; k<Depth_mi-1; k++) {
+		for (j=1; j<Height_mi-1; j++) {
+			for (i=1; i<Width_mi-1; i++) {
+	
+				loc[0] = k*WtimesH_mi + j*Width_mi + i;
+
+				if (CCVolume_muc[loc[0]]==FLAG_CONNECTED) {
+					NumCCVoxels = MarkingCC(loc[0], (unsigned char)FLAG_EMPTY, CCVolume_muc);
+					CCList_m[loc[0]] = NumCCVoxels;
+				}
+
+			}
+		}
+	}
+
+
+	int		TotalNumCCVoxels = 0;
+	int		MinNumVoxels=99999, MaxNumVoxels=-99999;
+	CCList_it = CCList_m.begin();
+	for (i=0; i<CCList_m.size(); i++, CCList_it++) {
+
+		loc[0] =(*CCList_it).first;
+		NumCCVoxels = (*CCList_it).second;
+		TotalNumCCVoxels += NumCCVoxels;
+		
+		Z_i = loc[0]/WtimesH_mi;
+		Y_i = (loc[0] - Z_i*WtimesH_mi)/Width_mi;
+		X_i = loc[0] % Width_mi;
+
+		if (MinNumVoxels > NumCCVoxels) MinNumVoxels = NumCCVoxels;
+		if (MaxNumVoxels < NumCCVoxels) MaxNumVoxels = NumCCVoxels;
+
+		if (NumCCVoxels>10) {
+			printf ("(%3d %3d %3d): ", X_i, Y_i, Z_i);
+			printf ("Num. Connected Voxels = %d\n", NumCCVoxels);
+		}
+	
+	}
+
+	printf ("Min & Max Num. Voxels = %d %d\n", MinNumVoxels, MaxNumVoxels);
+	printf ("Num. of CC = %d\n", (int)CCList_m.size());
+	printf ("Total Num. CC Voxles = %d\n", TotalNumCCVoxels);
+	fflush (stdout);
+
+
+	// Copying the voxel flag volume
+	for (i=0; i<WHD_mi; i++) {
+		if (VoxelFlags_muc[i]==FLAG_CONNECTED) CCVolume_muc[i] = VoxelFlags_muc[i];
+		else CCVolume_muc[i] = (unsigned char)FLAG_EMPTY;
+	}
+	
+	int				MaxLoc;
+	unsigned char	GreyColor_uc;
+	
+	GreyColor_uc = 255;
+	
+	do {
+	
+		MaxNumVoxels=-99999;
+		CCList_it = CCList_m.begin();
+		for (i=0; i<CCList_m.size(); i++, CCList_it++) {
+
+			loc[0] =(*CCList_it).first;
+			NumCCVoxels = (*CCList_it).second;
+			if (MaxNumVoxels < NumCCVoxels) {
+				MaxNumVoxels = NumCCVoxels;
+				MaxLoc = loc[0];
+			}
+		}
+		
+		CCList_m.erase(MaxLoc);
+		NumCCVoxels = MarkingCC(MaxLoc, GreyColor_uc, CCVolume_muc);
+		Z_i = MaxLoc/WtimesH_mi;
+		Y_i = (MaxLoc - Z_i*WtimesH_mi)/Width_mi;
+		X_i = MaxLoc % Width_mi;
+
+		printf ("Loc = (%3d %3d %3d), ", X_i, Y_i, Z_i);
+		printf ("Grey Color = %3d, ", GreyColor_uc);
+		printf ("Num. Voxels = %d, ", MaxNumVoxels);
+		printf ("Num. Voxels (rechecked) = %d\n", NumCCVoxels);
+		fflush (stdout);
+		
+		GreyColor_uc -= 2;
+		if (GreyColor_uc==FLAG_CONNECTED) GreyColor_uc -=2;
+		
+	} while (CCList_m.size()>0 && GreyColor_uc>5 );
+
+	
+}
+
+
+template<class _DataType>
+int cSkeleton<_DataType>::MarkingCC(int CCLoc, unsigned char MarkingNum, unsigned char *CCVolume_uc)
+{
+	int			i, j, k, X_i, Y_i, Z_i, loc[3], NumCCVoxels;
+	map<int, unsigned char>				CC_m;
+	map<int, unsigned char>::iterator	CC_it;
+
+	
+	CC_m.clear();
+	loc[0] = CCLoc;
+	CC_m[loc[0]] = (unsigned char)1;
+	CCVolume_uc[loc[0]] = MarkingNum;
+	NumCCVoxels = 1;
+	
+	do {
+
+		CC_it = CC_m.begin();
+		loc[0] = (*CC_it).first;
+		CC_m.erase(loc[0]);
+		Z_i = loc[0]/WtimesH_mi;
+		Y_i = (loc[0] - Z_i*WtimesH_mi)/Width_mi;
+		X_i = loc[0] % Width_mi;
+
+		for (k=Z_i-1; k<=Z_i+1; k++) {
+			for (j=Y_i-1; j<=Y_i+1; j++) {
+				for (i=X_i-1; i<=X_i+1; i++) {
+
+					loc[0] = Index(i, j, k);
+					if (CCVolume_uc[loc[0]]==FLAG_CONNECTED) {
+						CC_m[loc[0]] = (unsigned char)1;
+						CCVolume_uc[loc[0]] = MarkingNum;
+						NumCCVoxels++;
+					}
+
+				}
+			}
+		}
+
+	} while (CC_m.size()>0);
+	CC_m.clear();
+	
+	return NumCCVoxels;
+}
+
+template<class _DataType>
+int	cSkeleton<_DataType>::Index(int X, int Y, int Z, int ith, int NumElements)
+{
+	if (X<0 || Y<0 || Z<0 || X>=Width_mi || Y>=Height_mi || Z>=Depth_mi) return 0;
+	else return (Z*WtimesH_mi*NumElements + Y*Width_mi*NumElements + X*NumElements + ith);
+}
+
+template<class _DataType>
+int	cSkeleton<_DataType>::Index(int X, int Y, int Z)
+{
+	if (X<0 || Y<0 || Z<0 || X>=Width_mi || Y>=Height_mi || Z>=Depth_mi) return 0;
+	else return (Z*WtimesH_mi + Y*Width_mi + X);
+}
+
+	
+
+template<class _DataType>
+void cSkeleton<_DataType>::SaveInitVolume()
+{
+	SaveVolume(Distance_mi, (float)0.0, (float)255.0, "InitDF");
+	printf ("The init binary volume is saved\n");
+	fflush(stdout);
+}
+
+template<class _DataType>
+void cSkeleton<_DataType>::SaveDistanceVolume()
+{
+	int		i, Mini, Maxi;
+	
+	
+	Mini = 9999999;
+	Maxi = -9999999;
+	
+	for (i=0; i<WHD_mi; i++) {
+		if (Mini > Distance_mi[i]) Mini = Distance_mi[i];
+		if (Maxi < Distance_mi[i]) Maxi = Distance_mi[i];
+	}
+	printf ("Min & Max Distance = (%d, %d)\n", Mini, Maxi);
+	fflush(stdout);
+	
+	SaveVolume(Distance_mi, (float)Mini, (float)Maxi, "Dist");
+}
+
+
+
+template<class _DataType>
+void cSkeleton<_DataType>::DisplayFlag(int Flag)
+{
+	switch (Flag) {
+		case FLAG_CONNECTED : printf ("CON"); break;
+		case FLAG_LOCAL_MAX	: printf ("MAX"); break;
+		case FLAG_LOCAL_MIN	: printf ("MIN"); break;
+		case FLAG_SEGMENTED	: printf ("SEG"); break;
+		case FLAG_ZERO_LENGTH:printf ("ZER"); break;
+		case FLAG_EMPTY     : printf ("EPT"); break;
+		default: printf ("ERR"); break;
+	}
+
+}
+
+
+template<class _DataType>
+void cSkeleton<_DataType>::Display(int ZPlane)
+{
+	int		i, j;
+	
+	
+	printf ("Z Plane = %d\n", ZPlane);
+	for (j=0; j<Height_mi; j++) {
+		for (i=0; i<Width_mi; i++) {
+			printf ("%4d", Distance_mi[Index(i, j, ZPlane)]);
+		}
+		printf ("\n");
+	}
+	fflush(stdout);
+}
+
+
+
+template<class _DataType>
+void cSkeleton<_DataType>::Destroy()
+{
+	delete [] Distance_mi;
+	Distance_mi = NULL;
+
+	delete [] GradientVec_mf;
+	GradientVec_mf = NULL;
+
+	delete [] CCVolume_muc;
+	CCVolume_muc = NULL;
+	
+}
+
+cSkeleton<unsigned char>	__SkeletonValue0;
+cSkeleton<unsigned short>	__SkeletonValue1;
+cSkeleton<int>				__SkeletonValue2;
+cSkeleton<float>			__SkeletonValue3;
+
+

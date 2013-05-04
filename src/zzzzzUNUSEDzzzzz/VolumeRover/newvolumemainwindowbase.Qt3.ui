@@ -1,0 +1,2004 @@
+<!DOCTYPE UI><UI version="3.3" stdsetdef="1">
+<class>NewVolumeMainWindowBase</class>
+<widget class="QMainWindow">
+    <property name="name">
+        <cstring>NewVolumeMainWindowBase</cstring>
+    </property>
+    <property name="geometry">
+        <rect>
+            <x>0</x>
+            <y>0</y>
+            <width>747</width>
+            <height>642</height>
+        </rect>
+    </property>
+    <property name="caption">
+        <string>NewVolume</string>
+    </property>
+    <grid>
+        <property name="name">
+            <cstring>unnamed</cstring>
+        </property>
+        <widget class="QTabWidget" row="0" column="0">
+            <property name="name">
+                <cstring>m_ViewTabs</cstring>
+            </property>
+            <widget class="QWidget">
+                <property name="name">
+                    <cstring>ThreeDRover</cstring>
+                </property>
+                <attribute name="title">
+                    <string>3D Rover</string>
+                </attribute>
+                <grid>
+                    <property name="name">
+                        <cstring>unnamed</cstring>
+                    </property>
+                    <widget class="QLayoutWidget" row="1" column="0">
+                        <property name="name">
+                            <cstring>Layout6</cstring>
+                        </property>
+                        <vbox>
+                            <property name="name">
+                                <cstring>unnamed</cstring>
+                            </property>
+                            <property name="margin">
+                                <number>0</number>
+                            </property>
+                            <property name="spacing">
+                                <number>6</number>
+                            </property>
+                            <widget class="SimpleOpenGLWidget">
+                                <property name="name">
+                                    <cstring>m_ZoomedIn</cstring>
+                                </property>
+                                <property name="whatsThis" stdset="0">
+                                    <string>&lt;p&gt;&lt;b&gt;Subvolume Viewer Window&lt;/b&gt;&lt;/p&gt;
+
+&lt;p&gt;Use this window to view the subvolume cube.  The right mouse button rotates the view.  The left mouse button translates.  The middle button, or scroll wheel zooms.
+&lt;/p&gt;</string>
+                                </property>
+                            </widget>
+                            <widget class="QLayoutWidget">
+                                <property name="name">
+                                    <cstring>Layout6</cstring>
+                                </property>
+                                <grid>
+                                    <property name="name">
+                                        <cstring>unnamed</cstring>
+                                    </property>
+                                    <property name="margin">
+                                        <number>0</number>
+                                    </property>
+                                    <property name="spacing">
+                                        <number>6</number>
+                                    </property>
+                                    <widget class="QLabel" row="0" column="0">
+                                        <property name="name">
+                                            <cstring>TextLabel1</cstring>
+                                        </property>
+                                        <property name="text">
+                                            <string>Main Render Quality</string>
+                                        </property>
+                                        <property name="whatsThis" stdset="0">
+                                            <string>Determines the quality of the main render.  Dragging the slider to the left has the following 3 effects:
+
+1. Render speed increases.
+2. Render quality decreases.
+3. Render becomes more transparent.</string>
+                                        </property>
+                                    </widget>
+                                    <widget class="QLabel" row="1" column="0">
+                                        <property name="name">
+                                            <cstring>TextLabel1_3</cstring>
+                                        </property>
+                                        <property name="text">
+                                            <string>Main Near Clip Plane</string>
+                                        </property>
+                                        <property name="whatsThis" stdset="0">
+                                            <string>Allows you to clip away the near part of the volume.  Moving the slider all the way to the left will display the whole volume.  Moving the slider to the right will clip away the near portions of the volume.</string>
+                                        </property>
+                                    </widget>
+                                    <widget class="QSlider" row="0" column="1">
+                                        <property name="name">
+                                            <cstring>Slider2</cstring>
+                                        </property>
+                                        <property name="value">
+                                            <number>99</number>
+                                        </property>
+                                        <property name="orientation">
+                                            <enum>Horizontal</enum>
+                                        </property>
+                                        <property name="whatsThis" stdset="0">
+                                            <string>Determines the quality of the main render.  Dragging the slider to the left has the following 3 effects:
+
+1. Render speed increases.
+2. Render quality decreases.
+3. Render becomes more transparent.</string>
+                                        </property>
+                                    </widget>
+                                    <widget class="QSlider" row="1" column="1">
+                                        <property name="name">
+                                            <cstring>m_MainNearPlane</cstring>
+                                        </property>
+                                        <property name="orientation">
+                                            <enum>Horizontal</enum>
+                                        </property>
+                                        <property name="whatsThis" stdset="0">
+                                            <string>Allows you to clip away the near part of the volume.  Moving the slider all the way to the left will display the whole volume.  Moving the slider to the right will clip away the near portions of the volume.</string>
+                                        </property>
+                                    </widget>
+                                </grid>
+                            </widget>
+                        </vbox>
+                    </widget>
+                    <widget class="QLayoutWidget" row="1" column="1">
+                        <property name="name">
+                            <cstring>Layout7</cstring>
+                        </property>
+                        <vbox>
+                            <property name="name">
+                                <cstring>unnamed</cstring>
+                            </property>
+                            <property name="margin">
+                                <number>0</number>
+                            </property>
+                            <property name="spacing">
+                                <number>6</number>
+                            </property>
+                            <widget class="SimpleOpenGLWidget">
+                                <property name="name">
+                                    <cstring>m_ZoomedOut</cstring>
+                                </property>
+                                <property name="whatsThis" stdset="0">
+                                    <string>&lt;p&gt;&lt;b&gt;Explorer Window&lt;/b&gt;&lt;/p&gt;
+
+&lt;p&gt;Use this window to position the subvolume cube.  The right mouse button rotates the view.  To move the subvolume:
+&lt;ol&gt;
+&lt;li&gt;Click on one of the axes of the subvolume.
+&lt;li&gt;Drag along that axis.
+&lt;/ol&gt;
+To resize the subvolume:
+&lt;ol&gt;
+&lt;li&gt;Click on the end of one of the axes of the subvolume
+&lt;li&gt;Drag along that axis.
+&lt;/ol&gt;
+&lt;/p&gt;</string>
+                                </property>
+                            </widget>
+                            <widget class="QLayoutWidget">
+                                <property name="name">
+                                    <cstring>Layout7</cstring>
+                                </property>
+                                <grid>
+                                    <property name="name">
+                                        <cstring>unnamed</cstring>
+                                    </property>
+                                    <property name="margin">
+                                        <number>0</number>
+                                    </property>
+                                    <property name="spacing">
+                                        <number>6</number>
+                                    </property>
+                                    <widget class="QSlider" row="1" column="1">
+                                        <property name="name">
+                                            <cstring>m_ExplorerNearPlane</cstring>
+                                        </property>
+                                        <property name="orientation">
+                                            <enum>Horizontal</enum>
+                                        </property>
+                                        <property name="whatsThis" stdset="0">
+                                            <string>Allows you to clip away the near part of the volume.  Moving the slider all the way to the left will display the whole volume.  Moving the slider to the right will clip away the near portions of the volume.</string>
+                                        </property>
+                                    </widget>
+                                    <widget class="QLabel" row="1" column="0">
+                                        <property name="name">
+                                            <cstring>TextLabel2</cstring>
+                                        </property>
+                                        <property name="text">
+                                            <string>Explorer Near Clip Plane</string>
+                                        </property>
+                                        <property name="whatsThis" stdset="0">
+                                            <string>Allows you to clip away the near part of the volume.  Moving the slider all the way to the left will display the whole volume.  Moving the slider to the right will clip away the near portions of the volume.</string>
+                                        </property>
+                                    </widget>
+                                    <widget class="QSlider" row="0" column="1">
+                                        <property name="name">
+                                            <cstring>Slider1</cstring>
+                                        </property>
+                                        <property name="value">
+                                            <number>99</number>
+                                        </property>
+                                        <property name="orientation">
+                                            <enum>Horizontal</enum>
+                                        </property>
+                                        <property name="whatsThis" stdset="0">
+                                            <string>Determines the quality of the main render.  Dragging the slider to the left has the following 3 effects:
+
+1. Render speed increases.
+2. Render quality decreases.
+3. Render becomes more transparent.</string>
+                                        </property>
+                                    </widget>
+                                    <widget class="QLabel" row="0" column="0">
+                                        <property name="name">
+                                            <cstring>TextLabel1_2</cstring>
+                                        </property>
+                                        <property name="text">
+                                            <string>Explorer Render Quality</string>
+                                        </property>
+                                        <property name="whatsThis" stdset="0">
+                                            <string>Determines the quality of the main render.  Dragging the slider to the left has the following 3 effects:
+
+1. Render speed increases.
+2. Render quality decreases.
+3. Render becomes more transparent.</string>
+                                        </property>
+                                    </widget>
+                                </grid>
+                            </widget>
+                        </vbox>
+                    </widget>
+                    <widget class="QWidgetStack" row="0" column="0" rowspan="1" colspan="2">
+                        <property name="name">
+                            <cstring>m_VariableSelectionStack</cstring>
+                        </property>
+                        <widget class="QWidget">
+                            <property name="name">
+                                <cstring>Single</cstring>
+                            </property>
+                            <attribute name="id">
+                                <number>0</number>
+                            </attribute>
+                            <hbox>
+                                <property name="name">
+                                    <cstring>unnamed</cstring>
+                                </property>
+                                <widget class="QLabel">
+                                    <property name="name">
+                                        <cstring>m_VariableLabel</cstring>
+                                    </property>
+                                    <property name="enabled">
+                                        <bool>true</bool>
+                                    </property>
+                                    <property name="text">
+                                        <string>Variable</string>
+                                    </property>
+                                </widget>
+                                <widget class="QComboBox">
+                                    <property name="name">
+                                        <cstring>m_VariableBox</cstring>
+                                    </property>
+                                    <property name="enabled">
+                                        <bool>true</bool>
+                                    </property>
+                                    <property name="sizePolicy">
+                                        <sizepolicy>
+                                            <hsizetype>1</hsizetype>
+                                            <vsizetype>0</vsizetype>
+                                            <horstretch>0</horstretch>
+                                            <verstretch>0</verstretch>
+                                        </sizepolicy>
+                                    </property>
+                                    <property name="minimumSize">
+                                        <size>
+                                            <width>0</width>
+                                            <height>0</height>
+                                        </size>
+                                    </property>
+                                    <property name="toolTip" stdset="0">
+                                        <string>Variable</string>
+                                    </property>
+                                </widget>
+                                <widget class="QLabel">
+                                    <property name="name">
+                                        <cstring>m_TimeStepLevel</cstring>
+                                    </property>
+                                    <property name="enabled">
+                                        <bool>true</bool>
+                                    </property>
+                                    <property name="text">
+                                        <string>Time Step</string>
+                                    </property>
+                                </widget>
+                                <widget class="QSpinBox">
+                                    <property name="name">
+                                        <cstring>m_TimeStep</cstring>
+                                    </property>
+                                    <property name="enabled">
+                                        <bool>true</bool>
+                                    </property>
+                                    <property name="toolTip" stdset="0">
+                                        <string>Time Step</string>
+                                    </property>
+                                </widget>
+                                <spacer>
+                                    <property name="name">
+                                        <cstring>spacer1</cstring>
+                                    </property>
+                                    <property name="orientation">
+                                        <enum>Horizontal</enum>
+                                    </property>
+                                    <property name="sizeType">
+                                        <enum>Expanding</enum>
+                                    </property>
+                                    <property name="sizeHint">
+                                        <size>
+                                            <width>321</width>
+                                            <height>21</height>
+                                        </size>
+                                    </property>
+                                </spacer>
+                            </hbox>
+                        </widget>
+                        <widget class="QWidget">
+                            <property name="name">
+                                <cstring>RGBA</cstring>
+                            </property>
+                            <attribute name="id">
+                                <number>1</number>
+                            </attribute>
+                            <hbox>
+                                <property name="name">
+                                    <cstring>unnamed</cstring>
+                                </property>
+                                <widget class="QLabel">
+                                    <property name="name">
+                                        <cstring>m_RedLabel</cstring>
+                                    </property>
+                                    <property name="text">
+                                        <string>Red</string>
+                                    </property>
+                                </widget>
+                                <widget class="QComboBox">
+                                    <property name="name">
+                                        <cstring>m_RedBox</cstring>
+                                    </property>
+                                    <property name="sizePolicy">
+                                        <sizepolicy>
+                                            <hsizetype>5</hsizetype>
+                                            <vsizetype>0</vsizetype>
+                                            <horstretch>0</horstretch>
+                                            <verstretch>0</verstretch>
+                                        </sizepolicy>
+                                    </property>
+                                </widget>
+                                <widget class="QLabel">
+                                    <property name="name">
+                                        <cstring>m_GreenLabel</cstring>
+                                    </property>
+                                    <property name="text">
+                                        <string>Green</string>
+                                    </property>
+                                </widget>
+                                <widget class="QComboBox">
+                                    <property name="name">
+                                        <cstring>m_GreenBox</cstring>
+                                    </property>
+                                    <property name="sizePolicy">
+                                        <sizepolicy>
+                                            <hsizetype>5</hsizetype>
+                                            <vsizetype>0</vsizetype>
+                                            <horstretch>0</horstretch>
+                                            <verstretch>0</verstretch>
+                                        </sizepolicy>
+                                    </property>
+                                </widget>
+                                <widget class="QLabel">
+                                    <property name="name">
+                                        <cstring>m_BlueLabel</cstring>
+                                    </property>
+                                    <property name="text">
+                                        <string>Blue</string>
+                                    </property>
+                                </widget>
+                                <widget class="QComboBox">
+                                    <property name="name">
+                                        <cstring>m_BlueBox</cstring>
+                                    </property>
+                                    <property name="sizePolicy">
+                                        <sizepolicy>
+                                            <hsizetype>5</hsizetype>
+                                            <vsizetype>0</vsizetype>
+                                            <horstretch>0</horstretch>
+                                            <verstretch>0</verstretch>
+                                        </sizepolicy>
+                                    </property>
+                                </widget>
+                                <widget class="QLabel">
+                                    <property name="name">
+                                        <cstring>m_AlphaLabel</cstring>
+                                    </property>
+                                    <property name="text">
+                                        <string>Alpha</string>
+                                    </property>
+                                </widget>
+                                <widget class="QComboBox">
+                                    <property name="name">
+                                        <cstring>m_AlphaBox</cstring>
+                                    </property>
+                                    <property name="sizePolicy">
+                                        <sizepolicy>
+                                            <hsizetype>5</hsizetype>
+                                            <vsizetype>0</vsizetype>
+                                            <horstretch>0</horstretch>
+                                            <verstretch>0</verstretch>
+                                        </sizepolicy>
+                                    </property>
+                                </widget>
+                                <widget class="QLabel">
+                                    <property name="name">
+                                        <cstring>m_RGBATimeLabel</cstring>
+                                    </property>
+                                    <property name="text">
+                                        <string>Time Step</string>
+                                    </property>
+                                </widget>
+                                <widget class="QSpinBox">
+                                    <property name="name">
+                                        <cstring>m_RGBATimeStep</cstring>
+                                    </property>
+                                </widget>
+                            </hbox>
+                        </widget>
+                    </widget>
+                </grid>
+            </widget>
+        </widget>
+    </grid>
+</widget>
+<menubar>
+    <property name="name">
+        <cstring>menubar</cstring>
+    </property>
+    <item text="&amp;File" name="m_FileMenu">
+        <action name="ConnectToFile"/>
+        <action name="OpenImageFileAction"/>
+        <action name="ConnectToDC"/>
+        <action name="SaveSubVolumeAction"/>
+        <action name="SaveImageAction"/>
+        <separator/>
+        <action name="OptionsAction"/>
+        <separator/>
+        <action name="ExitAction"/>
+    </item>
+    <item text="&amp;View" name="m_ViewMenu">
+        <action name="CenterAction"/>
+        <action name="explorerChangedAction"/>
+        <separator/>
+        <action name="WireCubeToggleAction"/>
+        <action name="DepthCueToggleAction"/>
+        <separator/>
+        <action name="ShowTerminalAction"/>
+        <separator/>
+        <action name="SliceRenderingAction"/>
+    </item>
+    <item text="&amp;Geometry" name="m_GeometryMenu">
+        <action name="LoadGeometryAction"/>
+        <action name="ClearGeometryAction"/>
+        <action name="SaveGeometryAction"/>
+        <separator/>
+        <action name="ExportZoomedOutIsosurfaceAction"/>
+        <action name="ExportZoomedInIsosurfaceAction"/>
+        <separator/>
+        <action name="SaveSkeletonAction"/>
+        <action name="ClearSkeletonAction"/>
+        <separator/>
+        <action name="WireframeRenderToggleAction"/>
+        <action name="RenderSurfaceWithWireframeAction"/>
+        <action name="ClipGeometryToVolumeBoxAction"/>
+        <action name="EditTransformationAction"/>
+        <action name="ClearTransformationAction"/>
+        <separator/>
+        <action name="SmoothGeometryAction"/>
+        <action name="SignedDistanceFunctionAction"/>
+        <action name="MergeGeometryObjectsAction"/>
+        <action name="ConvertCurrentIsosurfaceToGeometryAction"/>
+        <action name="LBIEAction"/>
+        <item text="LBIE" name="popupMenu_39" accel="">
+            <action name="LBIEMeshingAction"/>
+            <action name="LBIEQualityImprovementAction"/>
+        </item>
+        <action name="ProjectToSurfaceAction"/>
+        <action name="ColorGeometryByVolumeAction"/>
+        <action name="CullGeometryWithSubvolumeBoxAction"/>
+    </item>
+    <item text="&amp;Servers" name="m_ServersMenu">
+        <action name="ConnectServerAction"/>
+        <action name="DisconnectServerAction"/>
+        <action name="ServerSettingAction"/>
+        <separator/>
+        <action name="RenderFrameAction"/>
+    </item>
+    <item text="&amp;Animation" name="m_AnimationMenu">
+        <action name="StartRecordingAnimationAction"/>
+        <action name="StopRecordingAnimationAction"/>
+        <separator/>
+        <action name="PlayAnimationAction"/>
+        <action name="StopAnimationAction"/>
+        <separator/>
+        <action name="SaveAnimationAction"/>
+        <action name="LoadAnimationAction"/>
+        <separator/>
+        <action name="SaveFrameSequenceAction"/>
+    </item>
+    <item text="Tools" name="Tools">
+        <action name="BilateralFilterAction"/>
+        <action name="SegmentVirusMapAction"/>
+        <action name="ContrastEnhancementAction"/>
+        <action name="PEDetectionAction"/>
+        <action name="PocketTunnelAction"/>
+        <action name="AnisotropicDiffusionAction"/>
+        <action name="BoundaryPointCloudAction"/>
+        <action name="TightCoconeAction"/>
+        <action name="CurationAction"/>
+        <action name="SkeletonizationAction"/>
+        <action name="SecondaryStructureAction"/>
+        <action name="HighLevelSetAction"/>
+        <action name="HighLevelSetReconAction"/>
+        <action name="GDTVFilterAction"/>
+        <action name="MumfordShahLevelSetAction"/>
+    </item>
+    <item text="&amp;Help" name="m_HelpMenu">
+        <action name="WhatsThisAction"/>
+    </item>
+</menubar>
+<toolbars>
+</toolbars>
+<customwidgets>
+    <customwidget>
+        <class>SimpleOpenGLWidget</class>
+        <header location="local">VolumeWidget/SimpleOpenGLWidget.h</header>
+        <sizehint>
+            <width>300</width>
+            <height>300</height>
+        </sizehint>
+        <container>0</container>
+        <sizepolicy>
+            <hordata>7</hordata>
+            <verdata>7</verdata>
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+        </sizepolicy>
+        <pixmap>image0</pixmap>
+    </customwidget>
+</customwidgets>
+<actions>
+    <action>
+        <property name="name">
+            <cstring>ConnectToFile</cstring>
+        </property>
+        <property name="text">
+            <string>&amp;Open Volume File...</string>
+        </property>
+        <property name="menuText">
+            <string>&amp;Open Volume File...</string>
+        </property>
+        <property name="whatsThis">
+            <string>Opens a local file</string>
+        </property>
+        <property name="accel">
+            <string>Ctrl+O</string>
+        </property>
+    </action>
+    <action>
+        <property name="name">
+            <cstring>explorerChangedAction</cstring>
+        </property>
+        <property name="text">
+            <string>Update</string>
+        </property>
+        <property name="menuText">
+            <string>&amp;Update</string>
+        </property>
+        <property name="whatsThis">
+            <string>Update the subvolume</string>
+        </property>
+    </action>
+    <action>
+        <property name="name">
+            <cstring>ConnectToDC</cstring>
+        </property>
+        <property name="enabled">
+            <bool>true</bool>
+        </property>
+        <property name="text">
+            <string>Data Server...</string>
+        </property>
+        <property name="menuText">
+            <string>&amp;Data Server...</string>
+        </property>
+        <property name="whatsThis">
+            <string>Connects to a datacutter server</string>
+        </property>
+    </action>
+    <action>
+        <property name="name">
+            <cstring>ExitAction</cstring>
+        </property>
+        <property name="text">
+            <string>Exit</string>
+        </property>
+        <property name="menuText">
+            <string>Exit</string>
+        </property>
+        <property name="whatsThis">
+            <string>Quits the program</string>
+        </property>
+        <property name="accel">
+            <string>Ctrl+Q</string>
+        </property>
+    </action>
+    <action>
+        <property name="name">
+            <cstring>WhatsThisAction</cstring>
+        </property>
+        <property name="text">
+            <string>WhatsThis</string>
+        </property>
+        <property name="menuText">
+            <string>&amp;WhatsThis</string>
+        </property>
+    </action>
+    <action>
+        <property name="name">
+            <cstring>CenterAction</cstring>
+        </property>
+        <property name="text">
+            <string>Center On Preview</string>
+        </property>
+        <property name="menuText">
+            <string>&amp;Center On Preview</string>
+        </property>
+    </action>
+    <action>
+        <property name="name">
+            <cstring>OptionsAction</cstring>
+        </property>
+        <property name="enabled">
+            <bool>true</bool>
+        </property>
+        <property name="text">
+            <string>Options...</string>
+        </property>
+        <property name="menuText">
+            <string>O&amp;ptions...</string>
+        </property>
+    </action>
+    <actiongroup>
+        <property name="name">
+            <cstring>RecentFilesPopup</cstring>
+        </property>
+        <property name="text">
+            <string>Recent &amp;Files</string>
+        </property>
+        <property name="menuText">
+            <string>Recent &amp;Files</string>
+        </property>
+        <property name="usesDropDown">
+            <bool>true</bool>
+        </property>
+        <action>
+            <property name="name">
+                <cstring>RecentFile1</cstring>
+            </property>
+            <property name="toggleAction">
+                <bool>false</bool>
+            </property>
+            <property name="text">
+                <string>Action</string>
+            </property>
+            <property name="menuText">
+                <string>Action</string>
+            </property>
+        </action>
+    </actiongroup>
+    <action>
+        <property name="name">
+            <cstring>ConnectServerAction</cstring>
+        </property>
+        <property name="text">
+            <string>Connect...</string>
+        </property>
+        <property name="menuText">
+            <string>&amp;Connect...</string>
+        </property>
+        <property name="whatsThis">
+            <string>Connects to a remote render server.</string>
+        </property>
+    </action>
+    <action>
+        <property name="name">
+            <cstring>DisconnectServerAction</cstring>
+        </property>
+        <property name="enabled">
+            <bool>false</bool>
+        </property>
+        <property name="text">
+            <string>Disconnect</string>
+        </property>
+        <property name="menuText">
+            <string>&amp;Disconnect</string>
+        </property>
+        <property name="whatsThis">
+            <string>Disconnects from the render server.</string>
+        </property>
+    </action>
+    <action>
+        <property name="name">
+            <cstring>ServerSettingAction</cstring>
+        </property>
+        <property name="enabled">
+            <bool>false</bool>
+        </property>
+        <property name="text">
+            <string>Server Settings...</string>
+        </property>
+        <property name="menuText">
+            <string>&amp;Server Settings...</string>
+        </property>
+        <property name="whatsThis">
+            <string>Settings for the remote server.</string>
+        </property>
+    </action>
+    <action>
+        <property name="name">
+            <cstring>RenderFrameAction</cstring>
+        </property>
+        <property name="enabled">
+            <bool>false</bool>
+        </property>
+        <property name="text">
+            <string>Render Frame</string>
+        </property>
+        <property name="menuText">
+            <string>Render &amp;Frame</string>
+        </property>
+        <property name="whatsThis">
+            <string>Renders a frame on the server.</string>
+        </property>
+        <property name="accel">
+            <string></string>
+        </property>
+    </action>
+    <action>
+        <property name="name">
+            <cstring>RenderAnimationAction</cstring>
+        </property>
+        <property name="text">
+            <string>Render Animation</string>
+        </property>
+        <property name="menuText">
+            <string>Render &amp;Animation</string>
+        </property>
+    </action>
+    <action>
+        <property name="name">
+            <cstring>BilateralFilterAction</cstring>
+        </property>
+        <property name="text">
+            <string>Bilateral Filter</string>
+        </property>
+        <property name="menuText">
+            <string>&amp;Bilateral Filter</string>
+        </property>
+    </action>
+    <action>
+        <property name="name">
+            <cstring>SaveSubVolumeAction</cstring>
+        </property>
+        <property name="enabled">
+            <bool>true</bool>
+        </property>
+        <property name="text">
+            <string>Save Subvolume</string>
+        </property>
+        <property name="menuText">
+            <string>&amp;Save Subvolume</string>
+        </property>
+        <property name="whatsThis">
+            <string>Creates a new volume file from the current subvolume.</string>
+        </property>
+    </action>
+    <action>
+        <property name="name">
+            <cstring>LoadGeometryAction</cstring>
+        </property>
+        <property name="text">
+            <string>Load Geometry</string>
+        </property>
+        <property name="menuText">
+            <string>&amp;Load Geometry</string>
+        </property>
+        <property name="whatsThis">
+            <string>Loads geometry from a file on disk.</string>
+        </property>
+    </action>
+    <action>
+        <property name="name">
+            <cstring>ClearGeometryAction</cstring>
+        </property>
+        <property name="text">
+            <string>Clear Geometry</string>
+        </property>
+        <property name="menuText">
+            <string>&amp;Clear Geometry</string>
+        </property>
+        <property name="whatsThis">
+            <string>Clears any geometry loaded from a file.</string>
+        </property>
+    </action>
+    <action>
+        <property name="name">
+            <cstring>ExportZoomedInIsosurfaceAction</cstring>
+        </property>
+        <property name="text">
+            <string>Export Subvolume Isosurface</string>
+        </property>
+        <property name="menuText">
+            <string>&amp;Export Subvolume Isosurface</string>
+        </property>
+        <property name="whatsThis">
+            <string>Saves all the isosurfaces from the left window to a file.</string>
+        </property>
+    </action>
+    <action>
+        <property name="name">
+            <cstring>ExportZoomedOutIsosurfaceAction</cstring>
+        </property>
+        <property name="text">
+            <string>Export Thumbnail Isosurface</string>
+        </property>
+        <property name="menuText">
+            <string>Export &amp;Thumbnail Isosurface</string>
+        </property>
+        <property name="whatsThis">
+            <string>Saves all isosurfaces from the right window to a file.</string>
+        </property>
+    </action>
+    <action>
+        <property name="name">
+            <cstring>WireCubeToggleAction</cstring>
+        </property>
+        <property name="toggleAction">
+            <bool>true</bool>
+        </property>
+        <property name="on">
+            <bool>true</bool>
+        </property>
+        <property name="text">
+            <string>Show Wire Cube</string>
+        </property>
+        <property name="menuText">
+            <string>Show Wire Cube</string>
+        </property>
+        <property name="whatsThis">
+            <string>Enables/Disables drawing of the wire cubes surrounding the volumes.</string>
+        </property>
+    </action>
+    <action>
+        <property name="name">
+            <cstring>WireframeRenderToggleAction</cstring>
+        </property>
+        <property name="toggleAction">
+            <bool>true</bool>
+        </property>
+        <property name="on">
+            <bool>false</bool>
+        </property>
+        <property name="text">
+            <string>Wireframe Rendering</string>
+        </property>
+        <property name="menuText">
+            <string>Wireframe Rendering</string>
+        </property>
+        <property name="whatsThis">
+            <string>Enables/Disables wireframe rendering.</string>
+        </property>
+    </action>
+    <action>
+        <property name="name">
+            <cstring>viewUnnamedAction</cstring>
+        </property>
+        <property name="text">
+            <string>Unnamed</string>
+        </property>
+        <property name="menuText">
+            <string>Unnamed</string>
+        </property>
+    </action>
+    <action>
+        <property name="name">
+            <cstring>viewUnnamedAction_2</cstring>
+        </property>
+        <property name="text">
+            <string>Unnamed</string>
+        </property>
+        <property name="menuText">
+            <string>Unnamed</string>
+        </property>
+    </action>
+    <action>
+        <property name="name">
+            <cstring>DepthCueToggleAction</cstring>
+        </property>
+        <property name="toggleAction">
+            <bool>true</bool>
+        </property>
+        <property name="text">
+            <string>Depth Cueing</string>
+        </property>
+        <property name="menuText">
+            <string>Depth Cueing</string>
+        </property>
+        <property name="whatsThis">
+            <string>Enables/Disables depth cueing.</string>
+        </property>
+    </action>
+    <action>
+        <property name="name">
+            <cstring>SaveImageAction</cstring>
+        </property>
+        <property name="text">
+            <string>Save Image...</string>
+        </property>
+        <property name="menuText">
+            <string>Save Image...</string>
+        </property>
+        <property name="whatsThis">
+            <string>Saves the contents of one or both render buffers to a file.</string>
+        </property>
+    </action>
+    <action>
+        <property name="name">
+            <cstring>StartRecordingAnimationAction</cstring>
+        </property>
+        <property name="text">
+            <string>Start Recording</string>
+        </property>
+        <property name="menuText">
+            <string>Start Recording</string>
+        </property>
+    </action>
+    <action>
+        <property name="name">
+            <cstring>StopRecordingAnimationAction</cstring>
+        </property>
+        <property name="text">
+            <string>Stop Recording</string>
+        </property>
+        <property name="menuText">
+            <string>Stop Recording</string>
+        </property>
+    </action>
+    <action>
+        <property name="name">
+            <cstring>PlayAnimationAction</cstring>
+        </property>
+        <property name="text">
+            <string>Play Animation</string>
+        </property>
+        <property name="menuText">
+            <string>Play Animation</string>
+        </property>
+    </action>
+    <action>
+        <property name="name">
+            <cstring>SaveAnimationAction</cstring>
+        </property>
+        <property name="enabled">
+            <bool>true</bool>
+        </property>
+        <property name="text">
+            <string>Save Animation...</string>
+        </property>
+        <property name="menuText">
+            <string>Save Animation...</string>
+        </property>
+    </action>
+    <action>
+        <property name="name">
+            <cstring>LoadAnimationAction</cstring>
+        </property>
+        <property name="text">
+            <string>Load Animation...</string>
+        </property>
+        <property name="menuText">
+            <string>Load Animation...</string>
+        </property>
+    </action>
+    <action>
+        <property name="name">
+            <cstring>StopAnimationAction</cstring>
+        </property>
+        <property name="text">
+            <string>Stop Animation</string>
+        </property>
+        <property name="menuText">
+            <string>Stop Animation</string>
+        </property>
+    </action>
+    <action>
+        <property name="name">
+            <cstring>SaveFrameSequenceAction</cstring>
+        </property>
+        <property name="text">
+            <string>Save Frame Sequence...</string>
+        </property>
+        <property name="menuText">
+            <string>Save Frame Sequence...</string>
+        </property>
+    </action>
+    <action>
+        <property name="name">
+            <cstring>SegmentVirusMapAction</cstring>
+        </property>
+        <property name="text">
+            <string>Segment Virus Map</string>
+        </property>
+        <property name="menuText">
+            <string>&amp;Segment Virus Map</string>
+        </property>
+    </action>
+    <action>
+        <property name="name">
+            <cstring>EditTransformationAction</cstring>
+        </property>
+        <property name="text">
+            <string>Edit Transformation</string>
+        </property>
+        <property name="menuText">
+            <string>Edit Transformation</string>
+        </property>
+        <property name="accel">
+            <string>Ctrl+T</string>
+        </property>
+    </action>
+    <action>
+        <property name="name">
+            <cstring>ClearTransformationAction</cstring>
+        </property>
+        <property name="text">
+            <string>Clear Transformation</string>
+        </property>
+        <property name="menuText">
+            <string>Clear Transformation</string>
+        </property>
+        <property name="accel">
+            <string>Ctrl+R</string>
+        </property>
+    </action>
+    <action>
+        <property name="name">
+            <cstring>ShowTerminalAction</cstring>
+        </property>
+        <property name="toggleAction">
+            <bool>true</bool>
+        </property>
+        <property name="text">
+            <string>Show Terminal</string>
+        </property>
+        <property name="menuText">
+            <string>Show Terminal</string>
+        </property>
+    </action>
+    <action>
+        <property name="name">
+            <cstring>ShowCorrelationAction</cstring>
+        </property>
+        <property name="text">
+            <string>Show Correlation</string>
+        </property>
+        <property name="menuText">
+            <string>Show Correlation</string>
+        </property>
+    </action>
+    <action>
+        <property name="name">
+            <cstring>ContrastEnhancementAction</cstring>
+        </property>
+        <property name="text">
+            <string>Contrast Enhancement</string>
+        </property>
+        <property name="menuText">
+            <string>&amp;Contrast Enhancement</string>
+        </property>
+    </action>
+    <action>
+        <property name="name">
+            <cstring>PEDetectionAction</cstring>
+        </property>
+        <property name="text">
+            <string>&amp;PEDetection</string>
+        </property>
+        <property name="menuText">
+            <string>&amp;PEDetection</string>
+        </property>
+    </action>
+    <action>
+        <property name="name">
+            <cstring>PocketTunnelAction</cstring>
+        </property>
+        <property name="text">
+            <string>Pocket &amp;Tunnel</string>
+        </property>
+        <property name="menuText">
+            <string>Pocket &amp;Tunnel</string>
+        </property>
+    </action>
+    <action>
+        <property name="name">
+            <cstring>SaveGeometryAction</cstring>
+        </property>
+        <property name="text">
+            <string>&amp;Save Geometry</string>
+        </property>
+        <property name="menuText">
+            <string>&amp;Save Geometry</string>
+        </property>
+    </action>
+    <action>
+        <property name="name">
+            <cstring>geometrySmoothingAction</cstring>
+        </property>
+        <property name="text">
+            <string>Smoothing</string>
+        </property>
+        <property name="menuText">
+            <string>Smoothing</string>
+        </property>
+    </action>
+    <action>
+        <property name="name">
+            <cstring>geometrynew_itemAction</cstring>
+        </property>
+        <property name="text">
+            <string>new item</string>
+        </property>
+        <property name="menuText">
+            <string>new item</string>
+        </property>
+    </action>
+    <action>
+        <property name="name">
+            <cstring>SmoothGeometryAction</cstring>
+        </property>
+        <property name="text">
+            <string>Smoothing</string>
+        </property>
+        <property name="menuText">
+            <string>Smoothing</string>
+        </property>
+    </action>
+    <action>
+        <property name="name">
+            <cstring>AnisotropicDiffusionAction</cstring>
+        </property>
+        <property name="text">
+            <string>&amp;Anisotropic Diffusion</string>
+        </property>
+        <property name="menuText">
+            <string>&amp;Anisotropic Diffusion</string>
+        </property>
+    </action>
+    <action>
+        <property name="name">
+            <cstring>SliceRenderingAction</cstring>
+        </property>
+        <property name="text">
+            <string>Slice Rendering</string>
+        </property>
+        <property name="menuText">
+            <string>Slice Rendering</string>
+        </property>
+    </action>
+    <action>
+        <property name="name">
+            <cstring>TightCoconeAction</cstring>
+        </property>
+        <property name="text">
+            <string>T&amp;ight Cocone</string>
+        </property>
+        <property name="menuText">
+            <string>T&amp;ight Cocone</string>
+        </property>
+    </action>
+    <action>
+        <property name="name">
+            <cstring>CurationAction</cstring>
+        </property>
+        <property name="text">
+            <string>Curation</string>
+        </property>
+        <property name="menuText">
+            <string>Curation</string>
+        </property>
+    </action>
+    <action>
+        <property name="name">
+            <cstring>SkeletonizationAction</cstring>
+        </property>
+        <property name="text">
+            <string>Skeletonization</string>
+        </property>
+        <property name="menuText">
+            <string>Skeletonization</string>
+        </property>
+    </action>
+    <action>
+        <property name="name">
+            <cstring>ClipGeometryToVolumeBoxAction</cstring>
+        </property>
+        <property name="toggleAction">
+            <bool>true</bool>
+        </property>
+        <property name="on">
+            <bool>true</bool>
+        </property>
+        <property name="text">
+            <string>Clip Geometry to Volume Box</string>
+        </property>
+        <property name="menuText">
+            <string>Clip Geometry to Volume Box</string>
+        </property>
+    </action>
+    <action>
+        <property name="name">
+            <cstring>BoundaryPointCloudAction</cstring>
+        </property>
+        <property name="text">
+            <string>Boundary Point Cloud</string>
+        </property>
+        <property name="menuText">
+            <string>Boundary Point Cloud</string>
+        </property>
+    </action>
+    <action>
+        <property name="name">
+            <cstring>SaveSkeletonAction</cstring>
+        </property>
+        <property name="text">
+            <string>Save Skeleton</string>
+        </property>
+    </action>
+    <action>
+        <property name="name">
+            <cstring>ClearSkeletonAction</cstring>
+        </property>
+        <property name="text">
+            <string>Clear Skeleton</string>
+        </property>
+        <property name="menuText">
+            <string>Clear Skeleton</string>
+        </property>
+    </action>
+    <action>
+        <property name="name">
+            <cstring>SignedDistanceFunctionAction</cstring>
+        </property>
+        <property name="text">
+            <string>Signed Distance Function</string>
+        </property>
+        <property name="menuText">
+            <string>Signed Distance Function</string>
+        </property>
+    </action>
+    <action>
+        <property name="name">
+            <cstring>MergeGeometryObjectsAction</cstring>
+        </property>
+        <property name="text">
+            <string>Merge Geometry Objects</string>
+        </property>
+        <property name="menuText">
+            <string>Merge Geometry Objects</string>
+        </property>
+    </action>
+    <action>
+        <property name="name">
+            <cstring>ConvertCurrentIsosurfaceToGeometryAction</cstring>
+        </property>
+        <property name="text">
+            <string>Convert Current Isosurface to Geometry</string>
+        </property>
+        <property name="menuText">
+            <string>Convert Current Isosurface to Geometry</string>
+        </property>
+    </action>
+    <action>
+        <property name="name">
+            <cstring>HighLevelSetAction</cstring>
+        </property>
+        <property name="text">
+            <string>High Level Set</string>
+        </property>
+        <property name="menuText">
+            <string>High Level Set</string>
+        </property>
+    </action>
+    <action>
+        <property name="name">
+            <cstring>HighLevelSetReconAction</cstring>
+        </property>
+        <property name="text">
+            <string>High Level Set Recon</string>
+        </property>
+        <property name="menuText">
+            <string>High Level Set Recon</string>
+        </property>
+    </action>
+    <action>
+        <property name="name">
+            <cstring>LBIEAction</cstring>
+        </property>
+        <property name="text">
+            <string>LBIE</string>
+        </property>
+        <property name="menuText">
+            <string>LBIE</string>
+        </property>
+    </action>
+    <action>
+        <property name="name">
+            <cstring>LBIEMeshingAction</cstring>
+        </property>
+        <property name="text">
+            <string>Meshing</string>
+        </property>
+        <property name="menuText">
+            <string>Meshing</string>
+        </property>
+    </action>
+    <action>
+        <property name="name">
+            <cstring>LBIEQualityImprovementAction</cstring>
+        </property>
+        <property name="text">
+            <string>Quality Improvement</string>
+        </property>
+        <property name="menuText">
+            <string>Quality Improvement</string>
+        </property>
+    </action>
+    <action>
+        <property name="name">
+            <cstring>RenderSurfaceWithWireframeAction</cstring>
+        </property>
+        <property name="toggleAction">
+            <bool>true</bool>
+        </property>
+        <property name="text">
+            <string>Render Surface With Wireframe</string>
+        </property>
+        <property name="menuText">
+            <string>Render Surface With Wireframe</string>
+        </property>
+    </action>
+    <action>
+        <property name="name">
+            <cstring>OpenImageFileAction</cstring>
+        </property>
+        <property name="text">
+            <string>Open Image File...</string>
+        </property>
+        <property name="menuText">
+            <string>Open Image File...</string>
+        </property>
+    </action>
+    <action>
+        <property name="name">
+            <cstring>ProjectToSurfaceAction</cstring>
+        </property>
+        <property name="text">
+            <string>Project to Surface</string>
+        </property>
+        <property name="menuText">
+            <string>Project to Surface</string>
+        </property>
+    </action>
+    <action>
+        <property name="name">
+            <cstring>GDTVFilterAction</cstring>
+        </property>
+        <property name="text">
+            <string>GDTVFilter</string>
+        </property>
+        <property name="menuText">
+            <string>GDTVFilter</string>
+        </property>
+    </action>
+    <action>
+        <property name="name">
+            <cstring>MumfordShahLevelSetAction</cstring>
+        </property>
+        <property name="text">
+            <string>Mumford-Shah Level Set</string>
+        </property>
+        <property name="menuText">
+            <string>Mumford-Shah Level Set</string>
+        </property>
+    </action>
+    <action>
+        <property name="name">
+            <cstring>ColorGeometryByVolumeAction</cstring>
+        </property>
+        <property name="text">
+            <string>Color Geometry By Volume</string>
+        </property>
+        <property name="menuText">
+            <string>Color Geometry By Volume</string>
+        </property>
+    </action>
+    <action>
+        <property name="name">
+            <cstring>CullGeometryWithSubvolumeBoxAction</cstring>
+        </property>
+        <property name="text">
+            <string>Cull Geometry with Subvolume Box</string>
+        </property>
+        <property name="menuText">
+            <string>Cull Geometry with Subvolume Box</string>
+        </property>
+    </action>
+    <action>
+        <property name="name">
+            <cstring>toolsnew_itemAction</cstring>
+        </property>
+        <property name="text">
+            <string>new item</string>
+        </property>
+        <property name="menuText">
+            <string>new item</string>
+        </property>
+    </action>
+    <action>
+        <property name="name">
+            <cstring>SecondaryStructureAction</cstring>
+        </property>
+        <property name="text">
+            <string>Secondary Structure </string>
+        </property>
+    </action>
+</actions>
+<images>
+    <image name="image0">
+        <data format="PNG" length="1252">89504e470d0a1a0a0000000d4948445200000016000000160806000000c4b46c3b000004ab49444154789cb595db6b5c551487bf33e7cc3d93cb4c6e93a449da1adbc6582fd552516b4bd1b60f165a10da07b1282822fe03822008fe0ba2a02f22fa262285d607915063087869ad84b44ecc4c9a4ce63ec99973e69c3373f6f2614c6aa84f82eb61b32f6b7ffc366badbdb4b9b939b6ed9df72f4a61dde2bfd8d0489c0fdefd52db5e6b7373737cf4c5ebb2309be7f2cb6f118bc6098763384e13dff711917f058908bef2719a4d72abcbacdecd92bb7b87a3c7d3bc71e963cd005898cdf3ea2b6f33393145b95ca45aab60e890e889f2e0741f189b38ad320dab4af6b646d30ce2da1144149ee71108187427fa181a98606136cb1b97403b71765cce9ebaccbebd0728143628950ba4d3291e7e7c92e420f85a01db5dc36d57f1da9b98568d42de24b798a0ba3684df162cab81e3b8d876935aad44a4bb815158b78845e394cb454ae502e3e3839c3977842de70e95c6afd4ed45dc5685402088a177a187a07fb44924b54475ad97dfbe3f48bb1d40441025689a4161ddc200088763546b152626873975769ac2d675b295afd9b4fea0bcd68bdfd2d134d00336fdc311628916007de91a33276ef1cbb787f03c1004ad83ec8c8ed3a42f19e7d49969cad63cb7f39f52297b2cfd384d299bdc15b450c467efe10afb8e7482da3b64b2e7d0068bf3c3f08f3807007cdf273510a5d1fa83d5ca15cac516bf5ebb1ffad8331a7ba6144b0b832ccd4f22aa935d23073688c43de4ef6cd9512c228cef0f51b76f526d64c8fc3445a316db053d717a2f4f3cdbcb66f30e4af22cff324632bd4972ac4624ee323859a352ecdead18400f9b58ee5dec5a8cc29ffdbba0275f38ccf3a79f26a87701c2a3278b04c36d567e1bddf1e91fdbdc756707ac190d94f210d1769e0830f3c838c79f7b1241e1b6ebd8cd2a3f7f97a4ede9f8ed00221ddfe4c8d6bf837de5113412048df8cee1d47492f3178f118c36b1bd3cb697c7f14cea8518221a9e1dc6312300bbc4ec02371a2e413d413cb4078081119d739726f0b522757b899af53bb67b97604871fcbc4977aa4d28a288f53411017b2bbc0b6c6c4fbcd62691904f32952035ece2b93e1ba56512dd064daf4abd5623927031f4187d7d614e5cb02816361001043632a9fb158b08eb390bdbdb400b369879cac6b11557bea8f0677689eb57b7b8fa7982b58c41dbd3012114afd39b2e210a7c5fa3e5e9f7837de5b3bad445a5bec29693a1776c99675e5ac4b115d73eeb277333816beb5cff3ac5e24f8a869ba3e1aca214285f689a618a2b7d20c2f667d8a9bc6613d30c925d8c317a280f40300ac72edc20772b4ddb330804749412423d252ca786f241294129d00c8fe9676ff3c357e38852f7c0b9d565020183fcdc28adb6cdf8431d7828e2f2c0932b681a3b4a4441bbd5018aeaec1bbaa27bb0c1e423457efebe13367de6f181f72c53210a5a2d9f62b69bcd528c50b445b4cb45a403500ac4075f81f2a1ba9e606d69809e010bc7d1d9c874b19609532d79a4868c4e0779edcd17656860826824812841101018de6bd297b619d9dfa92a1128e6ba28af75515849a0dab0e76095d4d816999b31d6731ef59ac9271f7ed3e920478fa75998cdd2d33584a6193b5fdfd60d0d6ec4817b4573cf2c44e0d67c9060348ad7f2304d93a1918eaff67f35d3bf00a1326eeaa55a11010000000049454e44ae426082</data>
+    </image>
+</images>
+<connections>
+    <connection>
+        <sender>ConnectToFile</sender>
+        <signal>activated()</signal>
+        <receiver>NewVolumeMainWindowBase</receiver>
+        <slot>actionSlot()</slot>
+    </connection>
+    <connection>
+        <sender>BilateralFilterAction</sender>
+        <signal>activated()</signal>
+        <receiver>NewVolumeMainWindowBase</receiver>
+        <slot>bilateralFilterSlot()</slot>
+    </connection>
+    <connection>
+        <sender>CenterAction</sender>
+        <signal>activated()</signal>
+        <receiver>NewVolumeMainWindowBase</receiver>
+        <slot>centerSlot()</slot>
+    </connection>
+    <connection>
+        <sender>ClearGeometryAction</sender>
+        <signal>activated()</signal>
+        <receiver>NewVolumeMainWindowBase</receiver>
+        <slot>clearGeometrySlot()</slot>
+    </connection>
+    <connection>
+        <sender>ExitAction</sender>
+        <signal>activated()</signal>
+        <receiver>NewVolumeMainWindowBase</receiver>
+        <slot>close()</slot>
+    </connection>
+    <connection>
+        <sender>ConnectServerAction</sender>
+        <signal>activated()</signal>
+        <receiver>NewVolumeMainWindowBase</receiver>
+        <slot>connectServerSlot()</slot>
+    </connection>
+    <connection>
+        <sender>ConnectToDC</sender>
+        <signal>activated()</signal>
+        <receiver>NewVolumeMainWindowBase</receiver>
+        <slot>connectToDCSlot()</slot>
+    </connection>
+    <connection>
+        <sender>DisconnectServerAction</sender>
+        <signal>activated()</signal>
+        <receiver>NewVolumeMainWindowBase</receiver>
+        <slot>disconnectServerSlot()</slot>
+    </connection>
+    <connection>
+        <sender>explorerChangedAction</sender>
+        <signal>activated()</signal>
+        <receiver>NewVolumeMainWindowBase</receiver>
+        <slot>explorerChangedSlot()</slot>
+    </connection>
+    <connection>
+        <sender>ExportZoomedInIsosurfaceAction</sender>
+        <signal>activated()</signal>
+        <receiver>NewVolumeMainWindowBase</receiver>
+        <slot>exportZoomedInIsosurfaceSlot()</slot>
+    </connection>
+    <connection>
+        <sender>ExportZoomedOutIsosurfaceAction</sender>
+        <signal>activated()</signal>
+        <receiver>NewVolumeMainWindowBase</receiver>
+        <slot>exportZoomedOutIsosurfaceSlot()</slot>
+    </connection>
+    <connection>
+        <sender>LoadAnimationAction</sender>
+        <signal>activated()</signal>
+        <receiver>NewVolumeMainWindowBase</receiver>
+        <slot>loadAnimationSlot()</slot>
+    </connection>
+    <connection>
+        <sender>LoadGeometryAction</sender>
+        <signal>activated()</signal>
+        <receiver>NewVolumeMainWindowBase</receiver>
+        <slot>loadGeometrySlot()</slot>
+    </connection>
+    <connection>
+        <sender>OptionsAction</sender>
+        <signal>activated()</signal>
+        <receiver>NewVolumeMainWindowBase</receiver>
+        <slot>optionsSlot()</slot>
+    </connection>
+    <connection>
+        <sender>PlayAnimationAction</sender>
+        <signal>activated()</signal>
+        <receiver>NewVolumeMainWindowBase</receiver>
+        <slot>playAnimationSlot()</slot>
+    </connection>
+    <connection>
+        <sender>RenderAnimationAction</sender>
+        <signal>activated()</signal>
+        <receiver>NewVolumeMainWindowBase</receiver>
+        <slot>renderAnimationSlot()</slot>
+    </connection>
+    <connection>
+        <sender>RenderFrameAction</sender>
+        <signal>activated()</signal>
+        <receiver>NewVolumeMainWindowBase</receiver>
+        <slot>renderFrameSlot()</slot>
+    </connection>
+    <connection>
+        <sender>SaveFrameSequenceAction</sender>
+        <signal>activated()</signal>
+        <receiver>NewVolumeMainWindowBase</receiver>
+        <slot>renderSequenceSlot()</slot>
+    </connection>
+    <connection>
+        <sender>ClearTransformationAction</sender>
+        <signal>activated()</signal>
+        <receiver>NewVolumeMainWindowBase</receiver>
+        <slot>resetGeometryTransformationSlot()</slot>
+    </connection>
+    <connection>
+        <sender>SaveAnimationAction</sender>
+        <signal>activated()</signal>
+        <receiver>NewVolumeMainWindowBase</receiver>
+        <slot>saveAnimationSlot()</slot>
+    </connection>
+    <connection>
+        <sender>SaveImageAction</sender>
+        <signal>activated()</signal>
+        <receiver>NewVolumeMainWindowBase</receiver>
+        <slot>saveImageSlot()</slot>
+    </connection>
+    <connection>
+        <sender>SaveSubVolumeAction</sender>
+        <signal>activated()</signal>
+        <receiver>NewVolumeMainWindowBase</receiver>
+        <slot>saveSubvolumeSlot()</slot>
+    </connection>
+    <connection>
+        <sender>ServerSettingAction</sender>
+        <signal>activated()</signal>
+        <receiver>NewVolumeMainWindowBase</receiver>
+        <slot>serverSettingsSlot()</slot>
+    </connection>
+    <connection>
+        <sender>Slider1</sender>
+        <signal>valueChanged(int)</signal>
+        <receiver>NewVolumeMainWindowBase</receiver>
+        <slot>setExplorerQualitySlot(int)</slot>
+    </connection>
+    <connection>
+        <sender>Slider2</sender>
+        <signal>valueChanged(int)</signal>
+        <receiver>NewVolumeMainWindowBase</receiver>
+        <slot>setMainQualitySlot(int)</slot>
+    </connection>
+    <connection>
+        <sender>StartRecordingAnimationAction</sender>
+        <signal>activated()</signal>
+        <receiver>NewVolumeMainWindowBase</receiver>
+        <slot>startRecordingAnimationSlot()</slot>
+    </connection>
+    <connection>
+        <sender>StopAnimationAction</sender>
+        <signal>activated()</signal>
+        <receiver>NewVolumeMainWindowBase</receiver>
+        <slot>stopAnimationSlot()</slot>
+    </connection>
+    <connection>
+        <sender>StopRecordingAnimationAction</sender>
+        <signal>activated()</signal>
+        <receiver>NewVolumeMainWindowBase</receiver>
+        <slot>stopRecordingAnimationSlot()</slot>
+    </connection>
+    <connection>
+        <sender>DepthCueToggleAction</sender>
+        <signal>toggled(bool)</signal>
+        <receiver>NewVolumeMainWindowBase</receiver>
+        <slot>toggleDepthCueSlot(bool)</slot>
+    </connection>
+    <connection>
+        <sender>EditTransformationAction</sender>
+        <signal>activated()</signal>
+        <receiver>NewVolumeMainWindowBase</receiver>
+        <slot>toggleGeometryTransformationSlot()</slot>
+    </connection>
+    <connection>
+        <sender>ShowTerminalAction</sender>
+        <signal>toggled(bool)</signal>
+        <receiver>NewVolumeMainWindowBase</receiver>
+        <slot>toggleTerminalSlot(bool)</slot>
+    </connection>
+    <connection>
+        <sender>WireCubeToggleAction</sender>
+        <signal>toggled(bool)</signal>
+        <receiver>NewVolumeMainWindowBase</receiver>
+        <slot>toggleWireCubeSlot(bool)</slot>
+    </connection>
+    <connection>
+        <sender>WireframeRenderToggleAction</sender>
+        <signal>toggled(bool)</signal>
+        <receiver>NewVolumeMainWindowBase</receiver>
+        <slot>toggleWireframeRenderingSlot(bool)</slot>
+    </connection>
+    <connection>
+        <sender>RenderSurfaceWithWireframeAction</sender>
+        <signal>toggled(bool)</signal>
+        <receiver>NewVolumeMainWindowBase</receiver>
+        <slot>toggleRenderSurfaceWithWireframeSlot(bool)</slot>
+    </connection>
+    <connection>
+        <sender>m_TimeStep</sender>
+        <signal>valueChanged(int)</signal>
+        <receiver>NewVolumeMainWindowBase</receiver>
+        <slot>variableOrTimeChangeSlot()</slot>
+    </connection>
+    <connection>
+        <sender>m_VariableBox</sender>
+        <signal>activated(int)</signal>
+        <receiver>NewVolumeMainWindowBase</receiver>
+        <slot>variableOrTimeChangeSlot()</slot>
+    </connection>
+    <connection>
+        <sender>m_RedBox</sender>
+        <signal>activated(int)</signal>
+        <receiver>NewVolumeMainWindowBase</receiver>
+        <slot>variableOrTimeChangeSlot()</slot>
+    </connection>
+    <connection>
+        <sender>m_GreenBox</sender>
+        <signal>activated(int)</signal>
+        <receiver>NewVolumeMainWindowBase</receiver>
+        <slot>variableOrTimeChangeSlot()</slot>
+    </connection>
+    <connection>
+        <sender>m_BlueBox</sender>
+        <signal>activated(int)</signal>
+        <receiver>NewVolumeMainWindowBase</receiver>
+        <slot>variableOrTimeChangeSlot()</slot>
+    </connection>
+    <connection>
+        <sender>m_AlphaBox</sender>
+        <signal>activated(int)</signal>
+        <receiver>NewVolumeMainWindowBase</receiver>
+        <slot>variableOrTimeChangeSlot()</slot>
+    </connection>
+    <connection>
+        <sender>m_RGBATimeStep</sender>
+        <signal>valueChanged(int)</signal>
+        <receiver>NewVolumeMainWindowBase</receiver>
+        <slot>variableOrTimeChangeSlot()</slot>
+    </connection>
+    <connection>
+        <sender>SegmentVirusMapAction</sender>
+        <signal>activated()</signal>
+        <receiver>NewVolumeMainWindowBase</receiver>
+        <slot>virusSegmentationSlot()</slot>
+    </connection>
+    <connection>
+        <sender>WhatsThisAction</sender>
+        <signal>activated()</signal>
+        <receiver>NewVolumeMainWindowBase</receiver>
+        <slot>whatsThis()</slot>
+    </connection>
+    <connection>
+        <sender>m_MainNearPlane</sender>
+        <signal>valueChanged(int)</signal>
+        <receiver>NewVolumeMainWindowBase</receiver>
+        <slot>zoomedInClipSlot(int)</slot>
+    </connection>
+    <connection>
+        <sender>m_ExplorerNearPlane</sender>
+        <signal>valueChanged(int)</signal>
+        <receiver>NewVolumeMainWindowBase</receiver>
+        <slot>zoomedOutClipSlot(int)</slot>
+    </connection>
+    <connection>
+        <sender>ContrastEnhancementAction</sender>
+        <signal>activated()</signal>
+        <receiver>NewVolumeMainWindowBase</receiver>
+        <slot>contrastEnhancementSlot()</slot>
+    </connection>
+    <connection>
+        <sender>PEDetectionAction</sender>
+        <signal>activated()</signal>
+        <receiver>NewVolumeMainWindowBase</receiver>
+        <slot>PEDetectionSlot()</slot>
+    </connection>
+    <connection>
+        <sender>PocketTunnelAction</sender>
+        <signal>activated()</signal>
+        <receiver>NewVolumeMainWindowBase</receiver>
+        <slot>pocketTunnelSlot()</slot>
+    </connection>
+    <connection>
+        <sender>SaveGeometryAction</sender>
+        <signal>activated()</signal>
+        <receiver>NewVolumeMainWindowBase</receiver>
+        <slot>saveGeometrySlot()</slot>
+    </connection>
+    <connection>
+        <sender>SmoothGeometryAction</sender>
+        <signal>activated()</signal>
+        <receiver>NewVolumeMainWindowBase</receiver>
+        <slot>smoothGeometrySlot()</slot>
+    </connection>
+    <connection>
+        <sender>AnisotropicDiffusionAction</sender>
+        <signal>activated()</signal>
+        <receiver>NewVolumeMainWindowBase</receiver>
+        <slot>anisotropicDiffusionSlot()</slot>
+    </connection>
+    <connection>
+        <sender>SliceRenderingAction</sender>
+        <signal>activated()</signal>
+        <receiver>NewVolumeMainWindowBase</receiver>
+        <slot>sliceRenderingSlot()</slot>
+    </connection>
+    <connection>
+        <sender>TightCoconeAction</sender>
+        <signal>activated()</signal>
+        <receiver>NewVolumeMainWindowBase</receiver>
+        <slot>tightCoconeSlot()</slot>
+    </connection>
+    <connection>
+        <sender>CurationAction</sender>
+        <signal>activated()</signal>
+        <receiver>NewVolumeMainWindowBase</receiver>
+        <slot>curationSlot()</slot>
+    </connection>
+    <connection>
+        <sender>SkeletonizationAction</sender>
+        <signal>activated()</signal>
+        <receiver>NewVolumeMainWindowBase</receiver>
+        <slot>skeletonizationSlot()</slot>
+    </connection>
+    <connection>
+        <sender>ClipGeometryToVolumeBoxAction</sender>
+        <signal>toggled(bool)</signal>
+        <receiver>NewVolumeMainWindowBase</receiver>
+        <slot>clipGeometryToVolumeBoxSlot(bool)</slot>
+    </connection>
+    <connection>
+        <sender>BoundaryPointCloudAction</sender>
+        <signal>activated()</signal>
+        <receiver>NewVolumeMainWindowBase</receiver>
+        <slot>boundaryPointCloudSlot()</slot>
+    </connection>
+    <connection>
+        <sender>SaveSkeletonAction</sender>
+        <signal>activated()</signal>
+        <receiver>NewVolumeMainWindowBase</receiver>
+        <slot>saveSkeletonSlot()</slot>
+    </connection>
+    <connection>
+        <sender>ClearSkeletonAction</sender>
+        <signal>activated()</signal>
+        <receiver>NewVolumeMainWindowBase</receiver>
+        <slot>clearSkeletonSlot()</slot>
+    </connection>
+    <connection>
+        <sender>SignedDistanceFunctionAction</sender>
+        <signal>activated()</signal>
+        <receiver>NewVolumeMainWindowBase</receiver>
+        <slot>signedDistanceFunctionSlot()</slot>
+    </connection>
+    <connection>
+        <sender>MergeGeometryObjectsAction</sender>
+        <signal>activated()</signal>
+        <receiver>NewVolumeMainWindowBase</receiver>
+        <slot>mergeGeometrySlot()</slot>
+    </connection>
+    <connection>
+        <sender>ConvertCurrentIsosurfaceToGeometryAction</sender>
+        <signal>activated()</signal>
+        <receiver>NewVolumeMainWindowBase</receiver>
+        <slot>convertIsosurfaceToGeometrySlot()</slot>
+    </connection>
+    <connection>
+        <sender>HighLevelSetAction</sender>
+        <signal>activated()</signal>
+        <receiver>NewVolumeMainWindowBase</receiver>
+        <slot>highLevelSetSlot()</slot>
+    </connection>
+    <connection>
+        <sender>HighLevelSetReconAction</sender>
+        <signal>activated()</signal>
+        <receiver>NewVolumeMainWindowBase</receiver>
+        <slot>highLevelSetReconSlot()</slot>
+    </connection>
+    <connection>
+        <sender>LBIEMeshingAction</sender>
+        <signal>activated()</signal>
+        <receiver>NewVolumeMainWindowBase</receiver>
+        <slot>LBIEMeshingSlot()</slot>
+    </connection>
+    <connection>
+        <sender>LBIEQualityImprovementAction</sender>
+        <signal>activated()</signal>
+        <receiver>NewVolumeMainWindowBase</receiver>
+        <slot>LBIEQualityImprovementSlot()</slot>
+    </connection>
+    <connection>
+        <sender>OpenImageFileAction</sender>
+        <signal>activated()</signal>
+        <receiver>NewVolumeMainWindowBase</receiver>
+        <slot>openImageFileSlot()</slot>
+    </connection>
+    <connection>
+        <sender>ProjectToSurfaceAction</sender>
+        <signal>activated()</signal>
+        <receiver>NewVolumeMainWindowBase</receiver>
+        <slot>projectGeometrySlot()</slot>
+    </connection>
+    <connection>
+        <sender>GDTVFilterAction</sender>
+        <signal>activated()</signal>
+        <receiver>NewVolumeMainWindowBase</receiver>
+        <slot>gdtvFilterSlot()</slot>
+    </connection>
+    <connection>
+        <sender>MumfordShahLevelSetAction</sender>
+        <signal>activated()</signal>
+        <receiver>NewVolumeMainWindowBase</receiver>
+        <slot>MSLevelSetSlot()</slot>
+    </connection>
+    <connection>
+        <sender>ColorGeometryByVolumeAction</sender>
+        <signal>activated()</signal>
+        <receiver>NewVolumeMainWindowBase</receiver>
+        <slot>colorGeometryByVolumeSlot()</slot>
+    </connection>
+    <connection>
+        <sender>CullGeometryWithSubvolumeBoxAction</sender>
+        <signal>activated()</signal>
+        <receiver>NewVolumeMainWindowBase</receiver>
+        <slot>cullGeometryWithSubvolumeBoxSlot()</slot>
+    </connection>
+    <connection>
+        <sender>SecondaryStructureAction</sender>
+        <signal>activated()</signal>
+        <receiver>NewVolumeMainWindowBase</receiver>
+        <slot>secondaryStructureElucidationSlot()</slot>
+    </connection>
+</connections>
+<tabstops>
+    <tabstop>Slider2</tabstop>
+    <tabstop>Slider1</tabstop>
+</tabstops>
+<includes>
+    <include location="local" impldecl="in implementation">newvolumemainwindowbase.ui.h</include>
+</includes>
+<slots>
+    <slot>actionSlot()</slot>
+    <slot>functionChangedSlot()</slot>
+    <slot>setExplorerQualitySlot( int )</slot>
+    <slot>mouseReleasedMain()</slot>
+    <slot>mouseReleasedPreview()</slot>
+    <slot>explorerChangedSlot()</slot>
+    <slot>connectToDCSlot()</slot>
+    <slot>setMainQualitySlot( int )</slot>
+    <slot>optionsSlot()</slot>
+    <slot>explorerMoveSlot()</slot>
+    <slot>explorerReleaseSlot()</slot>
+    <slot>connectServerSlot()</slot>
+    <slot>serverSettingsSlot()</slot>
+    <slot>disconnectServerSlot()</slot>
+    <slot>renderAnimationSlot()</slot>
+    <slot>renderFrameSlot()</slot>
+    <slot>isocontourNodeColorChangedSlot( int, double, double, double )</slot>
+    <slot>isocontourNodeChangedSlot( int, double )</slot>
+    <slot>isocontourNodeAddedSlot( int, double, double, double, double )</slot>
+    <slot>isocontourNodeDeletedSlot( int )</slot>
+    <slot>isocontourNodesAllChangedSlot()</slot>
+    <slot>bilateralFilterSlot()</slot>
+    <slot>saveSubvolumeSlot()</slot>
+    <slot>zoomedOutClipSlot( int )</slot>
+    <slot>zoomedInClipSlot( int )</slot>
+    <slot>centerSlot()</slot>
+    <slot>loadGeometrySlot()</slot>
+    <slot>clearGeometrySlot()</slot>
+    <slot>saveGeometrySlot()</slot>
+    <slot>exportZoomedInIsosurfaceSlot()</slot>
+    <slot>exportZoomedOutIsosurfaceSlot()</slot>
+    <slot>variableOrTimeChangeSlot()</slot>
+    <slot>contrastEnhancementSlot()</slot>
+    <slot>PEDetectionSlot()</slot>
+    <slot>pocketTunnelSlot()</slot>
+    <slot>smoothGeometrySlot()</slot>
+    <slot>anisotropicDiffusionSlot()</slot>
+    <slot>sliceRenderingSlot()</slot>
+    <slot>acquireConTreeSlot()</slot>
+    <slot>acquireConSpecSlot()</slot>
+    <slot>toggleWireframeRenderingSlot( bool )</slot>
+    <slot>toggleRenderSurfaceWithWireframeSlot( bool )</slot>
+    <slot>toggleWireCubeSlot( bool )</slot>
+    <slot>toggleDepthCueSlot( bool )</slot>
+    <slot>saveImageSlot()</slot>
+    <slot>contourTreeNodeAddedSlot( int, int, double )</slot>
+    <slot>contourTreeNodeDeletedSlot( int )</slot>
+    <slot>contourTreeNodeChangedSlot( int, double )</slot>
+    <slot>contourTreeNodeExploringSlot( int, double )</slot>
+    <slot>startRecordingAnimationSlot()</slot>
+    <slot>stopRecordingAnimationSlot()</slot>
+    <slot>playAnimationSlot()</slot>
+    <slot>saveAnimationSlot()</slot>
+    <slot>loadAnimationSlot()</slot>
+    <slot>stopAnimationSlot()</slot>
+    <slot>renderSequenceSlot()</slot>
+    <slot>virusSegmentationSlot()</slot>
+    <slot>toggleGeometryTransformationSlot()</slot>
+    <slot>resetGeometryTransformationSlot()</slot>
+    <slot>toggleTerminalSlot( bool )</slot>
+    <slot>boundaryPointCloudSlot()</slot>
+    <slot>tightCoconeSlot()</slot>
+    <slot>curationSlot()</slot>
+    <slot>skeletonizationSlot()</slot>
+    <slot>clipGeometryToVolumeBoxSlot( bool )</slot>
+    <slot>saveSkeletonSlot()</slot>
+    <slot>clearSkeletonSlot()</slot>
+    <slot>signedDistanceFunctionSlot()</slot>
+    <slot>mergeGeometrySlot()</slot>
+    <slot>convertIsosurfaceToGeometrySlot()</slot>
+    <slot>highLevelSetReconSlot()</slot>
+    <slot>highLevelSetSlot()</slot>
+    <slot>LBIEMeshingSlot()</slot>
+    <slot>LBIEQualityImprovementSlot()</slot>
+    <slot>openImageFileSlot()</slot>
+    <slot>projectGeometrySlot()</slot>
+    <slot>gdtvFilterSlot()</slot>
+    <slot>MSLevelSetSlot()</slot>
+    <slot>isocontourAskIsovalueSlot( int )</slot>
+    <slot>colorGeometryByVolumeSlot()</slot>
+    <slot>cullGeometryWithSubvolumeBoxSlot()</slot>
+    <slot>secondaryStructureElucidationSlot()</slot>
+</slots>
+<layoutdefaults spacing="6" margin="11"/>
+<includehints>
+    <includehint>VolumeWidget/SimpleOpenGLWidget.h</includehint>
+    <includehint>VolumeWidget/SimpleOpenGLWidget.h</includehint>
+</includehints>
+</UI>

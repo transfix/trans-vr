@@ -1,0 +1,532 @@
+<!DOCTYPE UI><UI version="3.3" stdsetdef="1">
+<class>RawIVEditorDialogBase</class>
+<widget class="QDialog">
+    <property name="name">
+        <cstring>RawIVEditorDialogBase</cstring>
+    </property>
+    <property name="geometry">
+        <rect>
+            <x>0</x>
+            <y>0</y>
+            <width>438</width>
+            <height>522</height>
+        </rect>
+    </property>
+    <property name="caption">
+        <string>RawIVEditor</string>
+    </property>
+    <property name="sizeGripEnabled">
+        <bool>true</bool>
+    </property>
+    <grid>
+        <property name="name">
+            <cstring>unnamed</cstring>
+        </property>
+        <property name="margin">
+            <number>11</number>
+        </property>
+        <property name="spacing">
+            <number>6</number>
+        </property>
+        <widget class="QLayoutWidget" row="0" column="0">
+            <property name="name">
+                <cstring>Layout2</cstring>
+            </property>
+            <hbox>
+                <property name="name">
+                    <cstring>unnamed</cstring>
+                </property>
+                <property name="margin">
+                    <number>0</number>
+                </property>
+                <property name="spacing">
+                    <number>6</number>
+                </property>
+                <widget class="QGroupBox">
+                    <property name="name">
+                        <cstring>Current</cstring>
+                    </property>
+                    <property name="title">
+                        <string>Header</string>
+                    </property>
+                    <grid>
+                        <property name="name">
+                            <cstring>unnamed</cstring>
+                        </property>
+                        <property name="margin">
+                            <number>11</number>
+                        </property>
+                        <property name="spacing">
+                            <number>6</number>
+                        </property>
+                        <widget class="QLineEdit" row="0" column="1">
+                            <property name="name">
+                                <cstring>m_MinX</cstring>
+                            </property>
+                            <property name="toolTip" stdset="0">
+                                <string>Minimum X coordinate</string>
+                            </property>
+                            <property name="whatsThis" stdset="0">
+                                <string>Minimum X coordinate</string>
+                            </property>
+                        </widget>
+                        <widget class="QLineEdit" row="2" column="1">
+                            <property name="name">
+                                <cstring>m_MinZ</cstring>
+                            </property>
+                            <property name="toolTip" stdset="0">
+                                <string>Minimum Z coordinate</string>
+                            </property>
+                            <property name="whatsThis" stdset="0">
+                                <string>Minimum Z coordinate</string>
+                            </property>
+                        </widget>
+                        <widget class="QLineEdit" row="3" column="1">
+                            <property name="name">
+                                <cstring>m_MaxX</cstring>
+                            </property>
+                            <property name="toolTip" stdset="0">
+                                <string>Maximum X coordinate</string>
+                            </property>
+                            <property name="whatsThis" stdset="0">
+                                <string>Maximum X coordinate</string>
+                            </property>
+                        </widget>
+                        <widget class="QLineEdit" row="4" column="1">
+                            <property name="name">
+                                <cstring>m_MaxY</cstring>
+                            </property>
+                            <property name="toolTip" stdset="0">
+                                <string>Maximum Y coordinate</string>
+                            </property>
+                            <property name="whatsThis" stdset="0">
+                                <string>Maximum Y coordinate</string>
+                            </property>
+                        </widget>
+                        <widget class="QLabel" row="0" column="0">
+                            <property name="name">
+                                <cstring>TextLabel1</cstring>
+                            </property>
+                            <property name="text">
+                                <string>MinX</string>
+                            </property>
+                            <property name="toolTip" stdset="0">
+                                <string>Minimum X coordinate</string>
+                            </property>
+                            <property name="whatsThis" stdset="0">
+                                <string>Minimum X coordinate</string>
+                            </property>
+                        </widget>
+                        <widget class="QLabel" row="3" column="0">
+                            <property name="name">
+                                <cstring>TextLabel1_4</cstring>
+                            </property>
+                            <property name="text">
+                                <string>MaxX</string>
+                            </property>
+                            <property name="toolTip" stdset="0">
+                                <string>Maximum X coordinate</string>
+                            </property>
+                            <property name="whatsThis" stdset="0">
+                                <string>Maximum X coordinate</string>
+                            </property>
+                        </widget>
+                        <widget class="QLabel" row="2" column="0">
+                            <property name="name">
+                                <cstring>TextLabel1_3</cstring>
+                            </property>
+                            <property name="text">
+                                <string>MinZ</string>
+                            </property>
+                            <property name="toolTip" stdset="0">
+                                <string>Minimum Z coordinate</string>
+                            </property>
+                            <property name="whatsThis" stdset="0">
+                                <string>Minimum Z coordinate</string>
+                            </property>
+                        </widget>
+                        <widget class="QLabel" row="1" column="0">
+                            <property name="name">
+                                <cstring>TextLabel1_2</cstring>
+                            </property>
+                            <property name="text">
+                                <string>MinY</string>
+                            </property>
+                            <property name="toolTip" stdset="0">
+                                <string>Minimum Y coordinate</string>
+                            </property>
+                            <property name="whatsThis" stdset="0">
+                                <string>Minimum Y coordinate</string>
+                            </property>
+                        </widget>
+                        <widget class="QLineEdit" row="1" column="1">
+                            <property name="name">
+                                <cstring>m_MinY</cstring>
+                            </property>
+                            <property name="toolTip" stdset="0">
+                                <string>Minimum Y coordinate</string>
+                            </property>
+                            <property name="whatsThis" stdset="0">
+                                <string>Minimum Y coordinate</string>
+                            </property>
+                        </widget>
+                        <widget class="QLabel" row="4" column="0">
+                            <property name="name">
+                                <cstring>TextLabel1_4_2</cstring>
+                            </property>
+                            <property name="text">
+                                <string>MaxY</string>
+                            </property>
+                            <property name="toolTip" stdset="0">
+                                <string>Maximum Y coordinate</string>
+                            </property>
+                            <property name="whatsThis" stdset="0">
+                                <string>Maximum Y coordinate</string>
+                            </property>
+                        </widget>
+                        <widget class="QLabel" row="5" column="0">
+                            <property name="name">
+                                <cstring>TextLabel1_4_3</cstring>
+                            </property>
+                            <property name="text">
+                                <string>MaxZ</string>
+                            </property>
+                            <property name="toolTip" stdset="0">
+                                <string>Maximum Z coordinate</string>
+                            </property>
+                            <property name="whatsThis" stdset="0">
+                                <string>Maximum Z coordinate</string>
+                            </property>
+                        </widget>
+                        <widget class="QLineEdit" row="13" column="1">
+                            <property name="name">
+                                <cstring>m_CellWidthY</cstring>
+                            </property>
+                            <property name="toolTip" stdset="0">
+                                <string>Width of a cell in the Y dimension</string>
+                            </property>
+                            <property name="whatsThis" stdset="0">
+                                <string>Width of a cell in the Y dimension</string>
+                            </property>
+                        </widget>
+                        <widget class="QLineEdit" row="14" column="1">
+                            <property name="name">
+                                <cstring>m_CellWidthZ</cstring>
+                            </property>
+                            <property name="toolTip" stdset="0">
+                                <string>Width of a cell in the Z dimension</string>
+                            </property>
+                            <property name="whatsThis" stdset="0">
+                                <string>Width of a cell in the Z dimension</string>
+                            </property>
+                        </widget>
+                        <widget class="QLineEdit" row="12" column="1">
+                            <property name="name">
+                                <cstring>m_CellWidthX</cstring>
+                            </property>
+                            <property name="toolTip" stdset="0">
+                                <string>Width of a cell in the X dimension</string>
+                            </property>
+                            <property name="whatsThis" stdset="0">
+                                <string>Width of a cell in the X dimension</string>
+                            </property>
+                        </widget>
+                        <widget class="QLineEdit" row="10" column="1">
+                            <property name="name">
+                                <cstring>m_OriginY</cstring>
+                            </property>
+                            <property name="toolTip" stdset="0">
+                                <string>Not sure what this is... 0 is a good default</string>
+                            </property>
+                            <property name="whatsThis" stdset="0">
+                                <string>Not sure what this is... 0 is a good default</string>
+                            </property>
+                        </widget>
+                        <widget class="QLineEdit" row="11" column="1">
+                            <property name="name">
+                                <cstring>m_OriginZ</cstring>
+                            </property>
+                            <property name="toolTip" stdset="0">
+                                <string>Not sure what this is... 0 is a good default</string>
+                            </property>
+                            <property name="whatsThis" stdset="0">
+                                <string>Not sure what this is... 0 is a good default</string>
+                            </property>
+                        </widget>
+                        <widget class="QLineEdit" row="9" column="1">
+                            <property name="name">
+                                <cstring>m_OriginX</cstring>
+                            </property>
+                            <property name="toolTip" stdset="0">
+                                <string>Not sure what this is... 0 is a good default</string>
+                            </property>
+                            <property name="whatsThis" stdset="0">
+                                <string>Not sure what this is... 0 is a good default</string>
+                            </property>
+                        </widget>
+                        <widget class="QLineEdit" row="8" column="1">
+                            <property name="name">
+                                <cstring>m_DimZ</cstring>
+                            </property>
+                            <property name="toolTip" stdset="0">
+                                <string>Number of vertices in the Z dimension</string>
+                            </property>
+                            <property name="whatsThis" stdset="0">
+                                <string>Number of vertices in the Z dimension</string>
+                            </property>
+                        </widget>
+                        <widget class="QLineEdit" row="7" column="1">
+                            <property name="name">
+                                <cstring>m_DimY</cstring>
+                            </property>
+                            <property name="toolTip" stdset="0">
+                                <string>Number of vertices in the Y dimension</string>
+                            </property>
+                            <property name="whatsThis" stdset="0">
+                                <string>Number of vertices in the Y dimension</string>
+                            </property>
+                        </widget>
+                        <widget class="QLineEdit" row="5" column="1">
+                            <property name="name">
+                                <cstring>m_MaxZ</cstring>
+                            </property>
+                            <property name="toolTip" stdset="0">
+                                <string>Maximum Z coordinate</string>
+                            </property>
+                            <property name="whatsThis" stdset="0">
+                                <string>Maximum Z coordinate</string>
+                            </property>
+                        </widget>
+                        <widget class="QLabel" row="9" column="0">
+                            <property name="name">
+                                <cstring>OriginX</cstring>
+                            </property>
+                            <property name="text">
+                                <string>OriginX</string>
+                            </property>
+                            <property name="toolTip" stdset="0">
+                                <string>Not sure what this is... 0 is a good default</string>
+                            </property>
+                            <property name="whatsThis" stdset="0">
+                                <string>Not sure what this is... 0 is a good default</string>
+                            </property>
+                        </widget>
+                        <widget class="QLabel" row="11" column="0">
+                            <property name="name">
+                                <cstring>OriginZ</cstring>
+                            </property>
+                            <property name="text">
+                                <string>OriginZ</string>
+                            </property>
+                            <property name="toolTip" stdset="0">
+                                <string>Not sure what this is... 0 is a good default</string>
+                            </property>
+                            <property name="whatsThis" stdset="0">
+                                <string>Not sure what this is... 0 is a good default</string>
+                            </property>
+                        </widget>
+                        <widget class="QLabel" row="7" column="0">
+                            <property name="name">
+                                <cstring>TextLabel1_4_5_2</cstring>
+                            </property>
+                            <property name="text">
+                                <string>DimY</string>
+                            </property>
+                            <property name="toolTip" stdset="0">
+                                <string>Number of vertices in the Y dimension</string>
+                            </property>
+                            <property name="whatsThis" stdset="0">
+                                <string>Number of vertices in the Y dimension</string>
+                            </property>
+                        </widget>
+                        <widget class="QLabel" row="10" column="0">
+                            <property name="name">
+                                <cstring>OriginY</cstring>
+                            </property>
+                            <property name="text">
+                                <string>OriginY</string>
+                            </property>
+                            <property name="toolTip" stdset="0">
+                                <string>Not sure what this is... 0 is a good default</string>
+                            </property>
+                            <property name="whatsThis" stdset="0">
+                                <string>Not sure what this is... 0 is a good default</string>
+                            </property>
+                        </widget>
+                        <widget class="QLabel" row="8" column="0">
+                            <property name="name">
+                                <cstring>TextLabel1_4_5_3</cstring>
+                            </property>
+                            <property name="text">
+                                <string>DimZ</string>
+                            </property>
+                            <property name="toolTip" stdset="0">
+                                <string>Number of vertices in the Z dimension</string>
+                            </property>
+                            <property name="whatsThis" stdset="0">
+                                <string>Number of vertices in the Z dimension</string>
+                            </property>
+                        </widget>
+                        <widget class="QLineEdit" row="6" column="1">
+                            <property name="name">
+                                <cstring>m_DimX</cstring>
+                            </property>
+                            <property name="toolTip" stdset="0">
+                                <string>Number of vertices in the X dimension</string>
+                            </property>
+                            <property name="whatsThis" stdset="0">
+                                <string>Number of vertices in the X dimension</string>
+                            </property>
+                        </widget>
+                        <widget class="QLabel" row="6" column="0">
+                            <property name="name">
+                                <cstring>TextLabel1_4_5</cstring>
+                            </property>
+                            <property name="text">
+                                <string>DimX</string>
+                            </property>
+                            <property name="toolTip" stdset="0">
+                                <string>Number of vertices in the X dimension</string>
+                            </property>
+                            <property name="whatsThis" stdset="0">
+                                <string>Number of vertices in the X dimension</string>
+                            </property>
+                        </widget>
+                        <widget class="QLabel" row="13" column="0">
+                            <property name="name">
+                                <cstring>TextLabel1_4_5_4</cstring>
+                            </property>
+                            <property name="text">
+                                <string>CellWidthY</string>
+                            </property>
+                            <property name="toolTip" stdset="0">
+                                <string>Width of a cell in the Y dimension</string>
+                            </property>
+                            <property name="whatsThis" stdset="0">
+                                <string>Width of a cell in the Y dimension</string>
+                            </property>
+                        </widget>
+                        <widget class="QLabel" row="12" column="0">
+                            <property name="name">
+                                <cstring>TextLabel1_4_5_4_4</cstring>
+                            </property>
+                            <property name="text">
+                                <string>CellWidthX</string>
+                            </property>
+                            <property name="toolTip" stdset="0">
+                                <string>Width of a cell in the X dimension</string>
+                            </property>
+                            <property name="whatsThis" stdset="0">
+                                <string>Width of a cell in the X dimension</string>
+                            </property>
+                        </widget>
+                        <widget class="QLabel" row="14" column="0">
+                            <property name="name">
+                                <cstring>TextLabel1_4_5_4_6</cstring>
+                            </property>
+                            <property name="text">
+                                <string>CellWidthZ</string>
+                            </property>
+                            <property name="toolTip" stdset="0">
+                                <string>Width of a cell in the Z dimension</string>
+                            </property>
+                            <property name="whatsThis" stdset="0">
+                                <string>Width of a cell in the Z dimension</string>
+                            </property>
+                        </widget>
+                    </grid>
+                </widget>
+            </hbox>
+        </widget>
+        <widget class="QLayoutWidget" row="1" column="0">
+            <property name="name">
+                <cstring>layout3</cstring>
+            </property>
+            <hbox>
+                <property name="name">
+                    <cstring>unnamed</cstring>
+                </property>
+                <widget class="QCheckBox">
+                    <property name="name">
+                        <cstring>userDefinedMinMax</cstring>
+                    </property>
+                    <property name="text">
+                        <string>User Defined Min Max</string>
+                    </property>
+                </widget>
+                <widget class="QPushButton">
+                    <property name="name">
+                        <cstring>buttonOk</cstring>
+                    </property>
+                    <property name="caption">
+                        <string></string>
+                    </property>
+                    <property name="text">
+                        <string>&amp;OK</string>
+                    </property>
+                    <property name="autoDefault">
+                        <bool>true</bool>
+                    </property>
+                    <property name="default">
+                        <bool>true</bool>
+                    </property>
+                </widget>
+                <widget class="QPushButton">
+                    <property name="name">
+                        <cstring>buttonCancel</cstring>
+                    </property>
+                    <property name="text">
+                        <string>&amp;Cancel</string>
+                    </property>
+                    <property name="autoDefault">
+                        <bool>true</bool>
+                    </property>
+                </widget>
+            </hbox>
+        </widget>
+    </grid>
+</widget>
+<connections>
+    <connection>
+        <sender>buttonOk</sender>
+        <signal>clicked()</signal>
+        <receiver>RawIVEditorDialogBase</receiver>
+        <slot>accept()</slot>
+    </connection>
+    <connection>
+        <sender>buttonCancel</sender>
+        <signal>clicked()</signal>
+        <receiver>RawIVEditorDialogBase</receiver>
+        <slot>reject()</slot>
+    </connection>
+    <connection>
+        <sender>userDefinedMinMax</sender>
+        <signal>toggled(bool)</signal>
+        <receiver>RawIVEditorDialogBase</receiver>
+        <slot>userDefinedMinMaxChanged(bool)</slot>
+    </connection>
+</connections>
+<tabstops>
+    <tabstop>m_MinX</tabstop>
+    <tabstop>m_MinY</tabstop>
+    <tabstop>m_MinZ</tabstop>
+    <tabstop>m_MaxX</tabstop>
+    <tabstop>m_MaxY</tabstop>
+    <tabstop>m_MaxZ</tabstop>
+    <tabstop>m_DimX</tabstop>
+    <tabstop>m_DimY</tabstop>
+    <tabstop>m_DimZ</tabstop>
+    <tabstop>m_OriginX</tabstop>
+    <tabstop>m_OriginY</tabstop>
+    <tabstop>m_OriginZ</tabstop>
+    <tabstop>m_CellWidthX</tabstop>
+    <tabstop>m_CellWidthY</tabstop>
+    <tabstop>m_CellWidthZ</tabstop>
+    <tabstop>buttonOk</tabstop>
+    <tabstop>buttonCancel</tabstop>
+</tabstops>
+<slots>
+    <slot>userDefinedMinMaxChanged(bool)</slot>
+</slots>
+<layoutdefaults spacing="6" margin="11"/>
+</UI>

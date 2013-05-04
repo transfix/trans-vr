@@ -1,0 +1,372 @@
+#pragma prefix "utexas.edu"
+
+///
+module CCV {
+	/**
+	* Data information: dimension of the dataset
+	*/	
+	struct DataInfo {
+		long dim[3];
+		float ext[3];
+		};
+
+	/**
+	* The eye position, viewing direction and up vector
+	*/
+	struct ViewParam {
+		long  perspective;      // Perspective 1 or Orthogonal 0
+		float fov;              // Field of View
+		float pos[3];           // Camera position 		
+		float vec[3];           // View plane normal
+		float up[3];            // View up vector 
+	};
+
+	/**
+     * View parameters for one frame in the movie
+     */
+	struct ViewforMovie {
+	  long time;
+	  ViewParam view_param;
+	};
+
+	/**
+     * Parameters to make a movie
+     */
+	struct MovieParam {
+	  long nview;                       // Number of principal views in the movie
+	  sequence<ViewforMovie> views;     // Array of all view params
+	  sequence<long> nframes;           // Num of interpolations between two key frames
+	};
+
+	/**
+     * Mpeg Movie data
+	 */
+	typedef sequence<char>  MpegData; 
+
+	/**
+	* The volume rendered image from server
+	*/ 
+	struct Image {
+		long dx;
+		long dy;
+		long res;
+		sequence<char> img; 
+	};
+	
+	/**
+	* The list of available files
+	*/
+	typedef sequence<string> FileList;
+
+	typedef long RampInfo[3];
+
+	/**
+	* The dimension of viewing volume
+	*/
+	typedef long ViewField[3];
+
+	/**
+	* Material information
+	*/
+	struct MatInfo {
+		float opacity;              /* Opacity value */
+ 
+		long start;                /* Each denotes a point where the direction  */
+		long up;                   /* of the material graph changes             */
+		long down;
+		long end;
+ 
+		long kar, kag, kab;        /* Ambient Color. (r,g,b) */
+		long kdr, kdg, kdb;        /* Diffuse Color. (r,g,b) */
+		long ksr, ksg, ksb;        /* Specular Color. (r,g,b) */
+		long kn;                   /* Exponent */
+	};
+
+	/**
+	* Lighting information
+	*/
+	struct LightInfo {
+		long red, green, blue;		/* Light color (r, g, b) */
+		float vx, vy, vz;			/* Light direction (vx, vy, vz) */
+	};
+	
+
+	/**
+	 * Isocontour information
+	 * @param cflag: 0 -- use the RGB color to color surface;
+	 *               i > 0 -- use the ith function to color surface
+	 */
+	struct ContourInfo {
+		float val;                   /* isovalue */
+		long ar, ag, ab;             /* ambient color */
+		long dr, dg, db;             /* diffuse color */
+		long sr, sg, sb;             /* specular color */
+		float opacity;               /* opacity */
+		long cflag;                  
+	};
+
+	/**
+     * Cutting plane
+	 */
+	struct CuttingPlane {
+		float center[3];
+		float normal[3];
+	};
+
+	/**
+	*  The size of volume rendering image
+	*/
+	typedef long WinSize[2];
+
+	/**
+	* One slice of volume data
+	*/
+	struct Slice {
+		long dx;
+		long dy;
+		sequence<float> data;
+		};
+
+	/**
+	* Data load exception
+	*/
+	exception DataLoadException {
+		string reason;
+		};
+
+	/**
+	* Direction of sampling slice
+	*/ 
+	enum Direction {TOP, BOTTOM, FRONT, BACK, RIGHT, LEFT};
+
+	/**
+	* Volume rendering sampling method
+	*/
+	enum SampleMethod {NEAREST, TRI_INTERP};
+
+	/**
+	*  rgb and alpha value of a density point.
+	*/ 
+	struct DenMaterial {
+		long den;
+		long r, g, b, alpha;
+	};
+
+	/**
+	 * up to 4096 density points in the definition of transfer function.
+	 */
+	typedef sequence<DenMaterial, 4096> DenTransfer;
+
+	/**
+	 * Current state of the parallel rendering server
+	 */
+	struct ServerState {
+		long n_mat;
+		long n_con;
+		long n_light;
+	};
+
+	/**
+	 * Parameters for a subvolume
+	 */
+	struct SubVolume {
+		float ox, oy, oz;       // coordinates of the origin
+		float dx, dy, dz;       // spans of the subvolume
+	};
+
+	/**
+	 * SubVolume Data.
+     * each data point is 1 byte
+	 */
+	struct SubVolData {
+		sequence<char> data;
+		long dim[3];
+	};
+
+	/**
+	 * Parallel volume rendering server.
+	 * It listens to client request and uses multiple slave processes 
+	 * to raytrace a volume parallelly.
+	 *
+	 */
+	interface PVolServer {
+	    /**@name methods */
+	    //@{
+
+		/**
+		 * load a volume data file
+		 */
+		boolean loadData(in string filename) raises(DataLoadException);
+
+		/**
+		* get information about volume data
+		*/
+		DataInfo getDataInfo();
+
+		/**
+		 * quit and destroy the servant
+		 */
+		void quit();
+
+		/**
+		 * set viewing parameters
+		 */
+		void setViewParam(in ViewParam param);
+
+		/**
+		 * most important function of FCastServer
+		 * It distributes tiles to slave processes to compute and 
+		 * return the final image to client
+		 * client should call this function in seperate thread such that
+		 * user may cancel the rendering operation
+		 */
+		Image render();
+
+		/**
+		 * cancel the current rendering operation
+		 * @note not implemented
+		 */
+		void cancel();
+
+		/**
+		 * return the number of slave hosts used in the rendering
+		 */
+		 long getNumOfHosts();
+
+		/**
+		 * get a slice
+		 * @param dir direct direction of the slice
+		 * @param n the slice number along dir
+		 * @note not implemented in hun's library
+		 */
+		Slice getSlice(in Direction dir, in long n);
+
+		/**
+		 * set sampling method
+		 */
+		 void setSamplingMethod(in SampleMethod method);
+
+		/**
+		 * set field of view
+		 */
+		 void setViewField(in ViewField vf);
+
+		/**
+		 * return list of config files
+		 */
+		 FileList getConfigFiles();
+
+		 /**
+		  * retrieve the number of materials, contours and lights
+		  */
+		 ServerState getServerState();
+
+		/**
+		 * set and get material information
+		 * @param n The nth material type (up to the current num of materials)
+		 * 
+		 */
+		 void setMaterial(in MatInfo mat, in long n);
+		 MatInfo getMaterial(in long n);
+
+		 /**
+		  * Add a new material type
+		  */
+		 void addMaterial(in MatInfo mat);
+
+		/**
+		 * set and get Light information
+		 * @param n The nth light (up to the current number of lights)
+		 */
+		 void setLight(in LightInfo light, in long n);
+		 LightInfo getLight(in long n);
+
+		 /**
+		  * Add a new light
+		  */
+		 void addLight(in LightInfo light);
+
+		/**
+		 * set image size
+		 */
+		void setImageSize(in WinSize win);
+		
+		/**
+		 * set the viewing window size.
+		 */
+		void setWindowSize(in WinSize win);
+		/**
+		 * get the viewing window size
+		 */	
+		WinSize getWindowSize();		
+
+		/**
+		 * get the nth contour information.
+		 */
+		ContourInfo getContourInfo(in long n);
+
+		/**
+		 * set the nth contour information.
+		 */
+		void setContourInfo(in ContourInfo con, in long n);
+
+		/**
+		 * Add a new contour.
+		 */
+		void addContour(in ContourInfo con);
+
+		/**
+		 * Set Rendering mode.
+		 * @param mode 
+		 *  2: Vol ren with material shapes
+		 *  3: Vol ren with material shapes + isocontouring
+		 *  4: Vol ren with density transfer function
+		 *  5: Vol ren with ray tracing + density map
+		 *  6: Vol ren with isosurface + density map
+		 *  7: Vol ren with ray tracing + isosurface + density map
+		 */
+		void setRenderingMode(in long mode);
+
+		/**
+		 * Set the density transfer function.
+		 */
+		void setDenTransfer(in DenTransfer dtrans);
+
+		/**
+		 * Set the subvolume.
+		 */
+		void setSubVolume(in SubVolume vol);
+
+		/**
+		 * Set the cutting plane
+		 * @ assume one cutting plane
+		 */
+		void setCuttingPlane(in CuttingPlane cp, in long n);
+
+		/**
+         * Create a Mpeg movie with given viewing parameters
+		 * @note this method takes excessively long time. call it in asynchrously or
+		 *       in a different thread.
+		 */
+		MpegData makeMovie(in MovieParam mov_param);
+
+		/**
+		 * Get the data of a subvolume 
+		 */
+		SubVolData getSubVolData(in SubVolume subvol);
+	    //@}
+	};
+
+	/**
+	 * Server Factory
+	 */
+	interface PVolManager {
+	    /**@name methods */
+	    //@{
+		/**
+		* create a new PVolServer instance and return the reference
+		*/
+		PVolServer connect();		
+		//@}
+	};
+};

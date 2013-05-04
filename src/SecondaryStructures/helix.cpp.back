@@ -1,0 +1,381 @@
+#include <Histogram/histogram_data.h>
+#include <map>
+#include <SecondaryStructures/helix.h>
+#include <SecondaryStructures/op.h>
+
+using namespace SecondaryStructures;
+
+#define THRESHOLD 2
+#define SUBDIV 100
+#define RADIUS 1.5
+#define HELIX_LENGTH_THRESHOLD 4
+
+vector< vector<Point> > build_cylindrical_helices(const vector< vector<int> >& curve_comps, const Curve& curve, ofstream& fout)
+{
+	vector< vector<Point> > helices; // each sub-vector contains 2k points,
+	// k on each rim of the cylinder.
+	// for every curve component, find the furthest pair of points.
+	vector<Cylinder> cyls; // holding the axis and endpoints of every cylinder temporarily.
+	vector<double> lengths;
+	fout << "{LIST" << endl;
+	for (int i = 0; i < (int)curve_comps.size(); i ++)
+	{
+		int ep[2] = {-1,-1};
+		double max = -HUGE;
+		if ((int)curve_comps[i].size() < 2)
+		{
+			continue;
+		}
+		for (int j = 0; j < (int)curve_comps[i].size(); j ++)
+		{
+			Point p1 = curve.vert_list[curve_comps[i][j]].pos;
+			for (int k = j+1; k < (int)curve_comps[i].size(); k ++)
+			{
+				Point p2 = curve.vert_list[curve_comps[i][k]].pos;
+				double d = CGAL::to_double((p1-p2)*(p1-p2));
+				if (d > max)
+				{
+					max = d;
+					ep[0] = curve_comps[i][j];
+					ep[1] = curve_comps[i][k];
+				}
+			}
+		}
+		CGAL_assertion(ep[0] != -1 && ep[1] != -1);
+		Point v0 = curve.vert_list[ep[0]].pos;
+		Point v1 = curve.vert_list[ep[1]].pos;
+		// check the length of this helix.
+		if (sqrt(CGAL::to_double((v0-v1)*(v0-v1))) < HELIX_LENGTH_THRESHOLD)
+		{
+			continue;
+		}
+		vector<Point> V;
+		V.push_back(v0);
+		V.push_back(v1);
+		Vector a = v1-v0;
+		cyls.push_back(Cylinder(V,a));
+		lengths.push_back(CGAL::to_double((v0-v1)*(v0-v1)));
+		// debug
+		// write all the points in the curve component.
+		srand48(i);
+		double red = drand48(), green = drand48(), blue = drand48();
+		fout << "{ appearance {linewidth 4}" << endl;
+		fout << "OFF" << endl;
+		fout << (int)curve_comps[i].size() << " "
+			 << (int)curve_comps[i].size() << " 0" << endl;
+		for (int j = 0; j < (int)curve_comps[i].size(); j ++)
+		{
+			fout << curve.vert_list[curve_comps[i][j]].pos << endl;
+		}
+		for (int j = 0; j < (int)curve_comps[i].size(); j ++)
+		{
+			fout << "1\t" << j << " " << red << " " << green << " " << blue << " 1" << endl;
+		}
+		fout << "}" << endl;
+		// end debug
+	}
+	fout << "}" << endl;
+	// insertion sort (will sort by length key)
+	std::map<double,Cylinder> cylsSorted;
+	for (int i=0; i<cyls.size(); i++)
+	{
+		double key = lengths[i];
+		Cylinder value = cyls[i];
+		cylsSorted.insert(std::make_pair(key,value));
+	}
+	// write the cylinders as mesh.
+	// for(map<double,Cylinder>::iterator i = cylsSorted.begin(); i != cylsSorted.end(); i++)
+	int counter = 0;
+	map<double,Cylinder>::iterator i = cylsSorted.end();
+	while (i != cylsSorted.begin())
+	{
+		i--;
+		counter++;
+		// 2-step process: first create SUBDIV number of points on a circle.
+		// Point v0 = cyls[i].first[0];
+		// Vector a = cyls[i].second;
+		Point v0 = i->second.first[0];
+		Vector a = i->second.second;
+		vector<Vector> circle;
+		for (int j = 0; j < SUBDIV; j ++)
+		{
+			double theta = 2*M_PI/SUBDIV*j;
+			double x = RADIUS*cos(theta),
+				   y = RADIUS*sin(theta),
+				   z = 0;
+			circle.push_back(Vector(x,y,z));
+		}
+		// rotate and translate the circle to be aligned with a
+		// and centered at v0.
+		// translation vector 't'.
+		// rotation parameters: axis 'raxis' passing through origin.
+		// translation parameters.
+		Vector t = v0 - CGAL::ORIGIN;
+		// rotation parameters.
+		Vector zaxis(0,0,1);
+		Vector raxis = CGAL::cross_product(zaxis,a);
+		raxis = (1./sqrt(CGAL::to_double(raxis*raxis))) * raxis;
+		double cos_sq = CGAL::to_double(zaxis*a)/sqrt(CGAL::to_double(a*a));
+		double sin_sq = sqrt(1-cos_sq*cos_sq);
+		vector<Point> pts1; // points on lower rim.
+		transform(pts1, circle, t, CGAL::ORIGIN, raxis, cos_sq, sin_sq);
+		vector<Point> pts2; // points on upper rim.
+		transform(pts2, circle, t+a, CGAL::ORIGIN, raxis, cos_sq, sin_sq);
+		pts2.insert(pts2.begin(), pts1.begin(), pts1.end()); // pad the points of pts1 in front of pts2.
+		helices.push_back(pts2); // push larger(later) values in front
+	}
+	assert(counter == cylsSorted.size());
+	return helices;
+}
+
+vector< vector<int> > cluster(const vector<Point>& hpts, Curve& curve)
+{
+	for (int i = 0; i < (int)hpts.size(); i ++)
+	{
+		curve.vert_list.push_back(CVertex(hpts[i]));
+		curve.vert_list[(int)curve.vert_list.size()-1].id = (int)curve.vert_list.size()-1;
+		curve.vert_list[(int)curve.vert_list.size()-1].visited = false;
+	}
+	for (int i = 0; i < (int)curve.vert_list.size(); i ++)
+	{
+		Point pi = curve.vert_list[i].pos;
+		for (int j = i+1; j < (int)curve.vert_list.size(); j ++)
+		{
+			Point pj = curve.vert_list[j].pos;
+			// if i-th and j-th points are within a threshold, connect them.
+			if (sqrt(CGAL::to_double((pi-pj)*(pi-pj))) < THRESHOLD)
+			{
+				curve.edge_list.push_back(CEdge(i,j));
+				curve.vert_list[i].inc_vid_list.push_back(j);
+				curve.vert_list[j].inc_vid_list.push_back(i);
+			}
+		}
+	}
+	// walk to collect the connected components.
+	vector< vector<int> > curve_comps;
+	for (int i = 0; i < (int)curve.vert_list.size(); i ++)
+	{
+		CVertex v = curve.vert_list[i];
+		if (v.visited)
+		{
+			continue;
+		}
+		vector<int> Q;
+		Q.push_back(i);
+		curve.vert_list[i].visited = true;
+		vector<int> new_comp;
+		while (! Q.empty())
+		{
+			int vid = Q.back();
+			Q.pop_back();
+			new_comp.push_back(vid);
+			// add the unvisited incident vertices to Q.
+			for (int j = 0; j < (int)curve.vert_list[vid].inc_vid_list.size(); j ++)
+			{
+				int uid = curve.vert_list[vid].inc_vid_list[j];
+				if (curve.vert_list[uid].visited)
+				{
+					continue;
+				}
+				Q.push_back(uid);
+				curve.vert_list[uid].visited = true;
+			}
+		}
+		curve_comps.push_back(new_comp);
+	}
+	return curve_comps;
+}
+
+// get a list of valid edges to construct histogram data from
+vector<SEdge> Skel::get_valid_edge_list()
+{
+	// this vector holds the edges as selected by the user with the histogram
+	vector<SEdge> valid_edge_list;
+	for (int i = 0; i < get_ne(); i ++)
+	{
+		// ignore conditions:
+		// 1. more than one included face
+		// 2. endpoints in same component
+		if (edge_list[i].num_inc_face >= 1)
+		{
+			continue;
+		}
+		else
+		{
+			if (in_same_comp(edge_list[i].get_endpoint(0),
+							 edge_list[i].get_endpoint(1)))
+			{
+				continue;
+			}
+		}
+		// this edge passes.
+		valid_edge_list.push_back(edge_list[i]);
+	}
+	return valid_edge_list;
+}
+
+HistogramData Skel::get_alpha_histogram_data()
+{
+	// create histogram data
+	const int n_bins = 128;
+	vector<double> widths;
+	vector<SEdge> valid_edge_list = get_valid_edge_list();
+	for (int i=0; i<valid_edge_list.size(); i++)
+	{
+		widths.push_back(valid_edge_list[i].width);
+	}
+	return HistogramData(widths, n_bins);
+}
+
+
+HistogramData Skel::get_beta_histogram_data()
+{
+	// create histogram data
+	const int n_bins = 128;
+	vector<double> widths;
+	vector<SFace> valid_face_list = face_list;
+	for (int i=0; i<valid_face_list.size(); i++)
+	{
+		widths.push_back(valid_face_list[i].width);
+	}
+	return HistogramData(widths, n_bins);
+}
+
+// Pass the helix candidate points as a list of points.
+void Skel::compute_helices(const char* file_prefix)
+{
+	helices.clear();
+	// collect the points from the linear portion of the skeleton.
+	vector<SEdge> valid_edge_list = get_valid_edge_list();
+	vector<SEdge> user_selected_edge_list;
+	// create user_selected_edge_list
+	// this vector holds the edges as selected by the user with the histogram
+	for (int i=0; i< valid_edge_list.size(); i++)
+	{
+		// prune by width
+		if (valid_edge_list[i].width < _alphaMinWidth ||
+				valid_edge_list[i].width > _alphaMaxWidth)
+		{
+			continue;
+		}
+		// this edge passes
+		user_selected_edge_list.push_back(valid_edge_list[i]);
+	}
+	// pass user data to algorithm
+	set<int> hvids; // id of the vertices on L which are selected by width cut-off.
+	for (int i = 0; i < user_selected_edge_list.size(); i++)
+	{
+		hvids.insert(user_selected_edge_list[i].get_endpoint(0));
+		hvids.insert(user_selected_edge_list[i].get_endpoint(1));
+	}
+	if (hvids.empty())
+	{
+		return;
+	}
+	vector<Point> hpts;
+	for (set<int>::iterator it = hvids.begin();
+			it != hvids.end(); it++)
+	{
+		hpts.push_back(vert_list[(*it)].point());
+	}
+	// collect the components of the helical region.
+	Curve curve;
+	vector< vector<int> > curve_comps = cluster(hpts, curve);
+	// for every curve component, fit a cylinder.
+	ofstream fout;
+	char filename[1000];
+	strcat(strcpy(filename, file_prefix), ".curve");
+	fout.open(filename);
+	helices = build_cylindrical_helices(curve_comps, curve, fout);
+	// save so that we can quickly rebuild point geometry
+	_curve_comps = curve_comps;
+	_curve = curve;
+}
+
+void Skel::buildHelixGeometry(Geometry* helixGeom)
+{
+	// write_curve(curve, curve_comps, cylinders, output_file_prefix);
+	// write the helix_cylinders in an off file.
+	// create a TexMol geometry file for the helices
+	std::vector<float> vertices;
+	std::vector<unsigned int> indices;
+	std::vector<float> colors;
+	// for(int helix =0; helix<helices.size(); helix++) {
+	// std::cerr << helix_cnt << "\t" << helices.size() << "\n";
+	assert(helix_cnt <= helices.size());
+	for (int helix =0; helix<helix_cnt; helix++)
+	{
+		vector<Point> points = helices[helix];
+		// copy points to vertex vector
+		assert(vertices.size()%3 == 0);
+		assert((vertices.size()/3) == (helix * SUBDIV * 2));
+		const int startVertex = vertices.size()/3;
+		assert(points.size() == (SUBDIV*2));
+		const float RED  = 0;
+		const float GREEN  = 0.5;
+		const float BLUE  = 0;
+		const float ALPHA = 1;
+		for (int i=0; i<points.size(); i++)
+		{
+			vertices.push_back(points[i].x());
+			vertices.push_back(points[i].y());
+			vertices.push_back(points[i].z());
+			colors.push_back(RED);
+			colors.push_back(GREEN);
+			colors.push_back(BLUE);
+			colors.push_back(ALPHA);
+		}
+		// build triangle array.  iterate along bottom rim
+		for (int i=0; i<SUBDIV; i++)
+		{
+			// next_i follows i in the circular list
+			int next_i = i+1;
+			if (next_i == SUBDIV)
+			{
+				next_i = 0;
+			}
+			// this index, on lower rim
+			const int lower_i = startVertex + i;
+			// next index, on lower rim
+			const int lower_next_i = startVertex + next_i;
+			// this index, on upper rim
+			const int upper_i = startVertex + i + SUBDIV;
+			// next index, on upper rim
+			const int upper_next_i = startVertex + next_i + SUBDIV;
+			// tri 1
+			indices.push_back(lower_i);
+			indices.push_back(lower_next_i);
+			indices.push_back(upper_i);
+			// tri 2
+			indices.push_back(lower_next_i);
+			indices.push_back(upper_next_i);
+			indices.push_back(upper_i);
+		}
+	}
+	vectors_to_tri_geometry(vertices,indices,colors,helixGeom);
+}
+
+void Skel::buildCurveGeometry(const vector< vector<int> >& curve_comps, const Curve& curve, Geometry* geom)
+{
+	// don't shuffle colors!
+	srand48(0);
+	// srand48(time(0));
+	// edges
+	std::vector<float> vertices;
+	std::vector<float> colors;
+	for (int i = 0; i < (int)curve_comps.size(); i ++)
+	{
+		double red = drand48(), green = drand48(), blue = drand48();
+		for (int j = 0; j < (int)curve_comps[i].size(); j ++)
+		{
+			Point p0 = curve.vert_list[curve_comps[i][j]].pos;
+			vertices.push_back(p0.x());
+			vertices.push_back(p0.y());
+			vertices.push_back(p0.z());
+			colors.push_back(red);
+			colors.push_back(green);
+			colors.push_back(blue);
+		}
+	}
+	vectors_to_point_geometry(vertices,colors,geom);
+}

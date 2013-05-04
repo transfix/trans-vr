@@ -1,0 +1,100 @@
+/**
+*
+*/
+
+module ccv {
+
+struct Contour3dData {
+	long nvert;
+	long ntri;
+	
+	sequence<float> vert;
+	sequence<float> vnorm;
+	sequence<long> tri;		
+};
+
+struct Image {
+    long dx;
+    long dy;
+    long res;
+    sequence<char> img;
+};
+
+typedef sequence<double> TMatrix;
+
+struct CRFileEntry{
+	string name;
+	long	type;
+};
+
+typedef sequence<CRFileEntry> CRFileList;
+
+  /**
+   *
+   */
+  struct SubVolume {
+	float min[3];
+	float max[3];
+  };
+
+	struct VolumeInfo {
+		float min[3];
+		float max[3];
+		float isomin;
+		float isomax;
+	};
+
+/**
+* client interface
+*/
+interface CRClient {
+	void receiveContour(in Contour3dData con3d);
+};
+
+/**
+* server interface
+*/
+interface CRServer {
+    long registerClient(in CRClient client);
+
+    void unregisterClient(in CRClient client);
+
+    void loadData(in string fname, in long type);
+
+	VolumeInfo getDataInfo();
+
+    /**
+     * Get a contour of isovalue x
+     * This method returns data back to client by callback
+     */
+    void getContour(in float x);
+
+    /**
+     * Get a progressive contour of isovalue x
+     * This method returns data back to client by callback
+     */
+    void getContourAtLevel(in float x, in long level);
+
+  /**
+   * Get a contour within the given subvolume.
+   * This method returns data back to client by callback.
+   */
+  void getContourInSubVolume(in float x, in long level, in SubVolume subvol);
+
+    /**
+     * Get a render image of extract isosurface
+     */
+    Image render(in float x);
+
+	/**
+	 * Get the list of available files
+	 */
+	CRFileList getFileList();
+	 
+	/**
+	 * Change the transformation matrix of rendering server
+	 */
+	void setTransformation(in TMatrix matrix); 
+};
+
+};

@@ -1,0 +1,294 @@
+/*****************************************************************************/
+/*                             ______________________                        */
+/*                            / _ _ _ _ _ _ _ _ _ _ _)                       */
+/*            ____  ____  _  / /__  __  _____  __                            */
+/*           (_  _)( ___)( \/ /(  \/  )(  _  )(  )                           */
+/*             )(   )__)  )  (  )    (  )(_)(  )(__                          */
+/*            (__) (____)/ /\_)(_/\/\_)(_____)(____)                         */
+/*            _ _ _ _ __/ /                                                  */
+/*           (___________/                     ___  ___                      */
+/*                                      \  )| |   ) _ _|\   )                */
+/*                                 ---   \/ | |  / |___| \_/                 */
+/*                                                       _/                  */
+/*                                                                           */
+/*   Copyright (C) The University of Texas at Austin                         */
+/*                                                                           */
+/*     Author:     Dr. Xu Guo Liang <xuguo@ices.utexas.edu>   2006-2007      */
+/*                                                                           */
+/*     Principal Investigator: Chandrajit Bajaj <bajaj@ices.utexas.edu>      */
+/*                                                                           */
+/*         Professor of Computer Sciences,                                   */
+/*         Computational and Applied Mathematics Chair in Visualization,     */
+/*         Director, Computational Visualization Center (CVC),               */
+/*         Institute of Computational Engineering and Sciences (ICES)        */
+/*         The University of Texas at Austin,                                */
+/*         201 East 24th Street, ACES 2.324A,                                */
+/*         1 University Station, C0200                                       */
+/*         Austin, TX 78712-0027                                             */
+/*         http://www.cs.utexas.edu/~bajaj                                   */
+/*                                                                           */
+/*         http://www.ices.utexas.edu/CVC                                    */
+/*  This software comes with a license. Using this code implies that you     */
+/*  read, understood and agreed to all the terms and conditions in that      */
+/*  license.                                                                 */
+/*                                                                           */
+/*  We request that you agree to acknowledge the use of the software that    */
+/*  results in any published work, including scientific papers, films and    */
+/*  videotapes by citing the reference listed below                          */
+/*                                                                           */
+/*    C. Bajaj, P. Djeu, V. Siddavanahalli, A. Thane,                        */
+/*    Interactive Visual Exploration of Large Flexible Multi-component       */
+/*    Molecular Complexes,                                                   */
+/*    Proc. of the Annual IEEE Visualization Conference, October 2004,       */
+/*    Austin, Texas, IEEE Computer Society Press, pp. 243-250.               */
+/*                                                                           */
+/*****************************************************************************/
+// HLevelSet.cpp: implementation of the HLevelSet class.
+//
+//////////////////////////////////////////////////////////////////////
+
+#include <HLevelSet/HLevelSet.h>
+#include "SimpleVolumeData.h"
+#include "Atom.h"
+#include "BlurMapsDataManager.h"
+#include <vector>
+#include <math.h>
+
+void Test();
+
+void Test()
+{
+printf("I am here\n");
+}
+
+
+
+using namespace HLevelSetNS;
+using namespace PDBParser;
+
+HLevelSet::HLevelSet()
+{
+
+}
+
+HLevelSet::~HLevelSet()
+{
+
+}
+
+bool HLevelSet::computeFunction( std::vector<Atom*> atomList, float* data, unsigned int* dim, float* minExtent, float* maxExtent ) 
+{
+printf("Xu Test 0\n");
+Test();
+
+	if( !data || !dim || !minExtent || !maxExtent ) return false;
+
+	// currently, at each atom location, I place a Cube ... you can replace this part with your own function call
+
+	{
+		// zero out data
+		int i;
+		for( i=0; i<dim[0]*dim[1]*dim[2]; i++ )
+			data[i] = 0;
+	}
+
+printf("Xu Test 1\n");
+
+	float spanx = (maxExtent[0] - minExtent[0]) / ((double)(dim[0] - 1));
+	float spany = (maxExtent[1] - minExtent[1]) / ((double)(dim[1] - 1));
+	float spanz = (maxExtent[2] - minExtent[2]) / ((double)(dim[2] - 1));
+
+
+	int i;
+	// loop through the atoms 
+	for( i=0; i<atomList.size(); i++ )
+	{
+		Atom* atom = atomList[i];
+		if( !atom ) continue;
+
+//printf("Xu Test 2\n");
+		// center and radii in angstroms
+		float x = atom->m_Position[0];
+		float y = atom->m_Position[1];
+		float z = atom->m_Position[2];
+		float r = atom->getRadius();
+
+		// center in grid indices
+		float ix = (x - minExtent[0]) / spanx;
+		float iy = (y - minExtent[1]) / spany;
+		float iz = (z - minExtent[2]) / spanz;
+
+		ix = ((ix-floor(ix)) >= 0.5) ? ceil(ix) : floor(ix);
+		iy = ((iy-floor(iy)) >= 0.5) ? ceil(iy) : floor(iy);
+		iz = ((iz-floor(iz)) >= 0.5) ? ceil(iz) : floor(iz);
+
+		// cube extent in grid
+		float wx = r / spanx;
+		float wy = r / spany;
+		float wz = r / spanz;
+
+		// loop in R3 to compute a cube. 
+		int i1, i2, i3;
+		for( i3 = -wz; i3<=wz; i3++ )
+		{
+			int i3GridIndex = iz+i3;
+			if( i3GridIndex < 0 ) continue;
+			if( i3GridIndex >= dim[2] ) continue;
+
+//printf("Xu Test 3\n");
+			for( i2 = -wy; i2<=wy; i2++ )
+			{
+				int i2GridIndex = iy+i2;
+				if( i2GridIndex < 0 ) continue;
+				if( i2GridIndex >= dim[1] ) continue;
+
+				for( i1 = -wx; i1<=wx; i1++ )
+				{
+					int i1GridIndex = ix+i1;
+					if( i1GridIndex < 0 ) continue;
+					if( i1GridIndex >= dim[0] ) continue;
+					
+					int gridIndex = i1GridIndex + i2GridIndex*dim[0] + i3GridIndex*dim[0]*dim[1];
+
+					data[gridIndex] = 1;
+				}
+			}
+		}
+	}
+
+	return true;
+}
+
+bool HLevelSet::computeFunction_Xu( std::vector<Atom*> atomList, float* data, unsigned int* dim, float* minExtent, float* maxExtent )
+{
+printf("Xu Test 0\n");
+Test();
+
+        if( !data || !dim || !minExtent || !maxExtent ) return false;
+
+        // currently, at each atom location, I place a Cube ... you can replace this part with your own function call
+
+        {
+                // zero out data
+                int i;
+                for( i=0; i<dim[0]*dim[1]*dim[2]; i++ )
+                        data[i] = 0;
+        }
+
+printf("Xu Test 1111\n");
+
+        float spanx = (maxExtent[0] - minExtent[0]) / ((double)(dim[0] - 1));
+        float spany = (maxExtent[1] - minExtent[1]) / ((double)(dim[1] - 1));
+        float spanz = (maxExtent[2] - minExtent[2]) / ((double)(dim[2] - 1));
+
+
+        int i;
+        // loop through the atoms
+        for( i=0; i<atomList.size(); i++ )
+        {
+                Atom* atom = atomList[i];
+                if( !atom ) continue;
+
+//printf("Xu Test 2\n");
+                // center and radii in angstroms
+                float x = atom->m_Position[0];
+                float y = atom->m_Position[1];
+                float z = atom->m_Position[2];
+                float r = atom->getRadius();
+
+                // center in grid indices
+                float ix = (x - minExtent[0]) / spanx;
+                float iy = (y - minExtent[1]) / spany;
+                float iz = (z - minExtent[2]) / spanz;
+
+                ix = ((ix-floor(ix)) >= 0.5) ? ceil(ix) : floor(ix);
+                iy = ((iy-floor(iy)) >= 0.5) ? ceil(iy) : floor(iy);
+                iz = ((iz-floor(iz)) >= 0.5) ? ceil(iz) : floor(iz);
+
+                // cube extent in grid
+                float wx = r / spanx;
+                float wy = r / spany;
+                float wz = r / spanz;
+
+                // loop in R3 to compute a cube.
+                int i1, i2, i3;
+                for( i3 = -wz; i3<=wz; i3++ )
+                {
+                        int i3GridIndex = iz+i3;
+                        if( i3GridIndex < 0 ) continue;
+                        if( i3GridIndex >= dim[2] ) continue;
+
+//printf("Xu Test 3\n");
+                        for( i2 = -wy; i2<=wy; i2++ )
+                        {
+                                int i2GridIndex = iy+i2;
+                                if( i2GridIndex < 0 ) continue;
+                                if( i2GridIndex >= dim[1] ) continue;
+
+                                for( i1 = -wx; i1<=wx; i1++ )
+                                {
+                                        int i1GridIndex = ix+i1;
+                                        if( i1GridIndex < 0 ) continue;
+                                        if( i1GridIndex >= dim[0] ) continue;
+
+                                        int gridIndex = i1GridIndex + i2GridIndex*dim[0] + i3GridIndex*dim[0]*dim[1];
+
+                                        data[gridIndex] = 1;
+                                }
+                        }
+                }
+        }
+
+        return true;
+}
+
+
+bool HLevelSet::getAtomListAndExtent( GroupOfAtoms* molecule, std::vector<Atom*> &atomList, float* minExtent, float* maxExtent )
+{
+	if( !molecule || !minExtent || !maxExtent ) return false;
+
+	CollectionData* collectionData = 0;
+	if( molecule->type == COLLECTION_TYPE ) collectionData = molecule->m_CollectionData;
+
+	GroupOfAtoms::RADIUS_TYPE radiusType = GroupOfAtoms::VDW_RADIUS;
+
+	BlurMapsDataManager::flattenGOA(molecule, atomList, collectionData, 0, 0, 0, radiusType, ATOM_TYPE, false  );
+
+	minExtent[0] = minExtent[1] = minExtent[2] = 0.;
+	maxExtent[0] = maxExtent[1] = maxExtent[2] = 0.;
+
+	double probeRadius = 1.4;
+	BlurMapsDataManager::getBoundingBox(atomList, minExtent, maxExtent, radiusType, probeRadius*2+1, 0);
+
+	return true;
+}
+
+SimpleVolumeData* HLevelSet::getHigherOrderLevelSetSurface( GroupOfAtoms* molecule, unsigned int* dim )
+{
+	// get the atom list from the molecule
+	std::vector<Atom*> atomList;
+	float minExtent[3];
+	float maxExtent[3];
+	if( !getAtomListAndExtent( molecule, atomList, minExtent, maxExtent ) ) return 0;
+
+	// initialize data and extent.
+	float* data = new float[dim[0]*dim[1]*dim[2]];
+printf("Xu Test 4\n");
+
+	// compute the function
+	if( !computeFunction_Xu( atomList, data, dim, minExtent, maxExtent ) ) { delete []data; data = 0; return 0; }
+
+printf("Xu Test 5\n");
+	// create volume data and return it.
+	SimpleVolumeData* sData = new SimpleVolumeData( dim );
+	sData->setDimensions( dim );
+	sData->setNumberOfVariables(1);
+	sData->setData(0, data);
+	sData->setType(0, SimpleVolumeData::FLOAT);
+	sData->setName(0, "HOrderLevelSet");
+	sData->setMinExtent(minExtent);
+	sData->setMaxExtent(maxExtent);
+
+printf("Xu Test 6\n");
+	return sData;
+}

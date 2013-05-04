@@ -1,0 +1,480 @@
+<!DOCTYPE UI><UI version="3.3" stdsetdef="1">
+<class>OptionsDialogBase</class>
+<widget class="QDialog">
+    <property name="name">
+        <cstring>OptionsDialogBase</cstring>
+    </property>
+    <property name="geometry">
+        <rect>
+            <x>0</x>
+            <y>0</y>
+            <width>501</width>
+            <height>444</height>
+        </rect>
+    </property>
+    <property name="caption">
+        <string>OptionsDialog</string>
+    </property>
+    <property name="sizeGripEnabled">
+        <bool>true</bool>
+    </property>
+    <grid>
+        <property name="name">
+            <cstring>unnamed</cstring>
+        </property>
+        <property name="resizeMode">
+            <enum>Fixed</enum>
+        </property>
+        <widget class="QGroupBox" row="0" column="1" rowspan="1" colspan="2">
+            <property name="name">
+                <cstring>IsosurfacingOptionsBox</cstring>
+            </property>
+            <property name="title">
+                <string>Isosurfacing</string>
+            </property>
+            <grid>
+                <property name="name">
+                    <cstring>unnamed</cstring>
+                </property>
+                <property name="margin">
+                    <number>11</number>
+                </property>
+                <property name="spacing">
+                    <number>6</number>
+                </property>
+                <widget class="QCheckBox" row="0" column="0">
+                    <property name="name">
+                        <cstring>m_ZoomedOutSurface</cstring>
+                    </property>
+                    <property name="text">
+                        <string>Show Thumbnail Isosurface</string>
+                    </property>
+                </widget>
+                <widget class="QCheckBox" row="1" column="0">
+                    <property name="name">
+                        <cstring>m_ZoomedInSurface</cstring>
+                    </property>
+                    <property name="text">
+                        <string>Show Magnified Isosurface</string>
+                    </property>
+                </widget>
+            </grid>
+        </widget>
+        <widget class="QButtonGroup" row="1" column="1" rowspan="1" colspan="2">
+            <property name="name">
+                <cstring>ButtonGroup2_2</cstring>
+            </property>
+            <property name="title">
+                <string>Render Style</string>
+            </property>
+            <vbox>
+                <property name="name">
+                    <cstring>unnamed</cstring>
+                </property>
+                <property name="margin">
+                    <number>11</number>
+                </property>
+                <property name="spacing">
+                    <number>6</number>
+                </property>
+                <widget class="QRadioButton">
+                    <property name="name">
+                        <cstring>m_Single</cstring>
+                    </property>
+                    <property name="text">
+                        <string>Single Variable</string>
+                    </property>
+                </widget>
+                <widget class="QRadioButton">
+                    <property name="name">
+                        <cstring>m_RGBA</cstring>
+                    </property>
+                    <property name="text">
+                        <string>RGBA Combined</string>
+                    </property>
+                </widget>
+            </vbox>
+        </widget>
+        <widget class="QButtonGroup" row="0" column="0">
+            <property name="name">
+                <cstring>ButtonGroup2</cstring>
+            </property>
+            <property name="title">
+                <string>Update Method</string>
+            </property>
+            <property name="whatsThis" stdset="0">
+                <string>&lt;p&gt;&lt;b&gt; Update Method &lt;/p&gt;&lt;/b&gt;
+
+&lt;p&gt;Determines when the data in the zoomed in view is updated as you explore the volume using the subvolume explorer. &lt;/p&gt;</string>
+            </property>
+            <vbox>
+                <property name="name">
+                    <cstring>unnamed</cstring>
+                </property>
+                <property name="margin">
+                    <number>11</number>
+                </property>
+                <property name="spacing">
+                    <number>6</number>
+                </property>
+                <widget class="QRadioButton">
+                    <property name="name">
+                        <cstring>m_Interactive</cstring>
+                    </property>
+                    <property name="text">
+                        <string>Interactive</string>
+                    </property>
+                    <property name="whatsThis" stdset="0">
+                        <string>&lt;p&gt;&lt;b&gt; Interactive &lt;/b&gt;&lt;/p&gt;
+
+&lt;p&gt;The data will update immediately every time you move the subcube volume &lt;/p&gt;</string>
+                    </property>
+                </widget>
+                <widget class="QRadioButton">
+                    <property name="name">
+                        <cstring>m_Delayed</cstring>
+                    </property>
+                    <property name="text">
+                        <string>Delayed</string>
+                    </property>
+                    <property name="whatsThis" stdset="0">
+                        <string>&lt;p&gt;&lt;b&gt;Delayed&lt;/b&gt;&lt;/p&gt;
+
+&lt;p&gt;The data will not update until you release the mouse button after dragging the subcube.&lt;/p&gt;</string>
+                    </property>
+                </widget>
+                <widget class="QRadioButton">
+                    <property name="name">
+                        <cstring>m_Manual</cstring>
+                    </property>
+                    <property name="text">
+                        <string>Manual</string>
+                    </property>
+                    <property name="whatsThis" stdset="0">
+                        <string>&lt;p&gt;&lt;b&gt;Manual&lt;/p&gt;&lt;/b&gt;
+
+&lt;p&gt;The data will not update untill you manually press the update button &lt;/p&gt;</string>
+                    </property>
+                </widget>
+            </vbox>
+        </widget>
+        <widget class="QButtonGroup" row="1" column="0">
+            <property name="name">
+                <cstring>ButtonGroup3</cstring>
+            </property>
+            <property name="title">
+                <string>Volume Rendering</string>
+            </property>
+            <grid>
+                <property name="name">
+                    <cstring>unnamed</cstring>
+                </property>
+                <widget class="QRadioButton" row="1" column="0">
+                    <property name="name">
+                        <cstring>m_Shaded</cstring>
+                    </property>
+                    <property name="text">
+                        <string>Shaded</string>
+                    </property>
+                </widget>
+                <widget class="QRadioButton" row="0" column="0">
+                    <property name="name">
+                        <cstring>m_Unshaded</cstring>
+                    </property>
+                    <property name="text">
+                        <string>Unshaded</string>
+                    </property>
+                </widget>
+            </grid>
+        </widget>
+        <widget class="QGroupBox" row="3" column="0" rowspan="1" colspan="3">
+            <property name="name">
+                <cstring>GroupBox2</cstring>
+            </property>
+            <property name="title">
+                <string>General</string>
+            </property>
+            <vbox>
+                <property name="name">
+                    <cstring>unnamed</cstring>
+                </property>
+                <property name="margin">
+                    <number>11</number>
+                </property>
+                <property name="spacing">
+                    <number>6</number>
+                </property>
+                <widget class="QLayoutWidget">
+                    <property name="name">
+                        <cstring>Layout2</cstring>
+                    </property>
+                    <hbox>
+                        <property name="name">
+                            <cstring>unnamed</cstring>
+                        </property>
+                        <property name="margin">
+                            <number>0</number>
+                        </property>
+                        <property name="spacing">
+                            <number>6</number>
+                        </property>
+                        <widget class="QLabel">
+                            <property name="name">
+                                <cstring>TextLabel1</cstring>
+                            </property>
+                            <property name="text">
+                                <string>Cache Directory:</string>
+                            </property>
+                        </widget>
+                        <widget class="QLineEdit">
+                            <property name="name">
+                                <cstring>m_CacheDir</cstring>
+                            </property>
+                        </widget>
+                        <widget class="QPushButton">
+                            <property name="name">
+                                <cstring>m_BrowseButton</cstring>
+                            </property>
+                            <property name="sizePolicy">
+                                <sizepolicy>
+                                    <hsizetype>0</hsizetype>
+                                    <vsizetype>0</vsizetype>
+                                    <horstretch>0</horstretch>
+                                    <verstretch>0</verstretch>
+                                </sizepolicy>
+                            </property>
+                            <property name="maximumSize">
+                                <size>
+                                    <width>25</width>
+                                    <height>32767</height>
+                                </size>
+                            </property>
+                            <property name="text">
+                                <string>...</string>
+                            </property>
+                        </widget>
+                    </hbox>
+                </widget>
+                <widget class="QLayoutWidget">
+                    <property name="name">
+                        <cstring>Layout3</cstring>
+                    </property>
+                    <hbox>
+                        <property name="name">
+                            <cstring>unnamed</cstring>
+                        </property>
+                        <property name="margin">
+                            <number>0</number>
+                        </property>
+                        <property name="spacing">
+                            <number>6</number>
+                        </property>
+                        <widget class="QLabel">
+                            <property name="name">
+                                <cstring>TextLabel2</cstring>
+                            </property>
+                            <property name="text">
+                                <string>Background Color:</string>
+                            </property>
+                        </widget>
+                        <spacer>
+                            <property name="name">
+                                <cstring>Spacer2</cstring>
+                            </property>
+                            <property name="orientation">
+                                <enum>Horizontal</enum>
+                            </property>
+                            <property name="sizeType">
+                                <enum>Expanding</enum>
+                            </property>
+                            <property name="sizeHint">
+                                <size>
+                                    <width>20</width>
+                                    <height>20</height>
+                                </size>
+                            </property>
+                        </spacer>
+                        <widget class="QPushButton">
+                            <property name="name">
+                                <cstring>m_ColorButton</cstring>
+                            </property>
+                            <property name="sizePolicy">
+                                <sizepolicy>
+                                    <hsizetype>1</hsizetype>
+                                    <vsizetype>0</vsizetype>
+                                    <horstretch>0</horstretch>
+                                    <verstretch>0</verstretch>
+                                </sizepolicy>
+                            </property>
+                            <property name="maximumSize">
+                                <size>
+                                    <width>25</width>
+                                    <height>32767</height>
+                                </size>
+                            </property>
+                            <property name="paletteBackgroundColor">
+                                <color>
+                                    <red>13</red>
+                                    <green>208</green>
+                                    <blue>200</blue>
+                                </color>
+                            </property>
+                            <property name="text">
+                                <string></string>
+                            </property>
+                        </widget>
+                    </hbox>
+                </widget>
+            </vbox>
+        </widget>
+        <widget class="QLayoutWidget" row="4" column="0" rowspan="1" colspan="3">
+            <property name="name">
+                <cstring>Layout1</cstring>
+            </property>
+            <hbox>
+                <property name="name">
+                    <cstring>unnamed</cstring>
+                </property>
+                <property name="margin">
+                    <number>0</number>
+                </property>
+                <property name="spacing">
+                    <number>6</number>
+                </property>
+                <spacer>
+                    <property name="name">
+                        <cstring>Horizontal Spacing2</cstring>
+                    </property>
+                    <property name="orientation">
+                        <enum>Horizontal</enum>
+                    </property>
+                    <property name="sizeType">
+                        <enum>Expanding</enum>
+                    </property>
+                    <property name="sizeHint">
+                        <size>
+                            <width>20</width>
+                            <height>20</height>
+                        </size>
+                    </property>
+                </spacer>
+                <widget class="QPushButton">
+                    <property name="name">
+                        <cstring>buttonOk</cstring>
+                    </property>
+                    <property name="caption">
+                        <string></string>
+                    </property>
+                    <property name="text">
+                        <string>&amp;OK</string>
+                    </property>
+                    <property name="autoDefault">
+                        <bool>true</bool>
+                    </property>
+                    <property name="default">
+                        <bool>true</bool>
+                    </property>
+                </widget>
+                <widget class="QPushButton">
+                    <property name="name">
+                        <cstring>buttonCancel</cstring>
+                    </property>
+                    <property name="text">
+                        <string>&amp;Cancel</string>
+                    </property>
+                    <property name="autoDefault">
+                        <bool>true</bool>
+                    </property>
+                </widget>
+            </hbox>
+        </widget>
+        <widget class="QButtonGroup" row="2" column="0" rowspan="1" colspan="2">
+            <property name="name">
+                <cstring>ButtonGroup7</cstring>
+            </property>
+            <property name="title">
+                <string>Transfer Function Dimension</string>
+            </property>
+            <grid>
+                <property name="name">
+                    <cstring>unnamed</cstring>
+                </property>
+                <widget class="QRadioButton" row="0" column="0">
+                    <property name="name">
+                        <cstring>m_1DTransferFunc</cstring>
+                    </property>
+                    <property name="text">
+                        <string>1D</string>
+                    </property>
+                </widget>
+                <widget class="QRadioButton" row="0" column="1">
+                    <property name="name">
+                        <cstring>m_2DTransferFunc</cstring>
+                    </property>
+                    <property name="text">
+                        <string>2D</string>
+                    </property>
+                </widget>
+                <widget class="QRadioButton" row="0" column="2">
+                    <property name="name">
+                        <cstring>m_3DTransferFunc</cstring>
+                    </property>
+                    <property name="text">
+                        <string>3D</string>
+                    </property>
+                </widget>
+            </grid>
+        </widget>
+    </grid>
+</widget>
+<connections>
+    <connection>
+        <sender>buttonOk</sender>
+        <signal>clicked()</signal>
+        <receiver>OptionsDialogBase</receiver>
+        <slot>accept()</slot>
+    </connection>
+    <connection>
+        <sender>buttonCancel</sender>
+        <signal>clicked()</signal>
+        <receiver>OptionsDialogBase</receiver>
+        <slot>reject()</slot>
+    </connection>
+    <connection>
+        <sender>m_BrowseButton</sender>
+        <signal>clicked()</signal>
+        <receiver>OptionsDialogBase</receiver>
+        <slot>browseSlot()</slot>
+    </connection>
+    <connection>
+        <sender>m_ColorButton</sender>
+        <signal>clicked()</signal>
+        <receiver>OptionsDialogBase</receiver>
+        <slot>colorSlot()</slot>
+    </connection>
+</connections>
+<tabstops>
+    <tabstop>m_Interactive</tabstop>
+    <tabstop>m_Delayed</tabstop>
+    <tabstop>m_Manual</tabstop>
+    <tabstop>m_ZoomedOutSurface</tabstop>
+    <tabstop>m_ZoomedInSurface</tabstop>
+    <tabstop>m_Unshaded</tabstop>
+    <tabstop>m_Shaded</tabstop>
+    <tabstop>m_Single</tabstop>
+    <tabstop>m_RGBA</tabstop>
+    <tabstop>m_1DTransferFunc</tabstop>
+    <tabstop>m_2DTransferFunc</tabstop>
+    <tabstop>m_3DTransferFunc</tabstop>
+    <tabstop>m_CacheDir</tabstop>
+    <tabstop>m_BrowseButton</tabstop>
+    <tabstop>m_ColorButton</tabstop>
+    <tabstop>buttonOk</tabstop>
+    <tabstop>buttonCancel</tabstop>
+</tabstops>
+<slots>
+    <slot>browseSlot()</slot>
+    <slot>colorSlot()</slot>
+</slots>
+<layoutdefaults spacing="6" margin="11"/>
+</UI>

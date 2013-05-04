@@ -1,0 +1,15 @@
+#include <list>
+#include <string>
+
+#include <SurfRecon.h>
+#include <VolMagick/VolMagick.h>
+
+#include <Tiling/TilingConfigFileReader.h>
+
+namespace TilingConfigFileReader
+{
+  std::list<SurfRecon::ContourPtr> readConfig(const std::string& filename, const VolMagick::VolumeFileInfo& volinfo)
+  {
+    
+  }
+};

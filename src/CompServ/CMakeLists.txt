@@ -1,0 +1,37 @@
+CMAKE_MINIMUM_REQUIRED (VERSION 2.6)
+
+FILE(GLOB SOURCE_FILES *.cpp)
+FILE(GLOB INCLUDE_FILES ../../inc/CompServ/*.[Hh])
+
+SOURCE_GROUP("Source Files" FILES ${SOURCE_FILES})
+SOURCE_GROUP("Header Files" FILES ${INCLUDE_FILES})
+
+INCLUDE_DIRECTORIES(
+  ../../inc
+)
+
+ADD_EXECUTABLE (CompServ 
+  ${SOURCE_FILES} ${INCLUDE_FILES}
+)
+
+set(LIBS
+  GenSeg
+  SegCapsid
+  SegMonomer
+  SegSubunit
+  SegMed
+  SecStruct
+  XmlRPC
+)
+
+if(BUILD_PEDETECTION_LIB)
+  set(LIBS ${LIBS} PEDetection)
+endif(BUILD_PEDETECTION_LIB)
+
+if(BUILD_RECONSTRUCTION_LIB)
+  set(LIBS ${LIBS} Reconstruction)
+endif(BUILD_RECONSTRUCTION_LIB)
+
+TARGET_LINK_LIBRARIES(CompServ
+  ${LIBS}
+)

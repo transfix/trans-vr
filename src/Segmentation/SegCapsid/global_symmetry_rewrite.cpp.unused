@@ -1,0 +1,155 @@
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <math.h>
+#include <memory.h>
+#include <time.h>
+#include <segmentationDataStructures.h>
+#include <rotate.h>
+
+#define max2(x, y) ((x>y) ? (x):(y))
+#define min2(x, y) ((x<y) ? (x):(y))
+#define PIE           3.1415926536f
+//the angle between two adjacent vertices in a regular icosahedron
+#define ANGL1         1.1071487178f
+//ANGL2 = PIE - ANGL1  This is the angle between 2 vertices in an icosahedron,
+//you'll have to look at an image to see which vertices.
+#define ANGL2         2.0344439358f
+#define MINDIST       10
+#define PolyNum       15
+
+#define IndexVect(i,j,k) ((k)*XDIM*YDIM + (j)*XDIM + (i))
+
+typedef struct{
+	bin axis;
+	float score;
+}scoreBin;
+
+void globalSymmetry(int xdim, int ydim, int zdim, float *data, CPNT *critical, bin *FiveFold);
+float globalSymmetryScore(bin axis, CPNT *critical);
+void globalRefinement(float *, float *, float *);
+void bubbleSort(scoreBin *axes, int numAxes);
+
+void globalSymmetry(int xdim, int ydim, int zdim, float *data, CPNT *critical, bin *FiveFold){
+	float theta, phi;
+	int i;
+	scoreBin axes[2];
+	scoreBin testBin;
+	for(i=0; i<2; i++){
+		axes[i].axis.phi = 0;
+		axes[i].axis.theta = 0;
+		axes[i].score = 999999999;
+	}
+	/*-Jesse-****************************************************************************************
+	I choose the step value of 0.005 ~ arctan(1/200), which gives us a sampeling at least as dense as
+	a uniform sampeling of a sphere of radius 200.*/
+	for(testBin.axis.theta=0; testBin.axis.theta<2*PIE; testBin.axis.theta+=.005){
+		for(testBin.axis.phi=-PIE; testBin.axis.phi<PIE; testBin.axis.phi+=.005){
+			testBin.score = globalSymmetryScore(testBin.axis, critical, xdim, ydim, zdim);
+			if(testBin.score < axes[0]){ // test < axes[0] < axes[1]
+				if(abs(testBin.axis.theta - axes[0].axis.theta) > ANGL1/2  ||  abs(testBin.axis.phi - axes[0].axis.phi) > ANGL1/2){
+					axes[1] = axes[0];
+					axes[0] = testBin;
+				}
+			}else if(testBin.score < axes[1]){// axes[0] < test < axes[1]
+				if(abs(testBin.axis.theta - axes[0].axis.theta) > ANGL1/2  ||  abs(testBin.axis.phi - axes[0].axis.phi) > ANGL1/2){
+					axes[1] = testBin;
+				}
+			}
+		}
+	}
+	//refine 2 axes
+
+	FiveFold[0].theta = axes[0].axis.theta;
+	FiveFold[0].phi
+	FiveFold[11].x = XDIM - FiveFold[0].x;
+	FiveFold[11].y = YDIM - FiveFold[0].y;
+	FiveFold[11].z = ZDIM - FiveFold[0].z;
+	//GlobalRefinement(&FiveFold[11].x, &FiveFold[11].y, &FiveFold[11].z);
+
+	FiveFold[6].x = XDIM - FiveFold[1].x;
+	FiveFold[6].y = YDIM - FiveFold[1].y;
+	FiveFold[6].z = ZDIM - FiveFold[1].z;
+	//GlobalRefinement(&FiveFold[6].x, &FiveFold[6].y, &FiveFold[6].z);
+	
+	cx = FiveFold[0].x-XDIM/2;
+	cy = FiveFold[0].y-YDIM/2;
+	cz = FiveFold[0].z-ZDIM/2;
+	theta = (float)atan2(cy,cx);
+	phi = (float)atan2(cz, sqrt(cx*cx+cy*cy));
+	for (n = 1; n < 5; n++) { 
+		sv = Rotate(FiveFold[1].x,FiveFold[1].y,FiveFold[1].z,theta,phi,n*2.0f*PIE/5.0f, XDIM, YDIM, ZDIM);
+		FiveFold[n+1].x = sv.x;
+		FiveFold[n+1].y = sv.y;
+		FiveFold[n+1].z = sv.z;
+		//GlobalRefinement(&FiveFold[n+1].x, &FiveFold[n+1].y, &FiveFold[n+1].z);
+
+		FiveFold[n+6].x = XDIM - FiveFold[n+1].x;
+		FiveFold[n+6].y = YDIM - FiveFold[n+1].y;
+		FiveFold[n+6].z = ZDIM - FiveFold[n+1].z;
+		//GlobalRefinement(&FiveFold[n+6].x, &FiveFold[n+6].y, &FiveFold[n+6].z);
+	}
+	//rotate around to get all 12
+	//refine all 12
+}
+
+float globalSymmetryScore(bin axis, CPNT *critical, int xdim, int ydim, int zdim){
+	CPNT *critical_tmp;
+	int numCritical = 0;
+	int i;
+	floatVoxel rotatedPT[5];
+	float average, deviation, score;
+	
+	critical_tmp = critical;
+	numCritical = 0;
+	score = 0;
+
+	while (critical_tmp != NULL) {
+		rotatedPT[0].x = (float)(critical_tmp->x-xdim/2);
+		rotatedPT[0].y = (float)(critical_tmp->y-ydim/2);
+		rotatedPT[0].z = (float)(critical_tmp->z-zdim/2);
+//		if(critical_tmp is near the axis of rotation)*/
+			average = IndexVect(rotatedPT[0].x,rotatedPT[0].y,rotatedPT[0].z)];
+			for(i=1; i<5; i++){
+				rotatedPT[i] = rotate(&rotatedPT[0], &rotatedPT[i], &axis, i*2*PIE/5, xdim, ydim, zdim);
+				average += data[IndexVect(rotatedPT[i].x,rotatedPT[i].y,rotatedPT[i].z)];
+			}
+			average /= 5;
+			deviation = 0;
+			for(i=0; i<5; i++){
+				deviation += abs(data[IndexVect(rotatedPT[i].x,rotatedPT[i].y,rotatedPT[i].z)] - average);
+			}
+			deviation /= 5;
+			numCritical ++;
+			score += deviation;
+//		}//if(critical_tmp is near rotation)
+	}
+	return score / numCritical;
+}
+
+void globalRefinement(){
+}
+
+void bubbleSort(scoreBin *axes, int numAxes){
+	bool swapped;
+	float tempTheta, tempPhi, tempScore;
+	do{
+		swapped = false;
+		numAxes --;
+		for(i=0; i<numAxes; i++){
+			if(axes[i].score > axes[i+1].score){
+				tempTheta = axes[i].axis.theta;
+				tempPhi = axes[i].axis.phi;
+				tempScore = axes[i].score;
+				axes[i].axis.theta = axes[i+1].axis.theta;
+				axes[i].axis.phi = axes[i+1].axis.phi;
+				axes[i].score = axes[i+1].score;
+				axes[i+1].axis.theta = tempTheta;
+				axes[i+1].axis.phi = tempPhi;
+				axes[i+1].score = tempScore;
+				swapped = true;
+			}
+		}
+	}while(swapped);
+}

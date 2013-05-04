@@ -1,0 +1,115 @@
+<!DOCTYPE UI><UI version="3.3" stdsetdef="1">
+<class>CurationDialogBase</class>
+<widget class="QDialog">
+    <property name="name">
+        <cstring>CurationDialogBase</cstring>
+    </property>
+    <property name="geometry">
+        <rect>
+            <x>0</x>
+            <y>0</y>
+            <width>363</width>
+            <height>120</height>
+        </rect>
+    </property>
+    <property name="caption">
+        <string>Curation</string>
+    </property>
+    <grid>
+        <property name="name">
+            <cstring>unnamed</cstring>
+        </property>
+        <widget class="QLabel" row="0" column="0">
+            <property name="name">
+                <cstring>m_MergeRatioText</cstring>
+            </property>
+            <property name="text">
+                <string>Merge Ratio:</string>
+            </property>
+        </widget>
+        <widget class="QLineEdit" row="0" column="2" rowspan="1" colspan="2">
+            <property name="name">
+                <cstring>m_MergeRatio</cstring>
+            </property>
+        </widget>
+        <widget class="QLabel" row="1" column="0" rowspan="1" colspan="2">
+            <property name="name">
+                <cstring>m_OutputSegCountText</cstring>
+            </property>
+            <property name="text">
+                <string>Number of output segments:</string>
+            </property>
+        </widget>
+        <widget class="QLineEdit" row="1" column="2" rowspan="1" colspan="2">
+            <property name="name">
+                <cstring>m_OutputSegCount</cstring>
+            </property>
+        </widget>
+        <widget class="QPushButton" row="2" column="3">
+            <property name="name">
+                <cstring>m_Ok</cstring>
+            </property>
+            <property name="sizePolicy">
+                <sizepolicy>
+                    <hsizetype>1</hsizetype>
+                    <vsizetype>1</vsizetype>
+                    <horstretch>0</horstretch>
+                    <verstretch>0</verstretch>
+                </sizepolicy>
+            </property>
+            <property name="text">
+                <string>Ok</string>
+            </property>
+        </widget>
+        <spacer row="2" column="0">
+            <property name="name">
+                <cstring>spacer3</cstring>
+            </property>
+            <property name="orientation">
+                <enum>Horizontal</enum>
+            </property>
+            <property name="sizeType">
+                <enum>Expanding</enum>
+            </property>
+            <property name="sizeHint">
+                <size>
+                    <width>151</width>
+                    <height>31</height>
+                </size>
+            </property>
+        </spacer>
+        <widget class="QPushButton" row="2" column="1" rowspan="1" colspan="2">
+            <property name="name">
+                <cstring>m_Cancel</cstring>
+            </property>
+            <property name="sizePolicy">
+                <sizepolicy>
+                    <hsizetype>1</hsizetype>
+                    <vsizetype>1</vsizetype>
+                    <horstretch>0</horstretch>
+                    <verstretch>0</verstretch>
+                </sizepolicy>
+            </property>
+            <property name="text">
+                <string>Cancel</string>
+            </property>
+        </widget>
+    </grid>
+</widget>
+<connections>
+    <connection>
+        <sender>m_Cancel</sender>
+        <signal>clicked()</signal>
+        <receiver>CurationDialogBase</receiver>
+        <slot>reject()</slot>
+    </connection>
+    <connection>
+        <sender>m_Ok</sender>
+        <signal>clicked()</signal>
+        <receiver>CurationDialogBase</receiver>
+        <slot>accept()</slot>
+    </connection>
+</connections>
+<pixmapinproject/>
+<layoutdefaults spacing="6" margin="11"/>
+</UI>

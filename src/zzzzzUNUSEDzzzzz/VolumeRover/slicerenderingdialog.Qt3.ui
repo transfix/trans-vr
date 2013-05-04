@@ -1,0 +1,363 @@
+<!DOCTYPE UI><UI version="3.3" stdsetdef="1">
+<class>SliceRenderingDialog</class>
+<widget class="QDialog">
+    <property name="name">
+        <cstring>SliceRenderingDialog</cstring>
+    </property>
+    <property name="geometry">
+        <rect>
+            <x>0</x>
+            <y>0</y>
+            <width>401</width>
+            <height>321</height>
+        </rect>
+    </property>
+    <property name="caption">
+        <string>Slice Rendering</string>
+    </property>
+    <grid>
+        <property name="name">
+            <cstring>unnamed</cstring>
+        </property>
+        <property name="resizeMode">
+            <enum>Fixed</enum>
+        </property>
+        <widget class="QCheckBox" row="0" column="0" rowspan="1" colspan="4">
+            <property name="name">
+                <cstring>m_SliceRenderingEnabled</cstring>
+            </property>
+            <property name="text">
+                <string>Render 2D slices in 3D View</string>
+            </property>
+        </widget>
+        <widget class="QLabel" row="1" column="0">
+            <property name="name">
+                <cstring>m_VariableText</cstring>
+            </property>
+            <property name="text">
+                <string>Variable:</string>
+            </property>
+        </widget>
+        <widget class="QLabel" row="1" column="2">
+            <property name="name">
+                <cstring>m_TimeStepText</cstring>
+            </property>
+            <property name="text">
+                <string>Time Step:</string>
+            </property>
+        </widget>
+        <widget class="QSpinBox" row="1" column="3">
+            <property name="name">
+                <cstring>m_Timestep</cstring>
+            </property>
+        </widget>
+        <widget class="QComboBox" row="1" column="1">
+            <property name="name">
+                <cstring>m_Variable</cstring>
+            </property>
+        </widget>
+        <widget class="QGroupBox" row="2" column="0" rowspan="1" colspan="2">
+            <property name="name">
+                <cstring>m_SliceToRenderGroup</cstring>
+            </property>
+            <property name="title">
+                <string>Slices to Render</string>
+            </property>
+            <vbox>
+                <property name="name">
+                    <cstring>unnamed</cstring>
+                </property>
+                <widget class="QLayoutWidget">
+                    <property name="name">
+                        <cstring>layout11</cstring>
+                    </property>
+                    <hbox>
+                        <property name="name">
+                            <cstring>unnamed</cstring>
+                        </property>
+                        <widget class="QCheckBox">
+                            <property name="name">
+                                <cstring>m_SliceToRenderXY</cstring>
+                            </property>
+                            <property name="text">
+                                <string>XY</string>
+                            </property>
+                            <property name="checked">
+                                <bool>false</bool>
+                            </property>
+                        </widget>
+                        <widget class="QCheckBox">
+                            <property name="name">
+                                <cstring>m_GrayscaleXY</cstring>
+                            </property>
+                            <property name="text">
+                                <string>Grayscale</string>
+                            </property>
+                        </widget>
+                    </hbox>
+                </widget>
+                <widget class="QLayoutWidget">
+                    <property name="name">
+                        <cstring>layout12</cstring>
+                    </property>
+                    <hbox>
+                        <property name="name">
+                            <cstring>unnamed</cstring>
+                        </property>
+                        <widget class="QCheckBox">
+                            <property name="name">
+                                <cstring>m_SliceToRenderXZ</cstring>
+                            </property>
+                            <property name="text">
+                                <string>XZ</string>
+                            </property>
+                        </widget>
+                        <widget class="QCheckBox">
+                            <property name="name">
+                                <cstring>m_GrayscaleXZ</cstring>
+                            </property>
+                            <property name="text">
+                                <string>Grayscale</string>
+                            </property>
+                        </widget>
+                    </hbox>
+                </widget>
+                <widget class="QLayoutWidget">
+                    <property name="name">
+                        <cstring>layout13</cstring>
+                    </property>
+                    <hbox>
+                        <property name="name">
+                            <cstring>unnamed</cstring>
+                        </property>
+                        <widget class="QCheckBox">
+                            <property name="name">
+                                <cstring>m_SliceToRenderZY</cstring>
+                            </property>
+                            <property name="text">
+                                <string>ZY</string>
+                            </property>
+                        </widget>
+                        <widget class="QCheckBox">
+                            <property name="name">
+                                <cstring>m_GrayscaleZY</cstring>
+                            </property>
+                            <property name="text">
+                                <string>Grayscale</string>
+                            </property>
+                        </widget>
+                    </hbox>
+                </widget>
+            </vbox>
+        </widget>
+        <widget class="QGroupBox" row="2" column="2" rowspan="1" colspan="2">
+            <property name="name">
+                <cstring>m_RenderAdjacentSlicesGroup</cstring>
+            </property>
+            <property name="title">
+                <string>Render Adjacent Slices</string>
+            </property>
+            <vbox>
+                <property name="name">
+                    <cstring>unnamed</cstring>
+                </property>
+                <widget class="QLayoutWidget">
+                    <property name="name">
+                        <cstring>layout8</cstring>
+                    </property>
+                    <hbox>
+                        <property name="name">
+                            <cstring>unnamed</cstring>
+                        </property>
+                        <widget class="QCheckBox">
+                            <property name="name">
+                                <cstring>m_RenderAdjacentSliceXY</cstring>
+                            </property>
+                            <property name="text">
+                                <string>XY</string>
+                            </property>
+                        </widget>
+                        <widget class="QLabel">
+                            <property name="name">
+                                <cstring>m_RenderAdjacentSlicesOffsetXYText</cstring>
+                            </property>
+                            <property name="text">
+                                <string>Offset:</string>
+                            </property>
+                        </widget>
+                        <widget class="QLineEdit">
+                            <property name="name">
+                                <cstring>m_RenderAdjacentSliceOffsetXY</cstring>
+                            </property>
+                            <property name="text">
+                                <string>1</string>
+                            </property>
+                        </widget>
+                    </hbox>
+                </widget>
+                <widget class="QLayoutWidget">
+                    <property name="name">
+                        <cstring>layout9</cstring>
+                    </property>
+                    <hbox>
+                        <property name="name">
+                            <cstring>unnamed</cstring>
+                        </property>
+                        <widget class="QCheckBox">
+                            <property name="name">
+                                <cstring>m_RenderAdjacentSliceXZ</cstring>
+                            </property>
+                            <property name="text">
+                                <string>XZ</string>
+                            </property>
+                        </widget>
+                        <widget class="QLabel">
+                            <property name="name">
+                                <cstring>m_RenderAdjacentSlicesOffsetXZText</cstring>
+                            </property>
+                            <property name="text">
+                                <string>Offset:</string>
+                            </property>
+                        </widget>
+                        <widget class="QLineEdit">
+                            <property name="name">
+                                <cstring>m_RenderAdjacentSliceOffsetXZ</cstring>
+                            </property>
+                            <property name="text">
+                                <string>1</string>
+                            </property>
+                        </widget>
+                    </hbox>
+                </widget>
+                <widget class="QLayoutWidget">
+                    <property name="name">
+                        <cstring>layout10</cstring>
+                    </property>
+                    <hbox>
+                        <property name="name">
+                            <cstring>unnamed</cstring>
+                        </property>
+                        <widget class="QCheckBox">
+                            <property name="name">
+                                <cstring>m_RenderAdjacentSliceZY</cstring>
+                            </property>
+                            <property name="text">
+                                <string>ZY</string>
+                            </property>
+                        </widget>
+                        <widget class="QLabel">
+                            <property name="name">
+                                <cstring>m_RenderAdjacentSlicesOffsetZYText</cstring>
+                            </property>
+                            <property name="text">
+                                <string>Offset:</string>
+                            </property>
+                        </widget>
+                        <widget class="QLineEdit">
+                            <property name="name">
+                                <cstring>m_RenderAdjacentSliceOffsetZY</cstring>
+                            </property>
+                            <property name="text">
+                                <string>1</string>
+                            </property>
+                        </widget>
+                    </hbox>
+                </widget>
+            </vbox>
+        </widget>
+        <widget class="QGroupBox" row="3" column="2" rowspan="1" colspan="2">
+            <property name="name">
+                <cstring>m_DialogButtonGroup</cstring>
+            </property>
+            <property name="title">
+                <string></string>
+            </property>
+            <widget class="QPushButton">
+                <property name="name">
+                    <cstring>m_OkButton</cstring>
+                </property>
+                <property name="geometry">
+                    <rect>
+                        <x>11</x>
+                        <y>11</y>
+                        <width>167</width>
+                        <height>32</height>
+                    </rect>
+                </property>
+                <property name="text">
+                    <string>Ok</string>
+                </property>
+            </widget>
+            <widget class="QPushButton">
+                <property name="name">
+                    <cstring>m_CancelButton</cstring>
+                </property>
+                <property name="geometry">
+                    <rect>
+                        <x>11</x>
+                        <y>49</y>
+                        <width>167</width>
+                        <height>32</height>
+                    </rect>
+                </property>
+                <property name="text">
+                    <string>Cancel</string>
+                </property>
+            </widget>
+        </widget>
+        <widget class="QGroupBox" row="3" column="0" rowspan="1" colspan="2">
+            <property name="name">
+                <cstring>m_Draw2DContoursGroup</cstring>
+            </property>
+            <property name="title">
+                <string>Draw 2D Contours on Slices</string>
+            </property>
+            <grid>
+                <property name="name">
+                    <cstring>unnamed</cstring>
+                </property>
+                <widget class="QCheckBox" row="0" column="0">
+                    <property name="name">
+                        <cstring>m_Draw2DContoursXY</cstring>
+                    </property>
+                    <property name="text">
+                        <string>XY</string>
+                    </property>
+                </widget>
+                <widget class="QCheckBox" row="2" column="0">
+                    <property name="name">
+                        <cstring>m_Draw2DContoursZY</cstring>
+                    </property>
+                    <property name="text">
+                        <string>ZY</string>
+                    </property>
+                </widget>
+                <widget class="QCheckBox" row="1" column="0">
+                    <property name="name">
+                        <cstring>m_Draw2DContoursXZ</cstring>
+                    </property>
+                    <property name="text">
+                        <string>XZ</string>
+                    </property>
+                </widget>
+            </grid>
+        </widget>
+    </grid>
+</widget>
+<connections>
+    <connection>
+        <sender>m_OkButton</sender>
+        <signal>clicked()</signal>
+        <receiver>SliceRenderingDialog</receiver>
+        <slot>accept()</slot>
+    </connection>
+    <connection>
+        <sender>m_CancelButton</sender>
+        <signal>clicked()</signal>
+        <receiver>SliceRenderingDialog</receiver>
+        <slot>reject()</slot>
+    </connection>
+</connections>
+<pixmapinproject/>
+<layoutdefaults spacing="6" margin="11"/>
+</UI>

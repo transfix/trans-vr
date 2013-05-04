@@ -1,0 +1,762 @@
+
+
+
+#include <SuperSecondaryStructures/segment.h>
+
+namespace SuperSecondaryStructures
+{
+
+
+
+// ------------------------------------------------------
+// merge_cluster
+// ---------------------
+// merge cluster rep2 to cluster rep1 
+// ------------------------------------------------------ 
+
+void merge_cluster(map<int, cell_cluster> &cluster_set, int rep1, int rep2, bool outside)
+{
+	cell_cluster *c_rep1 = &cluster_set[rep1];
+	cell_cluster *c = &cluster_set[c_rep1->tail];
+	
+	
+	CGAL_assertion(c != 0);
+	CGAL_assertion(c->nxt == NULL);
+	
+	cell_cluster *c_rep2 = &cluster_set[rep2];
+	c_rep1->tail = c_rep2->tail;
+	
+	c->nxt = c_rep2;
+	while(c->nxt != 0) { 
+		c->nxt->rep = rep1;
+		c->nxt->is_outside = outside;
+		c = c->nxt; 
+	}
+
+}
+
+void merge_cluster(map<int, cell_cluster> &cluster_set, int rep1, int rep2)
+{
+	cell_cluster *c_rep1 = &cluster_set[rep1];
+	cell_cluster *c = &cluster_set[c_rep1->tail];
+	
+	CGAL_assertion(c != 0);
+	CGAL_assertion(c->nxt == NULL);
+	
+	cell_cluster *c_rep2 = &cluster_set[rep2];
+	c_rep1->tail = c_rep2->tail;
+	
+	c->nxt = c_rep2;
+	while(c->nxt != 0) { 
+		c->nxt->rep = rep1;
+		c = c->nxt; 
+	}
+}
+
+
+
+
+// ------------------------------------------------------
+// sort_sink
+// ---------------------
+// Sort the sinks according to their birth-metric. 
+// Birth_metric is just the circumradius.
+// ------------------------------------------------------ 
+void
+sort_sink(Triangulation &triang,
+	  vector<Cell_handle> &sorted_sink_vector)
+{
+	// Clear the storage of sorted_sink_vector.
+	sorted_sink_vector.clear();
+
+
+	// collect the sinks in a temporary vector.
+	vector<Cell_handle> temp_sink_vector;
+	for(FCI cit = triang.finite_cells_begin();
+		cit != triang.finite_cells_end(); cit ++)
+        {
+           if( ! cit->sink() ) continue;
+           #ifdef __OUTSIDE__
+	   if(cit->outside)
+	   {
+	      CGAL_assertion(!cit->dirty());
+	      temp_sink_vector.push_back(cit);
+	   }
+           #endif
+           #ifdef __INSIDE__
+	   if( ! cit->outside)
+	   {
+	      CGAL_assertion(!cit->dirty());
+	      temp_sink_vector.push_back(cit);
+	   }
+           #endif
+        }
+	vector<bool> visited;
+	visited.clear(); visited.resize(temp_sink_vector.size(), false);
+
+	for(int i = 0; i < (int)temp_sink_vector.size(); i ++)
+	{
+		int ind = -1; double max = 0;
+		for(int j = 0; j < (int)temp_sink_vector.size(); j ++) 
+		{
+			if(visited[j]) continue;
+			Cell_handle c = temp_sink_vector[j];
+			CGAL_assertion(! c->dirty());
+			double r = c->cell_radius();
+			CGAL_assertion(r > 0);
+			if(r > max)
+			{
+				max = c->cell_radius();
+				ind = j;
+			}
+		}
+		CGAL_assertion(ind != -1); CGAL_assertion(max != -HUGE);
+		visited[ind] = true;
+		sorted_sink_vector.push_back(temp_sink_vector[ind]);
+	}
+
+	CGAL_assertion(sorted_sink_vector.size() == temp_sink_vector.size());
+}
+
+
+
+
+
+// ------------------------------------------------------
+// grow_sink
+// ---------
+// Grow the sinks according to the direction of flow.
+// ------------------------------------------------------
+void
+grow_sink(Triangulation &triang,
+	  map<int, cell_cluster> &cluster_set,
+	  vector<Cell_handle> &sorted_sink_vector,
+	  vector<double> &cluster_birth_vector )
+{
+    // The member of cell called "visited" will be used here. So reset that.
+    for(FCI cit = triang.finite_cells_begin();
+	  cit != triang.finite_cells_end(); cit ++)
+	    cit->visited = false;
+
+    int cluster_id = -1;
+
+    for(int i = 0; i < (int)sorted_sink_vector.size(); i ++)
+    {
+	    // when min height sink has the higher priority
+	    Cell_handle ch_sink = sorted_sink_vector[sorted_sink_vector.size() - i - 1];
+
+	    // when max height sink has the higher priority
+	    //Cell_handle ch_sink = sorted_sink_vector[i];
+
+	    CGAL_assertion(ch_sink->sink());
+	    CGAL_assertion(!ch_sink->visited);
+
+	    if(ch_sink->cosph_leader_id() != -1)
+		    CGAL_assertion(ch_sink->cosph_leader_id() == ch_sink->id);
+
+
+	    // assign the cluster id.
+	    cluster_id ++;
+	    ch_sink->set_cluster_id(cluster_id);
+	    // mark it visited.
+	    ch_sink->visited = true;
+
+	    
+	    // maintain the cluster_set data structure.
+	    CGAL_assertion(cluster_set[ch_sink->id].find() == ch_sink->id);
+	    // and it should remain so.
+
+	    // Now grow the sink through the other tetrahedra.
+	    vector<Facet> bdy_stack;
+
+	    for(int j = 0; j < 4; j ++)
+	    {
+		    bdy_stack.push_back(Facet(ch_sink, j));
+	    }
+
+	    while(! bdy_stack.empty())
+	    {
+		    Cell_handle old_c = bdy_stack.back().first;
+		    int old_id = bdy_stack.back().second;
+		    bdy_stack.pop_back();
+		    CGAL_assertion(old_c->visited);
+		    CGAL_assertion(!triang.is_infinite(old_c) );
+		    CGAL_assertion(old_c->cluster_id() != -1 &&
+				   old_c->cluster_id() == cluster_id);
+
+		    Cell_handle new_c = old_c->neighbor(old_id);
+		    int new_id = new_c->index(old_c);
+
+		    // If the new_c is infinite then no point in checking
+		    // the flow.
+		    if(triang.is_infinite(new_c))
+			    continue;
+		    // If the flow hits the surface then continue.
+		    if(old_c->cocone_flag(old_id))
+		    {
+			    CGAL_assertion(new_c->cocone_flag(new_id));
+			    continue;
+		    }
+
+		    // If new_c is already visited then another
+		    // more powerful sink must have taken it.
+		    // so continue.
+		    if(new_c->visited) 
+		    {
+			    CGAL_assertion(new_c->cluster_id() != -1);
+			    continue;
+		    }
+
+		    // if the flow is undefined then do the following.
+		    if(!((old_c->source(old_id) && new_c->terminus(new_id)) || 
+			 (old_c->terminus(old_id) && new_c->source(new_id)) || 
+			 (old_c->terminus(old_id) && new_c->terminus(new_id)) ) )
+		    {
+			    // they must be a cospherical pair.
+			    CGAL_assertion(old_c->cosph_pair(old_id) &&
+					   new_c->cosph_pair(new_id));
+			    // if they are cospherical pair then this is
+			    // also true.
+			    CGAL_assertion(! old_c->source(old_id) &&
+					   ! old_c->terminus(old_id) &&
+					   ! new_c->source(new_id) &&
+					   ! new_c->terminus(new_id) );
+			    
+			    // if new_c is sink then it is already visited
+			    // and cospherical leader of old_c is new_c
+			    if(new_c->sink())
+			    {
+				    cerr << "error in my assumption about flow relation. " << endl;
+				    CGAL_assertion(old_c->cosph_leader_id() == new_c->id);
+				    CGAL_assertion(new_c->visited);
+				    continue;
+			    }
+		
+			    // some safety checks.
+		    	    // it can not be a sink.
+		    	    CGAL_assertion(!new_c->sink());
+		    	    // It can not be an infinite tetrahedron.
+		    	    CGAL_assertion(! triang.is_infinite(new_c));
+		    	    // new_c can't be already visited.
+		    	    CGAL_assertion(!new_c->visited);
+
+			    // take the new cell into the cluster.
+			    new_c->set_cluster_id(cluster_id);
+		    	    // mark it visited.
+		    	    new_c->visited = true;
+			    
+	    		    CGAL_assertion(new_c->cluster_id() != -1);
+		    	    // get the new cells.
+		    	    for(int j = 1; j < 4; j ++)
+			    {
+			       if(new_c->neighbor((new_id+j)%4)->visited) 
+				       continue;
+			       bdy_stack.push_back(Facet(new_c, (new_id+j)%4));
+			    }
+
+		    	    // maintain cluster_set data structure.
+		    	    CGAL_assertion(cluster_set[new_c->id].find() == new_c->id);
+
+                            merge_cluster(cluster_set, ch_sink->id, new_c->id, ch_sink->outside);
+
+			    continue;
+		    }
+
+		    // now there are three possibilities left for
+		    // this flow which is defined.
+		    if(old_c->source(old_id))
+		    {
+			    CGAL_assertion(new_c->terminus(new_id));
+			    continue;
+		    }
+		    if(old_c->terminus(old_id) &&
+		       new_c->terminus(new_id) )
+		    {
+			    // this is a saddle face.
+			    continue;
+		    }
+		    CGAL_assertion(old_c->terminus(old_id) &&
+				   new_c->source(new_id) );
+		    
+		    // some safety checks.
+		    // it can not be a sink.
+		    CGAL_assertion(!new_c->sink());
+		    // It can not be an infinite tetrahedron.
+		    CGAL_assertion(! triang.is_infinite(new_c));
+		    // new_c can't be already visited.
+		    CGAL_assertion(!new_c->visited);
+
+		    // some maintainance.
+		    // set the cluster id.
+		    new_c->set_cluster_id(cluster_id);
+		    // mark it visited.
+		    new_c->visited = true;
+
+	    	    CGAL_assertion(new_c->cluster_id() != -1);
+
+		    // get the new cells.
+		    for(int j = 1; j < 4; j ++)
+		    {
+			    bdy_stack.push_back(Facet(new_c,(new_id+j)%4) );	    
+		    }
+
+		    // maintain cluster_set data structure.
+		    CGAL_assertion(cluster_set[new_c->id].find() == new_c->id);
+
+                    merge_cluster(cluster_set, ch_sink->id, new_c->id, ch_sink->outside);
+	    }
+	    
+	    cluster_birth_vector.push_back(ch_sink->cell_radius());
+    }
+    // At the end of growing all the clusters, the size of cluster_birth_vector
+    // should be same as that of sorted_sink_vector.
+    CGAL_assertion(cluster_birth_vector.size() == sorted_sink_vector.size());
+}
+
+// ------------------------------------------------------
+// club_segment
+// ------------
+// The inside of the shape has already been segmented by
+// growing the sinks. This routine will try to club some 
+// of them.
+// ------------------------------------------------------
+void
+club_connected_segment(Triangulation &triang,
+                       vector<int>& sorted_cluster_index_vector)
+{
+
+   // reset the visited flag in the cell.
+   for(FCI cit = triang.finite_cells_begin();
+      cit != triang.finite_cells_end(); cit ++)
+      cit->visited = false;
+  
+
+   // walk through the cells and mark all connected segments belong
+   // to the same cluster.
+   int cl_id = -1;
+   // keep the volume for every cluster.
+   vector<double> cl_vol_vector;
+   for(FCI cit = triang.finite_cells_begin();
+      cit != triang.finite_cells_end(); cit ++)
+   {
+      if( cit->cluster_id() == -1 ) continue;
+      if( cit->visited ) continue;
+
+      #ifdef __OUTSIDE__
+      if( ! cit->outside ) continue;
+      #endif
+
+      // put it into a stack and walk.
+      vector<Cell_handle> walk;
+      cit->visited = true;
+      walk.push_back(cit);
+
+      cl_id++;
+      double vol = 0;
+ 
+      while( ! walk.empty() )
+      {
+         Cell_handle c = walk.back();
+         walk.pop_back();
+         CGAL_assertion(c->visited);
+         
+         c->set_con_cl_id( cl_id );
+         vol += cell_volume(c);
+         
+         // collect the neighbors
+         for(int i = 0; i < 4; i ++)
+         {
+            if( c->cocone_flag(i) ) continue;
+            if( c->neighbor(i)->cluster_id() == -1 ) continue;
+            if( c->neighbor(i)->visited ) continue;
+
+            c->neighbor(i)->visited = true;
+            walk.push_back( c->neighbor(i) );
+         }
+      }
+
+      cl_vol_vector.push_back(vol);
+   }
+   cerr << "biggest cl_id " << cl_id << endl;
+
+   vector<bool> b;
+   b.resize((int)cl_vol_vector.size(), false);
+
+   for(int i = 0; i < (int)cl_vol_vector.size(); i ++)
+   {
+      double max = -HUGE; int ind = -1;
+      for(int j = 0; j < (int)cl_vol_vector.size(); j ++)
+      {
+         if(b[j]) continue;
+         if( cl_vol_vector[j] > max)
+         {
+            max = cl_vol_vector[j];
+            ind = j;
+         }
+      }
+      CGAL_assertion( max != -HUGE && ind != -1);
+      sorted_cluster_index_vector.push_back(ind);
+      b[ind] = true;
+   }
+
+   // debug
+   for(int i = 0; i < (int)sorted_cluster_index_vector.size() - 1; i ++)
+      CGAL_assertion(cl_vol_vector[sorted_cluster_index_vector[i]] >=
+                     cl_vol_vector[sorted_cluster_index_vector[i+1]] );
+   
+ 
+   // end debug
+   
+
+
+   /*
+
+   for(FFI fit = triang.finite_facets_begin();
+	fit != triang.finite_facets_end(); fit ++)
+   {
+      Cell_handle c = (*fit).first; int id = (*fit).second;
+      // each finite facet has atleast one finite cell incident.
+      if(triang.is_infinite(c) || triang.is_infinite(c->neighbor(id)))
+         continue;
+
+      // if the facet is not a boundary of two clusters
+      // continue.
+      if(c->cluster_id() == -1 ||
+         c->neighbor(id)->cluster_id() == -1)
+         continue;
+
+      // if the two clusters are not different
+      // continue.
+      if(cluster_set[c->id].find() == 
+         cluster_set[c->neighbor(id)->id].find()) continue;
+
+      // merging should be done only between in-in and out-out.
+      if(cluster_set[c->id].outside() != 
+         cluster_set[c->neighbor(id)->id].outside())
+         continue;
+
+      // we got a facet that is in the boundary of two diff. clusters.
+      // and the clusters are both in or both out.
+
+      // if one of the cells is dirty continue.
+      if(c->dirty() || c->neighbor(id)->dirty()) continue;
+		   
+      // we can merge the two clusters.
+      int rep1 = cluster_set[c->id].find(); // gives the id of the sink c is flowing into.
+      int rep2 = cluster_set[c->neighbor(id)->id].find(); // - do -
+      CGAL_assertion(rep1 != rep2);
+
+      // safety 
+      CGAL_assertion(cluster_set[c->id].outside() ==
+		     cluster_set[c->neighbor(id)->id].outside());
+      // end safety
+
+      // make rep1 always the bigger cluster_id.
+      if(rep1 < rep2)
+      {
+         int t = rep1;
+	 rep1 = rep2;
+	 rep2 = t;
+      }
+      CGAL_assertion(rep1 > rep2);
+	   
+      cerr << "(" << rep1 << "," << rep2 << ") ";
+      merge_cluster(cluster_set, rep1, rep2);
+   }
+
+   */
+
+}
+
+// ------------------------------------------------------
+// club_segment
+// ------------
+// The inside of the shape has already been segmented by
+// growing the sinks. This routine will try to club some 
+// of them.
+// ------------------------------------------------------
+void
+club_segment(Triangulation &triang,
+	     map<int, cell_cluster> &cluster_set,
+	     const vector<double>& cluster_birth_vector,
+	     double merge_ratio)
+{
+
+   for(FFI fit = triang.finite_facets_begin();
+	fit != triang.finite_facets_end(); fit ++)
+   {
+	   Cell_handle c = (*fit).first; int id = (*fit).second;
+	   // each finite facet has atleast one finite cell incident.
+	   if(triang.is_infinite(c) || triang.is_infinite(c->neighbor(id)))
+		   continue;
+
+	   // if the facet is not a boundary of two clusters
+	   // continue.
+	   if(c->cluster_id() == -1 ||
+	      c->neighbor(id)->cluster_id() == -1)
+		   continue;
+
+	   // if the two clusters are not different
+	   // continue.
+	   if(cluster_set[c->id].find() == 
+	      cluster_set[c->neighbor(id)->id].find()) continue;
+
+	   // merging should be done only between in-in and out-out.
+	   if(cluster_set[c->id].outside() != 
+	      cluster_set[c->neighbor(id)->id].outside())
+		   continue;
+
+	   // we got a facet that is in the boundary of two diff. clusters.
+	   // and the clusters are both in or both out.
+
+	   // if one of the cells is dirty continue.
+	   if(c->dirty() || c->neighbor(id)->dirty()) continue;
+
+	   // find the circumradius of the facet.
+
+	   // if it's not a saddle facet get the minimum of the circumradii of 
+	   // the two neighboring tetrahedra.
+	   double facet_bm = 0;
+	   CGAL_assertion(c->saddle(id) == c->neighbor(id)->saddle(c->neighbor(id)->index(c)) );
+	   if(!c->saddle(id))
+		   facet_bm = c->cell_radius() <= c->neighbor(id)->cell_radius() ?
+			      c->cell_radius() : c->neighbor(id)->cell_radius();
+	   else
+	   {
+		   Point p1 = c->vertex((id+1)%4)->point();
+		   Point p2 = c->vertex((id+2)%4)->point();
+		   Point p3 = c->vertex((id+3)%4)->point();
+
+		   facet_bm = sq_cr_tr_3(p1, p2, p3);
+
+		   if(facet_bm > c->cell_radius() ||
+		      facet_bm > c->neighbor(id)->cell_radius())
+			   continue;
+		   CGAL_assertion(facet_bm <= c->cell_radius() &&
+				  facet_bm <= c->neighbor(id)->cell_radius());
+	   }
+
+	   // safety check
+	   // facet_birth_metric can't be 0.
+	   CGAL_assertion(facet_bm != 0);
+	   
+	   if(facet_bm > cluster_birth_vector[c->cluster_id()] ||
+	      facet_bm > cluster_birth_vector[c->neighbor(id)->cluster_id()] )
+		   continue;
+	   // end safety check
+
+	   // here comes merging step.
+	   if(cluster_birth_vector[c->cluster_id()]/facet_bm < merge_ratio &&
+	      cluster_birth_vector[c->neighbor(id)->cluster_id()]/facet_bm < merge_ratio)
+	   {
+		   // we can merge the two clusters.
+		   int rep1 = cluster_set[c->id].find(); // gives the id of the sink c is flowing into.
+		   int rep2 = cluster_set[c->neighbor(id)->id].find(); // - do -
+		   CGAL_assertion(rep1 != rep2);
+
+		   // safety 
+		   CGAL_assertion(cluster_set[c->id].outside() ==
+				  cluster_set[c->neighbor(id)->id].outside());
+		   // end safety
+
+		   // make rep1 always the bigger cluster_id.
+		   if(rep1 < rep2)
+		   {
+			   int t = rep1;
+			   rep1 = rep2;
+			   rep2 = t;
+		   }
+		   CGAL_assertion(rep1 > rep2);
+		   
+                   merge_cluster(cluster_set, rep1, rep2);
+	   }
+   }
+}
+
+
+// -------------------------------------------------------
+// calc_cluster_volume_and_store_with_cluster_rep
+// ----------------------------------------------
+// Calculate the volume of each cluster where the clusters
+// are identified with 'rep' field in the cluster set.
+// -------------------------------------------------------
+void
+calc_cluster_volume_and_store_with_cluster_rep(
+		Triangulation &triang,
+	        map<int, cell_cluster> &cluster_set,
+		vector<double> &cluster_volume_vector,
+		vector<int> &cluster_rep_vector )
+{
+
+    for(FCI cit = triang.finite_cells_begin();
+	cit != triang.finite_cells_end(); cit ++)
+    {
+	    if(cit->cluster_id() == -1) continue;
+	    // Compute the volume of the tetrahedron and add it to the existing 
+	    // volume of the cluster numbered cit->cluster_id()
+	    Tetrahedron t = Tetrahedron(cit->vertex(0)->point(),
+			                cit->vertex(1)->point(),
+				        cit->vertex(2)->point(),
+				        cit->vertex(3)->point());
+	    double volume = CGAL::to_double(t.volume());
+	    //CGAL_assertion(volume != 0);
+	    volume = (volume < 0)?-volume:volume;
+	    // see if we already computed some of the cluster volume.
+	    // in other words see if the 'rep' is there in the cluster_rep_vector.
+	    int rep = cluster_set[cit->id].find();
+	    bool found = false;
+	    int pos = -1;
+	    for(int i = 0; i < (int)cluster_rep_vector.size(); i ++)
+		    if(cluster_rep_vector[i] == rep) 
+		    {
+			    found = true;
+			    pos = i;
+			    break;
+		    }
+	    if(found)
+		    cluster_volume_vector[pos] += volume;
+	    else
+	    {
+		    cluster_volume_vector.push_back(volume);
+		    cluster_rep_vector.push_back(rep);
+	    }
+    }
+    CGAL_assertion(cluster_volume_vector.size() == cluster_rep_vector.size());
+}
+
+
+
+
+// ------------------------------------------------------
+// sort_cluster_wrt_volume
+// -----------------------
+// Sort the clusters wrt volume of each cluster
+// ------------------------------------------------------
+void
+sort_cluster_wrt_volume(const vector<double>& cluster_volume_vector,
+		        const vector<int>& cluster_rep_vector,
+		        vector<int>& sorted_cluster_index_vector)
+{
+    vector<bool> f;
+    f.clear(); f.resize(cluster_volume_vector.size(), false);
+    for(int i = 0; i < (int)cluster_volume_vector.size(); i ++)
+    {
+	    int ind = -1; double max = -HUGE;
+	    for(int j = 0; j < (int)cluster_volume_vector.size(); j ++)
+	    {
+		    if(f[j]) continue;
+		    if(cluster_volume_vector[j] > max)
+		    {
+			    max = cluster_volume_vector[j];
+			    ind = j;
+		    }
+	    }
+	    CGAL_assertion(ind != -1); CGAL_assertion(max != -HUGE);
+	    f[ind] = true;
+	    sorted_cluster_index_vector.push_back(cluster_rep_vector[ind]);
+    }
+}
+
+
+
+
+// ------------------------------------------------------
+// segment_shape
+// -------------
+// Segment the shape produced by tight cocone.
+// Assumption : Inside outside marking has been properly
+// done with respect to the shape reconstructed by tight
+// cocone.
+// ------------------------------------------------------
+vector<int>
+segment_shape(Triangulation &triang, const double merge_ratio,
+	      map<int, cell_cluster> &cluster_set)
+{
+   // Sort the sinks according to their birth-metrics (in descending order).
+   vector<Cell_handle> sorted_sink_vector;
+   sort_sink(triang, sorted_sink_vector);
+   cerr << ".";
+
+   // DEBUG.
+   // output the sinks.
+   cout << "{OFF" << endl;
+   cout << (int)sorted_sink_vector.size() << " "
+        << (int)sorted_sink_vector.size() << " 0" << endl;
+   for(int i = 0; i < (int)sorted_sink_vector.size(); i ++)
+      cout << sorted_sink_vector[i]->voronoi() << endl;
+   for(int i = 0; i < (int)sorted_sink_vector.size(); i ++)
+      cout << "1\t" << i << " 1 0 0 1" << endl;
+   // END DEBUG.
+	
+
+
+	// Grow the sinks to make a cluster for each of them.
+	// cluster_birth_vector contains the birth_metric(s) of
+	// sink(s) for each cluster.
+	// cluster_birth_vector[i] = birth_metric of sink of cluster_i
+	vector<double> cluster_birth_vector;
+	cluster_birth_vector.clear();
+	grow_sink(triang, cluster_set, sorted_sink_vector, cluster_birth_vector);
+	cerr << ".";
+
+
+
+	// Comment : Growing the sinks is not sufficient to segment a shape.
+	// Growing the sinks gives an initial segmentation and I need to 
+	// club some of them to get rid of the annoying fragments in segmentation.
+
+        // for pocket identification, we want to be very aggressive and merge any
+        // two connected segments.
+	// club_segment(triang, cluster_set, cluster_birth_vector, merge_ratio);
+	vector<int> sorted_cluster_index_vector;
+	club_connected_segment(triang, sorted_cluster_index_vector);
+	cerr << ".";
+
+        /*
+	// Compute the volume of each cluster. Remember after merging the 
+	// 'rep' field is more useful than cluster_id.
+	vector<int> cluster_rep_vector;
+	vector<double> cluster_volume_vector;
+	cluster_rep_vector.clear();
+	cluster_volume_vector.clear();
+	calc_cluster_volume_and_store_with_cluster_rep(triang, 
+	  					       cluster_set,
+			                               cluster_volume_vector, 
+						       cluster_rep_vector);
+	// DEBUG.
+	for(int i = 0; i < (int)cluster_volume_vector.size(); i ++)
+		CGAL_assertion(cluster_volume_vector[i] > 0);
+	// END DEBUG.
+	cerr << ".";
+	
+	// Sort the clusters with respect to the volumes.
+	vector<int> sorted_cluster_index_vector;
+	sorted_cluster_index_vector.clear();
+	sort_cluster_wrt_volume(cluster_volume_vector, cluster_rep_vector, sorted_cluster_index_vector);
+	// DEBUG.
+	for(int i = 0; i < (int)sorted_cluster_index_vector.size() - 1; i ++)
+	{
+		int rep1 = sorted_cluster_index_vector[i];
+		int rep2 = sorted_cluster_index_vector[i+1];
+		int pos1 = -1;
+		int pos2 = -1;
+		for(int j = 0; j < (int)cluster_rep_vector.size(); j ++)
+		{
+			if(cluster_rep_vector[j] == rep1)
+				pos1 = j;
+			if(cluster_rep_vector[j] == rep2)
+				pos2 = j;
+			if(pos1 != -1 && pos2 != -1) break;
+		}
+		CGAL_assertion(cluster_volume_vector[pos1] >=
+			       cluster_volume_vector[pos2] );
+	}
+	// END DEBUG.
+        */
+	cerr << ".";
+
+	return sorted_cluster_index_vector;
+}
+
+
+};

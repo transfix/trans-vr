@@ -1,0 +1,682 @@
+<!DOCTYPE UI><UI version="3.3" stdsetdef="1">
+<class>VolumeInterfaceBase</class>
+<widget class="QWidget">
+    <property name="name">
+        <cstring>VolumeInterfaceBase</cstring>
+    </property>
+    <property name="geometry">
+        <rect>
+            <x>0</x>
+            <y>0</y>
+            <width>445</width>
+            <height>418</height>
+        </rect>
+    </property>
+    <property name="caption">
+        <string>Volume</string>
+    </property>
+    <grid>
+        <property name="name">
+            <cstring>unnamed</cstring>
+        </property>
+        <widget class="QLayoutWidget" row="0" column="0" rowspan="1" colspan="2">
+            <property name="name">
+                <cstring>layout4</cstring>
+            </property>
+            <grid>
+                <property name="name">
+                    <cstring>unnamed</cstring>
+                </property>
+                <widget class="QLabel" row="1" column="0">
+                    <property name="name">
+                        <cstring>_numTimestepsLabel</cstring>
+                    </property>
+                    <property name="text">
+                        <string>Number of Timesteps:</string>
+                    </property>
+                </widget>
+                <widget class="QLineEdit" row="0" column="1">
+                    <property name="name">
+                        <cstring>_numVars</cstring>
+                    </property>
+                    <property name="text">
+                        <string>0</string>
+                    </property>
+                    <property name="readOnly">
+                        <bool>true</bool>
+                    </property>
+                </widget>
+                <widget class="QLineEdit" row="1" column="1">
+                    <property name="name">
+                        <cstring>_numTimesteps</cstring>
+                    </property>
+                    <property name="text">
+                        <string>0</string>
+                    </property>
+                    <property name="readOnly">
+                        <bool>true</bool>
+                    </property>
+                </widget>
+                <widget class="QLabel" row="0" column="0">
+                    <property name="name">
+                        <cstring>_numVarsLabel</cstring>
+                    </property>
+                    <property name="text">
+                        <string>Number of Variables: </string>
+                    </property>
+                </widget>
+            </grid>
+        </widget>
+        <widget class="QLayoutWidget" row="0" column="2" rowspan="1" colspan="2">
+            <property name="name">
+                <cstring>layout5</cstring>
+            </property>
+            <grid>
+                <property name="name">
+                    <cstring>unnamed</cstring>
+                </property>
+                <widget class="QLabel" row="0" column="0">
+                    <property name="name">
+                        <cstring>_minValueLabel</cstring>
+                    </property>
+                    <property name="text">
+                        <string>Minimum Value:</string>
+                    </property>
+                </widget>
+                <widget class="QLineEdit" row="0" column="1">
+                    <property name="name">
+                        <cstring>_minValue</cstring>
+                    </property>
+                    <property name="text">
+                        <string>0</string>
+                    </property>
+                    <property name="readOnly">
+                        <bool>true</bool>
+                    </property>
+                </widget>
+                <widget class="QLabel" row="1" column="0">
+                    <property name="name">
+                        <cstring>_maxValueLabel</cstring>
+                    </property>
+                    <property name="text">
+                        <string>Maximum Value:</string>
+                    </property>
+                </widget>
+                <widget class="QLineEdit" row="1" column="1">
+                    <property name="name">
+                        <cstring>_maxValue</cstring>
+                    </property>
+                    <property name="text">
+                        <string>0</string>
+                    </property>
+                    <property name="readOnly">
+                        <bool>true</bool>
+                    </property>
+                </widget>
+            </grid>
+        </widget>
+        <widget class="QLayoutWidget" row="1" column="0" rowspan="1" colspan="4">
+            <property name="name">
+                <cstring>layout1</cstring>
+            </property>
+            <grid>
+                <property name="name">
+                    <cstring>unnamed</cstring>
+                </property>
+                <widget class="QLabel" row="0" column="0">
+                    <property name="name">
+                        <cstring>_dimensionLabel</cstring>
+                    </property>
+                    <property name="text">
+                        <string>Dimension:</string>
+                    </property>
+                </widget>
+                <widget class="QLineEdit" row="0" column="2">
+                    <property name="name">
+                        <cstring>_dimensionY</cstring>
+                    </property>
+                    <property name="text">
+                        <string>0</string>
+                    </property>
+                    <property name="readOnly">
+                        <bool>true</bool>
+                    </property>
+                </widget>
+                <widget class="QLineEdit" row="0" column="3">
+                    <property name="name">
+                        <cstring>_dimensionZ</cstring>
+                    </property>
+                    <property name="text">
+                        <string>0</string>
+                    </property>
+                    <property name="readOnly">
+                        <bool>true</bool>
+                    </property>
+                </widget>
+                <widget class="QPushButton" row="0" column="4">
+                    <property name="name">
+                        <cstring>_dimensionModify</cstring>
+                    </property>
+                    <property name="text">
+                        <string>Modify</string>
+                    </property>
+                </widget>
+                <widget class="QLineEdit" row="0" column="1">
+                    <property name="name">
+                        <cstring>_dimensionX</cstring>
+                    </property>
+                    <property name="text">
+                        <string>0</string>
+                    </property>
+                    <property name="readOnly">
+                        <bool>true</bool>
+                    </property>
+                </widget>
+            </grid>
+        </widget>
+        <widget class="QLayoutWidget" row="2" column="0" rowspan="1" colspan="4">
+            <property name="name">
+                <cstring>layout3</cstring>
+            </property>
+            <grid>
+                <property name="name">
+                    <cstring>unnamed</cstring>
+                </property>
+                <widget class="QLineEdit" row="0" column="2">
+                    <property name="name">
+                        <cstring>_boundingBoxMinX</cstring>
+                    </property>
+                    <property name="text">
+                        <string>0</string>
+                    </property>
+                    <property name="readOnly">
+                        <bool>true</bool>
+                    </property>
+                </widget>
+                <widget class="QLineEdit" row="1" column="3">
+                    <property name="name">
+                        <cstring>_boundingBoxMaxY</cstring>
+                    </property>
+                    <property name="text">
+                        <string>0</string>
+                    </property>
+                    <property name="readOnly">
+                        <bool>true</bool>
+                    </property>
+                </widget>
+                <widget class="QLabel" row="0" column="0" rowspan="2" colspan="1">
+                    <property name="name">
+                        <cstring>_boundingBoxLabel</cstring>
+                    </property>
+                    <property name="text">
+                        <string>Bounding Box:</string>
+                    </property>
+                </widget>
+                <widget class="QLineEdit" row="0" column="4">
+                    <property name="name">
+                        <cstring>_boundingBoxMinZ</cstring>
+                    </property>
+                    <property name="text">
+                        <string>0</string>
+                    </property>
+                    <property name="readOnly">
+                        <bool>true</bool>
+                    </property>
+                </widget>
+                <widget class="QLabel" row="1" column="1">
+                    <property name="name">
+                        <cstring>_boundingBoxMaxLabel</cstring>
+                    </property>
+                    <property name="text">
+                        <string>Max:</string>
+                    </property>
+                </widget>
+                <widget class="QLineEdit" row="1" column="2">
+                    <property name="name">
+                        <cstring>_boundingBoxMaxX</cstring>
+                    </property>
+                    <property name="text">
+                        <string>0</string>
+                    </property>
+                    <property name="readOnly">
+                        <bool>true</bool>
+                    </property>
+                </widget>
+                <widget class="QLineEdit" row="0" column="3">
+                    <property name="name">
+                        <cstring>_boundingBoxMinY</cstring>
+                    </property>
+                    <property name="text">
+                        <string>0</string>
+                    </property>
+                    <property name="readOnly">
+                        <bool>true</bool>
+                    </property>
+                </widget>
+                <widget class="QLineEdit" row="1" column="4">
+                    <property name="name">
+                        <cstring>_boundingBoxMaxZ</cstring>
+                    </property>
+                    <property name="text">
+                        <string>0</string>
+                    </property>
+                    <property name="readOnly">
+                        <bool>true</bool>
+                    </property>
+                </widget>
+                <widget class="QLabel" row="0" column="1">
+                    <property name="name">
+                        <cstring>_boundingBoxMinLabel</cstring>
+                    </property>
+                    <property name="text">
+                        <string>Min:</string>
+                    </property>
+                </widget>
+                <widget class="QPushButton" row="0" column="5" rowspan="2" colspan="1">
+                    <property name="name">
+                        <cstring>_boundingBoxModify</cstring>
+                    </property>
+                    <property name="text">
+                        <string>Modify</string>
+                    </property>
+                </widget>
+            </grid>
+        </widget>
+        <widget class="QLayoutWidget" row="3" column="0" rowspan="1" colspan="4">
+            <property name="name">
+                <cstring>layout3</cstring>
+            </property>
+            <grid>
+                <property name="name">
+                    <cstring>unnamed</cstring>
+                </property>
+                <widget class="QLineEdit" row="0" column="3">
+                    <property name="name">
+                        <cstring>_spanZ</cstring>
+                    </property>
+                    <property name="text">
+                        <string>0</string>
+                    </property>
+                    <property name="readOnly">
+                        <bool>true</bool>
+                    </property>
+                </widget>
+                <widget class="QLineEdit" row="0" column="2">
+                    <property name="name">
+                        <cstring>_spanY</cstring>
+                    </property>
+                    <property name="text">
+                        <string>0</string>
+                    </property>
+                    <property name="readOnly">
+                        <bool>true</bool>
+                    </property>
+                </widget>
+                <widget class="QLineEdit" row="0" column="1">
+                    <property name="name">
+                        <cstring>_spanX</cstring>
+                    </property>
+                    <property name="text">
+                        <string>0</string>
+                    </property>
+                    <property name="readOnly">
+                        <bool>true</bool>
+                    </property>
+                </widget>
+                <widget class="QLabel" row="0" column="0">
+                    <property name="name">
+                        <cstring>_spanLabel</cstring>
+                    </property>
+                    <property name="text">
+                        <string>Span:</string>
+                    </property>
+                </widget>
+            </grid>
+        </widget>
+        <widget class="QListView" row="4" column="0" rowspan="1" colspan="4">
+            <column>
+                <property name="text">
+                    <string>Variable</string>
+                </property>
+                <property name="clickable">
+                    <bool>true</bool>
+                </property>
+                <property name="resizable">
+                    <bool>true</bool>
+                </property>
+            </column>
+            <column>
+                <property name="text">
+                    <string>Data Type</string>
+                </property>
+                <property name="clickable">
+                    <bool>true</bool>
+                </property>
+                <property name="resizable">
+                    <bool>true</bool>
+                </property>
+            </column>
+            <column>
+                <property name="text">
+                    <string>Min Value</string>
+                </property>
+                <property name="clickable">
+                    <bool>true</bool>
+                </property>
+                <property name="resizable">
+                    <bool>true</bool>
+                </property>
+            </column>
+            <column>
+                <property name="text">
+                    <string>Max Value</string>
+                </property>
+                <property name="clickable">
+                    <bool>true</bool>
+                </property>
+                <property name="resizable">
+                    <bool>true</bool>
+                </property>
+            </column>
+            <column>
+                <property name="text">
+                    <string>Var Index</string>
+                </property>
+                <property name="clickable">
+                    <bool>true</bool>
+                </property>
+                <property name="resizable">
+                    <bool>true</bool>
+                </property>
+            </column>
+            <column>
+                <property name="text">
+                    <string>Time Index</string>
+                </property>
+                <property name="clickable">
+                    <bool>true</bool>
+                </property>
+                <property name="resizable">
+                    <bool>true</bool>
+                </property>
+            </column>
+            <property name="name">
+                <cstring>_variableList</cstring>
+            </property>
+            <property name="selectionMode">
+                <enum>Single</enum>
+            </property>
+        </widget>
+        <widget class="QGroupBox" row="5" column="0">
+            <property name="name">
+                <cstring>_variableModifyGroup</cstring>
+            </property>
+            <property name="sizePolicy">
+                <sizepolicy>
+                    <hsizetype>4</hsizetype>
+                    <vsizetype>5</vsizetype>
+                    <horstretch>0</horstretch>
+                    <verstretch>0</verstretch>
+                </sizepolicy>
+            </property>
+            <property name="title">
+                <string>Variable Mod</string>
+            </property>
+            <vbox>
+                <property name="name">
+                    <cstring>unnamed</cstring>
+                </property>
+                <widget class="QPushButton">
+                    <property name="name">
+                        <cstring>_addVariable</cstring>
+                    </property>
+                    <property name="sizePolicy">
+                        <sizepolicy>
+                            <hsizetype>7</hsizetype>
+                            <vsizetype>0</vsizetype>
+                            <horstretch>0</horstretch>
+                            <verstretch>0</verstretch>
+                        </sizepolicy>
+                    </property>
+                    <property name="text">
+                        <string>Add</string>
+                    </property>
+                </widget>
+                <widget class="QPushButton">
+                    <property name="name">
+                        <cstring>_editVariable</cstring>
+                    </property>
+                    <property name="sizePolicy">
+                        <sizepolicy>
+                            <hsizetype>7</hsizetype>
+                            <vsizetype>0</vsizetype>
+                            <horstretch>0</horstretch>
+                            <verstretch>0</verstretch>
+                        </sizepolicy>
+                    </property>
+                    <property name="text">
+                        <string>Edit</string>
+                    </property>
+                </widget>
+                <widget class="QPushButton">
+                    <property name="name">
+                        <cstring>_deleteVariable</cstring>
+                    </property>
+                    <property name="sizePolicy">
+                        <sizepolicy>
+                            <hsizetype>7</hsizetype>
+                            <vsizetype>0</vsizetype>
+                            <horstretch>0</horstretch>
+                            <verstretch>0</verstretch>
+                        </sizepolicy>
+                    </property>
+                    <property name="text">
+                        <string>Delete</string>
+                    </property>
+                </widget>
+            </vbox>
+        </widget>
+        <widget class="QGroupBox" row="5" column="1" rowspan="1" colspan="2">
+            <property name="name">
+                <cstring>_timestepModifyGroup</cstring>
+            </property>
+            <property name="sizePolicy">
+                <sizepolicy>
+                    <hsizetype>4</hsizetype>
+                    <vsizetype>5</vsizetype>
+                    <horstretch>0</horstretch>
+                    <verstretch>0</verstretch>
+                </sizepolicy>
+            </property>
+            <property name="title">
+                <string>Timestep Mod</string>
+            </property>
+            <vbox>
+                <property name="name">
+                    <cstring>unnamed</cstring>
+                </property>
+                <widget class="QPushButton">
+                    <property name="name">
+                        <cstring>_addTimestep</cstring>
+                    </property>
+                    <property name="sizePolicy">
+                        <sizepolicy>
+                            <hsizetype>7</hsizetype>
+                            <vsizetype>0</vsizetype>
+                            <horstretch>0</horstretch>
+                            <verstretch>0</verstretch>
+                        </sizepolicy>
+                    </property>
+                    <property name="text">
+                        <string>Add</string>
+                    </property>
+                </widget>
+                <widget class="QPushButton">
+                    <property name="name">
+                        <cstring>_deleteTimestep</cstring>
+                    </property>
+                    <property name="sizePolicy">
+                        <sizepolicy>
+                            <hsizetype>7</hsizetype>
+                            <vsizetype>0</vsizetype>
+                            <horstretch>0</horstretch>
+                            <verstretch>0</verstretch>
+                        </sizepolicy>
+                    </property>
+                    <property name="text">
+                        <string>Delete</string>
+                    </property>
+                </widget>
+            </vbox>
+        </widget>
+        <widget class="QGroupBox" row="5" column="3">
+            <property name="name">
+                <cstring>_volumeModifyGroup</cstring>
+            </property>
+            <property name="sizePolicy">
+                <sizepolicy>
+                    <hsizetype>7</hsizetype>
+                    <vsizetype>5</vsizetype>
+                    <horstretch>0</horstretch>
+                    <verstretch>0</verstretch>
+                </sizepolicy>
+            </property>
+            <property name="title">
+                <string>Var/Time Mod</string>
+            </property>
+            <vbox>
+                <property name="name">
+                    <cstring>unnamed</cstring>
+                </property>
+                <widget class="QPushButton">
+                    <property name="name">
+                        <cstring>_importData</cstring>
+                    </property>
+                    <property name="sizePolicy">
+                        <sizepolicy>
+                            <hsizetype>7</hsizetype>
+                            <vsizetype>0</vsizetype>
+                            <horstretch>0</horstretch>
+                            <verstretch>0</verstretch>
+                        </sizepolicy>
+                    </property>
+                    <property name="text">
+                        <string>Import Data</string>
+                    </property>
+                </widget>
+                <widget class="QPushButton">
+                    <property name="name">
+                        <cstring>_remap</cstring>
+                    </property>
+                    <property name="sizePolicy">
+                        <sizepolicy>
+                            <hsizetype>7</hsizetype>
+                            <vsizetype>0</vsizetype>
+                            <horstretch>0</horstretch>
+                            <verstretch>0</verstretch>
+                        </sizepolicy>
+                    </property>
+                    <property name="text">
+                        <string>Re-Map Voxel Values</string>
+                    </property>
+                </widget>
+            </vbox>
+        </widget>
+    </grid>
+</widget>
+<connections>
+    <connection>
+        <sender>_addVariable</sender>
+        <signal>clicked()</signal>
+        <receiver>VolumeInterfaceBase</receiver>
+        <slot>addVariableSlot()</slot>
+    </connection>
+    <connection>
+        <sender>_deleteVariable</sender>
+        <signal>clicked()</signal>
+        <receiver>VolumeInterfaceBase</receiver>
+        <slot>deleteVariableSlot()</slot>
+    </connection>
+    <connection>
+        <sender>_addTimestep</sender>
+        <signal>clicked()</signal>
+        <receiver>VolumeInterfaceBase</receiver>
+        <slot>addTimestepSlot()</slot>
+    </connection>
+    <connection>
+        <sender>_deleteTimestep</sender>
+        <signal>clicked()</signal>
+        <receiver>VolumeInterfaceBase</receiver>
+        <slot>deleteTimestepSlot()</slot>
+    </connection>
+    <connection>
+        <sender>_importData</sender>
+        <signal>clicked()</signal>
+        <receiver>VolumeInterfaceBase</receiver>
+        <slot>importDataSlot()</slot>
+    </connection>
+    <connection>
+        <sender>_dimensionModify</sender>
+        <signal>clicked()</signal>
+        <receiver>VolumeInterfaceBase</receiver>
+        <slot>dimensionModifySlot()</slot>
+    </connection>
+    <connection>
+        <sender>_boundingBoxModify</sender>
+        <signal>clicked()</signal>
+        <receiver>VolumeInterfaceBase</receiver>
+        <slot>boundingBoxModifySlot()</slot>
+    </connection>
+    <connection>
+        <sender>_editVariable</sender>
+        <signal>clicked()</signal>
+        <receiver>VolumeInterfaceBase</receiver>
+        <slot>editVariableSlot()</slot>
+    </connection>
+    <connection>
+        <sender>_remap</sender>
+        <signal>clicked()</signal>
+        <receiver>VolumeInterfaceBase</receiver>
+        <slot>remapSlot()</slot>
+    </connection>
+</connections>
+<tabstops>
+    <tabstop>_numVars</tabstop>
+    <tabstop>_numTimesteps</tabstop>
+    <tabstop>_minValue</tabstop>
+    <tabstop>_maxValue</tabstop>
+    <tabstop>_dimensionX</tabstop>
+    <tabstop>_dimensionY</tabstop>
+    <tabstop>_dimensionZ</tabstop>
+    <tabstop>_dimensionModify</tabstop>
+    <tabstop>_boundingBoxMinX</tabstop>
+    <tabstop>_boundingBoxMinY</tabstop>
+    <tabstop>_boundingBoxMinZ</tabstop>
+    <tabstop>_boundingBoxMaxX</tabstop>
+    <tabstop>_boundingBoxMaxY</tabstop>
+    <tabstop>_boundingBoxMaxZ</tabstop>
+    <tabstop>_boundingBoxModify</tabstop>
+    <tabstop>_spanX</tabstop>
+    <tabstop>_spanY</tabstop>
+    <tabstop>_spanZ</tabstop>
+    <tabstop>_variableList</tabstop>
+    <tabstop>_addVariable</tabstop>
+    <tabstop>_addTimestep</tabstop>
+    <tabstop>_deleteVariable</tabstop>
+    <tabstop>_deleteTimestep</tabstop>
+    <tabstop>_importData</tabstop>
+</tabstops>
+<slots>
+    <slot>addVariableSlot()</slot>
+    <slot>deleteVariableSlot()</slot>
+    <slot>addTimestepSlot()</slot>
+    <slot>deleteTimestepSlot()</slot>
+    <slot>importDataSlot()</slot>
+    <slot>dimensionModifySlot()</slot>
+    <slot>boundingBoxModifySlot()</slot>
+    <slot>editVariableSlot()</slot>
+    <slot>remapSlot()</slot>
+</slots>
+<pixmapinproject/>
+<layoutdefaults spacing="6" margin="11"/>
+</UI>

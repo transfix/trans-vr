@@ -1,0 +1,608 @@
+# Alias
+# PEDetect includes vessel tracking and quantification
+alias PEDetect='/home/utexas/ti/smpark/3DTexture/bin/PEDetect'
+alias PED='/home/utexas/ti/smpark/3DTexture/bin/PED'
+alias PED1='/home/utexas/ti/smpark/3DTexture/bin/PED1'
+alias PED2='/home/utexas/ti/smpark/3DTexture/bin/PED2'
+alias PED3='/home/utexas/ti/smpark/3DTexture/bin/PED3'
+alias PED4='/home/utexas/ti/smpark/3DTexture/bin/PED4'
+alias PED5='/home/utexas/ti/smpark/3DTexture/bin/PED5'
+alias PEDLZ='/home/utexas/ti/smpark/3DTexture/bin/PEDLZ'
+alias PEDRK='/home/utexas/ti/smpark/3DTexture/bin/PEDRK'
+
+# Classification and Evaluations
+alias Class_Org='/home/utexas/ti/smpark/3DTexture/bin/Class_Org'
+alias ClassOnly='/home/utexas/ti/smpark/3DTexture/bin/ClassOnly'
+alias ClassSaveIV='/home/utexas/ti/smpark/3DTexture/bin/ClassSaveIV'
+alias GradM='/home/utexas/ti/smpark/3DTexture/bin/GradM'
+alias SecondD='/home/utexas/ti/smpark/3DTexture/bin/SecondD'
+alias EvaluationOnly='/home/utexas/ti/smpark/3DTexture/bin/EvaluationOnly'
+alias Distance='/home/utexas/ti/smpark/3DTexture/bin/Distance'
+alias SigmaEval='/home/utexas/ti/smpark/3DTexture/bin/SigmaEval'
+alias DistAtHitLoc='/home/utexas/ti/smpark/3DTexture/bin/DistAtHitLoc'
+alias DistAtHitLoc_2048='/home/utexas/ti/smpark/3DTexture/bin/DistAtHitLoc_2048'
+
+# Save Original, Classification, Gradient Magnitude, Second Derivative Images Plus Evaluations
+alias OCGSEval='/home/utexas/ti/smpark/3DTexture/bin/OCGSEval'
+alias MakeRawiv='/home/utexas/ti/smpark/converters/RawTools/MakeRawiv'
+alias SplitDataRawIv='/home/utexas/ti/smpark/converters/RawTools/SplitDataRawIv'
+
+# Raw Tools
+alias RawIVHReader='/home/utexas/ti/smpark/converters/RawTools/RawIVHReader'
+alias SplitDataRawIv='/home/utexas/ti/smpark/converters/RawTools/SplitDataRawIv'
+alias IGGraph='/home/utexas/ti/smpark/3DTexture/TestPgm/IGGraph'
+alias MC_HyperbolicV='/home/utexas/ti/smpark/3DTexture/TestPgm/MC_HyperbolicV'
+alias MakeRawiv='/home/utexas/ti/smpark/converters/RawTools/MakeRawiv'
+alias Histogram='/home/utexas/ti/smpark/converters/RawTools/Histogram'
+alias TextToPPM='/home/utexas/ti/smpark/3DTexture/TestPgm/TextToPPM'
+alias Flip='/home/utexas/ti/smpark/3DTexture/TestPgm/FlipXYZ/Flip'
+alias ReOrderingXYZ='/home/utexas/ti/smpark/3DTexture/TestPgm/ReOrderingAxes/ReOrderingXYZ'
+
+
+MakeRawiv	./D1_SRS01_Init_070_255.raw 512 512 181 uchar ./D1_SRS01_Init_134_255.rawiv no
+
+MakeRawiv	./D1_SRS01_Init_134_255.raw 512 512 181 uchar ./D1_SRS01_Init_134_255.rawiv no
+MakeRawiv	./D1_SRS01_SK_Read_134_255.raw 512 512 181 uchar ./D1_SRS01_SK_Read_134_255.rawiv no
+MakeRawiv	./D1_SRS01_Skeletons_134_255.raw 512 512 181 uchar ./D1_SRS01_Skeletons_134_255.rawiv no
+MakeRawiv	./D1_SRS01_Skeletons_Thick_134_255.raw 512 512 181 uchar ./D1_SRS01_Skeletons_Thick_134_255.rawiv no
+
+MakeRawiv	./D1_SRS01_Init_070_255.raw 512 512 181 uchar ./D1_SRS01_Init_134_255.rawiv no
+MakeRawiv	./D1_SRS01_SK_CC_070_255.raw 512 512 181 uchar ./D1_SRS01_SK_CC_134_255.rawiv no
+MakeRawiv	./D1_SRS01_SK_CC_Thick_070_255.raw 512 512 181 uchar ./D1_SRS01_SK_CC_Thick_134_255.rawiv no
+MakeRawiv	./D1_SRS01_SK_Read_070_255.raw 512 512 181 uchar ./D1_SRS01_SK_Read_134_255.rawiv no
+MakeRawiv	./D1_SRS01_Skeletons_070_255.raw 512 512 181 uchar ./D1_SRS01_Skeletons_134_255.rawiv no
+MakeRawiv	./D1_SRS01_Skeletons_Thick_070_255.raw 512 512 181 uchar ./D1_SRS01_Skeletons_Thick_134_255.rawiv no
+
+
+<How to Run>
+ClassSaveIV D1_SRS01X.rawiv 512 512 181 1 ushort 1998.0 65536 1 8 ./C_D1_SRS01/D1_SRS01 no &
+
+D1_SRS01X.rawiv: data file name
+512 512 181    : data resolution
+1              : do not change
+ushort         : voxel size (uchar, ushort, and float) are avaialble
+1998.0 65536   : Min & Max values to trim
+1              : do not change
+8              : # of materials
+./C_D1_SRS01/D1_SRS01: output file name
+no             : swap byte order
+
+The executalbe file is the following:
+/home/utexas/ti/smpark/test/ClassSaveIV
+
+
+
+PED		  D1_SRS01.rawiv 512 512 181 10 ushort  1998.0 65536 1  8  ./C_D1_SRS01/D1_SRS01 no   
+
+#CV
+PED		  D1_SRS01.rawiv 512 512 181 10 ushort  1998.0 65536 1  8  ./C_D1_SRS01/D1_SRS01 no > ./C_D1_SRS01/D1_SRS01-test.txt
+PED	  D1_SRS01.rawiv 512 512 181 1 ushort  1998.0 65536 1  8  ./C_D1_SRS01_Smooth/D1_SRS01 no > ./C_D1_SRS01_Smooth/D1_SRS01-test.txt &
+PED	  D1_SRS01.rawiv 512 512 181 10 ushort  1998.0 65536 1  8  ./C_D1_SRS01/D1_SRS01 no > ./C_D1_SRS01/D1_SRS01-test1.txt &
+PED	  D1_SRS01.rawiv 512 512 181 10 ushort  1998.0 65536 1  8  ./C_D1_SRS01/D1_SRS01 no > ./C_D1_SRS01/D1_SRS01-test2.txt &
+PED	  D1_SRS01.rawiv 512 512 181 10 ushort  1998.0 65536 1  8  ./C_D1_SRS01/D1_SRS01 no > ./C_D1_SRS01/D1_SRS01-test3.txt &
+PED	  D1_SRS01.rawiv 512 512 181 10 ushort  1998.0 65536 1  8  ./C_D1_SRS01/D1_SRS01 no > ./C_D1_SRS01/D1_SRS01-test4.txt &
+PEDetect  D1_SRS01.rawiv 512 512 181 10 ushort  1998.0 65536 1  8  ./C_D1_SRS01/D1_SRS01 no > ./C_D1_SRS01/D1_SRS01-test.txt
+PEDetect  D1_SRS01.rawiv 512 512 181 10 ushort  1998.0 65536 1  8  ./C_D1_SRS01/D1_SRS01 no > ./C_D1_SRS01/D1_SRS01-IG.txt
+PEDetect  D1_SRS01.rawiv 512 512 181 10 ushort  1998.0 65536 1  8  ./C_D1_SRS01/D1_SRS01 no > ./C_D1_SRS01/D1_SRS01-SK.txt
+ClassOnly D1_SRS01.rawiv 512 512 181 10 ushort  1998.0 65536 1  8  ./C_D1_SRS01_SliceInfo/D1_SRS01 no 
+ClassOrg  D1_SRS01.rawiv 512 512 181 10 ushort  1998.0 65536 1  8  ./C_D1_SRS01_SliceInfo/D1_SRS01 no 
+SecondD   D1_SRS01.rawiv 512 512 181 10 ushort  1998.0 65536 1  8  ./C_D1_SRS01_SliceInfo/D1_SRS01 no  &
+GradM     D1_SRS01.rawiv 512 512 181 10 ushort  1998.0 65536 1  8  ./C_D1_SRS01_SliceInfo/D1_SRS01 no &
+EvaluationOnly  D1_SRS01.rawiv 512 512 181 10 ushort  1998.0 65536 1  8  ./C_D1_SRS01/D1_SRS01 no > ./C_D1_SRS01/D1_SRS01-Eval.txt &
+
+PEDetect  D1_SRS01_CCVolume.rawiv 512 512 181 10 uchar 0.0 255 1  8  ./CCVolume/CCVolume no > ./CCVolume/CCVolume-test.txt
+MakeRawiv CCVolume_Init_250_255.raw 512 512 181 uchar CCVolume_Init_250_255.rawiv no
+MakeRawiv CCVolume_Skeletons_250_255.raw 512 512 181 uchar CCVolume_Skeletons_250_255.rawiv no
+
+#CV_256
+PED	 D1_SRS01_256.rawiv 256 256 256 10 ushort  1998.0 65536 1  8  ./C_D1_SRS01_256/D1_SRS01_256 no > ./C_D1_SRS01_256/D1_SRS01_256.txt
+
+
+
+# LZ
+PED			D1_SRS02.rawiv 512 512 169 10 ushort 1950.0 65536 1  8  ./C_D1_SRS02/D1_SRS02 no > ./C_D1_SRS02/D1_SRS02-SK.txt &
+PEDLZ		D1_SRS02.rawiv 512 512 169 10 ushort 1950.0 65536 1  8  ./C_D1_SRS02/D1_SRS02 no > ./C_D1_SRS02/D1_SRS02-test.txt &
+PEDLZ		D1_SRS02.rawiv 512 512 169 1 ushort 1950.0 65536 1  8  ./C_D1_SRS02_Smooth/D1_SRS02 no > ./C_D1_SRS02_Smooth/D1_SRS02-class.txt &
+PEDetect	D1_SRS02.rawiv 512 512 169 10 ushort 1950.0 65536 1  8  ./C_D1_SRS02/D1_SRS02 no > ./C_D1_SRS02/D1_SRS02-test.txt &
+PEDetect	D1_SRS02.rawiv 512 512 169 10 ushort 1950.0 65536 1  8  ./C_D1_SRS02/D1_SRS02 no > ./C_D1_SRS02/D1_SRS02-PED.txt 
+ClassOrg	D1_SRS02.rawiv 512 512 169 1  ushort 1950.0 65536 1  8  ./C_D1_SRS02_SliceInfo/D1_SRS02 no &
+SecondD 	D1_SRS02.rawiv 512 512 169 1  ushort 1950.0 65536 1  8  ./C_D1_SRS02_SliceInfo/D1_SRS02 no &
+GradM		D1_SRS02.rawiv 512 512 169 1  ushort 1950.0 65536 1  8  ./C_D1_SRS02_SliceInfo/D1_SRS02 no &
+EvaluationOnly  D1_SRS02.rawiv 512 512 169 10 ushort  1950.0  65536  1  8  ./C_D1_SRS02/D1_SRS02 no > ./C_D1_SRS02/D1_SRS02-Eval.txt &
+
+
+#RK
+PED  		D2_SRS01.rawiv 512 512 181 10 ushort 1950.0 65536 1  8  ./C_D2_SRS01/D2_SRS01 no > ./C_D2_SRS01/D2_SRS01-SK.txt &
+PEDRK	  	D2_SRS01.rawiv 512 512 181 10 ushort 1950.0 65536 1  8  ./C_D2_SRS01/D2_SRS01 no > ./C_D2_SRS01/D2_SRS01-test.txt &
+PEDRK	  	D2_SRS01.rawiv 512 512 181 1 ushort 1950.0 65536 1  8  ./C_D2_SRS01_Smooth/D2_SRS01 no > ./C_D2_SRS01_Smooth/D2_SRS01-test.txt &
+PEDetect  	D2_SRS01.rawiv 512 512 181 10 ushort 1950.0 65536 1  8  ./C_D2_SRS01/D2_SRS01 no > ./C_D2_SRS01/D2_SRS01-test.txt &
+PEDetect  	D2_SRS01.rawiv 512 512 181 10 ushort 1950.0 65536 1  8  ./C_D2_SRS01/D2_SRS01 no > ./C_D2_SRS01/D2_SRS01-PED.txt 
+ClassOrg 	D2_SRS01.rawiv 512 512 181 1  ushort 1950.0 65536 1  8  ./C_D2_SRS01_SliceInfo/D2_SRS01 no &
+SecondD  	D2_SRS01.rawiv 512 512 181 1  ushort 1950.0 65536 1  8  ./C_D2_SRS01_SliceInfo/D2_SRS01 no &
+GradM  		D2_SRS01.rawiv 512 512 181 1  ushort 1950.0 65536 1  8  ./C_D2_SRS01_SliceInfo/D2_SRS01 no &
+EvaluationOnly D2_SRS01.rawiv 512 512 181 10 ushort  1950.0  65536  1  8  ./C_D2_SRS01/D2_SRS01 no > ./C_D2_SRS01/D2_SRS01-Eval.txt &
+
+############################################################################################################################
+# Patient02.rawiv
+PED2		Patient02.rawiv 512 512 209 5 ushort 0.0 65536 1  8  ./C_Patient02/Patient02 no > ./C_Patient02/Patient02-test.txt &
+PED2		Patient02.rawiv 512 512 209 5 ushort 0.0 65536 1  8  ./C_Patient02/Patient02 no > ./C_Patient02/Patient02-test.txt &
+PED2		Patient02.rawiv 512 512 209 1 ushort 0.0 65536 1  8  ./C_Patient02_Smooth/Patient02 no > ./C_Patient02_Smooth/Patient02-test.txt &
+PEDetect	Patient02.rawiv 512 512 209 5 ushort 0.0 65536 1  8  ./C_Patient02/Patient02 no > ./C_Patient02/Patient02-test.txt
+ClassOrg	Patient02.rawiv 512 512 209 1 ushort 0.0 65536  1  7  ./C_Patient02_SliceInfo/Patient02 no &
+ClassOnly	Patient02.rawiv 512 512 209 1 ushort 0.0 65536 1  8  ./C_Patient02_SliceInfo/Patient02 no 
+SecondD		Patient02.rawiv 512 512 209 1 ushort 0.0 65536  1  8  ./C_Patient02_SliceInfo/Patient02 no &
+GradM		Patient02.rawiv 512 512 209 1 ushort 0.0 1  8  ./C_Patient02_SliceInfo/Patient02 no &
+EvaluationOnly  Patient02.rawiv 512 512 209 5 ushort  0.0  65536  1  8  ./C_Patient02/Patient02 no > ./C_Patient02/Patient02-Eval.txt &
+
+
+PEDetect  Patient02.rawiv 512 512 209 5 ushort  0.0  65536 1  8  ./C_Patient02/Patient02 no > ./C_Patient02/Patient02-test.txt
+PEDetect  Patient03.rawiv 512 512 210 5 ushort  0.0  65536 1  8  ./C_Patient03/Patient03 no > ./C_Patient03/Patient03-test.txt
+PEDetect  Patient04.rawiv 512 512 208 5 ushort  0.0  65536 1  8  ./C_Patient04/Patient04 no > ./C_Patient04/Patient04-test.txt
+PEDetect  Patient05.rawiv 512 512 195 5 ushort  0.0  65536 1  8  ./C_Patient05/Patient05 no > ./C_Patient05/Patient05-test.txt
+
+
+Histogram D1_SRS01X.rawiv ushort D1_SRS01X 512 no &
+Histogram D1_SRS02X.rawiv ushort D1_SRS02X 512 no &
+Histogram D2_SRS01X.rawiv ushort D2_SRS01X 512 no &
+Histogram Patient02X.rawiv ushort Patient02X 512 no &
+Histogram Patient03X.rawiv ushort Patient03X 512 no &
+Histogram Patient04X.rawiv ushort Patient04X 512 no &
+Histogram Patient05X.rawiv ushort Patient05X 512 no &
+
+ClassOrg Patient02.rawiv 512 512 209 1 ushort  0.0  65536  1  8  ./C_Patient02_SliceInfo/Patient02 no &
+ClassOrg Patient03.rawiv 512 512 210 1 ushort  0.0  65536  1  8  ./C_Patient03_SliceInfo/Patient03 no &
+ClassOrg Patient04.rawiv 512 512 208 1 ushort  0.0  65536  1  8  ./C_Patient04_SliceInfo/Patient04 no &
+ClassOrg Patient05.rawiv 512 512 195 1 ushort  0.0  65536  1  8  ./C_Patient05_SliceInfo/Patient05 no &
+
+EvaluationOnly  Patient02.rawiv 512 512 209 1 ushort 0.0 65536 1 8 ./C_Patient02/Patient02 no > ./C_Patient02/Patient02-Eval.txt &
+EvaluationOnly  Patient03.rawiv 512 512 210 1 ushort 0.0 65536 1 8 ./C_Patient03/Patient03 no > ./C_Patient03/Patient03-Eval.txt &
+EvaluationOnly  Patient04.rawiv 512 512 208 1 ushort 0.0 65536 1 8 ./C_Patient04/Patient04 no > ./C_Patient04/Patient04-Eval.txt &
+EvaluationOnly  Patient05.rawiv 512 512 195 1 ushort 0.0 65536 1 8 ./C_Patient05/Patient05 no > ./C_Patient05/Patient05-Eval.txt &
+
+
+
+
+
+# Patient LZ
+/home/utexas/ti/smpark/converters/RawTools/SplitDataRawIv D1_SRS02.rawiv 1 ushort ./RawSlicesD1_SRS02/D1_SRS02 yes
+Classification /work/smpark/data-Houston/D1_SRS02.rawiv 512 512 169 50 ushort 0.0  1   8  /work/smpark/data-Houston/C_D1_SRS02-Mat08/D1_SRS02 &
+Class /work/smpark/data-Houston/D1_SRS02.rawiv 512 512 169 1 ushort 0.0  1   8  /work/smpark/data-Houston/C_D1_SRS02-Mat08/D1_SRS02 &
+
+
+# Patient RK
+/home/utexas/ti/smpark/converters/RawTools/SplitDataRawIv D2_SRS01.rawiv 1 ushort ./RawSlicesD2_SRS01/D2_SRS01 yes
+Classification /work/smpark/data-Houston/D2_SRS01.rawiv 512 512 181 50 ushort 0.0  1   8  /work/smpark/data-Houston/C_D2_SRS01-Mat08/D2_SRS01 &
+Class /work/smpark/data-Houston/D2_SRS01.rawiv 512 512 181 1 ushort 0.0  1   8  /work/smpark/data-Houston/C_D2_SRS01-Mat08/D2_SRS01 &
+
+# Pat0020.rawiv
+/home/utexas/ti/smpark/converters/RawTools/RawIVHReader D2_SRS01.rawiv
+
+
+#Patient 01 - 05
+/home/utexas/ti/smpark/converters/RawTools/SplitDataRawIv Patient01.rawiv 1 ushort ./RawSlicesP01/P01_ yes &
+/home/utexas/ti/smpark/converters/RawTools/SplitDataRawIv Patient02.rawiv 1 ushort ./RawSlicesP02/P02_ yes &
+/home/utexas/ti/smpark/converters/RawTools/SplitDataRawIv Patient03.rawiv 1 ushort ./RawSlicesP03/P03_ yes &
+/home/utexas/ti/smpark/converters/RawTools/SplitDataRawIv Patient04.rawiv 1 ushort ./RawSlicesP04/P04_ yes &
+/home/utexas/ti/smpark/converters/RawTools/SplitDataRawIv Patient05.rawiv 1 ushort ./RawSlicesP05/P05_ yes &
+
+Classification /work/smpark/data-PE/Patient01.rawiv 512 512 191 1 ushort  0.0  1  8  /work/smpark/data-PE/Class_P01/P01 &
+Classification /work/smpark/data-PE/Patient02.rawiv 512 512 209 1 ushort  0.0  1  8  /work/smpark/data-PE/Class_P02/P02 &
+Classification /work/smpark/data-PE/Patient03.rawiv 512 512 210 1 ushort  0.0  1  8  /work/smpark/data-PE/Class_P03/P03 &
+Classification /work/smpark/data-PE/Patient04.rawiv 512 512 208 1 ushort  0.0  1  8  /work/smpark/data-PE/Class_P04/P04 &
+Classification /work/smpark/data-PE/Patient05.rawiv 512 512 195 1 ushort  0.0  1  8  /work/smpark/data-PE/Class_P05/P05 &
+
+Class /work/smpark/data-Houston/D1_SRS01.rawiv 512 512 181 1 ushort 0.0  1   8  /work/smpark/data-Houston/C_D1_SRS01-Mat08/D1_SRS01
+
+
+
+#Engine
+/work/smpark/data-Engine/Engine.rawiv
+PED  Engine.rawiv 256 256 128 1 uchar 0  256 1   7 ./C_Engine/Engine no
+PED  Engine.rawiv 256 256 128 1 uchar 0  256 1   7 ./C_Engine/Engine no > ./C_Engine/Engine_CC2.txt
+
+PEDetect  Engine.rawiv 256 256 128 1 uchar 0  256 1   7 ./C_Engine/Engine no > ./C_Engine/Engine_IG2.txt
+PEDetect  Engine.rawiv 256 256 128 1 uchar 0  256 1   7 ./C_Engine/Engine no > ./C_Engine/Engine_IG.txt
+PEDetect  Engine.rawiv 256 256 128 1 uchar 0  256 1   7 ./C_Engine/Engine no > ./C_Engine/Engine_IGS.txt
+PEDetect  Engine.rawiv 256 256 128 1 uchar 0  256 1   7 ./C_Engine/Engine no > ./C_Engine/Engine_CC.txt
+PEDetect  Engine.rawiv 256 256 128 1 uchar 0  256 1   7 ./C_Engine/Engine no > ./C_Engine/Engine_DI.txt
+PEDetect  Engine.rawiv 256 256 128 1 uchar 0  256 1   7 ./C_Engine/Engine no > ./C_Engine/Engine_DV.txt
+
+PEDetect  Engine.rawiv 256 256 128 1 uchar 0  256 1   7 ./C_Engine/Engine no > ./C_Engine/Engine_MC.txt
+ClassOnly Engine.rawiv 256 256 128 1 uchar 0  256 1   7 ./Engine_SliceInfo/Engine no
+ClassOrg  Engine.rawiv 256 256 128 1 uchar 0  256 1   7 ./Engine_SliceInfo/Engine no
+SecondD   Engine.rawiv 256 256 128 1 uchar 0  256 1   7 ./Engine_SliceInfo/Engine no
+GradM     Engine.rawiv 256 256 128 1 uchar 0  256 1   7 ./Engine_SliceInfo/Engine no 
+EvaluationOnly Engine.rawiv 256 256 128 1 uchar 0  256 1   7 ./Engine_SliceInfo/Engine no > ./C_Engine/Engine_Eval.txt 
+
+
+Engine020_3.rawiv
+PEDetect  Engine020_3.rawiv 256 256 3 1 uchar 0 256 1 7 ./C_Engine020_3/Engine020_3 no > ./C_Engine020_3/Engine020_3_IG.txt
+
+imgcopy "./Engine020Zero0001.raw#raw%size=256,256%colormodel=luminance%type=uchar" ./Engine020Zero0001.tif
+
+
+# Test Data Sets
+PEDetect  Box.rawiv 64 64 64 5 uchar  0.0 256 1  2  ./Class_Box/Box no &
+PEDetect  Branch.rawiv 64 64 64 5 uchar  0.0 256 1  2  ./Class_Branch/Branch no &
+PEDetect  Cylinder.rawiv 64 64 64 5 uchar  0.0 256 1  2  ./Class_Cylinder/Cylinder no &
+PEDetect  Box.rawiv 64 64 64 5 uchar  0.0 256 1  3  ./Class_Box/Box no &
+PEDetect  H_Shape.rawiv 64 64 64 5 uchar  0.0 256 1  3  ./Class_H_Shape/H_Shape no &
+PEDetect  S_Shape.rawiv 64 64 64 5 uchar  0.0 256 1  3  ./Class_S_Shape/S_Shape no &
+PEDetect  Sphere.rawiv 64 64 64 5 uchar  0.0 256 1  3  ./Class_Sphere/Sphere no &
+
+EvaluationOnly  Branch.rawiv 64 64 64 5 uchar  0.0 256 1  2  ./Class_Branch/Branch no 
+
+# Init Volume
+MakeRawiv	./Class_Box/Box_Init_099_255.raw 64 64 64 uchar ./Class_All/Box_Init_099_255.rawiv no
+MakeRawiv	./Class_Branch/Branch_Init_099_255.raw 64 64 64 uchar ./Class_All/Branch_Init_099_255.rawiv no
+MakeRawiv	./Class_Cylinder/Cylinder_Init_099_255.raw 64 64 64 uchar ./Class_All/Cylinder_Init_099_255.rawiv no
+MakeRawiv	./Class_H_Shape/H_Shape_Init_099_255.raw 64 64 64 uchar ./Class_All/H_Shape_Init_099_255.rawiv no
+MakeRawiv	./Class_S_Shape/S_Shape_Init_099_255.raw 64 64 64 uchar ./Class_All/S_Shape_Init_099_255.rawiv no
+MakeRawiv	./Class_Sphere/Sphere_Init_099_255.raw 64 64 64 uchar ./Class_All/Sphere_Init_099_255.rawiv no
+# Skeleton Volume
+MakeRawiv	./Class_Box/Box_Skeletons_099_255.raw 64 64 64 uchar ./Class_All/Box_Skeletons_099_255.rawiv no
+MakeRawiv	./Class_Branch/Branch_Skeletons_099_255.raw 64 64 64 uchar ./Class_All/Branch_Skeletons_099_255.rawiv no
+MakeRawiv	./Class_Cylinder/Cylinder_Skeletons_099_255.raw 64 64 64 uchar ./Class_All/Cylinder_Skeletons_099_255.rawiv no
+MakeRawiv	./Class_H_Shape/H_Shape_Skeletons_099_255.raw 64 64 64 uchar ./Class_All/H_Shape_Skeletons_099_255.rawiv no
+MakeRawiv	./Class_S_Shape/S_Shape_Skeletons_099_255.raw 64 64 64 uchar ./Class_All/S_Shape_Skeletons_099_255.rawiv no
+MakeRawiv	./Class_Sphere/Sphere_Skeletons_099_255.raw 64 64 64 uchar ./Class_All/Sphere_Skeletons_099_255.rawiv no
+
+cd ./Class_Box
+rm *.raw
+cd ./Class_Branch
+rm *.raw
+cd ./Class_Cylinder
+rm *.raw
+cd ./Class_H_Shape
+rm *.raw
+cd ./Class_S_Shape
+rm *.raw
+cd ./Class_Sphere
+rm *.raw
+cd ..
+
+# Branch
+cd /work/smpark/data-test
+MakeRawiv	test.raw 64 64 64 uchar ./Branch.rawiv no
+PEDetect	Branch.rawiv 64 64 64 5 uchar 0  256 1   2 ./Class_Branch/Branch no 
+
+MakeRawiv	Branch_Init_099_255.raw 64 64 64 uchar ./Branch_Init_099_255.rawiv no
+MakeRawiv	Branch_SK_Read_099_255.raw 64 64 64 uchar ./Branch_SK_Read_099_255.rawiv no
+MakeRawiv	Branch_Skeletons_099_255.raw 64 64 64 uchar ./Branch_Skeletons_099_255.rawiv no
+MakeRawiv	Branch_Skeletons_Thick_099_255.raw 64 64 64 uchar ./Branch_Skeletons_Thick_099_255.rawiv no
+
+MakeRawiv	Branch_Skeletons_00_099_255.raw 64 64 64 uchar ./Branch_Skeletons_00_099_255.rawiv no
+
+
+
+# H_Shape
+cd /work/smpark/data-test
+MakeRawiv	test.raw 64 64 64 uchar ./H_Shape.rawiv no
+PEDetect	H_Shape.rawiv 64 64 64 5 uchar 0  256 1   2 ./Class_H_Shape/H_Shape no > ./Class_H_Shape/H_Shape.txt
+
+MakeRawiv	H_Shape_Init_099_255.raw 64 64 64 uchar ./H_Shape_Init_099_255.rawiv no
+MakeRawiv	H_Shape_Skeletons_099_255.raw 64 64 64 uchar ./H_Shape_Skeletons_099_255.rawiv no
+MakeRawiv	H_Shape_Skeletons_Thick_099_255.raw 64 64 64 uchar ./H_Shape_Skeletons_Thick_099_255.rawiv no
+
+
+MakeRawiv	H_Shape_Skeletons_099_255.raw 64 64 64 uchar ./H_Shape_Skeletons_099_255.rawiv no
+MakeRawiv	H_Shape_Skeletons_00_099_255.raw 64 64 64 uchar ./H_Shape_Skeletons_00_099_255.rawiv no
+MakeRawiv	H_Shape_Skeletons_01_099_255.raw 64 64 64 uchar ./H_Shape_Skeletons_01_099_255.rawiv no
+MakeRawiv	H_Shape_Skeletons_02_099_255.raw 64 64 64 uchar ./H_Shape_Skeletons_02_099_255.rawiv no
+MakeRawiv	H_Shape_Skeletons_03_099_255.raw 64 64 64 uchar ./H_Shape_Skeletons_03_099_255.rawiv no
+MakeRawiv	H_Shape_Skeletons_04_099_255.raw 64 64 64 uchar ./H_Shape_Skeletons_04_099_255.rawiv no
+MakeRawiv	H_Shape_Skeletons_05_099_255.raw 64 64 64 uchar ./H_Shape_Skeletons_05_099_255.rawiv no
+MakeRawiv	H_Shape_Skeletons_06_099_255.raw 64 64 64 uchar ./H_Shape_Skeletons_06_099_255.rawiv no
+MakeRawiv	H_Shape_Skeletons_07_099_255.raw 64 64 64 uchar ./H_Shape_Skeletons_07_099_255.rawiv no
+MakeRawiv	H_Shape_Skeletons_08_099_255.raw 64 64 64 uchar ./H_Shape_Skeletons_08_099_255.rawiv no
+MakeRawiv	H_Shape_Skeletons_09_099_255.raw 64 64 64 uchar ./H_Shape_Skeletons_09_099_255.rawiv no
+MakeRawiv	H_Shape_Skeletons_10_099_255.raw 64 64 64 uchar ./H_Shape_Skeletons_10_099_255.rawiv no
+MakeRawiv	H_Shape_Skeletons_11_099_255.raw 64 64 64 uchar ./H_Shape_Skeletons_11_099_255.rawiv no
+MakeRawiv	H_Shape_Skeletons_12_099_255.raw 64 64 64 uchar ./H_Shape_Skeletons_12_099_255.rawiv no
+MakeRawiv	H_Shape_Skeletons_13_099_255.raw 64 64 64 uchar ./H_Shape_Skeletons_13_099_255.rawiv no
+MakeRawiv	H_Shape_Skeletons_14_099_255.raw 64 64 64 uchar ./H_Shape_Skeletons_14_099_255.rawiv no
+MakeRawiv	H_Shape_Skeletons_15_099_255.raw 64 64 64 uchar ./H_Shape_Skeletons_15_099_255.rawiv no
+MakeRawiv	H_Shape_Skeletons_16_099_255.raw 64 64 64 uchar ./H_Shape_Skeletons_16_099_255.rawiv no
+MakeRawiv	H_Shape_Skeletons_17_099_255.raw 64 64 64 uchar ./H_Shape_Skeletons_17_099_255.rawiv no
+MakeRawiv	H_Shape_Skeletons_18_099_255.raw 64 64 64 uchar ./H_Shape_Skeletons_18_099_255.rawiv no
+MakeRawiv	H_Shape_Skeletons_19_099_255.raw 64 64 64 uchar ./H_Shape_Skeletons_19_099_255.rawiv no
+MakeRawiv	H_Shape_Skeletons_20_099_255.raw 64 64 64 uchar ./H_Shape_Skeletons_20_099_255.rawiv no
+MakeRawiv	H_Shape_Skeletons_21_099_255.raw 64 64 64 uchar ./H_Shape_Skeletons_21_099_255.rawiv no
+MakeRawiv	H_Shape_Skeletons_22_099_255.raw 64 64 64 uchar ./H_Shape_Skeletons_22_099_255.rawiv no
+MakeRawiv	H_Shape_Skeletons_23_099_255.raw 64 64 64 uchar ./H_Shape_Skeletons_23_099_255.rawiv no
+MakeRawiv	H_Shape_Skeletons_24_099_255.raw 64 64 64 uchar ./H_Shape_Skeletons_24_099_255.rawiv no
+MakeRawiv	H_Shape_Skeletons_25_099_255.raw 64 64 64 uchar ./H_Shape_Skeletons_25_099_255.rawiv no
+MakeRawiv	H_Shape_Skeletons_26_099_255.raw 64 64 64 uchar ./H_Shape_Skeletons_26_099_255.rawiv no
+MakeRawiv	H_Shape_Skeletons_27_099_255.raw 64 64 64 uchar ./H_Shape_Skeletons_27_099_255.rawiv no
+MakeRawiv	H_Shape_Skeletons_28_099_255.raw 64 64 64 uchar ./H_Shape_Skeletons_28_099_255.rawiv no
+MakeRawiv	H_Shape_Skeletons_29_099_255.raw 64 64 64 uchar ./H_Shape_Skeletons_29_099_255.rawiv no
+MakeRawiv	H_Shape_Skeletons_30_099_255.raw 64 64 64 uchar ./H_Shape_Skeletons_30_099_255.rawiv no
+MakeRawiv	H_Shape_Skeletons_32_099_255.raw 64 64 64 uchar ./H_Shape_Skeletons_32_099_255.rawiv no
+MakeRawiv	H_Shape_Skeletons_34_099_255.raw 64 64 64 uchar ./H_Shape_Skeletons_34_099_255.rawiv no
+MakeRawiv	H_Shape_Skeletons_36_099_255.raw 64 64 64 uchar ./H_Shape_Skeletons_36_099_255.rawiv no
+MakeRawiv	H_Shape_Skeletons_38_099_255.raw 64 64 64 uchar ./H_Shape_Skeletons_38_099_255.rawiv no
+MakeRawiv	H_Shape_Skeletons_40_099_255.raw 64 64 64 uchar ./H_Shape_Skeletons_40_099_255.rawiv no
+MakeRawiv	H_Shape_Skeletons_42_099_255.raw 64 64 64 uchar ./H_Shape_Skeletons_42_099_255.rawiv no
+MakeRawiv	H_Shape_Skeletons_44_099_255.raw 64 64 64 uchar ./H_Shape_Skeletons_44_099_255.rawiv no
+
+
+# Sphere
+cd /work/smpark/data-test
+MakeRawiv	test.raw 64 64 64 uchar ./Sphere.rawiv no
+PEDetect	Sphere.rawiv 64 64 64 5 uchar 0  256 1   2 ./Class_Sphere/Sphere no 
+
+MakeRawiv	Sphere_Init_099_255.raw 64 64 64 uchar ./Sphere_Init_099_255.rawiv no
+MakeRawiv	Sphere_Skeletons_099_255.raw 64 64 64 uchar ./Sphere_Skeletons_099_255.rawiv no
+MakeRawiv	Sphere_Skeletons_Thick_099_255.raw 64 64 64 uchar ./Sphere_Skeletons_Thick_099_255.rawiv no
+
+
+
+MakeRawiv	Sphere_Skeletons_099_255.raw 64 64 64 uchar ./Sphere_Skeletons_099_255.rawiv no
+MakeRawiv	Sphere_Skeletons_00_099_255.raw 64 64 64 uchar ./Sphere_Skeletons_00_099_255.rawiv no
+MakeRawiv	Sphere_Skeletons_01_099_255.raw 64 64 64 uchar ./Sphere_Skeletons_01_099_255.rawiv no
+MakeRawiv	Sphere_Skeletons_02_099_255.raw 64 64 64 uchar ./Sphere_Skeletons_02_099_255.rawiv no
+MakeRawiv	Sphere_Skeletons_03_099_255.raw 64 64 64 uchar ./Sphere_Skeletons_03_099_255.rawiv no
+MakeRawiv	Sphere_Skeletons_04_099_255.raw 64 64 64 uchar ./Sphere_Skeletons_04_099_255.rawiv no
+MakeRawiv	Sphere_Skeletons_05_099_255.raw 64 64 64 uchar ./Sphere_Skeletons_05_099_255.rawiv no
+MakeRawiv	Sphere_Skeletons_06_099_255.raw 64 64 64 uchar ./Sphere_Skeletons_06_099_255.rawiv no
+MakeRawiv	Sphere_Skeletons_07_099_255.raw 64 64 64 uchar ./Sphere_Skeletons_07_099_255.rawiv no
+MakeRawiv	Sphere_Skeletons_08_099_255.raw 64 64 64 uchar ./Sphere_Skeletons_08_099_255.rawiv no
+MakeRawiv	Sphere_Skeletons_09_099_255.raw 64 64 64 uchar ./Sphere_Skeletons_09_099_255.rawiv no
+MakeRawiv	Sphere_Skeletons_10_099_255.raw 64 64 64 uchar ./Sphere_Skeletons_10_099_255.rawiv no
+MakeRawiv	Sphere_Skeletons_11_099_255.raw 64 64 64 uchar ./Sphere_Skeletons_11_099_255.rawiv no
+MakeRawiv	Sphere_Skeletons_12_099_255.raw 64 64 64 uchar ./Sphere_Skeletons_12_099_255.rawiv no
+MakeRawiv	Sphere_Skeletons_13_099_255.raw 64 64 64 uchar ./Sphere_Skeletons_13_099_255.rawiv no
+MakeRawiv	Sphere_Skeletons_14_099_255.raw 64 64 64 uchar ./Sphere_Skeletons_14_099_255.rawiv no
+MakeRawiv	Sphere_Skeletons_15_099_255.raw 64 64 64 uchar ./Sphere_Skeletons_15_099_255.rawiv no
+MakeRawiv	Sphere_Skeletons_16_099_255.raw 64 64 64 uchar ./Sphere_Skeletons_16_099_255.rawiv no
+MakeRawiv	Sphere_Skeletons_17_099_255.raw 64 64 64 uchar ./Sphere_Skeletons_17_099_255.rawiv no
+MakeRawiv	Sphere_Skeletons_18_099_255.raw 64 64 64 uchar ./Sphere_Skeletons_18_099_255.rawiv no
+MakeRawiv	Sphere_Skeletons_19_099_255.raw 64 64 64 uchar ./Sphere_Skeletons_19_099_255.rawiv no
+MakeRawiv	Sphere_Skeletons_20_099_255.raw 64 64 64 uchar ./Sphere_Skeletons_20_099_255.rawiv no
+MakeRawiv	Sphere_Skeletons_21_099_255.raw 64 64 64 uchar ./Sphere_Skeletons_21_099_255.rawiv no
+MakeRawiv	Sphere_Skeletons_22_099_255.raw 64 64 64 uchar ./Sphere_Skeletons_22_099_255.rawiv no
+MakeRawiv	Sphere_Skeletons_23_099_255.raw 64 64 64 uchar ./Sphere_Skeletons_23_099_255.rawiv no
+MakeRawiv	Sphere_Skeletons_24_099_255.raw 64 64 64 uchar ./Sphere_Skeletons_24_099_255.rawiv no
+MakeRawiv	Sphere_Skeletons_25_099_255.raw 64 64 64 uchar ./Sphere_Skeletons_25_099_255.rawiv no
+MakeRawiv	Sphere_Skeletons_26_099_255.raw 64 64 64 uchar ./Sphere_Skeletons_26_099_255.rawiv no
+MakeRawiv	Sphere_Skeletons_27_099_255.raw 64 64 64 uchar ./Sphere_Skeletons_27_099_255.rawiv no
+MakeRawiv	Sphere_Skeletons_28_099_255.raw 64 64 64 uchar ./Sphere_Skeletons_28_099_255.rawiv no
+MakeRawiv	Sphere_Skeletons_29_099_255.raw 64 64 64 uchar ./Sphere_Skeletons_29_099_255.rawiv no
+MakeRawiv	Sphere_Skeletons_30_099_255.raw 64 64 64 uchar ./Sphere_Skeletons_20_099_255.rawiv no
+MakeRawiv	Sphere_Skeletons_31_099_255.raw 64 64 64 uchar ./Sphere_Skeletons_31_099_255.rawiv no
+MakeRawiv	Sphere_Skeletons_32_099_255.raw 64 64 64 uchar ./Sphere_Skeletons_32_099_255.rawiv no
+MakeRawiv	Sphere_Skeletons_33_099_255.raw 64 64 64 uchar ./Sphere_Skeletons_33_099_255.rawiv no
+MakeRawiv	Sphere_Skeletons_34_099_255.raw 64 64 64 uchar ./Sphere_Skeletons_34_099_255.rawiv no
+MakeRawiv	Sphere_Skeletons_35_099_255.raw 64 64 64 uchar ./Sphere_Skeletons_35_099_255.rawiv no
+MakeRawiv	Sphere_Skeletons_36_099_255.raw 64 64 64 uchar ./Sphere_Skeletons_36_099_255.rawiv no
+MakeRawiv	Sphere_Skeletons_37_099_255.raw 64 64 64 uchar ./Sphere_Skeletons_37_099_255.rawiv no
+MakeRawiv	Sphere_Skeletons_38_099_255.raw 64 64 64 uchar ./Sphere_Skeletons_38_099_255.rawiv no
+MakeRawiv	Sphere_Skeletons_39_099_255.raw 64 64 64 uchar ./Sphere_Skeletons_39_099_255.rawiv no
+MakeRawiv	Sphere_Skeletons_30_099_255.raw 64 64 64 uchar ./Sphere_Skeletons_30_099_255.rawiv no
+MakeRawiv	Sphere_Skeletons_41_099_255.raw 64 64 64 uchar ./Sphere_Skeletons_41_099_255.rawiv no
+MakeRawiv	Sphere_Skeletons_42_099_255.raw 64 64 64 uchar ./Sphere_Skeletons_42_099_255.rawiv no
+MakeRawiv	Sphere_Skeletons_43_099_255.raw 64 64 64 uchar ./Sphere_Skeletons_43_099_255.rawiv no
+MakeRawiv	Sphere_Skeletons_44_099_255.raw 64 64 64 uchar ./Sphere_Skeletons_44_099_255.rawiv no
+MakeRawiv	Sphere_Skeletons_45_099_255.raw 64 64 64 uchar ./Sphere_Skeletons_45_099_255.rawiv no
+MakeRawiv	Sphere_Skeletons_46_099_255.raw 64 64 64 uchar ./Sphere_Skeletons_46_099_255.rawiv no
+MakeRawiv	Sphere_Skeletons_47_099_255.raw 64 64 64 uchar ./Sphere_Skeletons_47_099_255.rawiv no
+MakeRawiv	Sphere_Skeletons_48_099_255.raw 64 64 64 uchar ./Sphere_Skeletons_48_099_255.rawiv no
+MakeRawiv	Sphere_Skeletons_49_099_255.raw 64 64 64 uchar ./Sphere_Skeletons_49_099_255.rawiv no
+MakeRawiv	Sphere_Skeletons_40_099_255.raw 64 64 64 uchar ./Sphere_Skeletons_50_099_255.rawiv no
+MakeRawiv	Sphere_Skeletons_51_099_255.raw 64 64 64 uchar ./Sphere_Skeletons_51_099_255.rawiv no
+MakeRawiv	Sphere_Skeletons_52_099_255.raw 64 64 64 uchar ./Sphere_Skeletons_52_099_255.rawiv no
+MakeRawiv	Sphere_Skeletons_53_099_255.raw 64 64 64 uchar ./Sphere_Skeletons_53_099_255.rawiv no
+MakeRawiv	Sphere_Skeletons_54_099_255.raw 64 64 64 uchar ./Sphere_Skeletons_54_099_255.rawiv no
+MakeRawiv	Sphere_Skeletons_55_099_255.raw 64 64 64 uchar ./Sphere_Skeletons_55_099_255.rawiv no
+MakeRawiv	Sphere_Skeletons_56_099_255.raw 64 64 64 uchar ./Sphere_Skeletons_56_099_255.rawiv no
+MakeRawiv	Sphere_Skeletons_57_099_255.raw 64 64 64 uchar ./Sphere_Skeletons_57_099_255.rawiv no
+MakeRawiv	Sphere_Skeletons_58_099_255.raw 64 64 64 uchar ./Sphere_Skeletons_58_099_255.rawiv no
+MakeRawiv	Sphere_Skeletons_59_099_255.raw 64 64 64 uchar ./Sphere_Skeletons_59_099_255.rawiv no
+
+
+
+# Box
+cd /work/smpark/data-test
+MakeRawiv	test.raw 64 64 64 uchar ./Box.rawiv no 
+PEDetect	Box.rawiv 64 64 64 5 uchar 0  256 1   2 ./Class_Box/Box no > ./Class_Box/Box.txt
+
+MakeRawiv	Box_Init_099_255.raw 64 64 64 uchar ./Box_Init_099_255.rawiv no
+MakeRawiv	Box_Skeletons_099_255.raw 64 64 64 uchar ./Box_Skeletons_099_255.rawiv no
+MakeRawiv	Box_Skeletons_Thick_099_255.raw 64 64 64 uchar ./Box_Skeletons_Thick_099_255.rawiv no
+
+
+MakeRawiv	Box_Skeletons_099_255.raw 64 64 64 uchar ./Box_Skeletons_099_255.rawiv no
+MakeRawiv	Box_Skeletons_00_099_255.raw 64 64 64 uchar ./Box_Skeletons_00_099_255.rawiv no
+MakeRawiv	Box_Skeletons_01_099_255.raw 64 64 64 uchar ./Box_Skeletons_01_099_255.rawiv no
+MakeRawiv	Box_Skeletons_02_099_255.raw 64 64 64 uchar ./Box_Skeletons_02_099_255.rawiv no
+MakeRawiv	Box_Skeletons_03_099_255.raw 64 64 64 uchar ./Box_Skeletons_03_099_255.rawiv no
+MakeRawiv	Box_Skeletons_04_099_255.raw 64 64 64 uchar ./Box_Skeletons_04_099_255.rawiv no
+MakeRawiv	Box_Skeletons_05_099_255.raw 64 64 64 uchar ./Box_Skeletons_05_099_255.rawiv no
+MakeRawiv	Box_Skeletons_06_099_255.raw 64 64 64 uchar ./Box_Skeletons_06_099_255.rawiv no
+MakeRawiv	Box_Skeletons_07_099_255.raw 64 64 64 uchar ./Box_Skeletons_07_099_255.rawiv no
+MakeRawiv	Box_Skeletons_08_099_255.raw 64 64 64 uchar ./Box_Skeletons_08_099_255.rawiv no
+MakeRawiv	Box_Skeletons_09_099_255.raw 64 64 64 uchar ./Box_Skeletons_09_099_255.rawiv no
+MakeRawiv	Box_Skeletons_10_099_255.raw 64 64 64 uchar ./Box_Skeletons_10_099_255.rawiv no
+MakeRawiv	Box_Skeletons_11_099_255.raw 64 64 64 uchar ./Box_Skeletons_11_099_255.rawiv no
+MakeRawiv	Box_Skeletons_12_099_255.raw 64 64 64 uchar ./Box_Skeletons_12_099_255.rawiv no
+MakeRawiv	Box_Skeletons_13_099_255.raw 64 64 64 uchar ./Box_Skeletons_13_099_255.rawiv no
+MakeRawiv	Box_Skeletons_14_099_255.raw 64 64 64 uchar ./Box_Skeletons_14_099_255.rawiv no
+MakeRawiv	Box_Skeletons_15_099_255.raw 64 64 64 uchar ./Box_Skeletons_15_099_255.rawiv no
+MakeRawiv	Box_Skeletons_16_099_255.raw 64 64 64 uchar ./Box_Skeletons_16_099_255.rawiv no
+MakeRawiv	Box_Skeletons_17_099_255.raw 64 64 64 uchar ./Box_Skeletons_17_099_255.rawiv no
+MakeRawiv	Box_Skeletons_18_099_255.raw 64 64 64 uchar ./Box_Skeletons_18_099_255.rawiv no
+MakeRawiv	Box_Skeletons_19_099_255.raw 64 64 64 uchar ./Box_Skeletons_19_099_255.rawiv no
+MakeRawiv	Box_Skeletons_20_099_255.raw 64 64 64 uchar ./Box_Skeletons_20_099_255.rawiv no
+MakeRawiv	Box_Skeletons_21_099_255.raw 64 64 64 uchar ./Box_Skeletons_21_099_255.rawiv no
+MakeRawiv	Box_Skeletons_22_099_255.raw 64 64 64 uchar ./Box_Skeletons_22_099_255.rawiv no
+MakeRawiv	Box_Skeletons_23_099_255.raw 64 64 64 uchar ./Box_Skeletons_23_099_255.rawiv no
+MakeRawiv	Box_Skeletons_24_099_255.raw 64 64 64 uchar ./Box_Skeletons_24_099_255.rawiv no
+MakeRawiv	Box_Skeletons_25_099_255.raw 64 64 64 uchar ./Box_Skeletons_25_099_255.rawiv no
+MakeRawiv	Box_Skeletons_26_099_255.raw 64 64 64 uchar ./Box_Skeletons_26_099_255.rawiv no
+MakeRawiv	Box_Skeletons_27_099_255.raw 64 64 64 uchar ./Box_Skeletons_27_099_255.rawiv no
+MakeRawiv	Box_Skeletons_28_099_255.raw 64 64 64 uchar ./Box_Skeletons_28_099_255.rawiv no
+MakeRawiv	Box_Skeletons_29_099_255.raw 64 64 64 uchar ./Box_Skeletons_29_099_255.rawiv no
+MakeRawiv	Box_Skeletons_30_099_255.raw 64 64 64 uchar ./Box_Skeletons_30_099_255.rawiv no
+MakeRawiv	Box_Skeletons_31_099_255.raw 64 64 64 uchar ./Box_Skeletons_31_099_255.rawiv no
+MakeRawiv	Box_Skeletons_32_099_255.raw 64 64 64 uchar ./Box_Skeletons_32_099_255.rawiv no
+MakeRawiv	Box_Skeletons_33_099_255.raw 64 64 64 uchar ./Box_Skeletons_33_099_255.rawiv no
+MakeRawiv	Box_Skeletons_34_099_255.raw 64 64 64 uchar ./Box_Skeletons_34_099_255.rawiv no
+MakeRawiv	Box_Skeletons_35_099_255.raw 64 64 64 uchar ./Box_Skeletons_35_099_255.rawiv no
+MakeRawiv	Box_Skeletons_36_099_255.raw 64 64 64 uchar ./Box_Skeletons_36_099_255.rawiv no
+MakeRawiv	Box_Skeletons_37_099_255.raw 64 64 64 uchar ./Box_Skeletons_37_099_255.rawiv no
+MakeRawiv	Box_Skeletons_38_099_255.raw 64 64 64 uchar ./Box_Skeletons_38_099_255.rawiv no
+MakeRawiv	Box_Skeletons_39_099_255.raw 64 64 64 uchar ./Box_Skeletons_39_099_255.rawiv no
+MakeRawiv	Box_Skeletons_40_099_255.raw 64 64 64 uchar ./Box_Skeletons_40_099_255.rawiv no
+MakeRawiv	Box_Skeletons_41_099_255.raw 64 64 64 uchar ./Box_Skeletons_41_099_255.rawiv no
+MakeRawiv	Box_Skeletons_42_099_255.raw 64 64 64 uchar ./Box_Skeletons_42_099_255.rawiv no
+MakeRawiv	Box_Skeletons_43_099_255.raw 64 64 64 uchar ./Box_Skeletons_43_099_255.rawiv no
+MakeRawiv	Box_Skeletons_44_099_255.raw 64 64 64 uchar ./Box_Skeletons_44_099_255.rawiv no
+MakeRawiv	Box_Skeletons_45_099_255.raw 64 64 64 uchar ./Box_Skeletons_45_099_255.rawiv no
+MakeRawiv	Box_Skeletons_46_099_255.raw 64 64 64 uchar ./Box_Skeletons_46_099_255.rawiv no
+MakeRawiv	Box_Skeletons_47_099_255.raw 64 64 64 uchar ./Box_Skeletons_47_099_255.rawiv no
+MakeRawiv	Box_Skeletons_48_099_255.raw 64 64 64 uchar ./Box_Skeletons_48_099_255.rawiv no
+MakeRawiv	Box_Skeletons_49_099_255.raw 64 64 64 uchar ./Box_Skeletons_49_099_255.rawiv no
+MakeRawiv	Box_Skeletons_50_099_255.raw 64 64 64 uchar ./Box_Skeletons_50_099_255.rawiv no
+MakeRawiv	Box_Skeletons_51_099_255.raw 64 64 64 uchar ./Box_Skeletons_51_099_255.rawiv no
+MakeRawiv	Box_Skeletons_52_099_255.raw 64 64 64 uchar ./Box_Skeletons_52_099_255.rawiv no
+MakeRawiv	Box_Skeletons_53_099_255.raw 64 64 64 uchar ./Box_Skeletons_53_099_255.rawiv no
+MakeRawiv	Box_Skeletons_54_099_255.raw 64 64 64 uchar ./Box_Skeletons_54_099_255.rawiv no
+MakeRawiv	Box_Skeletons_55_099_255.raw 64 64 64 uchar ./Box_Skeletons_55_099_255.rawiv no
+MakeRawiv	Box_Skeletons_56_099_255.raw 64 64 64 uchar ./Box_Skeletons_56_099_255.rawiv no
+MakeRawiv	Box_Skeletons_57_099_255.raw 64 64 64 uchar ./Box_Skeletons_57_099_255.rawiv no
+MakeRawiv	Box_Skeletons_58_099_255.raw 64 64 64 uchar ./Box_Skeletons_58_099_255.rawiv no
+MakeRawiv	Box_Skeletons_69_099_255.raw 64 64 64 uchar ./Box_Skeletons_69_099_255.rawiv no
+MakeRawiv	Box_Skeletons_60_099_255.raw 64 64 64 uchar ./Box_Skeletons_60_099_255.rawiv no
+MakeRawiv	Box_Skeletons_61_099_255.raw 64 64 64 uchar ./Box_Skeletons_61_099_255.rawiv no
+MakeRawiv	Box_Skeletons_62_099_255.raw 64 64 64 uchar ./Box_Skeletons_62_099_255.rawiv no
+MakeRawiv	Box_Skeletons_63_099_255.raw 64 64 64 uchar ./Box_Skeletons_63_099_255.rawiv no
+MakeRawiv	Box_Skeletons_64_099_255.raw 64 64 64 uchar ./Box_Skeletons_64_099_255.rawiv no
+MakeRawiv	Box_Skeletons_65_099_255.raw 64 64 64 uchar ./Box_Skeletons_65_099_255.rawiv no
+MakeRawiv	Box_Skeletons_66_099_255.raw 64 64 64 uchar ./Box_Skeletons_66_099_255.rawiv no
+MakeRawiv	Box_Skeletons_67_099_255.raw 64 64 64 uchar ./Box_Skeletons_67_099_255.rawiv no
+MakeRawiv	Box_Skeletons_68_099_255.raw 64 64 64 uchar ./Box_Skeletons_68_099_255.rawiv no
+MakeRawiv	Box_Skeletons_69_099_255.raw 64 64 64 uchar ./Box_Skeletons_69_099_255.rawiv no
+
+
+
+
+
+
+#vhmale 256^3
+PEDetect  vhmale_256.rawiv 256 256 256 5 ushort  0.0 65536 1  8  ./C_vhmale_256/vhmale_256 no > ./C_vhmale_256/vhmale_256-PED.txt
+ClassOnly vhmale_256.rawiv 256 256 256 5 ushort  0.0 65536 1  8  ./C_vhmale_256/vhmale_256 no 
+ClassOrg  vhmale_256.rawiv 256 256 256 5 ushort  0.0 65536 1  8  ./C_vhmale_256/vhmale_256 no 
+SigmaEval vhmale_256.rawiv 256 256 256 5 ushort  0.0 65536 1  8  ./C_vhmale_256/vhmale_256 no > ./C_vhmale_256/vhmale_256-Sigma.txt &
+
+
+#vhmale 512^3
+PEDetect  vhmale_512.rawiv 512 512 512 5 ushort  0.0 65536 1  8  ./C_vhmale_512/vhmale_512 no > ./C_vhmale_512/vhmale_512-PED.txt
+Distance  vhmale_512.rawiv 512 512 512 5 ushort  0.0 65536 1  8  ./C_vhmale_512/vhmale_512 no > ./C_vhmale_512/vhmale_512-Dist.txt &
+
+
+
+# BrainWeb
+
+PEDetect BrainWeb_256.rawiv 256 256 256 1 ushort 0.0 65536  1  5 ./C_BrainWeb_256/BrainWeb_256 no > ./C_BrainWeb_256/BrainWeb_256_IG.txt
+
+PEDetect BrainWeb_181x217x181.rawiv 181 217 181 1 ushort 0.0 65536  1  5 ./C_BrainWeb/BrainWeb no > ./C_BrainWeb/BrainWeb_IG.txt
+Distance BrainWeb_181x217x181.rawiv 181 217 181 1 ushort 0.0 65536  1  5 ./C_BrainWeb/BrainWeb no > ./C_BrainWeb/BrainWeb_Dist.txt
+ClassOnly BrainWeb_181x217x181.rawiv 181 217 181 1 ushort 0.0 65536  1  5 ./C_BrainWeb/BrainWeb no
+ClassOrg BrainWeb_181x217x181.rawiv 181 217 181 1 ushort 0.0 65536  1  5 ./C_BrainWeb/BrainWeb no &
+SecondD  BrainWeb_181x217x181.rawiv 181 217 181 1 ushort  0.0  65536  1  5  ./BrainWeb_SliceInfo/BrainWeb no &
+GradM  BrainWeb_181x217x181.rawiv 181 217 181 1 ushort  0.0  1  5  ./BrainWeb_SliceInfo/BrainWeb no &
+EvaluationOnly  BrainWeb_181x217x181.rawiv 181 217 181 10 ushort  0.0  65536  1  5  ./C_BrainWeb/BrainWeb no > ./C_BrainWeb/BrainWeb_Eval.txt
+
+PEDetect BrainWeb_181x217x181.rawiv 181 217 181 1 ushort 0.0 65536  1  5 ./C_BrainWeb/BrainWeb no > ./C_BrainWeb/BrainWeb_CC.txt
+PEDetect BrainWeb_181x217x181.rawiv 181 217 181 1 ushort 0.0 65536  1  5 ./C_BrainWeb/BrainWeb no > ./C_BrainWeb/BrainWeb_IG.txt
+PEDetect BrainWeb_181x217x181.rawiv 181 217 181 1 ushort 0.0 65536  1  5 ./C_BrainWeb/BrainWeb no > ./C_BrainWeb/BrainWeb_MC.txt
+ClassOnly BrainWeb_181x217x181.rawiv 181 217 181 1 ushort 0.0 65536  1  5 ./C_BrainWeb/BrainWeb no
+ClassOrg BrainWeb_181x217x181.rawiv 181 217 181 1 ushort 0.0 65536  1  5 ./C_BrainWeb/BrainWeb no &
+SecondD  BrainWeb_181x217x181.rawiv 181 217 181 1 ushort  0.0  65536  1  5  ./BrainWeb_SliceInfo/BrainWeb no &
+GradM  BrainWeb_181x217x181.rawiv 181 217 181 1 ushort  0.0  1  5  ./BrainWeb_SliceInfo/BrainWeb no &
+EvaluationOnly  BrainWeb_181x217x181.rawiv 181 217 181 10 ushort  0.0  65536  1  5  ./C_BrainWeb/BrainWeb no > ./C_BrainWeb/BrainWeb_Eval.txt
+
+
+PEDetect BrainWeb_25_80R3.rawiv 256 256 3 1 ushort 0.0 65536  1  2 ./C_BrainWeb_256_80R3/BrainWeb_25_80R3 no > ./C_BrainWeb_256_80R3/BrainWeb_25_80R3_IG.txt
+
+
+# Branch (100, 200, 255)
+cd /work/smpark/data-test
+MakeRawiv	test.raw 64 64 64 uchar ./Branch.rawiv no
+ClassOnly	Branch.rawiv 64 64 64 1 uchar 0  256 1   3 ./Class_Branch/Branch no 
+ClassOrg	Branch.rawiv 64 64 64 1 uchar 0  256 1   3 ./Class_Branch/Branch no 
+PEDetect	Branch.rawiv 64 64 64 1 uchar 0  256 1   3 ./Class_Branch/Branch no 
+SecondD		Branch.rawiv 64 64 64 1 uchar 0  256 1   2 ./Class_Branch/Branch no 
+GradM		Branch.rawiv 64 64 64 1 uchar 0  1   3 ./Class_Branch/Branch no 
+
+PEDetect  tooth.rawiv 256 256 161 1 ushort 0  1301 1   7 ./C_Tooth/tooth no > ./C_Tooth/tooth_IG2.txt
+PEDetect  tooth.rawiv 256 256 161 1 ushort 0  1301 1   7 ./C_Tooth/tooth no > ./C_Tooth/tooth_IG.txt
+ClassOnly tooth.rawiv 256 256 161 1 ushort 0  1301 1   7 ./C_Tooth/tooth no
+ClassOrg  tooth.rawiv 256 256 161 1 ushort 0  1301 1   7 ./C_Tooth/tooth no
+SecondD   tooth.rawiv 256 256 161 1 ushort 0  1301 1   7 ./Tooth_SliceInfo/tooth no
+GradM     tooth.rawiv 256 256 161 1 ushort 0  1   7 ./Tooth_SliceInfo/tooth no 
+EvaluationOnly tooth.rawiv 256 256 161 1 ushort 0  1301 1   7 ./Tooth_SliceInfo/Engine no > ./C_Tooth/Tooth_Eval.txt 
+
+PEDetect  blade.rawiv 256 256 128 1 uchar 0  256 1   7 ./C_Blade/blade no > ./C_Blade/Blade_IG2.txt
+PEDetect  blade.rawiv 256 256 128 1 uchar 0  256 1   7 ./C_Blade/blade no > ./C_Blade/Blade_IG.txt
+ClassOnly blade.rawiv 256 256 128 1 uchar 0  256 1   7 ./C_Blade/blade no
+ClassOrg  blade.rawiv 256 256 128 1 uchar 0  256 1   7 ./C_Blade/blade no
+SecondD   blade.rawiv 256 256 128 1 uchar 0  256 1   7 ./Blade_SliceInfo/blade no
+GradM     blade.rawiv 256 256 128 1 uchar 0  1   7 ./Blade_SliceInfo/blade no 
+EvaluationOnly blade.rawiv 256 256 128 1 uchar 0  256 1   7 ./Blade_SliceInfo/blade no > ./C_Blade/Blade_Eval.txt 
+
+PEDetect  blade_70R3.rawiv 256 256 3 1 uchar 0  256 1   2 ./C_Blade_07R3/Blade_07R3 no > ./C_Blade_07R3/Blade_07R3_IG.txt
+
+
+#Lei-Dong
+PEDetect  PA1SE1.rawiv 512 512 100 1 ushort 0  65536 1   7 ./C_PA1SE1/PA1SE1 no > ./C_PA1SE1/PA1SE1_IG.txt
+ClassOnly PA1SE1.rawiv 512 512 100 1 ushort 0  65536 1   7 ./C_PA1SE1/PA1SE1 no
+ClassOrg  PA1SE1.rawiv 512 512 100 1 ushort 0  65536 1   7 ./C_PA1SE1/PA1SE1 no
+SecondD   PA1SE1.rawiv 512 512 100 1 ushort 0  65536 1   7 ./C_PA1SE1/PA1SE1 no
+GradM     PA1SE1.rawiv 512 512 100 1 ushort 0  1   7 ./C_PA1SE1/PA1SE1 no 
+EvaluationOnly PA1SE1.rawiv 512 512 100 1 ushort 0  65536 1   7 ./C_PA1SE1/PA1SE1 no > ./C_PA1SE1/PA1SE1_Eval.txt 
+
+PEDetect  PA1SE1_30R3.rawiv 256 256 3 1 ushort 0  65536 1   2 ./C_PA1SE1_30R3/PA1SE1_30R3 no > ./C_PA1SE1_30R3/PA1SE1_30R3_IG.txt
+
+
+#Chapel Hill CT
+
+PEDetect  head256.rawiv 256 256 225 1 uchar 0  255 1   2 ./C_head256/head256 no > ./C_head256/head256_IG.txt
+
+#Graph Generation
+TextToPPM Distance.txt 0 15 no
+TextToPPM G.txt 0 100 no
+TextToPPM I.txt 0 255 no
+TextToPPM ID-HitRGB.txt 0 5 rgb
+TextToPPM IG-Hit.txt 0 5 no
+TextToPPM IG-General.txt 0 5 no
+TextToPPM IS-General.txt 0 5 no
+TextToPPM S.txt -10 10 yes
+
+
+
+# Renaming the original directory
+# Getting your own working copy of the source 
+cd ..
+mv PEDetection PEDetection.orig
+cvs checkout PEDetection
+
+# Viewing differences after you edit the file, main.C
+cvs diff main.C 
+
+# Storing the new file, main.C, in the repository
+cvs commit -m "Sept. 1 2004" *.cpp
+cvs commit -m "Sept. 1 2004" *.h
+cvs commit -m "Sept. 1 2004" *.txt
+
+# Adding Files
+cvs add filename
+cvs commit -m "New File" filename
+
+# Removing Files
+cvs remove filename
+cvs ci -m "Unnecessary File" 
+
+
+
+

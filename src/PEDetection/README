@@ -1,0 +1,44 @@
+Usage:
+Classification	<Input File Name> 
+				<Data Resolution X> <Data Resolution Y> <Data Resolution Z>
+				<Leaping Number for Output Classified and Original Slices> 
+				<Data Type> 
+				<Min Value to Clip> 
+				<Max Value to Clip> 
+				<Window Size>  
+				<Number of Clusters> 
+				<Output File Name>
+				<Swap Byte Order>
+
+<Input File Name>:
+Avaiable Input File Types: rawiv, ppm, pgm, raw. "*.raw" have no header
+
+<Leaping Number for Output Classified and Original Slices>:
+If the leaping number is 10, then output slices will be 10, 20, 30, and so on.
+
+<Data Type> 
+Avaiable Data Types: uchar ushort float
+
+<Min Value to Truncate>:
+If the Min Value is 10, then all voxels, which have less than 10, will be zero.
+
+<Max Value to Clip>:
+If the Max Value is 100, then all voxels, which have greater than 100, will be zero.
+
+<Window Size>:
+This is not used. So, 1 is recommended
+
+<Swap Byte Order>
+You should select "yes" or "no"
+
+Example)
+Classification /work/smpark/data-TurbineBlade/blade.rawiv 256 256 128 10 uchar 0.0 3000 1  8  /work/smpark/data-TurbineBlade/Class-blade/blade no
+
+
+Programmed by Sangmin Park
+smpark@cs.utexas.edu
+
+
+
+This program generates several files such as *.gvec, *.GVF, *.Init, and *.second
+*.Init file has the initialization information for EM.

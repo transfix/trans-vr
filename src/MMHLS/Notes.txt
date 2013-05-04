@@ -1,0 +1,62 @@
+Tools->MMHLS has two steps to generate Multi-Domain mesh with gaps between any two meshes.
+Step 1. generateRawV
+Step 2. generateMesh
+
+Step 1 generateRawV implemented two cases.
+Case 1. If the input is a classifcation map, the goal is to generate multi-domain mesh.
+We need use the Volume Tab. First load this classification map, which must be a rawiv file
+format. Each voxel has an integer ID. 
+ Three parameters are needed here.
+ 
+ Dimension is an integer, which is the dimension of the  reconstructed volume by higher-order level-set method.
+ If the original volume is big, one  need to use a big dimension for mesh quality. 
+ 
+ Edgelength is a parameter used in HLS   reconstruction. If the edgelength is small, more points will be
+ generated for reconstructing  the volume. If it's big, fewer points will be used for reconstructing the volume.
+
+ Out Prefix is the output files name, which will be merged into the original volume file name.
+
+ Case 2. If the input is a series of meshes (may have intersections), the goal is to generate non intersecting meshes.
+ We need use the Mesh Tab. First load a volume, whose bounding box will be used for reconstructing volume for
+ each mesh. Note, this volume must enclose all the meshes. 
+
+ MeshStart is the start mesh id.
+ MeshEnd is the end mesh id.
+ Mesh Prefix is the mesh file name prefix.
+ For example, if you have files foo1.raw, foo2.raw, ...,foo15.raw, MeshStart is 1, MeshEnd is 15, Mesh Prefix is foo.
+ The supported file format is raw file, pure geometric file format used in CVC. All the meshes should 
+ be in the same folder with the volume that encloses them. 
+
+ Dimension, EdgeLength, Out Prefix are the same as for Case 1.
+
+After this step, the output includes partition surfaces and reconstructed volumes by HLS method and
+a manifest text file, which documented the number of domains (first line), each volume, id, iso value, red,
+green, blue. 
+
+Step 2. generateMesh.
+For this step, we press the generateMesh button directly.
+We need first load a manifest file, which is usually geneated by Step 1.
+
+Isovalue Ratio is the ratio of the isovalue used for generating mesh from the volume that Step 1
+generated. If ratio is 1, then the isovalue documented in the manifest file will be used. If
+ less than 1, the mesh will be smaller. Usually should be [0.9-1].
+
+Tolerance is the gap threshold, [0, ~1]. If it's small, the generated meshes may still include 
+intersections. If it's big, the meshes generated will be far. Usually [0, 0.2].
+
+Volume Threshold is a penalty threshold. The extacted meshes from the volumes may include multiple
+components. If the volume of one component is less than this threshold, that component will
+be removed. This parameter is based on the unit. During the code running, if you find many
+small components, you can set it a larger number.
+
+MeshStart is which mesh you want to start.
+MeshEnd is the id which you want to end.
+Outprefix is output.
+E.g, for brain data, we get 41 domains. If I am only intrested in 15-20 domains. MeshStart is 15,
+MeshEnd is 20, OutPrefix, say, foo. Then you will get foo15.rawc,..., foo20.rawc. These files
+are geometric files with color info. 
+
+Have fun.
+Questions: zqyork@ices.utexas.edu
+
+

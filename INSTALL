@@ -1,0 +1,42 @@
+------------------------------------------------
+|      VolumeRover 2.0 - Build/Installation     |
+------------------------------------------------
+Joe R. -- transfix@ices.utexas.edu -- 04/25/2011
+ - add dependency list of external libraries, CHA 07/11/2012
+
+--->
+A. Check external libraries required to build full functionality of VolumeRover 2.0
+(these libraries will be found by cmake if you have ones installed)
+
+1. Boost (1.41.0 has been tested) - required for basic build
+2. GSL (1.15 has been tested)     - required for tiling, volume grid rover, and volutils
+3. HDF5 (1.8.5 has been tested)   - required for heirarchical volume handling
+4. CGAL (4.0 has been tested)     - required for tiling, segmentation, curation, pockettunnel, skeletonization, secondary structure elucidation, tightcocone, super secondary structure elucidation, and volume grid rover.
+5. FFTW (3.2.4 has been tested)   - required for volutils and reconstruction
+6. Cg (Nvidia)                    - required for shaded volume rendering
+
+*** You can download those libraries here **
+
+   http://cvcweb.ices.utexas.edu/3rdparty
+
+***
+
+--->
+B. Build
+
+To build:
+$ cd $BUILD_DIR
+$ cmake $SOURCE_DIR
+$ make
+
+BUILD_DIR - a location to place files generated during the build.
+            It can be the same as the SOURCE_DIR
+SOURCE_DIR - The location of the project's root CMakeLists.txt file.
+
+Once you've built the project, the binary will be in bin/ and any libraries
+created during the process will be in lib/.
+
+You will likely want to configure some of the build options.
+This can be done with the ccmake command:
+
+$ ccmake $SOURCE_DIR

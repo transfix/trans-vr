@@ -1,0 +1,81 @@
+<html>
+<head>
+<title>C2C codec users guide</title>
+</head>
+<body bgcolor=#ffffff link=#ff0000>
+
+<h3>Decoding Functions:</h3>
+<blockquote>
+ContourGeom* decodeC2CFile(const char *fileName, bool &amp; color);
+</blockquote>
+<p>This function takes a <b>filename</b> (absolute path or path relative to CWD)
+and a reference to a bool. It returns a pointer to a ContourGeom instance or
+NULL if there was an error. The bool reference will be set to true if the
+returned ContourGeom instance includes valid color information.</p>
+<blockquote>
+ContourGeom* decodeC2CBuffer(void *data, int size, unsigned char type,
+		bool &amp; color);
+</blockquote>
+<p>This function takes a pointer to some c2c encoded <b>data</b>, the
+<b>size</b> of that data in bytes, the <b>type</b> of that data (described in
+the table below), and a reference to a bool. It returns a pointer to a 
+ContourGeom instance or NULL if there was an error. As with the above function,
+the bool reference will be used to indicate the presence of color.<br>
+Note that this function should not be used for decoding data from c2c files. It
+was designed more for streamed data (where each buffer received is some
+subvolume of a larger volume). Part of this stream should also contain the type
+of the data because it is not part of the buffer.</p>
+
+<h3>Encoding Functions:</h3>
+<blockquote>
+void encodeC2CFile(const char *inFile, const char *outFile, unsigned char type,
+		float isoval);
+</blockquote>
+<p>This function takes an <b>in</b>put <b>file</b>name, an <b>out</b>put 
+<b>file</b>name, a <b>type</b> (again, described below), and an <b>isoval</b>ue.
+The input file should either be a Rawiv or RawV file. The output file should be
+a file which does not yet exist or is to be overwritten. The isovalue is any
+number between the minimum and maximum values of the function in the input
+file. The isovalue can be outside that range, but in that case the output file
+will contain no contour.</p>
+<blockquote>
+ByteStream *encodeC2CBuffer(void *data, unsigned char *red, unsigned char *green,
+		unsigned char *blue, unsigned char type, float isoval, int dim[3],
+		float orig[3], float span[3]);
+</blockquote>
+<p>This function takes a pointer to some volume <b>data</b>, pointers to
+<b>red</b>, <b>green</b>, and <b>blue</b> color volumes, the <b>type</b> of
+the volume data, an <b>isoval</b>ue, the <b>dim</b>ensions of the data,
+the coordinate <b>orig</b>in of the data, and the <b>span</b> of a single
+cell of volume data. It returns a pointer to a ByteStream instance that contains
+c2c data or nothing if there was an error. If the data being encoded has no
+color information, then NULL pointers should be passed in place of red, green,
+and blue color volumes.</p>
+
+<h4>Possible values for the <i>type</i> argument</h4>
+<table border=1>
+<tr><td>value</td><td>data type</td></tr>
+<tr><td>0</td><td>unsigned char</td></tr>
+<tr><td>1</td><td>unsigned short</td></tr>
+<tr><td>2</td><td>float</td></tr>
+<tr><td>3</td><td>unsigned char (with color) (RawV input volumes)</td></tr>
+<tr><td>4</td><td>unsigned short (with color) (RawV input volumes)</td></tr>
+<tr><td>5</td><td>float (with color) (RawV input volumes)</td></tr>
+</table>
+
+<h4>An abridged description of the ContourGeom class</h4>
+<p><b>Functions:</b>
+<ul>
+<li>int getNVert(void) : returns the number of vertices (and colors)
+<li>int getNTri(void) : returns the number of triangles
+<li>void merge(ContourGeom *) : merges two contours
+</ul>
+<b>Data Members:</b>
+<ul>
+<li>float	(*vert)[3] : isosurface vertex array
+<li>float	(*vcol)[3] : color values at vertices
+<li>unsigned int (*tri)[3] : triangle mesh array
+</ul>
+
+</body>
+</html>
