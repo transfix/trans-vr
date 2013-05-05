@@ -1,0 +1,6 @@
+[submodule "deps/CGAL"]
+	path = deps/CGAL
+	url = git://scm.gforge.inria.fr/cgal-bindings/cgal-bindings.git
+[submodule "deps/boost"]
+	path = deps/boost
+	url = git://github.com/ryppl/boost-zero.git
