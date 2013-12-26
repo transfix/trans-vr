@@ -2236,6 +2236,7 @@ void CVCMainWindow::showHistogramDialogSlot() {
     }
     string meshName = resultName + "_Mesh";
    
+#ifdef USING_SWEETMESH
     CVCGEOM_NAMESPACE::cvcgeom_t geometry;
     sweetMesh::hexMesh hMesh;
     sweetMesh::runLBIE(vfi, outer_isoval, inner_isoval, ui.m_ErrorTolerance->text().toDouble(), ui.m_InnerErrorTolerance->text().toDouble(), LBIE::Mesher::MeshType(ui.m_MeshType->currentItem()), LBIE::Mesher::NormalType(ui.m_NormalType->currentItem()), ui.m_Iterations->text().toUInt(), outputMessage, geometry, hMesh);
@@ -2247,6 +2248,7 @@ void CVCMainWindow::showHistogramDialogSlot() {
       cvcapp.listPropertyAppend("thumbnail.geometries", meshName);
       cvcapp.listPropertyAppend("zoomed.geometries", meshName);
     }
+#endif
     
 //     VolMagick::Volume vol;
 //     readVolumeFile(vol,vfi.filename());

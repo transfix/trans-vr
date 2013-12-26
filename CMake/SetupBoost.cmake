@@ -3,7 +3,7 @@
 #
 
 macro(SetupBoost TargetName)
- #set(Boost_USE_STATIC_LIBS OFF)
+ set(Boost_USE_STATIC_LIBS OFF)
  set(Boost_USE_MULTITHREADED ON)
  find_package(Boost 1.34.0 COMPONENTS thread date_time regex filesystem system)
  if(Boost_FOUND)
