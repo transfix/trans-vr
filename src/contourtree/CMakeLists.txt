@@ -1,4 +1,4 @@
-CMAKE_MINIMUM_REQUIRED (VERSION 2.6)
+cmake_minimum_required(VERSION 3.16)
 
 FILE(GLOB SOURCE_FILES *.cpp)
 FILE(GLOB INCLUDE_FILES ../../inc/contourtree/*.[Hh])
@@ -11,3 +11,9 @@ INCLUDE_DIRECTORIES(
 )
 
 ADD_LIBRARY (contourtree STATIC ${SOURCE_FILES} ${INCLUDE_FILES})
+
+set_target_properties(contourtree PROPERTIES
+  AUTOMOC OFF
+  AUTOUIC OFF
+  AUTORCC OFF
+)

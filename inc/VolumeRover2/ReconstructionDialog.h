@@ -41,7 +41,7 @@ class ReconstructionDialog : public QDialog
   Q_OBJECT
 
  public:
-  ReconstructionDialog(QWidget *parent=0,Qt::WFlags flags=0);
+  ReconstructionDialog(QWidget *parent=nullptr,Qt::WindowFlags flags=Qt::WindowFlags());
 
   virtual ~ReconstructionDialog();
 

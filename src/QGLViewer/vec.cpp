@@ -1,108 +1,108 @@
-/****************************************************************************
+/**********************************************************************
 
- Copyright (C) 2002-2008 Gilles Debunne. All rights reserved.
+Copyright (C) 2002-2025 Gilles Debunne. All rights reserved.
 
- This file is part of the QGLViewer library version 2.3.6.
+This file is part of the QGLViewer library version 3.0.0.
 
- http://www.libqglviewer.com - contact@libqglviewer.com
+https://gillesdebunne.github.io/libQGLViewer - contact@libqglviewer.com
 
- This file may be used under the terms of the GNU General Public License 
- versions 2.0 or 3.0 as published by the Free Software Foundation and
- appearing in the LICENSE file included in the packaging of this file.
- In addition, as a special exception, Gilles Debunne gives you certain 
- additional rights, described in the file GPL_EXCEPTION in this package.
+This file is part of a free software; you can redistribute it and/or
+modify it under the terms of the GNU Lesser General Public
+License as published by the Free Software Foundation; either
+version 3 of the License, or (at your option) any later version.
 
- libQGLViewer uses dual licensing. Commercial/proprietary software must
- purchase a libQGLViewer Commercial License.
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+Lesser General Public License for more details.
 
- This file is provided AS IS with NO WARRANTY OF ANY KIND, INCLUDING THE
- WARRANTY OF DESIGN, MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.
+You should have received a copy of the GNU Lesser General Public License
+along with this program; if not, write to the Free Software Foundation,
+Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 
-*****************************************************************************/
+**********************************************************************/
 
-#include <QGLViewer/domUtils.h>
 #include <QGLViewer/vec.h>
+#include <QGLViewer/domUtils.h>
 
 // Most of the methods are declared inline in vec.h
 
 using namespace qglviewer;
 using namespace std;
 
-/*! Projects the Vec on the axis of direction \p direction that passes through the origin.
+/*! Projects the Vec on the axis of direction \p direction that passes through
+the origin.
 
 \p direction does not need to be normalized (but must be non null). */
-void Vec::projectOnAxis(const Vec& direction)
-{
+void Vec::projectOnAxis(const Vec &direction) {
 #ifndef QT_NO_DEBUG
   if (direction.squaredNorm() < 1.0E-10)
-    qWarning("Vec::projectOnAxis: axis direction is not normalized (norm=%f).", direction.norm());
+    qWarning("Vec::projectOnAxis: axis direction is not normalized (norm=%f).",
+             direction.norm());
 #endif
 
-  *this = (((*this)*direction) / direction.squaredNorm()) * direction;
+  *this = (((*this) * direction) / direction.squaredNorm()) * direction;
 }
 
-/*! Projects the Vec on the plane whose normal is \p normal that passes through the origin.
+/*! Projects the Vec on the plane whose normal is \p normal that passes through
+the origin.
 
 \p normal does not need to be normalized (but must be non null). */
-void Vec::projectOnPlane(const Vec& normal)
-{
+void Vec::projectOnPlane(const Vec &normal) {
 #ifndef QT_NO_DEBUG
   if (normal.squaredNorm() < 1.0E-10)
-    qWarning("Vec::projectOnPlane: plane normal is not normalized (norm=%f).", normal.norm());
+    qWarning("Vec::projectOnPlane: plane normal is not normalized (norm=%f).",
+             normal.norm());
 #endif
 
-  *this -= (((*this)*normal) / normal.squaredNorm()) * normal;
+  *this -= (((*this) * normal) / normal.squaredNorm()) * normal;
 }
 
-/*! Returns a Vec orthogonal to the Vec. Its norm() depends on the Vec, but is zero only for a
- null Vec. Note that the function that associates an orthogonalVec() to a Vec is not continous. */
-Vec Vec::orthogonalVec() const
-{
+/*! Returns a Vec orthogonal to the Vec. Its norm() depends on the Vec, but is
+ zero only for a null Vec. Note that the function that associates an
+ orthogonalVec() to a Vec is not continous. */
+Vec Vec::orthogonalVec() const {
   // Find smallest component. Keep equal case for null values.
-  if ((fabs(y) >= 0.9*fabs(x)) && (fabs(z) >= 0.9*fabs(x)))
+  if ((fabs(y) >= 0.9 * fabs(x)) && (fabs(z) >= 0.9 * fabs(x)))
     return Vec(0.0, -z, y);
+  else if ((fabs(x) >= 0.9 * fabs(y)) && (fabs(z) >= 0.9 * fabs(y)))
+    return Vec(-z, 0.0, x);
   else
-    if ((fabs(x) >= 0.9*fabs(y)) && (fabs(z) >= 0.9*fabs(y)))
-      return Vec(-z, 0.0, x);
-    else
-      return Vec(-y, x, 0.0);
+    return Vec(-y, x, 0.0);
 }
 
 /*! Constructs a Vec from a \c QDomElement representing an XML code of the form
  \code< anyTagName x=".." y=".." z=".." />\endcode
 
-If one of these attributes is missing or is not a number, a warning is displayed and the associated
-value is set to 0.0.
+If one of these attributes is missing or is not a number, a warning is displayed
+and the associated value is set to 0.0.
 
 See also domElement() and initFromDOMElement(). */
-Vec::Vec(const QDomElement& element)
-{
+Vec::Vec(const QDomElement &element) {
   QStringList attribute;
-  attribute << "x" << "y" << "z";
-#if QT_VERSION >= 0x040000
-  for (int i=0; i<attribute.size(); ++i)
-#else
-  for (unsigned int i=0; i<attribute.count(); ++i)
-#endif
+  attribute << "x"
+            << "y"
+            << "z";
+  for (int i = 0; i < attribute.size(); ++i)
 #ifdef QGLVIEWER_UNION_NOT_SUPPORTED
-    this->operator[](i) = DomUtils::floatFromDom(element, attribute[i], 0.0);
+    this->operator[](i) = DomUtils::qrealFromDom(element, attribute[i], 0.0);
 #else
-    v_[i] = DomUtils::floatFromDom(element, attribute[i], 0.0);
+    v_[i] = DomUtils::qrealFromDom(element, attribute[i], 0.0);
 #endif
 }
 
 /*! Returns an XML \c QDomElement that represents the Vec.
 
- \p name is the name of the QDomElement tag. \p doc is the \c QDomDocument factory used to create
- QDomElement.
+ \p name is the name of the QDomElement tag. \p doc is the \c QDomDocument
+ factory used to create QDomElement.
 
  When output to a file, the resulting QDomElement will look like:
  \code
  <name x=".." y=".." z=".." />
  \endcode
 
- Use initFromDOMElement() to restore the Vec state from the resulting \c QDomElement. See also the
- Vec(const QDomElement&) constructor.
+ Use initFromDOMElement() to restore the Vec state from the resulting \c
+ QDomElement. See also the Vec(const QDomElement&) constructor.
 
  Here is complete example that creates a QDomDocument and saves it into a file:
  \code
@@ -124,9 +124,9 @@ Vec::Vec(const QDomElement& element)
  }
  \endcode
 
- See also Quaternion::domElement(), Frame::domElement(), Camera::domElement()... */
-QDomElement Vec::domElement(const QString& name, QDomDocument& document) const
-{
+ See also Quaternion::domElement(), Frame::domElement(), Camera::domElement()...
+ */
+QDomElement Vec::domElement(const QString &name, QDomDocument &document) const {
   QDomElement de = document.createElement(name);
   de.setAttribute("x", QString::number(x));
   de.setAttribute("y", QString::number(y));
@@ -136,8 +136,9 @@ QDomElement Vec::domElement(const QString& name, QDomDocument& document) const
 
 /*! Restores the Vec state from a \c QDomElement created by domElement().
 
- The \c QDomElement should contain \c x, \c y and \c z attributes. If one of these attributes is
- missing or is not a number, a warning is displayed and the associated value is set to 0.0.
+ The \c QDomElement should contain \c x, \c y and \c z attributes. If one of
+ these attributes is missing or is not a number, a warning is displayed and the
+ associated value is set to 0.0.
 
  To restore the Vec state from an xml file, use:
  \code
@@ -155,14 +156,11 @@ QDomElement Vec::domElement(const QString& name, QDomDocument& document) const
  \endcode
 
  See also the Vec(const QDomElement&) constructor. */
-void Vec::initFromDOMElement(const QDomElement& element)
-{
+void Vec::initFromDOMElement(const QDomElement &element) {
   const Vec v(element);
   *this = v;
 }
 
-ostream& operator<<(ostream& o, const Vec& v)
-{
+ostream &operator<<(ostream &o, const Vec &v) {
   return o << v.x << '\t' << v.y << '\t' << v.z;
 }
-

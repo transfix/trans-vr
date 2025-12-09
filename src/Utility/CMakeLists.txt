@@ -1,13 +1,19 @@
-CMAKE_MINIMUM_REQUIRED (VERSION 2.6)
+cmake_minimum_required(VERSION 3.16)
 
-FILE(GLOB SOURCE_FILES *.cpp)
-FILE(GLOB INCLUDE_FILES ../../inc/Utility/*.[Hh])
+file(GLOB SOURCE_FILES *.cpp)
+file(GLOB INCLUDE_FILES ../../inc/Utility/*.[Hh])
 
-SOURCE_GROUP("Source Files" FILES ${SOURCE_FILES})
-SOURCE_GROUP("Header Files" FILES ${HEADER_FILES})
+source_group("Source Files" FILES ${SOURCE_FILES})
+source_group("Header Files" FILES ${INCLUDE_FILES})
 
-INCLUDE_DIRECTORIES(
+include_directories(
   ../../inc
 )
 
-ADD_LIBRARY (Utility STATIC ${SOURCE_FILES} ${INCLUDE_FILES})
+add_library(Utility STATIC ${SOURCE_FILES} ${INCLUDE_FILES})
+
+set_target_properties(Utility PROPERTIES
+  AUTOMOC OFF
+  AUTOUIC OFF
+  AUTORCC OFF
+)

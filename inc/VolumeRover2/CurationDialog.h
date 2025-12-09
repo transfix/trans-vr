@@ -41,7 +41,7 @@ class CurationDialog : public QDialog
   Q_OBJECT
 
  public:
-  CurationDialog(QWidget *parent=0,Qt::WFlags flags=0);
+  CurationDialog(QWidget *parent=nullptr,Qt::WindowFlags flags=Qt::WindowFlags());
 
   virtual ~CurationDialog();
 

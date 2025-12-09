@@ -20,8 +20,8 @@
   Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
-#include <qapplication.h>
-#include <qstring.h>
+#include <QApplication>
+#include <QString>
 
 #ifndef WIN32
 #include <signal.h>

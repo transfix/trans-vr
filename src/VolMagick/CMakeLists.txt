@@ -1,11 +1,11 @@
 # joe - 07/23/2011 - adding cvc
-CMAKE_MINIMUM_REQUIRED (VERSION 2.6)
+cmake_minimum_required(VERSION 3.16)
 
 if(WIN32)
   add_definitions(-D__WINDOWS__)
-endif(WIN32)
+endif()
 
-SET(INCLUDE_FILES 
+set(INCLUDE_FILES 
   ../../inc/VolMagick/BoundingBox.h
   ../../inc/VolMagick/Dimension.h
   ../../inc/VolMagick/Exceptions.h
@@ -130,15 +130,10 @@ if(VOLMAGICK_USING_VOLMAGICK_INR)
   ) 
 endif(VOLMAGICK_USING_VOLMAGICK_INR)
 
-option(VOLMAGICK_USING_QTIMAGE "Add support for loading volumes as images using Qt3 (not yet working)" OFF)
-mark_as_advanced(VOLMAGICK_USING_QTIMAGE)
-if(VOLMAGICK_USING_QTIMAGE)
-  # Find and setup Qt3 for this project.
-  set(QT_MT_REQUIRED TRUE)
-  find_package(Qt3 REQUIRED)
-  add_definitions(${QT_DEFINITIONS})
-  include_directories(${QT_INCLUDE_DIR})
-
+# QtImage support disabled - Qt3 no longer supported
+# option(VOLMAGICK_USING_QTIMAGE "Add support for loading volumes as images using Qt" OFF)
+# mark_as_advanced(VOLMAGICK_USING_QTIMAGE)
+if(FALSE) # Disabled - requires Qt3 which is no longer supported
   add_definitions(-DVOLMAGICK_USING_QTIMAGE)
   set(INCLUDE_FILES
     ${INCLUDE_FILES}
@@ -152,7 +147,7 @@ if(VOLMAGICK_USING_QTIMAGE)
     ${VOLMAGICK_LINK_LIBS}
     ${QT_LIBRARIES}
   )
-endif(VOLMAGICK_USING_QTIMAGE)
+endif()
 
 SOURCE_GROUP("Source Files" FILES ${SOURCE_FILES})
 SOURCE_GROUP("Header Files" FILES ${INCLUDE_FILES})
@@ -163,7 +158,18 @@ INCLUDE_DIRECTORIES(
 
 ADD_LIBRARY (VolMagick STATIC ${SOURCE_FILES} ${INCLUDE_FILES})
 
-#make sure we have boost
-SetupBoost(VolMagick)
+set_target_properties(VolMagick PROPERTIES
+  AUTOMOC OFF
+  AUTOUIC OFF
+  AUTORCC OFF
+)
 
-target_link_libraries(VolMagick ${VOLMAGICK_LINK_LIBS})
+target_link_libraries(VolMagick
+  PUBLIC
+    Boost::thread
+    Boost::date_time
+    Boost::regex
+    Boost::filesystem
+    Boost::system
+    ${VOLMAGICK_LINK_LIBS}
+)

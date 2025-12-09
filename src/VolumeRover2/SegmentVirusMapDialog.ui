@@ -1,0 +1,768 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>SegmentVirusMapDialog</class>
+ <widget class="QDialog" name="SegmentVirusMapDialog">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>620</width>
+    <height>566</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Dialog</string>
+  </property>
+  <layout class="QGridLayout" name="gridLayout_25">
+   <item row="0" column="0" colspan="2">
+    <layout class="QGridLayout" name="gridLayout">
+     <item row="0" column="0">
+      <widget class="QFrame" name="frame">
+       <property name="frameShape">
+        <enum>QFrame::StyledPanel</enum>
+       </property>
+       <property name="frameShadow">
+        <enum>QFrame::Raised</enum>
+       </property>
+       <widget class="QRadioButton" name="m_RemoteSegmentationButton">
+        <property name="geometry">
+         <rect>
+          <x>10</x>
+          <y>80</y>
+          <width>174</width>
+          <height>22</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>Remote Segmentation</string>
+        </property>
+       </widget>
+       <widget class="QRadioButton" name="m_LocalSegmentationButton">
+        <property name="geometry">
+         <rect>
+          <x>10</x>
+          <y>52</y>
+          <width>158</width>
+          <height>22</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>Local Segmentation</string>
+        </property>
+        <property name="checked">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </widget>
+     </item>
+     <item row="0" column="1">
+      <widget class="QGroupBox" name="m_RemoteSegmentationGroup">
+       <property name="minimumSize">
+        <size>
+         <width>321</width>
+         <height>129</height>
+        </size>
+       </property>
+       <property name="title">
+        <string>Remote Segmentation Host</string>
+       </property>
+       <widget class="QLabel" name="m_RemoteSegmentationHostnameText">
+        <property name="geometry">
+         <rect>
+          <x>10</x>
+          <y>30</y>
+          <width>81</width>
+          <height>17</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>Hostname:</string>
+        </property>
+       </widget>
+       <widget class="QLabel" name="m_RemoteSegmentationPortText">
+        <property name="geometry">
+         <rect>
+          <x>10</x>
+          <y>67</y>
+          <width>62</width>
+          <height>17</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>Port:</string>
+        </property>
+       </widget>
+       <widget class="QLabel" name="m_RemoteSegmentationFilenameText">
+        <property name="geometry">
+         <rect>
+          <x>10</x>
+          <y>96</y>
+          <width>91</width>
+          <height>17</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>Remote File:</string>
+        </property>
+       </widget>
+       <widget class="QLineEdit" name="m_RemoteSegmentationHostname">
+        <property name="geometry">
+         <rect>
+          <x>100</x>
+          <y>30</y>
+          <width>211</width>
+          <height>27</height>
+         </rect>
+        </property>
+       </widget>
+       <widget class="QLineEdit" name="m_RemoteSegmentationPort">
+        <property name="geometry">
+         <rect>
+          <x>100</x>
+          <y>60</y>
+          <width>211</width>
+          <height>27</height>
+         </rect>
+        </property>
+       </widget>
+       <widget class="QLineEdit" name="m_RemoteSegmentationFilename">
+        <property name="geometry">
+         <rect>
+          <x>100</x>
+          <y>90</y>
+          <width>211</width>
+          <height>31</height>
+         </rect>
+        </property>
+       </widget>
+      </widget>
+     </item>
+    </layout>
+   </item>
+   <item row="1" column="0" colspan="2">
+    <layout class="QGridLayout" name="gridLayout_2">
+     <item row="0" column="0">
+      <widget class="QLabel" name="m_VolumeListText">
+       <property name="minimumSize">
+        <size>
+         <width>130</width>
+         <height>0</height>
+        </size>
+       </property>
+       <property name="maximumSize">
+        <size>
+         <width>130</width>
+         <height>16777215</height>
+        </size>
+       </property>
+       <property name="text">
+        <string>Volume Data List</string>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="1">
+      <widget class="QComboBox" name="m_VolumeList"/>
+     </item>
+    </layout>
+   </item>
+   <item row="2" column="0">
+    <widget class="QLabel" name="label">
+     <property name="text">
+      <string>Segmentation Type</string>
+     </property>
+    </widget>
+   </item>
+   <item row="3" column="0" colspan="2">
+    <widget class="QTabWidget" name="m_TabSegmentationType">
+     <property name="whatsThis">
+      <string/>
+     </property>
+     <property name="currentIndex">
+      <number>0</number>
+     </property>
+     <widget class="QWidget" name="m_TabCapsid">
+      <property name="toolTip">
+       <string/>
+      </property>
+      <attribute name="title">
+       <string>Capsid</string>
+      </attribute>
+      <layout class="QGridLayout" name="gridLayout_3">
+       <item row="0" column="0">
+        <widget class="QLabel" name="label_2">
+         <property name="text">
+          <string>Capsid Layer Type</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="0">
+        <widget class="QTabWidget" name="m_TabCapsidLayerType">
+         <property name="currentIndex">
+          <number>0</number>
+         </property>
+         <widget class="QWidget" name="m_TabSingleCapsidDistinct">
+          <attribute name="title">
+           <string>Single Capsid - distinct</string>
+          </attribute>
+          <layout class="QGridLayout" name="gridLayout_13">
+           <item row="0" column="0">
+            <layout class="QGridLayout" name="gridLayout_10">
+             <item row="0" column="0">
+              <widget class="QLabel" name="m_TLowTextType0">
+               <property name="text">
+                <string>Lowest threshold for segmentation (0-255)</string>
+               </property>
+              </widget>
+             </item>
+             <item row="0" column="1">
+              <widget class="QLineEdit" name="m_TLowEditType0"/>
+             </item>
+            </layout>
+           </item>
+           <item row="1" column="0">
+            <layout class="QGridLayout" name="gridLayout_11">
+             <item row="0" column="0">
+              <widget class="QLabel" name="m_SeedPoint0TextType0">
+               <property name="text">
+                <string>Seed point of capsid</string>
+               </property>
+              </widget>
+             </item>
+             <item row="0" column="1">
+              <widget class="QCheckBox" name="m_RunDiffusionType0">
+               <property name="text">
+                <string>Run Diffusion</string>
+               </property>
+               <property name="checked">
+                <bool>true</bool>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </item>
+           <item row="2" column="0">
+            <layout class="QGridLayout" name="gridLayout_12">
+             <item row="0" column="0">
+              <widget class="QLabel" name="m_X0TextType0">
+               <property name="text">
+                <string>x</string>
+               </property>
+              </widget>
+             </item>
+             <item row="0" column="1">
+              <widget class="QLineEdit" name="m_X0EditType0"/>
+             </item>
+             <item row="0" column="2">
+              <widget class="QLabel" name="m_Y0TextType0">
+               <property name="text">
+                <string>y</string>
+               </property>
+              </widget>
+             </item>
+             <item row="0" column="3">
+              <widget class="QLineEdit" name="m_Y0EditType0"/>
+             </item>
+             <item row="0" column="4">
+              <widget class="QLabel" name="m_Z0TextType0">
+               <property name="text">
+                <string>z</string>
+               </property>
+              </widget>
+             </item>
+             <item row="0" column="5">
+              <widget class="QLineEdit" name="m_Z0EditType0"/>
+             </item>
+            </layout>
+           </item>
+           <item row="3" column="0">
+            <spacer name="verticalSpacer_3">
+             <property name="orientation">
+              <enum>Qt::Vertical</enum>
+             </property>
+             <property name="sizeHint" stdset="0">
+              <size>
+               <width>20</width>
+               <height>70</height>
+              </size>
+             </property>
+            </spacer>
+           </item>
+          </layout>
+         </widget>
+         <widget class="QWidget" name="m_TabSingleCapsid">
+          <attribute name="title">
+           <string>Single Capsid</string>
+          </attribute>
+          <layout class="QGridLayout" name="gridLayout_17">
+           <item row="0" column="0" colspan="6">
+            <layout class="QGridLayout" name="gridLayout_14">
+             <item row="0" column="0">
+              <widget class="QLabel" name="m_TLowTextType1">
+               <property name="text">
+                <string>Lowest threshold for segmentation (0-255)</string>
+               </property>
+              </widget>
+             </item>
+             <item row="0" column="1">
+              <widget class="QLineEdit" name="m_TLowEditType1"/>
+             </item>
+            </layout>
+           </item>
+           <item row="1" column="0" colspan="6">
+            <layout class="QGridLayout" name="gridLayout_15">
+             <item row="0" column="0">
+              <widget class="QLabel" name="m_SeedPoint0TextType1">
+               <property name="text">
+                <string>Seed point of genomic structures</string>
+               </property>
+              </widget>
+             </item>
+             <item row="0" column="1">
+              <widget class="QCheckBox" name="m_RunDiffusionType1">
+               <property name="text">
+                <string>Run Diffuse</string>
+               </property>
+               <property name="checked">
+                <bool>true</bool>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </item>
+           <item row="2" column="0" colspan="6">
+            <layout class="QGridLayout" name="gridLayout_16">
+             <item row="0" column="0">
+              <widget class="QLabel" name="m_X0TextType1">
+               <property name="text">
+                <string>x</string>
+               </property>
+              </widget>
+             </item>
+             <item row="0" column="1">
+              <widget class="QLineEdit" name="m_X0EditType1"/>
+             </item>
+             <item row="0" column="2">
+              <widget class="QLabel" name="m_Y0TextType1">
+               <property name="text">
+                <string>y</string>
+               </property>
+              </widget>
+             </item>
+             <item row="0" column="3">
+              <widget class="QLineEdit" name="m_Y0EditType1"/>
+             </item>
+             <item row="0" column="4">
+              <widget class="QLabel" name="m_Z0TextType1">
+               <property name="text">
+                <string>z</string>
+               </property>
+              </widget>
+             </item>
+             <item row="0" column="5">
+              <widget class="QLineEdit" name="m_Z0EditType1"/>
+             </item>
+            </layout>
+           </item>
+           <item row="3" column="0" colspan="3">
+            <widget class="QLabel" name="m_SeedPoint1TextType1">
+             <property name="text">
+              <string>Seed point of capsid</string>
+             </property>
+            </widget>
+           </item>
+           <item row="4" column="0">
+            <widget class="QLabel" name="m_X1TextType1">
+             <property name="text">
+              <string>x</string>
+             </property>
+            </widget>
+           </item>
+           <item row="4" column="1">
+            <widget class="QLineEdit" name="m_X1EditType1"/>
+           </item>
+           <item row="4" column="2">
+            <widget class="QLabel" name="m_Y1TextType1">
+             <property name="text">
+              <string>y</string>
+             </property>
+            </widget>
+           </item>
+           <item row="4" column="3">
+            <widget class="QLineEdit" name="m_Y1EditType1"/>
+           </item>
+           <item row="4" column="4">
+            <widget class="QLabel" name="m_Z1TextType1">
+             <property name="text">
+              <string>z</string>
+             </property>
+            </widget>
+           </item>
+           <item row="4" column="5">
+            <widget class="QLineEdit" name="m_Z1EditType1"/>
+           </item>
+          </layout>
+         </widget>
+         <widget class="QWidget" name="m_TabDoubleCapsidInitial">
+          <attribute name="title">
+           <string>Double Capsid - initial segmentation</string>
+          </attribute>
+          <layout class="QGridLayout" name="gridLayout_20">
+           <item row="0" column="0" colspan="2">
+            <layout class="QGridLayout" name="gridLayout_18">
+             <item row="0" column="0">
+              <widget class="QLabel" name="m_TLowTextType2">
+               <property name="text">
+                <string>Lowest threshold for segmentation (0-255)</string>
+               </property>
+              </widget>
+             </item>
+             <item row="0" column="1">
+              <widget class="QLineEdit" name="m_TLowEditType2"/>
+             </item>
+            </layout>
+           </item>
+           <item row="1" column="0">
+            <widget class="QLabel" name="m_RadiiTextType2">
+             <property name="text">
+              <string>Estimated Radii</string>
+             </property>
+            </widget>
+           </item>
+           <item row="2" column="0" colspan="2">
+            <layout class="QGridLayout" name="gridLayout_19">
+             <item row="0" column="0">
+              <widget class="QLabel" name="m_SmallRadiusTextType2">
+               <property name="text">
+                <string>Small</string>
+               </property>
+              </widget>
+             </item>
+             <item row="0" column="1">
+              <widget class="QLineEdit" name="m_SmallRadiusEditType2"/>
+             </item>
+             <item row="0" column="2">
+              <widget class="QLabel" name="m_LargeRadiusTextType2m_LargeRadiusTextType2">
+               <property name="text">
+                <string>Large</string>
+               </property>
+              </widget>
+             </item>
+             <item row="0" column="3">
+              <widget class="QLineEdit" name="m_LargeRadiusEditType2"/>
+             </item>
+            </layout>
+           </item>
+           <item row="3" column="1">
+            <spacer name="verticalSpacer_4">
+             <property name="orientation">
+              <enum>Qt::Vertical</enum>
+             </property>
+             <property name="sizeHint" stdset="0">
+              <size>
+               <width>20</width>
+               <height>77</height>
+              </size>
+             </property>
+            </spacer>
+           </item>
+          </layout>
+         </widget>
+         <widget class="QWidget" name="m_TabDoubleCapsidRefined">
+          <attribute name="title">
+           <string>Double Capsid - refined segmentatino</string>
+          </attribute>
+          <layout class="QGridLayout" name="gridLayout_24">
+           <item row="0" column="0">
+            <layout class="QGridLayout" name="gridLayout_21">
+             <item row="0" column="0">
+              <widget class="QLabel" name="m_TLowTextType3">
+               <property name="text">
+                <string>Lowest threshold for segmentation (0-255)</string>
+               </property>
+              </widget>
+             </item>
+             <item row="0" column="1">
+              <widget class="QLineEdit" name="m_TLowEditType3"/>
+             </item>
+            </layout>
+           </item>
+           <item row="1" column="0">
+            <widget class="QLabel" name="m_OuterLayerTextType3">
+             <property name="text">
+              <string>Outer Layer</string>
+             </property>
+            </widget>
+           </item>
+           <item row="2" column="0">
+            <layout class="QGridLayout" name="gridLayout_22">
+             <item row="0" column="0">
+              <widget class="QLabel" name="m_3FoldTextType3">
+               <property name="text">
+                <string>3-fold</string>
+               </property>
+              </widget>
+             </item>
+             <item row="0" column="1">
+              <widget class="QLineEdit" name="m_3FoldEditType3"/>
+             </item>
+             <item row="0" column="2">
+              <widget class="QLabel" name="m_5FoldTextType3">
+               <property name="text">
+                <string>5-fold</string>
+               </property>
+              </widget>
+             </item>
+             <item row="0" column="3">
+              <widget class="QLineEdit" name="m_5FoldEditType3"/>
+             </item>
+             <item row="0" column="4">
+              <widget class="QLabel" name="m_6FoldTextType3">
+               <property name="text">
+                <string>6-fold</string>
+               </property>
+              </widget>
+             </item>
+             <item row="0" column="5">
+              <widget class="QLineEdit" name="m_6FoldEditType3"/>
+             </item>
+            </layout>
+           </item>
+           <item row="3" column="0">
+            <widget class="QLabel" name="m_RadiiTextType3">
+             <property name="text">
+              <string>Estimated Radii</string>
+             </property>
+            </widget>
+           </item>
+           <item row="4" column="0">
+            <layout class="QGridLayout" name="gridLayout_23">
+             <item row="0" column="0">
+              <widget class="QLabel" name="m_SmallRadiusTextType3">
+               <property name="text">
+                <string>Small</string>
+               </property>
+              </widget>
+             </item>
+             <item row="0" column="1">
+              <widget class="QLineEdit" name="m_SmallRadiusEditType3"/>
+             </item>
+             <item row="0" column="2">
+              <widget class="QLabel" name="m_LargeRadiusTextType3">
+               <property name="text">
+                <string>Large</string>
+               </property>
+              </widget>
+             </item>
+             <item row="0" column="3">
+              <widget class="QLineEdit" name="m_LargeRadiusEditType3"/>
+             </item>
+            </layout>
+           </item>
+          </layout>
+         </widget>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QWidget" name="m_TabMonomer">
+      <attribute name="title">
+       <string>Monomer</string>
+      </attribute>
+      <layout class="QGridLayout" name="gridLayout_9">
+       <item row="0" column="0">
+        <layout class="QGridLayout" name="gridLayout_8">
+         <item row="0" column="0">
+          <widget class="QLabel" name="m_FoldNumText">
+           <property name="text">
+            <string>Number of symmetry folding</string>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="1">
+          <widget class="QLineEdit" name="m_FoldNumEdit"/>
+         </item>
+        </layout>
+       </item>
+       <item row="1" column="0">
+        <spacer name="verticalSpacer_2">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>20</width>
+           <height>209</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QWidget" name="m_TabSubunit">
+      <attribute name="title">
+       <string>Subunit</string>
+      </attribute>
+      <layout class="QGridLayout" name="gridLayout_7">
+       <item row="0" column="0">
+        <layout class="QGridLayout" name="gridLayout_4">
+         <item row="0" column="0">
+          <widget class="QLabel" name="m_HNumText">
+           <property name="minimumSize">
+            <size>
+             <width>60</width>
+             <height>0</height>
+            </size>
+           </property>
+           <property name="text">
+            <string>h-num</string>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="1">
+          <widget class="QLineEdit" name="m_HNumEdit">
+           <property name="minimumSize">
+            <size>
+             <width>110</width>
+             <height>0</height>
+            </size>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="2">
+          <widget class="QLabel" name="m_KNumText">
+           <property name="minimumSize">
+            <size>
+             <width>60</width>
+             <height>0</height>
+            </size>
+           </property>
+           <property name="text">
+            <string>k-num</string>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="3">
+          <widget class="QLineEdit" name="m_KNumEdit">
+           <property name="minimumSize">
+            <size>
+             <width>110</width>
+             <height>0</height>
+            </size>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item row="1" column="0">
+        <layout class="QGridLayout" name="gridLayout_5">
+         <item row="0" column="0">
+          <widget class="QLabel" name="m_3FoldText">
+           <property name="text">
+            <string>3-fold</string>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="1">
+          <widget class="QLineEdit" name="m_3FoldEdit"/>
+         </item>
+         <item row="0" column="2">
+          <widget class="QLabel" name="m_5FoldText">
+           <property name="text">
+            <string>5-fold</string>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="3">
+          <widget class="QLineEdit" name="m_5FoldEdit"/>
+         </item>
+         <item row="0" column="4">
+          <widget class="QLabel" name="m_6FoldText">
+           <property name="text">
+            <string>6-fold</string>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="5">
+          <widget class="QLineEdit" name="m_6FoldEdit"/>
+         </item>
+        </layout>
+       </item>
+       <item row="2" column="0">
+        <layout class="QGridLayout" name="gridLayout_6">
+         <item row="0" column="0">
+          <widget class="QLabel" name="m_InitRadiusText">
+           <property name="text">
+            <string>Initial radius</string>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="1">
+          <widget class="QLineEdit" name="m_InitRadiusEdit"/>
+         </item>
+        </layout>
+       </item>
+       <item row="3" column="0">
+        <spacer name="verticalSpacer">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>20</width>
+           <height>139</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+      </layout>
+     </widget>
+    </widget>
+   </item>
+   <item row="4" column="1">
+    <widget class="QDialogButtonBox" name="buttonBox">
+     <property name="orientation">
+      <enum>Qt::Horizontal</enum>
+     </property>
+     <property name="standardButtons">
+      <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
+     </property>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections>
+  <connection>
+   <sender>buttonBox</sender>
+   <signal>accepted()</signal>
+   <receiver>SegmentVirusMapDialog</receiver>
+   <slot>accept()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>248</x>
+     <y>254</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>157</x>
+     <y>274</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>buttonBox</sender>
+   <signal>rejected()</signal>
+   <receiver>SegmentVirusMapDialog</receiver>
+   <slot>reject()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>316</x>
+     <y>260</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>286</x>
+     <y>274</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
+</ui>

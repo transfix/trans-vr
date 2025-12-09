@@ -41,7 +41,7 @@ class TightCoconeDialog : public QDialog
   Q_OBJECT
 
  public:
-  TightCoconeDialog(QWidget *parent=0,Qt::WFlags flags=0);
+  TightCoconeDialog(QWidget *parent=nullptr,Qt::WindowFlags flags=Qt::WindowFlags());
 
   virtual ~TightCoconeDialog();
 

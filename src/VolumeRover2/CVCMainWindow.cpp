@@ -314,19 +314,19 @@ private:
 namespace CVC_NAMESPACE
 {
   /* Need these to signal the GUI thread the segmentation result so it can popup a message to the user */
-  class SegmentationFailedEvent : public QCustomEvent
+  class SegmentationFailedEvent : public QEvent
   {
     public:
-      SegmentationFailedEvent(const QString &m) : QCustomEvent(QEvent::User+100), msg(m) {}
+      SegmentationFailedEvent(const QString &m) : QEvent(static_cast<QEvent::Type>(QEvent::User+100)), msg(m) {}
       QString message() const { return msg; }
     private:
       QString msg;
   };
 
-  class SegmentationFinishedEvent : public QCustomEvent
+  class SegmentationFinishedEvent : public QEvent
   {
     public:
-      SegmentationFinishedEvent(const QString &m) : QCustomEvent(QEvent::User+101), msg(m) {}
+      SegmentationFinishedEvent(const QString &m) : QEvent(static_cast<QEvent::Type>(QEvent::User+101)), msg(m) {}
       QString message() const { return msg; }
     private:
       QString msg;

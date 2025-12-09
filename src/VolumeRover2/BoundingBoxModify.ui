@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>BoundingBoxModify</class>
+ <widget class="QWidget" name="BoundingBoxModify">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>438</width>
+    <height>203</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Change Bounding Box</string>
+  </property>
+  <layout class="QGridLayout" name="gridLayout_3">
+   <item row="0" column="0" colspan="2">
+    <widget class="QCheckBox" name="_useCenterPoint">
+     <property name="text">
+      <string>Center bounding box about specified point (preserving span)</string>
+     </property>
+    </widget>
+   </item>
+   <item row="1" column="0" colspan="2">
+    <widget class="QGroupBox" name="_boundingBoxGroup">
+     <property name="title">
+      <string>Bounding Box</string>
+     </property>
+     <layout class="QGridLayout" name="gridLayout">
+      <item row="0" column="0">
+       <widget class="QLabel" name="_boundingBoxMinLabel">
+        <property name="text">
+         <string>Min:</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="1">
+       <widget class="QLineEdit" name="_boundingBoxMinX"/>
+      </item>
+      <item row="0" column="2">
+       <widget class="QLineEdit" name="_boundingBoxMinY"/>
+      </item>
+      <item row="0" column="3">
+       <widget class="QLineEdit" name="_boundingBoxMinZ"/>
+      </item>
+      <item row="1" column="0">
+       <widget class="QLabel" name="_boundingBoxMaxLabel">
+        <property name="text">
+         <string>Max:</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="1">
+       <widget class="QLineEdit" name="_boundingBoxMaxX"/>
+      </item>
+      <item row="1" column="2">
+       <widget class="QLineEdit" name="_boundingBoxMaxY"/>
+      </item>
+      <item row="1" column="3">
+       <widget class="QLineEdit" name="_boundingBoxMaxZ"/>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item row="2" column="0" rowspan="2">
+    <widget class="QGroupBox" name="_centerPointGroup">
+     <property name="enabled">
+      <bool>false</bool>
+     </property>
+     <property name="title">
+      <string>Center Point</string>
+     </property>
+     <layout class="QGridLayout" name="gridLayout_2">
+      <item row="0" column="0">
+       <widget class="QLineEdit" name="_centerPointX"/>
+      </item>
+      <item row="0" column="1">
+       <widget class="QLineEdit" name="_centerPointY"/>
+      </item>
+      <item row="0" column="2">
+       <widget class="QLineEdit" name="_centerPointZ"/>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item row="2" column="1">
+    <widget class="QPushButton" name="_cancel">
+     <property name="text">
+      <string>Cancel</string>
+     </property>
+    </widget>
+   </item>
+   <item row="3" column="1">
+    <widget class="QPushButton" name="_ok">
+     <property name="text">
+      <string>Ok</string>
+     </property>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections>
+  <connection>
+   <sender>_useCenterPoint</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>_centerPointGroup</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>218</x>
+     <y>20</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>173</x>
+     <y>163</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>_useCenterPoint</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>_boundingBoxGroup</receiver>
+   <slot>setDisabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>218</x>
+     <y>20</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>218</x>
+     <y>82</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
+</ui>

@@ -28,7 +28,7 @@
 #include <math.h>
 
 #ifdef USING_QT
-#include <qapplication.h>
+#include <QApplication>
 #include <qprogressdialog.h>
 #endif
 

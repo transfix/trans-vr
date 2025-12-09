@@ -26,22 +26,12 @@
 #ifndef __IMPORTDATA_H__
 #define __IMPORTDATA_H__
 
-#include <qglobal.h>
-
-#if QT_VERSION < 0x040000
-#include <qdialog.h>
-#else
 #include <QDialog>
-#endif
 
-#if QT_VERSION < 0x040000
-class ImportDataBase;
-#else
 namespace Ui
 {
   class ImportData;
 }
-#endif
 
 class ImportData : public QDialog
 {

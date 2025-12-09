@@ -1,0 +1,120 @@
+<ui version="4.0" >
+ <class>DimensionModify</class>
+ <widget class="QDialog" name="DimensionModify" >
+  <property name="geometry" >
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>363</width>
+    <height>84</height>
+   </rect>
+  </property>
+  <property name="windowTitle" >
+   <string>Change Dimension</string>
+  </property>
+  <layout class="QGridLayout" >
+   <item row="0" column="0" colspan="3" >
+    <layout class="QGridLayout" >
+     <item row="0" column="0" >
+      <widget class="QLabel" name="_dimensionLabel" >
+       <property name="text" >
+        <string>New Dimension:</string>
+       </property>
+       <property name="wordWrap" >
+        <bool>false</bool>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="2" >
+      <widget class="QLineEdit" name="_dimensionY" >
+       <property name="text" >
+        <string>1</string>
+       </property>
+       <property name="readOnly" >
+        <bool>false</bool>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="3" >
+      <widget class="QLineEdit" name="_dimensionZ" >
+       <property name="text" >
+        <string>1</string>
+       </property>
+       <property name="readOnly" >
+        <bool>false</bool>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="1" >
+      <widget class="QLineEdit" name="_dimensionX" >
+       <property name="text" >
+        <string>1</string>
+       </property>
+       <property name="readOnly" >
+        <bool>false</bool>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+   <item row="1" column="2" >
+    <widget class="QPushButton" name="_ok" >
+     <property name="text" >
+      <string>Ok</string>
+     </property>
+    </widget>
+   </item>
+   <item row="1" column="1" >
+    <widget class="QPushButton" name="_cancel" >
+     <property name="text" >
+      <string>Cancel</string>
+     </property>
+    </widget>
+   </item>
+   <item row="1" column="0" >
+    <spacer name="spacer5" >
+     <property name="orientation" >
+      <enum>Qt::Horizontal</enum>
+     </property>
+     <property name="sizeType" >
+      <enum>QSizePolicy::Expanding</enum>
+     </property>
+     <property name="sizeHint" stdset="0" >
+      <size>
+       <width>171</width>
+       <height>31</height>
+      </size>
+     </property>
+    </spacer>
+   </item>
+  </layout>
+ </widget>
+ <layoutdefault spacing="6" margin="11" />
+ <pixmapfunction>qPixmapFromMimeSource</pixmapfunction>
+ <tabstops>
+  <tabstop>_dimensionX</tabstop>
+  <tabstop>_dimensionY</tabstop>
+  <tabstop>_dimensionZ</tabstop>
+  <tabstop>_cancel</tabstop>
+  <tabstop>_ok</tabstop>
+ </tabstops>
+ <resources/>
+ <connections>
+  <connection>
+   <sender>_cancel</sender>
+   <signal>clicked()</signal>
+   <receiver>DimensionModify</receiver>
+   <slot>reject()</slot>
+   <hints>
+    <hint type="sourcelabel" >
+     <x>20</x>
+     <y>20</y>
+    </hint>
+    <hint type="destinationlabel" >
+     <x>20</x>
+     <y>20</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
+</ui>

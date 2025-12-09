@@ -41,7 +41,7 @@ class BilateralFilterDialog : public QDialog
   Q_OBJECT
 
  public:
-  BilateralFilterDialog(QWidget *parent=0,Qt::WFlags flags=0);
+  BilateralFilterDialog(QWidget *parent=nullptr,Qt::WindowFlags flags=Qt::WindowFlags());
 
   virtual ~BilateralFilterDialog();
 

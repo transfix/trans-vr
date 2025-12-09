@@ -1,4 +1,4 @@
-CMAKE_MINIMUM_REQUIRED (VERSION 2.6)
+cmake_minimum_required(VERSION 3.16)
 
 FILE(GLOB SOURCE_FILES *.cpp *.c)
 FILE(GLOB INCLUDE_FILES ../../inc/Contour/*.[Hh])
@@ -19,5 +19,11 @@ IF(APPLE)
 ENDIF(APPLE)
 
 ADD_LIBRARY (Contour STATIC ${SOURCE_FILES} ${INCLUDE_FILES})
+
+set_target_properties(Contour PROPERTIES
+  AUTOMOC OFF
+  AUTOUIC OFF
+  AUTORCC OFF
+)
 
 target_link_libraries(Contour Utility)

@@ -55,7 +55,7 @@ class SignedDistanceFunctionDialog : public QDialog
 #if QT_VERSION < 0x040000
                   const char* name = 0, WFlags f = WType_TopLevel
 #else
-                  Qt::WFlags flags=0
+                  Qt::WindowFlags flags={}
 #endif
                   );
   virtual ~SignedDistanceFunctionDialog();

@@ -25,6 +25,7 @@
 #include <ColorTable2/XoomedOut.h>
 #include <cstdlib>
 #include <boost/utility.hpp>
+#include <boost/next_prior.hpp>
 
 #if QT_VERSION < 0x040000
 #include <qpixmap.h>
@@ -42,7 +43,7 @@ namespace CVCColorTable
 #if QT_VERSION < 0x040000
                         const char *name 
 #else
-                        Qt::WFlags flags
+                        Qt::WindowFlags flags
 #endif
                         )
     : QFrame( parent, 
@@ -200,17 +201,17 @@ namespace CVCColorTable
     else
       {
 	for(ColorTable::color_nodes::const_iterator i = m_ColorTableInformation.colorNodes().begin();
-	    i != prior(m_ColorTableInformation.colorNodes().end());
+	    i != boost::prior(m_ColorTableInformation.colorNodes().end());
 	    i++)
 	  {
 	    pos1 = MapToPixel(i->position, miny, maxy);
-	    pos2 = MapToPixel(next(i)->position, miny, maxy);
+	    pos2 = MapToPixel(std::next(i)->position, miny, maxy);
 	    cr1 = i->r;
-	    cr2 = next(i)->r;
+	    cr2 = std::next(i)->r;
 	    cg1 = i->g;
-	    cg2 = next(i)->g;
+	    cg2 = std::next(i)->g;
 	    cb1 = i->b;
-	    cb2 = next(i)->b;
+	    cb2 = std::next(i)->b;
 	    for (int y=pos1; y<=pos2; y++)
 	      {
 		mag = MapToDouble(y, pos1, pos2);
@@ -282,17 +283,17 @@ namespace CVCColorTable
     else
       {
 	for(ColorTable::color_nodes::const_iterator i = m_ColorTableInformation.colorNodes().begin();
-	    i != prior(m_ColorTableInformation.colorNodes().end());
+	    i != boost::prior(m_ColorTableInformation.colorNodes().end());
 	    i++)
 	  {
 	    pos1 = MapToPixel(i->position, minx, maxx);
-	    pos2 = MapToPixel(next(i)->position, minx, maxx);
+	    pos2 = MapToPixel(std::next(i)->position, minx, maxx);
 	    cr1 = i->r;
-	    cr2 = next(i)->r;
+	    cr2 = std::next(i)->r;
 	    cg1 = i->g;
-	    cg2 = next(i)->g;
+	    cg2 = std::next(i)->g;
 	    cb1 = i->b;
-	    cb2 = next(i)->b;
+	    cb2 = std::next(i)->b;
 	    for (int x=pos1; x<=pos2; x++)
 	      {
 		mag = MapToDouble(x, pos1, pos2);

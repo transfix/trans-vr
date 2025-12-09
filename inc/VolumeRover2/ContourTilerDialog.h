@@ -43,7 +43,7 @@ class ContourTilerDialog : public QDialog
   Q_OBJECT
 
  public:
-  ContourTilerDialog(QWidget *parent=0,Qt::WFlags flags=0);
+  ContourTilerDialog(QWidget *parent=nullptr,Qt::WindowFlags flags=Qt::WindowFlags());
 
   virtual ~ContourTilerDialog();
 

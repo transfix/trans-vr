@@ -67,7 +67,7 @@
 
 #include <qpainter.h>
 #include <qcolor.h>
-#include <qstring.h>
+#include <QString>
 #include <qstringlist.h>
 #include <qlayout.h>
 #include <qimage.h>
@@ -77,18 +77,19 @@
 #include <qspinbox.h>
 #include <qcheckbox.h>
 #include <qvalidator.h>
-#include <qfiledialog.h>
-#include <qfileinfo.h>
-#include <qmessagebox.h>
+#include <QFileDialog>
+#include <QFileInfo>
+#include <QMessageBox>
 #include <qprogressdialog.h>
-#include <qfile.h>
-#include <qtextstream.h>
+#include <QFile>
+#include <QTextStream>
 #include <qbuttongroup.h>
 #include <qsettings.h>
-#include <qdir.h>
+#include <QDir>
 #include <qlistview.h>
 
-#include <qxml.h>
+#include <QXmlStreamReader>
+#include <QXmlStreamWriter>
 #include <qdom.h>
 
 #include <XmlRPC/XmlRpc.h>
@@ -2298,8 +2299,8 @@ void SGIColorTableSliceRenderer::uploadColorTable()
 }
 
 /*********** The VolumeGridRover *****************/
-VolumeGridRover::VolumeGridRover(QWidget* parent, const char* name, Qt::WFlags fl)
-  : QWidget(parent, fl), m_PointClassList(NULL),
+VolumeGridRover::VolumeGridRover(QWidget* parent, Qt::WindowFlags fl)
+  : QWidget(parent, fl), m_PointClassList(nullptr),
 #ifdef USING_EM_CLUSTERING
     m_Clusters(256,50), m_HistogramCalculated(false),
 #endif
@@ -2313,9 +2314,12 @@ VolumeGridRover::VolumeGridRover(QWidget* parent, const char* name, Qt::WFlags f
   format.setAlpha(true);
   format.setStencil(true);
   
-  m_XYSliceCanvas = new SliceCanvas(SliceCanvas::XY,format,_ui->m_XYSliceFrame,"m_XYSliceCanvas");
-  m_XZSliceCanvas = new SliceCanvas(SliceCanvas::XZ,format,_ui->m_XZSliceFrame,"m_XZSliceCanvas");
-  m_ZYSliceCanvas = new SliceCanvas(SliceCanvas::ZY,format,_ui->m_ZYSliceFrame,"m_ZYSliceCanvas");
+  m_XYSliceCanvas = new SliceCanvas(SliceCanvas::XY,format,_ui->m_XYSliceFrame);
+  m_XYSliceCanvas->setObjectName("m_XYSliceCanvas");
+  m_XZSliceCanvas = new SliceCanvas(SliceCanvas::XZ,format,_ui->m_XZSliceFrame);
+  m_XZSliceCanvas->setObjectName("m_XZSliceCanvas");
+  m_ZYSliceCanvas = new SliceCanvas(SliceCanvas::ZY,format,_ui->m_ZYSliceFrame);
+  m_ZYSliceCanvas->setObjectName("m_ZYSliceCanvas");
 	
   QGridLayout *XYSliceCanvasLayout = new QGridLayout(_ui->m_XYSliceFrame);
   XYSliceCanvasLayout->addWidget(m_XYSliceCanvas);

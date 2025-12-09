@@ -25,7 +25,7 @@
 #ifndef __SDF_OPT_H__
 #define __SDF_OPT_H__
 
-#include <qdialog.h>
+#include <QDialog>
 
 class QLineEdit;
 class QComboBox;

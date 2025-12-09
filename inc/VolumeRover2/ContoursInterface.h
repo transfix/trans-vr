@@ -28,7 +28,7 @@
 #ifndef __CONTOURSINTERFACE_H__
 #define __CONTOURSINTERFACE_H__
 
-#include <qglobal.h>
+
 #include <VolumeRover2/DataWidget.h>
 #include <cvcraw_geometry/contours.h>
 #include <cvcraw_geometry/io.h>
@@ -47,7 +47,7 @@ class ContoursInterface : public CVC_NAMESPACE::DataWidget
  public:
   ContoursInterface(const cvcraw_geometry::contours_t & geom= cvcraw_geometry::contours_t(),
                   QWidget* parent = 0, 
-                  Qt::WFlags flags=0);
+                  Qt::WindowFlags flags=Qt::WindowFlags());
   virtual ~ContoursInterface();
 
   virtual void initialize(const boost::any& datum)

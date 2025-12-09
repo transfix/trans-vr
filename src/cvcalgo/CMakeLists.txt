@@ -1,16 +1,24 @@
-CMAKE_MINIMUM_REQUIRED (VERSION 2.6)
+cmake_minimum_required(VERSION 3.16)
 
-SetupQt() #this library only needs Qt for the UI
+# Setup Qt6 or Qt4
+if(USE_QT6)
+  find_package(Qt6 REQUIRED COMPONENTS Core Gui Widgets)
+  set(CMAKE_AUTOMOC ON)
+  set(CMAKE_AUTOUIC ON)
+  set(QT_LIBRARIES Qt6::Core Qt6::Gui Qt6::Widgets)
+else()
+  SetupQt()
+endif()
 
 FILE(GLOB SOURCE_FILES *.cpp)
 FILE(GLOB INCLUDE_FILES ../../inc/cvcalgo/*.[Hh])
 FILE(GLOB UI_SOURCE_FILES ui/*.cpp)
 FILE(GLOB UI_INCLUDE_FILES ../../inc/cvcalgo/ui/*.[Hh])
-FILE(GLOB UI3_FORMS ui/*.Qt3.ui)
-FILE(GLOB UI4_FORMS ui/*.Qt4.ui)
+FILE(GLOB UI_FORMS ui/*.ui)
 
 SOURCE_GROUP("Source Files" FILES ${SOURCE_FILES})
 SOURCE_GROUP("Header Files" FILES ${INCLUDE_FILES})
+SOURCE_GROUP("UI Files" FILES ${UI_FORMS})
 
 INCLUDE_DIRECTORIES(
   ../../inc
@@ -35,50 +43,22 @@ set(FINAL_SOURCES
   ${INCLUDE_FILES}
 )
 
-if(QT3_FOUND)
-  message("cvcalgo: No Qt3 dialogs yet!")
-
-  #set(UI_FORMS ${UI3_FORMS})
-  #SOURCE_GROUP("UI Files" FILES ${UI_FORMS})
-
-  #QT_WRAP_CPP(cvcalgo MOC_SOURCES ${MOC_HEADERS})
-  #QT_WRAP_UI(cvcalgo UI_H UI_CPP ${UI_FORMS})
-
-  #set(FINAL_SOURCES
-  #  ${FINAL_SOURCES}
-  #  ${UI_SOURCE_FILES}
-  #  ${UI_INCLUDE_FILES}
-  #  ${MOC_SOURCES}
-  #  ${UI_H}
-  #  ${UI_CPP}
-  #)
-
-  #set(LIBS
-  #  ${QT_LIBRARIES}
-  #  ${LIBS}
-  #)
-elseif(QT4_FOUND)
-  set(UI_FORMS ${UI4_FORMS})
-  source_group("UI Files" FILES ${UI_FORMS})
-
-  qt4_wrap_cpp(MOC_SOURCES ${MOC_HEADERS})
-  qt4_wrap_ui(UI_FILES ${UI_FORMS})
-
+# Qt6 uses AUTOMOC/AUTOUIC, Qt4 uses manual wrapping
+if(USE_QT6 OR QT4_FOUND)
   set(FINAL_SOURCES
     ${FINAL_SOURCES}
     ${UI_SOURCE_FILES}
     ${UI_INCLUDE_FILES}
-    ${MOC_SOURCES}
-    ${UI_FILES}
+    ${UI_FORMS}
   )
 
   set(LIBS
     ${QT_LIBRARIES}
     ${LIBS}
   )
-else(QT3_FOUND)
+else()
   message("cvcalgo: Qt not found, not building UI")
-endif(QT3_FOUND)
+endif()
 
 add_library (cvcalgo STATIC ${FINAL_SOURCES})
 

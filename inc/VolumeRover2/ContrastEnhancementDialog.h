@@ -41,7 +41,7 @@ class ContrastEnhancementDialog : public QDialog
   Q_OBJECT
 
  public:
-  ContrastEnhancementDialog(QWidget *parent=0,Qt::WFlags flags=0);
+  ContrastEnhancementDialog(QWidget *parent=nullptr,Qt::WindowFlags flags=Qt::WindowFlags());
 
   virtual ~ContrastEnhancementDialog();
 

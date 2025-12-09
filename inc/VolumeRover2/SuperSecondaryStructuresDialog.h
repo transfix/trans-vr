@@ -41,7 +41,7 @@ class SuperSecondaryStructuresDialog : public QDialog
   Q_OBJECT
 
  public:
-  SuperSecondaryStructuresDialog(QWidget *parent=0,Qt::WFlags flags=0);
+  SuperSecondaryStructuresDialog(QWidget *parent=nullptr,Qt::WindowFlags flags=Qt::WindowFlags());
 
   virtual ~SuperSecondaryStructuresDialog();
 

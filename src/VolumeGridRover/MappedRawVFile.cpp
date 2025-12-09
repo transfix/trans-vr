@@ -27,9 +27,9 @@
 #include <string.h>
 
 #ifdef USING_QT
-#include <qapplication.h>
+#include <QApplication>
 #include <qprogressdialog.h>
-#include <qstring.h>
+#include <QString>
 #endif
 
 typedef struct

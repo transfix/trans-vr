@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>GeometryInterface</class>
+ <widget class="QWidget" name="GeometryInterface">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>476</width>
+    <height>411</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Form</string>
+  </property>
+  <layout class="QGridLayout" name="gridLayout">
+   <item row="0" column="0">
+    <layout class="QGridLayout" name="gridLayout_2">
+     <item row="3" column="1">
+      <widget class="QLineEdit" name="_numTriangles"/>
+     </item>
+     <item row="1" column="1">
+      <widget class="QLineEdit" name="_numLines"/>
+     </item>
+     <item row="0" column="1">
+      <widget class="QLineEdit" name="_numVerts"/>
+     </item>
+     <item row="0" column="0">
+      <widget class="QLabel" name="vertLabel">
+       <property name="text">
+        <string>Number of Vertices</string>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="0">
+      <widget class="QLabel" name="elementLabel">
+       <property name="text">
+        <string>Number of Lines</string>
+       </property>
+      </widget>
+     </item>
+     <item row="3" column="0">
+      <widget class="QLabel" name="triLabel">
+       <property name="text">
+        <string>Number of Triangles</string>
+       </property>
+      </widget>
+     </item>
+     <item row="4" column="0">
+      <widget class="QLabel" name="quadLabel">
+       <property name="text">
+        <string>Number of Quads</string>
+       </property>
+      </widget>
+     </item>
+     <item row="4" column="1">
+      <widget class="QLineEdit" name="_numQuads"/>
+     </item>
+     <item row="5" column="0">
+      <widget class="QLabel" name="minLabel">
+       <property name="text">
+        <string>Min Extent</string>
+       </property>
+      </widget>
+     </item>
+     <item row="6" column="0">
+      <widget class="QLabel" name="maxLabel">
+       <property name="text">
+        <string>Max Extent</string>
+       </property>
+      </widget>
+     </item>
+     <item row="5" column="1">
+      <layout class="QHBoxLayout" name="horizontalLayout">
+       <item>
+        <widget class="QLineEdit" name="_minZ"/>
+       </item>
+       <item>
+        <widget class="QLineEdit" name="_minY"/>
+       </item>
+       <item>
+        <widget class="QLineEdit" name="_minX"/>
+       </item>
+      </layout>
+     </item>
+     <item row="6" column="1">
+      <layout class="QHBoxLayout" name="horizontalLayout_2">
+       <item>
+        <widget class="QLineEdit" name="_maxX"/>
+       </item>
+       <item>
+        <widget class="QLineEdit" name="_maxY"/>
+       </item>
+       <item>
+        <widget class="QLineEdit" name="_maxZ"/>
+       </item>
+      </layout>
+     </item>
+     <item row="7" column="0">
+      <widget class="QCheckBox" name="_colors">
+       <property name="text">
+        <string>Normals</string>
+       </property>
+      </widget>
+     </item>
+     <item row="7" column="1">
+      <widget class="QCheckBox" name="_normals">
+       <property name="text">
+        <string>Colors</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+   <item row="1" column="0">
+    <widget class="QWidget" name="_geometryInterfaceViewer" native="true"/>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

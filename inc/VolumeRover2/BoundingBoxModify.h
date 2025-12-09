@@ -26,35 +26,21 @@
 #ifndef __BOUNDINGBOXMODIFY_H__
 #define __BOUNDINGBOXMODIFY_H__
 
-#if QT_VERSION < 0x040000
-#include <qdialog.h>
-#else
 #include <QDialog>
-#endif
+#include <VolMagick/BoundingBox.h>
 
-#if QT_VERSION < 0x040000
-class BoundingBoxModifyBase;
-#else
 namespace Ui
 {
   class BoundingBoxModify;
 }
-#endif
-
-#include <VolMagick/BoundingBox.h>
 
 class BoundingBoxModify : public QDialog
 {
   Q_OBJECT
 
  public:
-  BoundingBoxModify(QWidget* parent = 0, 
-#if QT_VERSION < 0x040000
-                    const char* name = 0, WFlags f = WType_TopLevel
-#else
-                    Qt::WFlags flags=0
-#endif
-                    );
+  BoundingBoxModify(QWidget* parent = nullptr, 
+                    Qt::WindowFlags flags=Qt::WindowFlags());
   virtual ~BoundingBoxModify();
 
   VolMagick::BoundingBox boundingBox() const;

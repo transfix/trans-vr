@@ -20,5 +20,5 @@ ADD_EXECUTABLE (SimpleExample
 TARGET_LINK_LIBRARIES(SimpleExample
   VolumeLibrary
   ${GLUT_LIBRARIES}
-  glew
+  GLEW::GLEW
 )

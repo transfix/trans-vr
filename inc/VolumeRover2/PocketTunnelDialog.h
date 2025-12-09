@@ -41,7 +41,7 @@ class PocketTunnelDialog : public QDialog
   Q_OBJECT
 
  public:
-  PocketTunnelDialog(QWidget *parent=0,Qt::WFlags flags=0);
+  PocketTunnelDialog(QWidget *parent=nullptr,Qt::WindowFlags flags=Qt::WindowFlags());
 
   virtual ~PocketTunnelDialog();
 

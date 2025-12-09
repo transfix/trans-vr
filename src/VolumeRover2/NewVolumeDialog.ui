@@ -1,0 +1,429 @@
+<ui version="4.0" >
+ <class>NewVolumeDialog</class>
+ <widget class="QWidget" name="NewVolumeDialog" >
+  <property name="geometry" >
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>350</width>
+    <height>431</height>
+   </rect>
+  </property>
+  <property name="windowTitle" >
+   <string>New Volume</string>
+  </property>
+  <layout class="QGridLayout" name="gridLayout_8" >
+   <item row="0" column="0" >
+    <widget class="QLabel" name="_filenameLabel" >
+     <property name="text" >
+      <string>New Filename:</string>
+     </property>
+    </widget>
+   </item>
+   <item row="0" column="1" colspan="2" >
+    <widget class="QLineEdit" name="_filename" />
+   </item>
+   <item row="0" column="3" >
+    <widget class="QPushButton" name="_filenameButton" >
+     <property name="text" >
+      <string>...</string>
+     </property>
+    </widget>
+   </item>
+   <item row="1" column="0" colspan="4" >
+    <widget class="QGroupBox" name="_newCopyGroup" >
+     <property name="title" >
+      <string/>
+     </property>
+     <property name="checkable" >
+      <bool>false</bool>
+     </property>
+     <layout class="QHBoxLayout" name="horizontalLayout" >
+      <item>
+       <widget class="QRadioButton" name="_newVolumeButton" >
+        <property name="text" >
+         <string>Brand New</string>
+        </property>
+        <property name="checked" >
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QRadioButton" name="_copyVolumeButton" >
+        <property name="text" >
+         <string>Copy Existing Volume</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item row="2" column="0" colspan="4" >
+    <widget class="QStackedWidget" name="_newVolumeStack" >
+     <property name="currentIndex" >
+      <number>0</number>
+     </property>
+     <widget class="QWidget" name="NewVolumeInformation" >
+      <layout class="QGridLayout" name="gridLayout_4" >
+       <item row="0" column="0" colspan="2" >
+        <widget class="QGroupBox" name="_dimensionGroupBox" >
+         <property name="title" >
+          <string>Dimension</string>
+         </property>
+         <layout class="QHBoxLayout" name="horizontalLayout_3" >
+          <item>
+           <widget class="QLineEdit" name="_dimensionX" >
+            <property name="text" >
+             <string>1</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLineEdit" name="_dimensionY" >
+            <property name="text" >
+             <string>1</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLineEdit" name="_dimensionZ" >
+            <property name="text" >
+             <string>1</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <item row="1" column="0" colspan="2" >
+        <widget class="QGroupBox" name="_boundingBoxGroupBox" >
+         <property name="title" >
+          <string>Bounding Box</string>
+         </property>
+         <layout class="QGridLayout" name="gridLayout_6" >
+          <item row="0" column="0" >
+           <layout class="QGridLayout" name="gridLayout_5" >
+            <item row="0" column="0" >
+             <widget class="QLabel" name="_boundingBoxMinLabel" >
+              <property name="text" >
+               <string>Min point:</string>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="1" >
+             <widget class="QLineEdit" name="_boundingBoxMinX" >
+              <property name="text" >
+               <string>0.0</string>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="2" >
+             <widget class="QLineEdit" name="_boundingBoxMinY" >
+              <property name="text" >
+               <string>0.0</string>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="3" >
+             <widget class="QLineEdit" name="_boundingBoxMinZ" >
+              <property name="text" >
+               <string>0.0</string>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="0" >
+             <widget class="QLabel" name="_boundingBoxMaxLabel" >
+              <property name="text" >
+               <string>Max point:</string>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="1" >
+             <widget class="QLineEdit" name="_boundingBoxMaxX" >
+              <property name="text" >
+               <string>1.0</string>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="2" >
+             <widget class="QLineEdit" name="_boundingBoxMaxY" >
+              <property name="text" >
+               <string>1.0</string>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="3" >
+             <widget class="QLineEdit" name="_boundingBoxMaxZ" >
+              <property name="text" >
+               <string>1.0</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <item row="2" column="0" >
+        <widget class="QLabel" name="_variableNameLabel" >
+         <property name="text" >
+          <string>First Variable Name:</string>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="1" >
+        <widget class="QLineEdit" name="_variableName" >
+         <property name="text" >
+          <string>no name</string>
+         </property>
+        </widget>
+       </item>
+       <item row="3" column="0" >
+        <widget class="QLabel" name="_variableTypeLabel" >
+         <property name="text" >
+          <string>First Variable Type:</string>
+         </property>
+        </widget>
+       </item>
+       <item row="3" column="1" >
+        <widget class="QComboBox" name="_variableType" >
+         <item>
+          <property name="text" >
+           <string>unsigned char</string>
+          </property>
+         </item>
+         <item>
+          <property name="text" >
+           <string>unsigned short</string>
+          </property>
+         </item>
+         <item>
+          <property name="text" >
+           <string>unsigned int</string>
+          </property>
+         </item>
+         <item>
+          <property name="text" >
+           <string>float</string>
+          </property>
+         </item>
+         <item>
+          <property name="text" >
+           <string>double</string>
+          </property>
+         </item>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QWidget" name="CopyVolumeInformation" >
+      <layout class="QGridLayout" name="gridLayout_7" >
+       <item row="0" column="0" >
+        <widget class="QLabel" name="_volumeCopyLabel" >
+         <property name="text" >
+          <string>Volume File to Copy:</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="1" colspan="3" >
+        <spacer name="horizontalSpacer" >
+         <property name="orientation" >
+          <enum>Qt::Horizontal</enum>
+         </property>
+         <property name="sizeHint" stdset="0" >
+          <size>
+           <width>173</width>
+           <height>20</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+       <item row="1" column="0" colspan="3" >
+        <widget class="QLineEdit" name="_volumeCopyFilename" />
+       </item>
+       <item row="1" column="3" >
+        <widget class="QPushButton" name="_volumeCopyFilenameButton" >
+         <property name="text" >
+          <string>...</string>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="0" colspan="2" >
+        <widget class="QCheckBox" name="_extractSubVolume" >
+         <property name="text" >
+          <string>Extract Sub Volume</string>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="2" colspan="2" >
+        <spacer name="horizontalSpacer_2" >
+         <property name="orientation" >
+          <enum>Qt::Horizontal</enum>
+         </property>
+         <property name="sizeHint" stdset="0" >
+          <size>
+           <width>122</width>
+           <height>21</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+       <item row="3" column="0" colspan="4" >
+        <widget class="QTabWidget" name="_extractSubVolumeMethod" >
+         <property name="enabled" >
+          <bool>false</bool>
+         </property>
+         <property name="currentIndex" >
+          <number>0</number>
+         </property>
+         <widget class="QWidget" name="tab" >
+          <attribute name="title" >
+           <string>Using Image Indices</string>
+          </attribute>
+          <layout class="QGridLayout" name="gridLayout" >
+           <item row="0" column="0" >
+            <widget class="QLabel" name="_extractSubVolumeMinIndexLabel" >
+             <property name="text" >
+              <string>Minimum Index:</string>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="1" >
+            <widget class="QLineEdit" name="_extractSubVolumeMinIndexX" />
+           </item>
+           <item row="0" column="2" >
+            <widget class="QLineEdit" name="_extractSubVolumeMinIndexY" />
+           </item>
+           <item row="0" column="3" >
+            <widget class="QLineEdit" name="_extractSubVolumeMinIndexZ" />
+           </item>
+           <item row="1" column="0" >
+            <widget class="QLabel" name="_extractSubVolumeMaxIndexLabel" >
+             <property name="text" >
+              <string>Maximum Index:</string>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="1" >
+            <widget class="QLineEdit" name="_extractSubVolumeMaxIndexX" />
+           </item>
+           <item row="1" column="2" >
+            <widget class="QLineEdit" name="_extractSubVolumeMaxIndexY" />
+           </item>
+           <item row="1" column="3" >
+            <widget class="QLineEdit" name="_extractSubVolumeMaxIndexZ" />
+           </item>
+          </layout>
+         </widget>
+         <widget class="QWidget" name="tab_2" >
+          <attribute name="title" >
+           <string>Using Bounding Box</string>
+          </attribute>
+          <layout class="QGridLayout" name="gridLayout_3" >
+           <item row="0" column="0" >
+            <layout class="QGridLayout" name="gridLayout_2" >
+             <item row="0" column="0" >
+              <widget class="QLabel" name="_extractSubVolumeMinLabel" >
+               <property name="text" >
+                <string>Min point:</string>
+               </property>
+              </widget>
+             </item>
+             <item row="0" column="1" >
+              <widget class="QLineEdit" name="_extractSubVolumeMinX" />
+             </item>
+             <item row="0" column="2" >
+              <widget class="QLineEdit" name="_extractSubVolumeMinY" />
+             </item>
+             <item row="0" column="3" >
+              <widget class="QLineEdit" name="_extractSubVolumeMinZ" />
+             </item>
+             <item row="1" column="0" >
+              <widget class="QLabel" name="_extractSubVolumeMaxLabel" >
+               <property name="text" >
+                <string>Max point:</string>
+               </property>
+              </widget>
+             </item>
+             <item row="1" column="1" >
+              <widget class="QLineEdit" name="_extractSubVolumeMaxX" />
+             </item>
+             <item row="1" column="2" >
+              <widget class="QLineEdit" name="_extractSubVolumeMaxY" />
+             </item>
+             <item row="1" column="3" >
+              <widget class="QLineEdit" name="_extractSubVolumeMaxZ" />
+             </item>
+            </layout>
+           </item>
+           <item row="1" column="0" >
+            <widget class="QGroupBox" name="_extractSubVolumeBoundingBoxDimensionGroup" >
+             <property name="title" >
+              <string>Dimension of sub volume sample</string>
+             </property>
+             <layout class="QHBoxLayout" name="horizontalLayout_2" >
+              <item>
+               <widget class="QLineEdit" name="_extractSubVolumeBoundingBoxDimX" />
+              </item>
+              <item>
+               <widget class="QLineEdit" name="_extractSubVolumeBoundingBoxDimY" />
+              </item>
+              <item>
+               <widget class="QLineEdit" name="_extractSubVolumeBoundingBoxDimZ" />
+              </item>
+             </layout>
+            </widget>
+           </item>
+          </layout>
+         </widget>
+        </widget>
+       </item>
+      </layout>
+      <zorder>horizontalSpacer</zorder>
+      <zorder>label</zorder>
+      <zorder>_volumeCopyFilename</zorder>
+      <zorder>_volumeCopyFilenameButton</zorder>
+      <zorder>_extractSubVolume</zorder>
+      <zorder>horizontalSpacer_2</zorder>
+      <zorder>_extractSubVolumeMethod</zorder>
+      <zorder>_volumeCopyLabel</zorder>
+     </widget>
+    </widget>
+   </item>
+   <item row="3" column="0" colspan="2" >
+    <widget class="QPushButton" name="_cancel" >
+     <property name="text" >
+      <string>Cancel</string>
+     </property>
+    </widget>
+   </item>
+   <item row="3" column="2" colspan="2" >
+    <widget class="QPushButton" name="_ok" >
+     <property name="text" >
+      <string>Ok</string>
+     </property>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections>
+  <connection>
+   <sender>_extractSubVolume</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>_extractSubVolumeMethod</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel" >
+     <x>109</x>
+     <y>180</y>
+    </hint>
+    <hint type="destinationlabel" >
+     <x>174</x>
+     <y>288</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
+</ui>

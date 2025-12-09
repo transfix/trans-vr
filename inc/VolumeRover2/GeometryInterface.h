@@ -27,8 +27,6 @@
 #define __GEOMETRYINTERFACE_H__
 
 #include <CVC/Namespace.h>
-
-#include <qglobal.h>
 #include <VolumeRover2/DataWidget.h>
 #include <cvcraw_geometry/cvcgeom.h>
 #include <cvcraw_geometry/io.h>
@@ -51,8 +49,8 @@ class GeometryInterface : public CVC_NAMESPACE::DataWidget
 
  public:
   GeometryInterface(const cvcraw_geometry::cvcgeom_t & geom= cvcraw_geometry::cvcgeom_t(),
-                  QWidget* parent = 0, 
-                  Qt::WFlags flags=0);
+                  QWidget* parent = nullptr, 
+                  Qt::WindowFlags flags=Qt::WindowFlags());
   virtual ~GeometryInterface();
 
   virtual void initialize(const std::string& datakey);

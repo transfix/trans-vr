@@ -1,14 +1,10 @@
-cmake_minimum_required(VERSION 2.6)
+cmake_minimum_required(VERSION 3.16)
 
 SetupQt()
 
-if(WIN32)
-  add_definitions(-DGLEW_STATIC)
-endif(WIN32)
-
 if(ENABLE_STEREO_DISPLAY)
   add_definitions(-DENABLE_STEREO_DISPLAY)
-endif(ENABLE_STEREO_DISPLAY)
+endif()
 
 set(ISOCONTOURING_LIB "")
 option(VOLUMEROVER2_ISOCONTOURING_WITH_LBIE "Build VolumeRover2 with LBIE isocontouring support (can call FastContouring depending on method selected)" ON)
@@ -99,65 +95,51 @@ set(INCLUDE_FILES
   ../../inc/VolumeRover2/VolumeViewer2.h
 )
 
-# arand: this is out of date, remove Qt3 stuff
-#FILE(GLOB UI3_FORMS *.Qt3.ui)
-set(UI3_FORMS
-  boundingboxmodifybase.Qt3.ui
-  editvariablebase.Qt3.ui
-  dimensionmodifybase.Qt3.ui
-  volumeinterfacebase.Qt3.ui
-  volumerovermainbase.Qt3.ui
-  addtimestepbase.Qt3.ui
-  addvariablebase.Qt3.ui
-  importdatabase.Qt3.ui
-  remapvoxelsbase.Qt3.ui
-)
-#FILE(GLOB UI4_FORMS *.Qt4.ui)
-set(UI4_FORMS
-  HLSSurfaceDialog.Qt4.ui
-  AnisotropicDiffusionDialog.Qt4.ui
-  RemapVoxels.Qt4.ui
-  SecondaryStructureDialog.Qt4.ui
-  HistogramDialog.Qt4.ui
-  CurationDialog.Qt4.ui
-#  VolumeRoverMain.Qt4.ui
-  ContrastEnhancementDialog.Qt4.ui
-  NewVolumeDialog.Qt4.ui
-  ImportData.Qt4.ui
-  TightCoconeDialog.Qt4.ui
-  SuperSecondaryStructuresDialog.Qt4.ui
-  DimensionModify.Qt4.ui
-  SegmentVirusMapDialog.Qt4.ui
-  UnknownData.Qt4.ui
-  BoundingBoxModify.Qt4.ui
-  BilateralFilterDialog.Qt4.ui
-  ContourTilerDialog.Qt4.ui
-  PocketTunnelDialog.Qt4.ui
-  LBIE_dialog.Qt4.ui
-  LBIE_qualityImprovement.Qt4.ui
-  ReconstructionDialog.Qt4.ui
-  CVCMainWidget.Qt4.ui
-  VolumeInterface.Qt4.ui
-  GeometryInterface.Qt4.ui
-  ContoursInterface.Qt4.ui
-  VolumeMemoryInterface.Qt4.ui
-  GDTVFilterDialog.Qt4.ui
-  SkeletonizationDialog.Qt4.ui
-  VolumeViewerPage.Qt4.ui
-  VolumeViewerPageManipulators.Qt4.ui
-  AddPropertyDialog.Qt4.ui
-  MainOptions.Qt4.ui
-  SaveFileDialog.Qt4.ui
-  SliceRenderingDialog.Qt4.ui
-  CloseDataDialog.Qt4.ui
-  SaveImageDialog.Qt4.ui
-  ViewGeometryOptionsDialog.Qt4.ui
-  SelectCurrentVolumeDialog.Qt4.ui
-  MultiTileServerDialog.Qt4.ui
-  generateRawvDialog.Qt4.ui
-  generateMeshDialog.Qt4.ui
-  mslevelsetDialog.Qt4.ui
-  mplevelsetDialog.Qt4.ui
+# Qt6-compatible UI forms (Qt4 .ui files work with Qt6 AUTOUIC)
+set(UI_FORMS
+  HLSSurfaceDialog.ui
+  AnisotropicDiffusionDialog.ui
+  RemapVoxels.ui
+  SecondaryStructureDialog.ui
+  HistogramDialog.ui
+  CurationDialog.ui
+  ContrastEnhancementDialog.ui
+  NewVolumeDialog.ui
+  ImportData.ui
+  TightCoconeDialog.ui
+  SuperSecondaryStructuresDialog.ui
+  DimensionModify.ui
+  SegmentVirusMapDialog.ui
+  UnknownData.ui
+  BoundingBoxModify.ui
+  BilateralFilterDialog.ui
+  ContourTilerDialog.ui
+  PocketTunnelDialog.ui
+  LBIE_dialog.ui
+  LBIE_qualityImprovement.ui
+  ReconstructionDialog.ui
+  CVCMainWidget.ui
+  VolumeInterface.ui
+  GeometryInterface.ui
+  ContoursInterface.ui
+  VolumeMemoryInterface.ui
+  GDTVFilterDialog.ui
+  SkeletonizationDialog.ui
+  VolumeViewerPage.ui
+  VolumeViewerPageManipulators.ui
+  AddPropertyDialog.ui
+  MainOptions.ui
+  SaveFileDialog.ui
+  SliceRenderingDialog.ui
+  CloseDataDialog.ui
+  SaveImageDialog.ui
+  ViewGeometryOptionsDialog.ui
+  SelectCurrentVolumeDialog.ui
+  MultiTileServerDialog.ui
+  generateRawvDialog.ui
+  generateMeshDialog.ui
+  mslevelsetDialog.ui
+  mplevelsetDialog.ui
 )
 
 source_group("Source Files" FILES ${SOURCE_FILES})
@@ -300,56 +282,64 @@ set(LIBS
     log4cplus
 )
 
-#link against VolumeGridRover if it is available
-if(BUILD_VOLUMEGRIDROVER AND NOT DISABLE_CGAL) # works in Qt4 now
-  include_directories(${CMAKE_BINARY_DIR}/src/VolumeGridRover) # for generated headers
+# Link against VolumeGridRover if available
+if(BUILD_VOLUMEGRIDROVER AND NOT DISABLE_CGAL)
+  include_directories(${CMAKE_BINARY_DIR}/src/VolumeGridRover)
   set(LIBS ${LIBS} VolumeGridRover)
-endif(BUILD_VOLUMEGRIDROVER AND NOT DISABLE_CGAL)
+endif()
 
-if(QT3_FOUND)
-  set(UI_FORMS ${UI3_FORMS})
-  source_group("UI Files" FILES ${UI_FORMS})
+# Source grouping for IDEs
+source_group("Source Files" FILES ${SOURCE_FILES})
+source_group("Header Files" FILES ${INCLUDE_FILES})
+source_group("UI Files" FILES ${UI_FORMS})
 
-  qt_wrap_cpp(VolumeRover2 MOC_SOURCES ${MOC_HEADERS})
-  qt_wrap_ui(VolumeRover2 UI_H UI_CPP ${UI_FORMS})
+set(MACOSX_BUNDLE_ICON_FILE ${VolumeRover_SOURCE_DIR}/dat/VolRover.icns)
 
-  add_executable(VolumeRover2 MACOSX_BUNDLE
-    ${SOURCE_FILES}
-    ${INCLUDE_FILES}
-    ${MOC_SOURCES}
-    ${UI_H}
-    ${UI_CPP}
+# AUTOMOC and AUTOUIC will handle MOC and UI file generation automatically
+add_executable(VolumeRover2 MACOSX_BUNDLE
+  ${SOURCE_FILES}
+  ${INCLUDE_FILES}
+  ${UI_FORMS}
+)
+
+# Link libraries - use modern target-based linking for Qt6
+if(USE_QT6)
+  target_link_libraries(VolumeRover2
+    PRIVATE
+      Qt6::Core
+      Qt6::Gui
+      Qt6::Widgets
+      Qt6::Xml
+      Qt6::OpenGL
+      Qt6::OpenGLWidgets
+      Boost::thread
+      Boost::date_time
+      Boost::regex
+      Boost::filesystem
+      Boost::system
+      ${LIBS}
   )
-
-  target_link_libraries(VolumeRover2 ${LIBS})
-elseif(QT4_FOUND)
-  set(UI_FORMS ${UI4_FORMS})
-  source_group("UI Files" FILES ${UI_FORMS})
-
-  qt4_wrap_cpp(MOC_SOURCES ${MOC_HEADERS})
-  qt4_wrap_ui(UI_FILES ${UI_FORMS})
-
-  set(MACOSX_BUNDLE_ICON_FILE ${VolumeRover_SOURCE_DIR}/dat/VolRover.icns)
-
-  add_executable(VolumeRover2 MACOSX_BUNDLE
-    ${SOURCE_FILES}
-    ${INCLUDE_FILES}
-    ${MOC_SOURCES}
-    ${UI_FILES}
+else()
+  target_link_libraries(VolumeRover2
+    PRIVATE
+      ${QT_LIBRARIES}
+      Boost::thread
+      Boost::date_time
+      Boost::regex
+      Boost::filesystem
+      Boost::system
+      ${LIBS}
   )
+endif()
 
-  target_link_libraries(VolumeRover2 ${LIBS})
-endif(QT3_FOUND)
+# Setup additional dependencies
+if(BUILD_VOLUMEGRIDROVER AND NOT DISABLE_CGAL)
+  SetupGSL(VolumeRover2)
+endif()
 
-if(BUILD_VOLUMEGRIDROVER AND NOT DISABLE_CGAL) # works in Qt4 now
-SetupGSL(VolumeRover2)
-endif(BUILD_VOLUMEGRIDROVER AND NOT DISABLE_CGAL) # works in Qt4 now
-
-SetupBoost(VolumeRover2)
-
-if (NOT DISABLE_CGAL)
+if(NOT DISABLE_CGAL)
   SetupCGAL(VolumeRover2)
-endif (NOT DISABLE_CGAL)
+endif()
 
 if(${CMAKE_MAJOR_VERSION}.${CMAKE_MINOR_VERSION} GREATER 2.4)
   if(APPLE)

@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 2.6)
+cmake_minimum_required(VERSION 3.16)
 
 file(GLOB SOURCE_FILES *.cpp)
 file(GLOB INCLUDE_FILES ../../inc/PocketTunnel/*.[Hh])

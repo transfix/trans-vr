@@ -43,7 +43,7 @@ class VolumeGridRoverMainWindow : public QWidget
   Q_OBJECT
 
  public:
-  VolumeGridRoverMainWindow(QWidget* parent = 0, const char* name = 0, Qt::WFlags fl = 0);
+  VolumeGridRoverMainWindow(QWidget* parent = nullptr, Qt::WindowFlags fl = Qt::WindowFlags());
   ~VolumeGridRoverMainWindow();
 
   void fileOpen();

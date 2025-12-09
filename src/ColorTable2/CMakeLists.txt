@@ -1,34 +1,21 @@
-CMAKE_MINIMUM_REQUIRED (VERSION 2.6)
+cmake_minimum_required(VERSION 3.16)
 
 SetupQt()
 
-FILE(GLOB SOURCE_FILES *.cpp)
-FILE(GLOB INCLUDE_FILES ../../inc/ColorTable2/*.[Hh])
+file(GLOB SOURCE_FILES *.cpp)
+file(GLOB INCLUDE_FILES ../../inc/ColorTable2/*.[Hh])
 
-SOURCE_GROUP("Source Files" FILES ${SOURCE_FILES})
-SOURCE_GROUP("Header Files" FILES ${INCLUDE_FILES})
+source_group("Source Files" FILES ${SOURCE_FILES})
+source_group("Header Files" FILES ${INCLUDE_FILES})
 
-INCLUDE_DIRECTORIES(
+include_directories(
   ../../inc
 )
 
-SET(MOC_HEADERS
-  ../../inc/ColorTable2/XoomedOut.h
-  ../../inc/ColorTable2/Table.h
-  ../../inc/ColorTable2/ColorTable.h
-  ../../inc/ColorTable2/InfoDialog.h
-)
-
-if(QT3_FOUND)
-  QT_WRAP_CPP(ColorTable2 MOC_SOURCES ${MOC_HEADERS})
-else(QT4_FOUND)
-  qt4_wrap_cpp(MOC_SOURCES ${MOC_HEADERS})
-endif(QT3_FOUND)
-
-ADD_LIBRARY (ColorTable2 STATIC 
+# AUTOMOC will handle MOC generation automatically for headers with Q_OBJECT
+add_library(ColorTable2 STATIC 
   ${SOURCE_FILES}
   ${INCLUDE_FILES}
-  ${MOC_SOURCES}
 )
 
 #Make sure we've got boost
@@ -49,16 +36,16 @@ option(COLORTABLE2_DISABLE_CONTOUR_TREE "ColorTable2 -- enable/disable contour t
 mark_as_advanced(COLORTABLE2_DISABLE_CONTOUR_TREE)
 if(COLORTABLE2_DISABLE_CONTOUR_TREE)
   add_definitions(-DCOLORTABLE2_DISABLE_CONTOUR_TREE)
-else(COLORTABLE2_DISABLE_CONTOUR_TREE)
+else()
   set(LIBS ${LIBS} contourtree VolMagick)
-endif(COLORTABLE2_DISABLE_CONTOUR_TREE)
+endif()
 
 option(COLORTABLE2_DISABLE_CONTOUR_SPECTRUM "ColorTable2 -- enable/disable contour spectrum.  Requires libContour and VolMagick libs" OFF)
 mark_as_advanced(COLORTABLE2_DISABLE_CONTOUR_SPECTRUM)
 if(COLORTABLE2_DISABLE_CONTOUR_SPECTRUM)
   add_definitions(-DCOLORTABLE2_DISABLE_CONTOUR_SPECTRUM)
-else(COLORTABLE2_DISABLE_CONTOUR_SPECTRUM)
+else()
   set(LIBS ${LIBS} Contour VolMagick)
-endif(COLORTABLE2_DISABLE_CONTOUR_SPECTRUM)
+endif()
 
-TARGET_LINK_LIBRARIES(ColorTable2 ${LIBS})
+target_link_libraries(ColorTable2 PUBLIC ${LIBS})

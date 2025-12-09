@@ -26,35 +26,20 @@
 #ifndef __REMAPVOXELS_H__
 #define __REMAPVOXELS_H__
 
-#include <qglobal.h>
-
-#if QT_VERSION < 0x040000
-#include <qdialog.h>
-#else
 #include <QDialog>
-#endif
 
-#if QT_VERSION < 0x040000
-class RemapVoxelsBase;
-#else
 namespace Ui
 {
   class RemapVoxels;
 }
-#endif
 
 class RemapVoxels : public QDialog
 {
   Q_OBJECT
 
  public:
-  RemapVoxels(QWidget* parent = 0,
-#if QT_VERSION < 0x040000
-                  const char* name = 0, WFlags f = WType_TopLevel
-#else
-                  Qt::WFlags flags=0
-#endif
-                  );
+  RemapVoxels(QWidget* parent = nullptr,
+                  Qt::WindowFlags flags=Qt::WindowFlags());
   virtual ~RemapVoxels();
 
   double minValue() const;

@@ -23,8 +23,9 @@
 #ifndef __POINTCLASSFILE_H__
 #define __POINTCLASSFILE_H__
 
-#include <qstring.h>
-#include <qxml.h>
+#include <QString>
+#include <QXmlStreamReader>
+#include <QXmlStreamWriter>
 
 class VolumeGridRover;
 

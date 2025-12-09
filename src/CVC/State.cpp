@@ -35,6 +35,7 @@
 #include <boost/regex.hpp>
 #include <boost/date_time/posix_time/posix_time.hpp>
 #include <boost/asio.hpp>
+#include <boost/bind/bind.hpp>
 
 #ifndef CVC_STATE_XML_PROPERTY_TREE
 #include <boost/property_tree/info_parser.hpp>
@@ -450,6 +451,8 @@ namespace CVC_NAMESPACE
     _hidden(false),
     _initialized(false)
   {
+    using namespace boost::placeholders;
+    
     //This slot propagates child changes up to parents
     childChanged.connect(
       MapChangeSignal::slot_type(

@@ -1,39 +1,38 @@
-CMAKE_MINIMUM_REQUIRED (VERSION 2.6)
+cmake_minimum_required(VERSION 3.16)
 
-SetupQt()
+# Setup Qt6 or Qt4
+if(USE_QT6)
+  find_package(Qt6 REQUIRED COMPONENTS Core Gui Widgets)
+  set(CMAKE_AUTOMOC ON)
+  set(CMAKE_AUTOUIC ON)
+  set(QT_LIBRARIES Qt6::Core Qt6::Gui Qt6::Widgets)
+else()
+  SetupQt()
+endif()
 
-FILE(GLOB SOURCE_FILES *.cpp)
-FILE(GLOB INCLUDE_FILES ../../inc/RawIVEditor/*.[Hh])
-FILE(GLOB UI_FORMS *.ui)
+file(GLOB SOURCE_FILES *.cpp)
+file(GLOB INCLUDE_FILES ../../inc/RawIVEditor/*.[Hh])
+file(GLOB UI_FORMS *.ui)
 
-SOURCE_GROUP("Source Files" FILES ${SOURCE_FILES})
-SOURCE_GROUP("UI Files" FILES ${UI_FORMS})
-SOURCE_GROUP("Header Files" FILES ${INCLUDE_FILES})
+source_group("Source Files" FILES ${SOURCE_FILES})
+source_group("UI Files" FILES ${UI_FORMS})
+source_group("Header Files" FILES ${INCLUDE_FILES})
 
-SET(MOC_HEADERS
+set(MOC_HEADERS
   ../../inc/RawIVEditor/rawiveditordialog.h
 )
 
-if(QT3_FOUND)
-  QT_WRAP_CPP(RawIVEditor MOC_SOURCES ${MOC_HEADERS})
-  QT_WRAP_UI(RawIVEditor UI_H UI_CPP ${UI_FORMS})
+include_directories(
+  ../../inc
+  ${CMAKE_BINARY_DIR}/src/RawIVEditor  #for generated headers
+)
 
-  INCLUDE_DIRECTORIES(
-    ../../inc
-    ${CMAKE_BINARY_DIR}/src/RawIVEditor  #for generated headers
-  )
+add_executable(RawIVEditor
+  ${SOURCE_FILES}
+  ${INCLUDE_FILES}
+  ${UI_FORMS}
+)
 
-  ADD_EXECUTABLE(RawIVEditor
-    ${MOC_SOURCES}
-    ${UI_H}
-    ${UI_CPP}
-    ${SOURCE_FILES}
-    ${INCLUDE_FILES}
-  )
-
-  TARGET_LINK_LIBRARIES(RawIVEditor
-    ${QT_LIBRARIES}
-  )
-else(QT3_FOUND)
-  message("RawIVEditor only works with Qt3! Not creating RawIVEditor target.")
-endif(QT3_FOUND)
+target_link_libraries(RawIVEditor
+  ${QT_LIBRARIES}
+)

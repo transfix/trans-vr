@@ -33,7 +33,7 @@ namespace CVCColorTable
 #if QT_VERSION < 0x040000
                       const char *name
 #else
-                      Qt::WFlags flags
+                      Qt::WindowFlags flags
 #endif
                       )
     : QFrame( parent, 
@@ -53,7 +53,7 @@ namespace CVCColorTable
 #else
     new QBoxLayout( QBoxLayout::Down, this );
 #endif
-    layout->setMargin(3);
+    layout->setContentsMargins(3, 3, 3, 3);
     layout->setSpacing(3);
 
 #if QT_VERSION < 0x040000
@@ -515,12 +515,8 @@ namespace CVCColorTable
 
   void ColorTable::update()
   {
-    _xoomedIn->updateGL();
-#if QT_VERSION < 0x040000
+    _xoomedIn->update();
     _xoomedOut->update();
-#else
-    _xoomedOut->updateGL();
-#endif
   }
 
   void ColorTable::reset()
@@ -759,7 +755,7 @@ namespace CVCColorTable
     outf << prior(local_cti.opacityNodes().end())->position << " "
 	 << prior(local_cti.opacityNodes().end())->value << endl;
     if(local_cti.opacityNodes().size() > 2)
-      for(opacity_nodes::iterator i = next(local_cti.opacityNodes().begin());
+      for(opacity_nodes::iterator i = std::next(local_cti.opacityNodes().begin());
 	  i != prior(local_cti.opacityNodes().end());
 	  i++)
 	outf << i->position << " " << i->value << endl;
@@ -778,7 +774,7 @@ namespace CVCColorTable
 	 << prior(local_cti.colorNodes().end())->g << " "
 	 << prior(local_cti.colorNodes().end())->b << endl;
     if(local_cti.colorNodes().size() > 2)
-      for(color_nodes::iterator i = next(local_cti.colorNodes().begin());
+      for(color_nodes::iterator i = std::next(local_cti.colorNodes().begin());
 	  i != prior(local_cti.colorNodes().end());
 	  i++)
 	outf << i->position << " "

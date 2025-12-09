@@ -25,7 +25,7 @@
 #ifndef __BSPLINE_OPT_H__
 #define __BSPLINE_OPT_H__
 
-#include <qdialog.h>
+#include <QDialog>
 
 class QLineEdit;
 class QCheckBox;

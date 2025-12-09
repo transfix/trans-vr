@@ -23,7 +23,6 @@
 
 #include <Histogram/glcontrolwidget.h>
 #include <Histogram/histogram_data.h>
-//Added by qt3to4:
 #include <QMouseEvent>
 #include <QWheelEvent>
 

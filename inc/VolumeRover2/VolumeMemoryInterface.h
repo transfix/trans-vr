@@ -28,7 +28,7 @@
 
 #include <CVC/Namespace.h>
 
-#include <qglobal.h>
+
 #include <VolumeRover2/DataWidget.h>
 #include <VolMagick/VolMagick.h>
 
@@ -50,7 +50,7 @@ class VolumeMemoryInterface : public CVC_NAMESPACE::DataWidget
  public:
   VolumeMemoryInterface(const VolMagick::Volume & vol= VolMagick::Volume(),
                         QWidget* parent = 0, 
-                        Qt::WFlags flags=0);
+                        Qt::WindowFlags flags=Qt::WindowFlags());
   virtual ~VolumeMemoryInterface();
 
   virtual void initialize(const std::string& datakey);

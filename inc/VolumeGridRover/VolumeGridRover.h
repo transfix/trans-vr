@@ -27,20 +27,18 @@
 
 #include <QList>
 #include <QListView>
-
-#include <qwmatrix.h>
-#include <qpainter.h>
-#include <qframe.h>
-#include <qpixmap.h>
-#include <qslider.h>
-#include <qlineedit.h>
-//#include <qptrlist.h>
-#include <qcombobox.h>
-#include <qspinbox.h>
-#include <qthread.h>
-#include <qrect.h>
-#include <qtabwidget.h>
-#include <qimage.h>
+#include <QTransform>
+#include <QPainter>
+#include <QFrame>
+#include <QPixmap>
+#include <QSlider>
+#include <QLineEdit>
+#include <QComboBox>
+#include <QSpinBox>
+#include <QThread>
+#include <QRect>
+#include <QTabWidget>
+#include <QImage>
 #include <QGLViewer/qglviewer.h>
 #include <QGLViewer/camera.h>
 
@@ -356,7 +354,7 @@ class VolumeGridRover : public QWidget
   Q_OBJECT
 
     public:
-  VolumeGridRover(QWidget* parent = NULL, const char* name = NULL, Qt::WFlags fl = NULL);
+  VolumeGridRover(QWidget* parent = nullptr, Qt::WindowFlags fl = Qt::WindowFlags());
   ~VolumeGridRover();
 
   SliceCanvas *getCurrentSliceCanvas();

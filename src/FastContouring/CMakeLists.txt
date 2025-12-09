@@ -1,4 +1,4 @@
-CMAKE_MINIMUM_REQUIRED (VERSION 2.6)
+cmake_minimum_required(VERSION 3.16)
 
 FILE(GLOB SOURCE_FILES *.cpp)
 FILE(GLOB INCLUDE_FILES ../../inc/FastContouring/*.[Hh])
@@ -10,7 +10,13 @@ INCLUDE_DIRECTORIES(
   ../../inc
 )
 
-ADD_LIBRARY (FastContouring STATIC ${SOURCE_FILES} ${INCLUDE_FILES})
+add_library(FastContouring STATIC ${SOURCE_FILES} ${INCLUDE_FILES})
+
+set_target_properties(FastContouring PROPERTIES
+  AUTOMOC OFF
+  AUTOUIC OFF
+  AUTORCC OFF
+)
 TARGET_LINK_LIBRARIES (FastContouring VolMagick)
 
 #Make sure we've got boost

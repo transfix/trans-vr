@@ -41,7 +41,7 @@ class AnisotropicDiffusionDialog : public QDialog
   Q_OBJECT
 
  public:
-  AnisotropicDiffusionDialog(QWidget *parent=0,Qt::WFlags flags=0);
+  AnisotropicDiffusionDialog(QWidget *parent=nullptr,Qt::WindowFlags flags=Qt::WindowFlags());
 
   virtual ~AnisotropicDiffusionDialog();
 

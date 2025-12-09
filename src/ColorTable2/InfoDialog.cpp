@@ -7,7 +7,7 @@
 namespace CVCColorTable
 {
   ConSpecInfoNode::ConSpecInfoNode(int id, double position, float isoval, float area, float minvol, float maxvol, float grad, int nComp)
-     : QWidget( 0, 0 )
+     : QWidget( nullptr )
   {
      m_ID = id;
      m_Position = position;
@@ -102,7 +102,7 @@ namespace CVCColorTable
   }
 
   ConSpecInfoNode::ConSpecInfoNode(const ConSpecInfoNode& copy)
-     : QWidget( 0, 0 )
+     : QWidget( nullptr )
   {
      m_ID = copy.m_ID;
      m_Position = copy.m_Position;
@@ -231,7 +231,7 @@ namespace CVCColorTable
 #if QT_VERSION < 0x040000
                       const char *name
 #else
-                      Qt::WFlags flags
+                      Qt::WindowFlags flags
 #endif
                       )
     : QFrame( parent, 
@@ -251,7 +251,7 @@ namespace CVCColorTable
 #else
     new QBoxLayout( QBoxLayout::Down, this );
 #endif
-    layout->setMargin(3);
+    layout->setContentsMargins(3, 3, 3, 3);
     layout->setSpacing(3);
 
     setFrameRect( QRect( 400, 400, 300, 300 ) );

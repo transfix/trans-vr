@@ -41,7 +41,7 @@ class GDTVFilterDialog : public QDialog
   Q_OBJECT
 
  public:
-  GDTVFilterDialog(QWidget *parent=0,Qt::WFlags flags=0);
+  GDTVFilterDialog(QWidget *parent=nullptr,Qt::WindowFlags flags=Qt::WindowFlags());
 
   virtual ~GDTVFilterDialog();
 

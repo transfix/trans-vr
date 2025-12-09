@@ -26,37 +26,21 @@
 #ifndef __DIMENSIONMODIFY_H__
 #define __DIMENSIONMODIFY_H__
 
-#include <qglobal.h>
-
-#if QT_VERSION < 0x040000
-#include <qdialog.h>
-#else
 #include <QDialog>
-#endif
-
 #include <VolMagick/Dimension.h>
 
-#if QT_VERSION < 0x040000
-class DimensionModifyBase;
-#else
 namespace Ui
 {
   class DimensionModify;
 }
-#endif
 
 class DimensionModify : public QDialog
 {
   Q_OBJECT
 
  public:
-  DimensionModify(QWidget* parent = 0,
-#if QT_VERSION < 0x040000
-                  const char* name = 0, WFlags f = WType_TopLevel
-#else
-                  Qt::WFlags flags=0
-#endif
-                  );
+  DimensionModify(QWidget* parent = nullptr,
+                  Qt::WindowFlags flags=Qt::WindowFlags());
   virtual ~DimensionModify();
 
   VolMagick::Dimension dimension() const;

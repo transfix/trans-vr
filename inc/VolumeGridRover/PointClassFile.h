@@ -23,7 +23,8 @@
 #ifndef __POINTCLASSFILE_H__
 #define __POINTCLASSFILE_H__
 
-#include <qxml.h>
+#include <QXmlStreamReader>
+#include <QXmlStreamWriter>
 
 class VolumeGridRover;
 class PointClass;

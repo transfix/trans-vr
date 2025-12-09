@@ -1,4 +1,4 @@
-CMAKE_MINIMUM_REQUIRED (VERSION 2.6)
+cmake_minimum_required(VERSION 3.16)
 
 #FILE(GLOB SOURCE_FILES *.cpp)
 SET(SOURCE_FILES
@@ -21,7 +21,13 @@ INCLUDE_DIRECTORIES(
   ../../inc
 )
 
-ADD_LIBRARY (LBIE STATIC ${SOURCE_FILES} ${INCLUDE_FILES})
+add_library(LBIE STATIC ${SOURCE_FILES} ${INCLUDE_FILES})
+
+set_target_properties(LBIE PROPERTIES
+  AUTOMOC OFF
+  AUTOUIC OFF
+  AUTORCC OFF
+)
 
 SET(LINK_LIBS
   FastContouring
@@ -55,6 +61,12 @@ IF(BUILD_LBIE_MESHER)
   find_package(Boost 1.34.0 COMPONENTS program_options)
   if(Boost_FOUND)
     ADD_EXECUTABLE(Mesher main.cpp)
+    
+    set_target_properties(Mesher PROPERTIES
+      AUTOMOC OFF
+      AUTOUIC OFF
+      AUTORCC OFF
+    )
     TARGET_LINK_LIBRARIES(Mesher
       LBIE
       ${Boost_LIBRARIES} 
