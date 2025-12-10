@@ -105,7 +105,7 @@
 #include <VolumeGridRover/medax.h>
 #endif
 
-#include <glew/glew.h>
+#include <GL/glew.h>
 
 // using GSL library for 2D contour interpolation
 #include <gsl/gsl_interp.h>

@@ -62,7 +62,7 @@ NewVolumeDialog::NewVolumeDialog(QWidget* parent,
 #if QT_VERSION < 0x040000
                                  const char* name, WFlags f
 #else
-                                 Qt::WFlags flags
+                                 Qt::WindowFlags flags
 #endif
                                  )
   : QDialog(parent,
@@ -162,7 +162,7 @@ std::string NewVolumeDialog::variableName() const
 #if QT_VERSION < 0x040000
   return std::string((const char *)_ui->_variableName->text());
 #else
-  return std::string(_ui->_variableName->text().toAscii());
+  return std::string(_ui->_variableName->text().toUtf8().constData());
 #endif
 }
 
@@ -171,7 +171,7 @@ std::string NewVolumeDialog::filename() const
 #if QT_VERSION < 0x040000
   return std::string((const char *)_ui->_filename->text());
 #else
-  return std::string(_ui->_filename->text().toAscii());
+  return std::string(_ui->_filename->text().toUtf8().constData());
 #endif
 }
 
@@ -180,7 +180,7 @@ std::string NewVolumeDialog::volumeCopyFilename() const
 #if QT_VERSION < 0x040000
   return std::string((const char *)_ui->_volumeCopyFilename->text());
 #else
-  return std::string(_ui->_volumeCopyFilename->text().toAscii());
+  return std::string(_ui->_volumeCopyFilename->text().toUtf8().constData());
 #endif
 }
 
@@ -290,14 +290,14 @@ void NewVolumeDialog::okSlot()
 void NewVolumeDialog::fileSlot()
 {
 #if QT_VERSION < 0x040000
-  _ui->_filename->setText(QFileDialog::getSaveFileName(QString::null,
+  _ui->_filename->setText(QFileDialog::getSaveFileName(QString(),
                                                        "RawIV (*.rawiv);;"
                                                        "RawV (*.rawv)"
                                                        , this));
 #else
   _ui->_filename->setText(QFileDialog::getSaveFileName(this,
                                                        tr("New file"),
-                                                       QString::null,
+                                                       QString(),
                                                        "RawIV (*.rawiv);;"
                                                        "RawV (*.rawv)"));
 #endif
@@ -306,14 +306,14 @@ void NewVolumeDialog::fileSlot()
 void NewVolumeDialog::volumeCopyFilenameSlot()
 {
 #if QT_VERSION < 0x040000
-  _ui->_volumeCopyFilename->setText(QFileDialog::getOpenFileName(QString::null,
+  _ui->_volumeCopyFilename->setText(QFileDialog::getOpenFileName(QString(),
                                                                  "RawIV (*.rawiv);;"
                                                                  "RawV (*.rawv)"
                                                                  , this));
 #else
   _ui->_volumeCopyFilename->setText(QFileDialog::getOpenFileName(this,
                                                                  "Copy file",
-                                                                 QString::null,
+                                                                 QString(),
                                                                  "RawIV (*.rawiv);;"
                                                                  "RawV (*.rawv)"));
 #endif
@@ -329,7 +329,7 @@ void NewVolumeDialog::acquireVolumeInfo(bool doit)
 #if QT_VERSION < 0x040000      
       VolMagick::VolumeFileInfo vfi(_ui->_volumeCopyFilename->text());
 #else
-      VolMagick::VolumeFileInfo vfi((const char *)_ui->_volumeCopyFilename->text().toAscii());
+      VolMagick::VolumeFileInfo vfi((const char *)_ui->_volumeCopyFilename->text().toUtf8().constData());
 #endif
       _ui->_extractSubVolumeMinIndexX->setText("0");
       _ui->_extractSubVolumeMinIndexY->setText("0");

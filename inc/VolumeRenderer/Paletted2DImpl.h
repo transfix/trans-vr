@@ -27,7 +27,7 @@
 #if !defined(AFX_PALETTED2DIMPL_H__92BAADF9_254C_4539_9BDA_4D1D50EBBFBC__INCLUDED_)
 #define AFX_PALETTED2DIMPL_H__92BAADF9_254C_4539_9BDA_4D1D50EBBFBC__INCLUDED_
 
-#include <glew/glew.h>
+#include <GL/glew.h>
 
 #include <VolumeRenderer/UnshadedBase.h>
 

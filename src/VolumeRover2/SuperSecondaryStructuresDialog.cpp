@@ -39,7 +39,7 @@
 #include <iostream> 
 using namespace std;
 
-SuperSecondaryStructuresDialog::SuperSecondaryStructuresDialog(QWidget *parent,Qt::WFlags flags) 
+SuperSecondaryStructuresDialog::SuperSecondaryStructuresDialog(QWidget *parent,Qt::WindowFlags flags) 
   : QDialog(parent, flags) {
 
   _ui = new Ui::SuperSecondaryStructuresDialog;

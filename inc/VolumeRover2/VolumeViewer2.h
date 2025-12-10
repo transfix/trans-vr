@@ -54,16 +54,8 @@ namespace CVC_NAMESPACE
     enum VolumeRenderingType { ColorMapped, RGBA };
 
     explicit VolumeViewer2(QWidget* parent=nullptr, 
-                          const QGLWidget* shareWidget=nullptr, 
                           Qt::WindowFlags flags=Qt::WindowFlags())
-      : QGLViewer(parent, shareWidget,flags)
-    { defaultConstructor(); }
-
-    explicit VolumeViewer2(const QGLFormat& format, 
-                          QWidget* parent=nullptr, 
-                          const QGLWidget* shareWidget=nullptr, 
-                          Qt::WindowFlags flags=Qt::WindowFlags())
-      : QGLViewer(format,parent,shareWidget,flags)
+      : QGLViewer(parent, flags)
     { defaultConstructor(); }
 
     ~VolumeViewer2();

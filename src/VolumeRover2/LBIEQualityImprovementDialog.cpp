@@ -37,7 +37,7 @@
 #include <iostream> 
 using namespace std;
 
-LBIEQualityImprovementDialog::LBIEQualityImprovementDialog(QWidget *parent,Qt::WFlags flags) 
+LBIEQualityImprovementDialog::LBIEQualityImprovementDialog(QWidget *parent,Qt::WindowFlags flags) 
   : QDialog(parent, flags) {
 
   _ui = new Ui::LBIEQualityImprovementDialogBase;

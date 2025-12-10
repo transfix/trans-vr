@@ -48,7 +48,7 @@ RemapVoxels::RemapVoxels(QWidget* parent,
 #if QT_VERSION < 0x040000
                                  const char* name, WFlags f
 #else
-                                 Qt::WFlags flags
+                                 Qt::WindowFlags flags
 #endif
                                  )
   : QDialog(parent,

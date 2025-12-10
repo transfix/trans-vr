@@ -52,7 +52,7 @@
 #include <iostream>
 
 VolumeMemoryInterface::VolumeMemoryInterface(const VolMagick::Volume &vol,
-                  QWidget* parent,Qt::WFlags flags)  
+                  QWidget* parent,Qt::WindowFlags flags)  
   : DataWidget(parent,flags),_ui(NULL)
 {
   _ui = new Ui::VolumeMemoryInterface;

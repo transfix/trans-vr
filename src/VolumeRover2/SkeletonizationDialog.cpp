@@ -38,7 +38,7 @@
 #include <iostream> 
 using namespace std;
 
-SkeletonizationDialog::SkeletonizationDialog(QWidget *parent,Qt::WFlags flags) 
+SkeletonizationDialog::SkeletonizationDialog(QWidget *parent,Qt::WindowFlags flags) 
   : QDialog(parent, flags) {
 
   _ui = new Ui::SkeletonizationDialog;

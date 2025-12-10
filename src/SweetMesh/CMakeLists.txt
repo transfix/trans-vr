@@ -40,6 +40,7 @@ add_library(SweetMesh STATIC ${SOURCE_FILES} ${INCLUDE_FILES})
 target_link_libraries(SweetMesh
   PRIVATE
     cvcraw_geometry
+    Qt6::Core
     Boost::thread
     Boost::date_time
     Boost::regex

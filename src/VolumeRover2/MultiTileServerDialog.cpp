@@ -38,7 +38,7 @@
 using namespace std;
 using namespace CVC_NAMESPACE;
 
-MultiTileServerDialog::MultiTileServerDialog(QWidget *parent,Qt::WFlags flags) 
+MultiTileServerDialog::MultiTileServerDialog(QWidget *parent,Qt::WindowFlags flags) 
   : QDialog(parent, flags) {
 
   _ui = new Ui::MultiTileServerDialog;

@@ -30,9 +30,12 @@
 #include <boost/algorithm/string/split.hpp>
 #include <boost/algorithm/string/trim.hpp>
 #include <boost/utility.hpp>
+#include <boost/bind/bind.hpp>
 #include <cmath>
 #include <vector>
 #include <VolumeRover2/VolumeViewer.h>
+
+using namespace boost::placeholders;
 #include <CVC/CVCEvent.h>
 #include <CVC/State.h>
 #include <log4cplus/logger.h>
@@ -300,10 +303,9 @@ namespace CVC_NAMESPACE
 #ifndef USE_XmlRpc
     m_socket = NULL;
 #endif
-    _multiTileServer_nServer = NULL;
-    _terminateMultiTileClient = false;
-    _updateMultiTileServer = NULL;
+    _multiTileServer_nServer = 0;
     _terminateMultiTileClient = NULL;
+    _updateMultiTileServer = NULL;
 
     _multiTileServer_hostList = NULL;
     _multiTileServer_portList = NULL;
@@ -2899,7 +2901,7 @@ namespace CVC_NAMESPACE
       handleGeomStateChanged(boost::any_cast<std::string>(mwe->data));
     if(mwe->name == "updateGL" && !_glUpdated)
       {
-        updateGL();
+        update();
         _glUpdated = true;
       }
   }
@@ -3012,9 +3014,8 @@ namespace CVC_NAMESPACE
 		
 		string tmp = cvcapp.properties(key_idents[0]+".snapshot_filename");
 		setSnapshotFileName(tmp.c_str());
-		setSnapshotFormat("png");	      
-		//saveSnapshot(true, true);
-		saveImageSnapshot(tmp.c_str(), 1200,800);
+		setSnapshotFormat("png");
+		saveSnapshot(QString::fromStdString(tmp), true);
 	      }
 	    }
 
@@ -3736,9 +3737,8 @@ namespace CVC_NAMESPACE
           {
             string tmp = cvcstate(stateName("snapshot_filename")).value();
             setSnapshotFileName(tmp.c_str());
-            setSnapshotFormat("png");	      
-            //saveSnapshot(true, true);
-            saveImageSnapshot(tmp.c_str(), 1200,800);
+            setSnapshotFormat("png");
+            saveSnapshot(QString::fromStdString(tmp), true);
             //TODO: set back to false?
           }
 

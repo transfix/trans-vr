@@ -62,7 +62,7 @@
 
 VolumeInterface::VolumeInterface(const VolMagick::VolumeFileInfo &vfi,
 				 QWidget* parent, 
-                                 Qt::WFlags flags)
+                                 Qt::WindowFlags flags)
   : DataWidget(parent,flags),
     _ui(NULL)
 {
@@ -135,8 +135,7 @@ void VolumeInterface::setInterfaceInfo(const VolMagick::VolumeFileInfo &vfi, boo
       QTreeWidgetItem *var = new QTreeWidgetItem(_ui->_variableList);
       var->setText(0,
                    QString("(%1) %2").
-                   arg(QString("%1").
-                       sprintf(var_fmt.toAscii(),i)).
+                   arg(QString::asprintf(var_fmt.toUtf8().constData(),i)).
                    arg(vfi.name(i).c_str()));
       var->setText(1,QString("%1").arg(vfi.voxelTypeStr(i).c_str()));
       for(unsigned int j = 0; j<vfi.numTimesteps(); j++)
@@ -146,8 +145,8 @@ void VolumeInterface::setInterfaceInfo(const VolMagick::VolumeFileInfo &vfi, boo
           cur->setText(1,QString("%1").arg(vfi.voxelTypeStr(i).c_str()));
           cur->setText(2,QString("%1").arg(vfi.min(i,j)));
           cur->setText(3,QString("%1").arg(vfi.max(i,j)));
-          cur->setText(4,QString("%1").sprintf(var_fmt.toAscii(),i));
-          cur->setText(5,QString("%1").sprintf(time_fmt.toAscii(),j));
+          cur->setText(4,QString::asprintf(var_fmt.toUtf8().constData(),i));
+          cur->setText(5,QString::asprintf(time_fmt.toUtf8().constData(),j));
 	  if(varmin > vfi.min(i,j)) varmin = vfi.min(i,j);
 	  if(varmax < vfi.max(i,j)) varmax = vfi.max(i,j);
         }
@@ -193,7 +192,7 @@ void VolumeInterface::dimensionModifySlot()
 #if QT_VERSION < 0x040000
       std::string std_filename(filename.ascii());
 #else
-      std::string std_filename(filename.toAscii());
+      std::string std_filename(filename.toUtf8().constData());
 #endif
 
       qDebug("temp filename: %s",std_filename.c_str());
@@ -265,7 +264,7 @@ void VolumeInterface::boundingBoxModifySlot()
 #if QT_VERSION < 0x040000
       std::string std_filename(filename.ascii());
 #else
-      std::string std_filename(filename.toAscii());
+      std::string std_filename(filename.toUtf8().constData());
 #endif
 
       qDebug("temp filename: %s",std_filename.c_str());
@@ -552,7 +551,7 @@ void VolumeInterface::deleteTimestepSlot()
 #if QT_VERSION < 0x040000
   std::string std_filename(filename.ascii());
 #else
-  std::string std_filename(filename.toAscii());
+  std::string std_filename(filename.toUtf8().constData());
 #endif
 
   qDebug("temp filename: %s",std_filename.c_str());
@@ -648,7 +647,7 @@ void VolumeInterface::deleteVariableSlot()
 #if QT_VERSION < 0x040000
   std::string std_filename(filename.ascii());
 #else
-  std::string std_filename(filename.toAscii());
+  std::string std_filename(filename.toUtf8().constData());
 #endif
 
   qDebug("temp filename: %s",std_filename.c_str());
@@ -736,7 +735,7 @@ void VolumeInterface::editVariableSlot()
     }
 
   ev._name->setText(_vfi.name(selected_var));
-  ev._dataType->setCurrentItem(static_cast<int>(_vfi.voxelTypes(selected_var)));
+  ev._dataType->setCurrentIndex(static_cast<int>(_vfi.voxelTypes(selected_var)));
 
   if(ev.exec() == QDialog::Accepted)
     {

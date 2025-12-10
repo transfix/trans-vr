@@ -22,9 +22,10 @@
 
 /* $Id: BoundingBoxClip.cpp 5692 2012-06-01 22:39:25Z transfix $ */
 
-#include <GeometryRenderer/BoundingBoxClip.h>
+// GLEW must be included before any OpenGL headers
+#include <GL/glew.h>
 
-#include <glew/glew.h>
+#include <GeometryRenderer/BoundingBoxClip.h>
 
 namespace CVC_NAMESPACE
 {

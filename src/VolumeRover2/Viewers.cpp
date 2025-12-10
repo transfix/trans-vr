@@ -43,8 +43,6 @@
 #include <CVC/Exception.h>
 #include <log4cplus/logger.h>
 
-#include <QGLWidget>
-#include <QGLFormat>
 #include <QTimer>
 #include <QMessageBox>
 #include <QSplitter>
@@ -52,6 +50,7 @@
 #include <boost/lexical_cast.hpp>
 #include <boost/thread/thread.hpp>
 #include <boost/format.hpp>
+#include <boost/bind/bind.hpp>
 
 #include "ui_VolumeViewerPage.h"
 #include "ui_VolumeViewerPageManipulators.h"
@@ -59,6 +58,8 @@
 #include <map>
 #include <set>
 #include <iterator>
+
+using namespace boost::placeholders;
 
 namespace
 {
@@ -714,7 +715,7 @@ namespace CVC_NAMESPACE
 {
   // 12/02/2011 - transfix - added a QSplitter between the viewers and the color table.
   Viewers::Viewers(QWidget *parent,
-                   Qt::WFlags flags) : 
+                   Qt::WindowFlags flags) : 
     QWidget(parent,flags),
     _thumbnailVolumeDirty(true),
     _subVolumeDirty(true),
@@ -739,13 +740,6 @@ namespace CVC_NAMESPACE
 
     _oldObjectName = objectName();
 
-    QGLFormat format;
-#ifdef ENABLE_STEREO_DISPLAY
-    format.setStereo(true);
-#else
-    format.setStereo(false);
-#endif
-
     QGridLayout *viewersFrameLayout = new QGridLayout(_ui->_viewersFrame);
     QSplitter *vsplitter = new QSplitter(_ui->_viewersFrame);
     vsplitter->setOrientation(Qt::Vertical);
@@ -759,8 +753,8 @@ namespace CVC_NAMESPACE
     QWidget *manipulators = new QWidget;
     vsplitter->addWidget(manipulators);
 
-    _subvolumeViewer = new VolumeViewer(format,NULL,NULL,flags);
-    _thumbnailViewer = new VolumeViewer(format,NULL,NULL,flags);
+    _subvolumeViewer = new VolumeViewer(NULL,flags);
+    _thumbnailViewer = new VolumeViewer(NULL,flags);
     QSplitter *splitter = new QSplitter(viewers);
     viewersLayout->addWidget(splitter);
     splitter->addWidget(_subvolumeViewer);

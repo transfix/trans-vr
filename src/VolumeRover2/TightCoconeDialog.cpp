@@ -39,7 +39,7 @@
 #include <iostream> 
 using namespace std;
 
-TightCoconeDialog::TightCoconeDialog(QWidget *parent,Qt::WFlags flags) 
+TightCoconeDialog::TightCoconeDialog(QWidget *parent,Qt::WindowFlags flags) 
   : QDialog(parent, flags) {
 
   _ui = new Ui::TightCoconeDialog;

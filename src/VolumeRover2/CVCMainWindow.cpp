@@ -345,6 +345,7 @@ namespace CVC_NAMESPACE
         //Set up slot connections in this factory function because
         //objects cannot be set up to track themselves in their
         //constructor.
+        using namespace boost::placeholders;
         cvcapp.propertiesChanged.connect(
           MapChangeSignal::slot_type(
             &CVCMainWindow::propertyMapChanged, _instance.get(), _1
@@ -378,7 +379,7 @@ namespace CVC_NAMESPACE
     _instance.reset();
   }
 
-  CVCMainWindow::CVCMainWindow(QWidget *parent, Qt::WFlags flags)
+  CVCMainWindow::CVCMainWindow(QWidget *parent, Qt::WindowFlags flags)
     : QMainWindow(parent,flags),
       _centralWidget(NULL),
       _dataMap(NULL),
@@ -495,8 +496,8 @@ namespace CVC_NAMESPACE
     dataTabLayout->addWidget(dataTabSplitter);
     _dataMap = new QTreeWidget;
     QTreeWidgetItem *dataitem = _dataMap->headerItem();
-    dataitem->setText(1, QApplication::translate("CVCMainWidget", "Type", 0, QApplication::UnicodeUTF8));
-    dataitem->setText(0, QApplication::translate("CVCMainWidget", "Object Key", 0, QApplication::UnicodeUTF8));
+    dataitem->setText(1, QApplication::translate("CVCMainWidget", "Type"));
+    dataitem->setText(0, QApplication::translate("CVCMainWidget", "Object Key"));
     dataTabSplitter->addWidget(_dataMap);
     _dataWidgetStack = new QStackedWidget;
     dataTabSplitter->addWidget(_dataWidgetStack);
@@ -504,8 +505,7 @@ namespace CVC_NAMESPACE
     _ui->_tabs->
       setTabText(_ui->_tabs->indexOf(dataTab),
                  QApplication::translate("CVCMainWidget", 
-                                         "Data", 0, 
-                                         QApplication::UnicodeUTF8));
+                                         "Data"));
 
     connect(_ui->_propertyMap,
             SIGNAL(itemChanged(QTreeWidgetItem*,int)),
@@ -991,7 +991,7 @@ namespace CVC_NAMESPACE
   {
     QString filename = QFileDialog::getSaveFileName(this,
                                                     tr("Save Property Map"),
-                                                    QString::null,
+                                                    QString(),
                                                     "VolumeRover Property Map (*.vpm *.xml *.info);;"
                                                     "All Files (*)");
     if(filename.isEmpty()) return;
@@ -1013,7 +1013,7 @@ namespace CVC_NAMESPACE
   {
     QStringList filenames = QFileDialog::getOpenFileNames(this,
                                                           tr("Load Property Map"),
-                                                          QString::null,
+                                                          QString(),
                                                           "VolumeRover Property Map (*.vpm *.xml *.info);;"
                                                           "All Files (*)");
     if(filenames.isEmpty()) return;
@@ -2239,11 +2239,11 @@ void CVCMainWindow::showHistogramDialogSlot() {
 #ifdef USING_SWEETMESH
     CVCGEOM_NAMESPACE::cvcgeom_t geometry;
     sweetMesh::hexMesh hMesh;
-    sweetMesh::runLBIE(vfi, outer_isoval, inner_isoval, ui.m_ErrorTolerance->text().toDouble(), ui.m_InnerErrorTolerance->text().toDouble(), LBIE::Mesher::MeshType(ui.m_MeshType->currentItem()), LBIE::Mesher::NormalType(ui.m_NormalType->currentItem()), ui.m_Iterations->text().toUInt(), outputMessage, geometry, hMesh);
+    sweetMesh::runLBIE(vfi, outer_isoval, inner_isoval, ui.m_ErrorTolerance->text().toDouble(), ui.m_InnerErrorTolerance->text().toDouble(), LBIE::Mesher::MeshType(ui.m_MeshType->currentIndex()), LBIE::Mesher::NormalType(ui.m_NormalType->currentIndex()), ui.m_Iterations->text().toUInt(), outputMessage, geometry, hMesh);
     cvcapp.data(resultName, geometry);
     cvcapp.listPropertyAppend("thumbnail.geometries", resultName);
     cvcapp.listPropertyAppend("zoomed.geometries", resultName);
-    if(LBIE::Mesher::MeshType(ui.m_MeshType->currentItem() == LBIE::geoframe::HEXA)){
+    if(LBIE::Mesher::MeshType(ui.m_MeshType->currentIndex() == LBIE::geoframe::HEXA)){
       cvcapp.data(meshName, hMesh);
       cvcapp.listPropertyAppend("thumbnail.geometries", meshName);
       cvcapp.listPropertyAppend("zoomed.geometries", meshName);
@@ -3149,7 +3149,7 @@ void CVCMainWindow::HOSegmentationSlot()
 void CVCMainWindow::on_UserSegReadButton_clickedSlot()
 {
     QString s =  QFileDialog::getOpenFileName(this, tr("open File"), "./", tr("All (*.*)"));
-	if(s == QString::null)
+	if(s == QString())
 		strcpy(MPLSParams->userSegFileName, "");
 	else
 	{
@@ -3549,7 +3549,7 @@ void CVCMainWindow::unimplementedSlot() {
    }
 
    RemoteSegThread::RemoteSegThread(Ui::SegmentVirusMapDialog *dialog, CVCMainWindow *nvmw, unsigned int stackSize)
-    : QThread(nvmw), m_CVCMainWindow(nvmw),m_XmlRpcClient(dialog->m_RemoteSegmentationHostname->text(), dialog->m_RemoteSegmentationPort->text().toInt())
+    : QThread(nvmw), m_CVCMainWindow(nvmw),m_XmlRpcClient(dialog->m_RemoteSegmentationHostname->text().toUtf8().constData(), dialog->m_RemoteSegmentationPort->text().toInt())
    {
 
 #ifdef USING_SEGMENTATION

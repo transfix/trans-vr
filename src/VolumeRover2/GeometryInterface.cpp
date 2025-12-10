@@ -58,7 +58,7 @@
 // 3-31-2011: arand, initial implementation
 //
 GeometryInterface::GeometryInterface(const cvcraw_geometry::cvcgeom_t & geom,
-                  QWidget* parent,Qt::WFlags flags)  
+                  QWidget* parent,Qt::WindowFlags flags)  
   : DataWidget(parent,flags),_ui(NULL)
 {
   _ui = new Ui::GeometryInterface;

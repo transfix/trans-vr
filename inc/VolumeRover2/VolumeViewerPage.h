@@ -8,7 +8,7 @@
 //define the following if you want threaded isocontouring
 //#define THREADED_ISOCONTOURING
 
-#include <VolumeViewer/VolumeViewer.h>
+#include <VolumeRover2/VolumeViewer.h>
 #include <VolMagick/VolMagick.h>
 #include <VolMagick/VolumeCache.h>
 
@@ -57,14 +57,14 @@ class VolumeViewerPage : public QWidget
 #if QT_VERSION < 0x040000
                    const char * name = 0
 #else
-                   Qt::WFlags flags = 0
+                   Qt::WindowFlags flags = {}
 #endif
                    );
 
   virtual ~VolumeViewerPage();
 
-  VolumeViewer::Viewer* thumbnailViewer() { return _thumbnailViewer; }
-  VolumeViewer::Viewer* subvolumeViewer() { return _subvolumeViewer; }
+  CVC::VolumeViewer* thumbnailViewer() { return _thumbnailViewer; }
+  CVC::VolumeViewer* subvolumeViewer() { return _subvolumeViewer; }
 
   CVCColorTable::ColorTable* colorTable() { return _colorTable; }
 
@@ -97,8 +97,8 @@ class VolumeViewerPage : public QWidget
   virtual void updateColorTable();
 
  private:
-  VolumeViewer::Viewer *_thumbnailViewer;
-  VolumeViewer::Viewer *_subvolumeViewer;
+  CVC::VolumeViewer *_thumbnailViewer;
+  CVC::VolumeViewer *_subvolumeViewer;
 
   VolMagick::VolumeCache _volumeCache;
 

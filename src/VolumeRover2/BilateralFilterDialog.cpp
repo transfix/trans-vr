@@ -39,7 +39,7 @@ using namespace std;
 // 05/01/2011 -- arand -- initial implementation following anisotropic diffusion as a template
 // 10/08/2011 -- transfix -- Defaulting to zoomed_volume, and adding extensions from VolMagick
 
-BilateralFilterDialog::BilateralFilterDialog(QWidget *parent,Qt::WFlags flags) 
+BilateralFilterDialog::BilateralFilterDialog(QWidget *parent,Qt::WindowFlags flags) 
   : QDialog(parent, flags) {
 
   int idx = -1;
@@ -84,13 +84,13 @@ BilateralFilterDialog::BilateralFilterDialog(QWidget *parent,Qt::WFlags flags)
   //default to .cvc type if available
   idx = _ui->FileTypeComboBox->findText(".cvc");
   if(idx != -1)
-    _ui->FileTypeComboBox->setCurrentItem(idx);
+    _ui->FileTypeComboBox->setCurrentIndex(idx);
   else
     {
       //if .cvc isn't available (no HDF5), then default to .rawiv
       idx = _ui->FileTypeComboBox->findText(".rawiv");
       if(idx != -1)
-        _ui->FileTypeComboBox->setCurrentItem(idx);
+        _ui->FileTypeComboBox->setCurrentIndex(idx);
     }
 
   //Default to zoomed_volume if it is in the list
@@ -98,7 +98,7 @@ BilateralFilterDialog::BilateralFilterDialog(QWidget *parent,Qt::WFlags flags)
   if(idx != -1)
     {
       _ui->tabWidget->setCurrentIndex(1); //preview tab
-      _ui->VolumeList->setCurrentItem(idx);
+      _ui->VolumeList->setCurrentIndex(idx);
       _ui->DataSetName->setText("zoomed_volume");
     }
 }

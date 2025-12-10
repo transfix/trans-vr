@@ -270,7 +270,7 @@ namespace CVC_NAMESPACE
           handleThreadsChanged(boost::any_cast<std::string>(mwe->data));
         else if(mwe->name == "updateGL" && !state("glUpdated").value<int>())
           {
-            updateGL();
+            update();
             state("glUpdated").value(int(true));
           }
       }

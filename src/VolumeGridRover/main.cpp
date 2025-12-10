@@ -29,7 +29,7 @@
 
 #include <VolumeGridRover/VolumeGridRoverMainWindow.h>
 
-#include <glew/glew.h>
+#include <GL/glew.h>
 
 int main(int argc, char **argv)
 {

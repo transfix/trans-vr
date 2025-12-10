@@ -40,7 +40,7 @@
 #include <iostream> 
 using namespace std;
 
-PocketTunnelDialog::PocketTunnelDialog(QWidget *parent,Qt::WFlags flags) 
+PocketTunnelDialog::PocketTunnelDialog(QWidget *parent,Qt::WindowFlags flags) 
   : QDialog(parent, flags) {
 
   _ui = new Ui::PocketTunnelDialog;

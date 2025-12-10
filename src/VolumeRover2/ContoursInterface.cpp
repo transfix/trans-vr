@@ -55,7 +55,7 @@
 #include <iostream>
 
 ContoursInterface::ContoursInterface(const cvcraw_geometry::contours_t & geom,
-                  QWidget* parent,Qt::WFlags flags)  
+                  QWidget* parent,Qt::WindowFlags flags)  
   : DataWidget(parent,flags),_ui(NULL)
 {
   _ui = new Ui::ContoursInterface;

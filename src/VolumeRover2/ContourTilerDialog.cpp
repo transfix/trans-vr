@@ -45,7 +45,7 @@ using namespace std;
 // 05/01/2011 -- arand -- initial implementation following anisotropic diffusion as a template
 // 10/08/2011 -- transfix -- Defaulting to zoomed_volume, and adding extensions from VolMagick
 
-ContourTilerDialog::ContourTilerDialog(QWidget *parent,Qt::WFlags flags) 
+ContourTilerDialog::ContourTilerDialog(QWidget *parent,Qt::WindowFlags flags) 
   : QDialog(parent, flags)
 {
   log4cplus::Logger logger = log4cplus::Logger::getInstance("VolumeRover2.ContourTilerDialog");

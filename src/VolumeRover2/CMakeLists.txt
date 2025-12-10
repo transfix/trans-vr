@@ -79,7 +79,7 @@ set(INCLUDE_FILES
   ../../inc/VolumeRover2/DimensionModify.h
   ../../inc/VolumeRover2/VolMagickEventHandler.h
   ../../inc/VolumeRover2/DataWidget.h
-  ../../inc/VolumeRover2/VolumeViewerPage.h
+#  ../../inc/VolumeRover2/VolumeViewerPage.h
   ../../inc/VolumeRover2/NewVolumeDialog.h
 #  ../../inc/VolumeRover2/VolumeRoverMain.h
   ../../inc/VolumeRover2/ImportData.h
@@ -93,6 +93,20 @@ set(INCLUDE_FILES
   ../../inc/VolumeRover2/VolumeRoverExtension.h
   ../../inc/VolumeRover2/MultiTileServerDialog.h
   ../../inc/VolumeRover2/VolumeViewer2.h
+  ../../inc/VolumeRover2/GeometryInterface.h
+  ../../inc/VolumeRover2/ContoursInterface.h
+  ../../inc/VolumeRover2/ReconstructionDialog.h
+  ../../inc/VolumeRover2/AnisotropicDiffusionDialog.h
+  ../../inc/VolumeRover2/BilateralFilterDialog.h
+  ../../inc/VolumeRover2/ContourTilerDialog.h
+  ../../inc/VolumeRover2/ContrastEnhancementDialog.h
+  ../../inc/VolumeRover2/GDTVFilterDialog.h
+  ../../inc/VolumeRover2/PocketTunnelDialog.h
+  ../../inc/VolumeRover2/CurationDialog.h
+  ../../inc/VolumeRover2/TightCoconeDialog.h
+  ../../inc/VolumeRover2/SuperSecondaryStructuresDialog.h
+  ../../inc/VolumeRover2/SkeletonizationDialog.h
+  ../../inc/VolumeRover2/LBIEQualityImprovementDialog.h
 )
 
 # Qt6-compatible UI forms (Qt4 .ui files work with Qt6 AUTOUIC)
@@ -300,6 +314,11 @@ add_executable(VolumeRover2 MACOSX_BUNDLE
   ${SOURCE_FILES}
   ${INCLUDE_FILES}
   ${UI_FORMS}
+)
+
+# Tell AUTOUIC where to find .ui files when headers are in inc/ but .ui files are in src/
+set_target_properties(VolumeRover2 PROPERTIES
+  AUTOUIC_SEARCH_PATHS "${CMAKE_CURRENT_SOURCE_DIR}"
 )
 
 # Link libraries - use modern target-based linking for Qt6

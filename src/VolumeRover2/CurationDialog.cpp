@@ -40,7 +40,7 @@
 #include <iostream> 
 using namespace std;
 
-CurationDialog::CurationDialog(QWidget *parent,Qt::WFlags flags) 
+CurationDialog::CurationDialog(QWidget *parent,Qt::WindowFlags flags) 
   : QDialog(parent, flags) {
 
   _ui = new Ui::CurationDialog;
