@@ -1197,7 +1197,7 @@ namespace CVC_NAMESPACE
 
             if(geoms.empty())
               {
-                BOOST_FOREACH(string data_key, data_keys)
+                for (const auto& data_key : data_keys)
                   cvcapp.data(data_key,VolMagick::Volume());
               }
             else
@@ -1206,7 +1206,7 @@ namespace CVC_NAMESPACE
                 cvcraw_geometry::cvcgeom_t initial_geom;
 
                 //find a non empty geom to supply an initial bbox
-                BOOST_FOREACH(cvcraw_geometry::cvcgeom_t geom, geoms)
+                for (const auto& geom : geoms)
                   if(!geom.empty())
                     {
                       initial_geom = geom;
@@ -1236,8 +1236,7 @@ namespace CVC_NAMESPACE
                   }
 
                 //build a bounding box that encompasses all bounding boxes of the geometries
-                BOOST_FOREACH(cvcraw_geometry::cvcgeom_t geom, geoms)
-                  {
+                for (const auto& geom : geoms) {
                     if(geom.empty()) continue;
                     minpt = geom.min_point();
                     maxpt = geom.max_point();
@@ -1262,7 +1261,7 @@ namespace CVC_NAMESPACE
                     
                 VolMagick::Volume newvol;
                 newvol.boundingBox(bbox);
-                BOOST_FOREACH(string data_key, data_keys)
+                for (const auto& data_key : data_keys)
                   cvcapp.data(data_key,newvol);
               }
           }
@@ -1445,7 +1444,7 @@ namespace CVC_NAMESPACE
               newvol = cvcapp.data<VolMagick::Volume>(thumbnail_data_keys[0]);
                 
             newvol.boundingBox(bbox);
-            BOOST_FOREACH(string zoomed_data_key, zoomed_data_keys)
+            for (const auto& zoomed_data_key : zoomed_data_keys)
               cvcapp.data(zoomed_data_key,newvol);
           }
         else
@@ -1617,8 +1616,7 @@ namespace CVC_NAMESPACE
 	//default options.  Might revisit this later if it introduces
 	//bugs.
 	PropertyMap map = cvcapp.properties();
-        BOOST_FOREACH(PropertyMap::value_type val, map)
-          {
+        for (const auto& val : map) {
 	    using namespace std;
 	    using namespace boost;
 	    using namespace boost::algorithm;
@@ -1650,7 +1648,7 @@ namespace CVC_NAMESPACE
   void Viewers::ensureVolumeAvailability()
   {
     std::vector<std::string> volDataKeys = cvcapp.listProperty(getObjectName("volumes"));
-    BOOST_FOREACH(std::string volDataKey, volDataKeys)
+    for (const auto& volDataKey : volDataKeys)
       if(!cvcapp.isData<VolMagick::Volume>(volDataKey))
         cvcapp.data(volDataKey,VolMagick::Volume());
   }
@@ -1658,7 +1656,7 @@ namespace CVC_NAMESPACE
   void Viewers::ensureSubVolumeAvailability()
   {
     std::vector<std::string> volDataKeys = cvcapp.listProperty(getObjectName("subvolumes"));
-    BOOST_FOREACH(std::string volDataKey, volDataKeys)
+    for (const auto& volDataKey : volDataKeys)
       if(!cvcapp.isData<VolMagick::Volume>(volDataKey))
         cvcapp.data(volDataKey,VolMagick::Volume());
   }
@@ -1708,8 +1706,7 @@ namespace CVC_NAMESPACE
     if(key == "all")
       {
         PropertyMap map = cvcapp.properties();
-        BOOST_FOREACH(PropertyMap::value_type val, map)
-          {
+        for (const auto& val : map) {
             assert(val.first!="all");
             handlePropertiesChanged(val.first);
           }
@@ -2032,8 +2029,7 @@ namespace CVC_NAMESPACE
     if(key == "all")
       {
         DataMap map = cvcapp.data();
-        BOOST_FOREACH(DataMap::value_type val, map)
-          {
+        for (const auto& val : map) {
             assert(val.first!="all");
             handleDataChanged(val.first);
           }
@@ -2093,21 +2089,19 @@ namespace CVC_NAMESPACE
 
                 //Clear out data in the isocache that we don't need
                 set<double> isovals;
-                BOOST_FOREACH(ColorTable::isocontour_node node, nodes)
-                  {
+                for (const auto& node : nodes) {
                     double isoval = vol.min()+(vol.max()-vol.min())*node.position;
                     isovals.insert(isoval);
                   }
                 IsocontouringThread::isocache_t isoc = IsocontouringThread::isocache();
                 set<double> isocache_vals;
-                BOOST_FOREACH(IsocontouringThread::isocache_t::value_type iv, isoc)
+                for (const auto& iv : isoc)
                   isocache_vals.insert(iv.first);
                 set<double> clear_vals;
                 set_difference(isocache_vals.begin(), isocache_vals.end(),
                                isovals.begin(), isovals.end(),
                                inserter(clear_vals, clear_vals.begin()));
-                BOOST_FOREACH(double val, clear_vals)
-                  {
+                for (const auto& val : clear_vals) {
                     cvcapp.log(5,str(format("Erasing isoval %1%\n")%val));
                     isoc.erase(val);
                   }
@@ -2175,7 +2169,7 @@ namespace CVC_NAMESPACE
         //TODO: add a property to set the contour volume explicitly
         //TODO: also do the contour spectrum/tree calculations in a separate thread
         vector<string> volDataKeys = cvcapp.listProperty(getObjectName("subvolumes"));
-        BOOST_FOREACH(string volDataKey, volDataKeys)
+        for (const auto& volDataKey : volDataKeys)
           if(volDataKey == key)
             {
               _colorTable->setContourVolume(cvcapp.data<VolMagick::Volume>(volDataKey));

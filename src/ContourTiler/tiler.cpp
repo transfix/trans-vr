@@ -413,7 +413,7 @@ void tile(Slice_iter slices_begin, Slice_iter slices_end,
       // for (boost::unordered_set<Tiler_intersection>::iterator it = intersections.begin(); it != intersections.end(); ++it)
       // {
 	// size_t a = it->a_id(), b = it->b_id();
-      BOOST_FOREACH (const Tiler_intersection& ti, intersections) {
+      for (const auto& ti : intersections) {
 	size_t a = ti.a_id(), b = ti.b_id();
         TW_handle twa = slice_workspaces[a];
         TW_handle twb = slice_workspaces[b];

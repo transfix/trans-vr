@@ -819,7 +819,7 @@ namespace CVC_NAMESPACE
         std::vector<VolMagick::Volume> vols = 
           cvcstate(s).data<std::vector<VolMagick::Volume> >();
         BoundingBox bbox = vols.empty() ? BoundingBox() : vols[0].boundingBox();
-        BOOST_FOREACH(VolMagick::Volume& vol, vols)
+        for (auto& vol : vols)
           bbox += vol.boundingBox();
 
         if(state("draw_bounding_box").value<int>())
@@ -936,7 +936,7 @@ namespace CVC_NAMESPACE
         std::vector<VolMagick::Volume> vols = 
           cvcstate(s).data<std::vector<VolMagick::Volume> >();
         BoundingBox all_bbox = vols.empty() ? BoundingBox() : vols[0].boundingBox();
-        BOOST_FOREACH(VolMagick::Volume& vol, vols)
+        for (auto& vol : vols)
           all_bbox += vol.boundingBox();
 
         bbox += all_bbox;

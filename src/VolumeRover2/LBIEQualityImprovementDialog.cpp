@@ -55,7 +55,7 @@ LBIEQualityImprovementDialog::LBIEQualityImprovementDialog(QWidget *parent,Qt::W
       return;
     }
   
-  BOOST_FOREACH(std::string key, keys)
+  for (const auto& key : keys)
     _ui->GeometryList->addItem(QString::fromStdString(key)); 
 
 }

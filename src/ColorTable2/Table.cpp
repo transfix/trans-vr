@@ -861,7 +861,7 @@ namespace CVCColorTable
 	float mymin = *(result.first);
 	float mymax = *(result.second);
 
-        BOOST_FOREACH(float &val, func) {
+        for (auto& val : func) {
           val = (val-mymin)/(mymax-mymin);
         }
      }

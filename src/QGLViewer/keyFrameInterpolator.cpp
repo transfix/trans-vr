@@ -395,7 +395,7 @@ void KeyFrameInterpolator::drawPath(int mask, int nbFrames, qreal scale) {
 
     if (mask & 1) {
       glBegin(GL_LINE_STRIP);
-      Q_FOREACH (Frame fr, path_)
+      for (const auto& fr : path_)
         glVertex3fv(fr.position());
       glEnd();
     }
@@ -404,7 +404,7 @@ void KeyFrameInterpolator::drawPath(int mask, int nbFrames, qreal scale) {
       if (nbFrames > nbSteps)
         nbFrames = nbSteps;
       qreal goal = 0.0;
-      Q_FOREACH (Frame fr, path_)
+      for (const auto& fr : path_)
         if ((count++) >= goal) {
           goal += nbSteps / static_cast<qreal>(nbFrames);
           glPushMatrix();
@@ -623,7 +623,7 @@ QDomElement KeyFrameInterpolator::domElement(const QString &name,
                                              QDomDocument &document) const {
   QDomElement de = document.createElement(name);
   int count = 0;
-  Q_FOREACH (KeyFrame *kf, keyFrame_) {
+  for (auto* kf : keyFrame_) {
     Frame fr(kf->position(), kf->orientation());
     QDomElement kfNode = fr.domElement("KeyFrame", document);
     kfNode.setAttribute("index", QString::number(count));

@@ -109,10 +109,10 @@ Ser_transform process_transform(TiXmlElement* transform)
   char_separator<char> sep(" \t\n");
   tokenizer<char_separator<char> > xtok(xcoef_str, sep), ytok(ycoef_str, sep);
   vector<double> xcoef, ycoef;
-  BOOST_FOREACH (string token, xtok) {
+  for (const auto& token : xtok) {
     xcoef.push_back(lexical_cast<double>(token));
   }
-  BOOST_FOREACH (string token, ytok) {
+  for (const auto& token : ytok) {
     ycoef.push_back(lexical_cast<double>(token));
   }
 

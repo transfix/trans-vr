@@ -819,7 +819,8 @@ void medial_axis_stable(const Untiled_region& r, Number_type zmid, Tile_iterator
 
   bool planar = true;
   Number_type planar_z = P[0].z();
-  BOOST_FOREACH (const Point_2& v, make_pair(P.vertices_begin(), P.vertices_end())) {
+  for (auto v_it = P.vertices_begin(); v_it != P.vertices_end(); ++v_it) {
+    const Point_2& v = *v_it;
     planar = (v.z() == planar_z);
   }
   LOG4CPLUS_TRACE(logger, "planar = " << planar);
@@ -833,7 +834,8 @@ void medial_axis_stable(const Untiled_region& r, Number_type zmid, Tile_iterator
   }
 
   Number_type z_home;
-  BOOST_FOREACH (const Point_2& v, make_pair(P.vertices_begin(), P.vertices_end())) {
+  for (auto v_it = P.vertices_begin(); v_it != P.vertices_end(); ++v_it) {
+    const Point_2& v = *v_it;
     if (tw.has_z_home(v)) {
       z_home = tw.z_home(v);
       break;
@@ -855,7 +857,8 @@ void medial_axis_stable(const Untiled_region& r, Number_type zmid, Tile_iterator
   // nonsimple polygons.
   Polygon_2 old_P = P;
   P = adjust_nonsimple_polygon(P, 0.00001, old2new);
-  BOOST_FOREACH (const Point_2& p, make_pair(old_P.vertices_begin(), old_P.vertices_end())) {
+  for (auto p_it = old_P.vertices_begin(); p_it != old_P.vertices_end(); ++p_it) {
+    const Point_2& p = *p_it;
     if (old2new.find(p) == old2new.end()) {
       old2new[p] = p;
     }
@@ -878,7 +881,7 @@ void medial_axis_stable(const Untiled_region& r, Number_type zmid, Tile_iterator
     LOG4CPLUS_ERROR(logger, "Original: " << pp(old_P));
     return;
   }
-  BOOST_FOREACH (const Polygon_2& p, polygons) {
+  for (const auto& p : polygons) {
     segments.insert(segments.end(), p.edges_begin(), p.edges_end());
     LOG4CPLUS_TRACE(logger, "convex polygon area = " << p.area());
   }
@@ -917,7 +920,7 @@ void medial_axis_stable(const Untiled_region& r, Number_type zmid, Tile_iterator
   boost::unordered_map<Segment_2, Point_3> edge2center;
   Number_type largest_area = std::numeric_limits<Number_type>::min();
   Point_2 largest_centroid;
-  BOOST_FOREACH (const Polygon_2& p, polygons) {
+  for (const auto& p : polygons) {
     Number_type area = p.area();
     Point_3 center = centroid(p, zmid);
     const size_t id = id_factory.unique_id();
@@ -967,7 +970,7 @@ void medial_axis_stable(const Untiled_region& r, Number_type zmid, Tile_iterator
   get_intersections(segments.begin(), segments.end(), back_inserter(intersections), true, true);
 
   Vertex2extras vertex2extras;
-  BOOST_FOREACH (const SL_intersection& i, intersections) {
+  for (const auto& i : intersections) {
     const list<Segment_2>& ends = i.ends();
     if (ends.size() == 2) {
       Segment_2_undirected a(*ends.begin());
@@ -1012,24 +1015,24 @@ void medial_axis_stable(const Untiled_region& r, Number_type zmid, Tile_iterator
   
   interpolate(anchors.begin(), anchors.end(), centers.begin(), centers.end(), zmid);
 
-  BOOST_FOREACH (const Point_2& c, centers) {
+  for (const auto& c : centers) {
     if (c.z() > anchor_max || c.z() < anchor_min) {
       LOG4CPLUS_ERROR(logger, "Bad interpolation: failing.  z = " << c.z()
         	      << ", min = " << anchor_min << ", max = " << anchor_max << "  Anchors:");
-      BOOST_FOREACH (const Point_2& a, anchors) {
+      for (const auto& a : anchors) {
         LOG4CPLUS_DEBUG(logger, "  Anchors = " << pp(a));
       }
-      BOOST_FOREACH (const Polygon_2& p, polygons) {
+      for (const auto& p : polygons) {
         LOG4CPLUS_DEBUG(logger, "  Polygon = " << pp(p));
       }
       LOG4CPLUS_DEBUG(logger, "  Original polygon = " << pp(P));
       return;
       // LOG4CPLUS_TRACE(logger, "Bad interpolation: failing.  z = " << c.z()
       //   	      << ", min = " << anchor_min << ", max = " << anchor_max << "  Anchors:");
-      // BOOST_FOREACH (const Point_2& a, anchors) {
+      // for (const auto& a : anchors) {
       //   LOG4CPLUS_TRACE(logger, "  " << pp(a));
       // }
-      // BOOST_FOREACH (const Polygon_2& p, polygons) {
+      // for (const auto& p : polygons) {
       //   LOG4CPLUS_TRACE(logger, "  " << pp(p));
       // }
       // point2z[c] = anchor_mid;
@@ -1052,7 +1055,7 @@ void medial_axis_stable(const Untiled_region& r, Number_type zmid, Tile_iterator
 
       // debug
       if (vertex.id() == 1397 && previous.id() == 1398) {
-        BOOST_FOREACH (const Point_2& p, extras) {
+        for (const auto& p : extras) {
           LOG4CPLUS_TRACE(logger, "Extra: " << pp(p));
         }
       }

@@ -253,8 +253,7 @@ namespace
       string filename_to_open;
       string cache_object;
       bool copyToCache = true;
-      BOOST_FOREACH(string& val, volumeobjs)
-        {
+      for (auto& val : volumeobjs) {
           try
             {
               string origin;
@@ -356,7 +355,7 @@ namespace
           VolMagick::VolumeFile_IO::getExtensions();
         std::vector<std::string> filtered_extensions;
         bool foundExt = false;
-        BOOST_FOREACH(std::string &val, extensions)
+        for (auto& val : extensions)
           {
             LOG4CPLUS_TRACE(logger, "supported extension " << val);
             // cvcapp.log(3,str(format("%s :: supported extension %s\n") 
@@ -378,7 +377,7 @@ namespace
         bool launchCachingThread = false;
 
         if(cvcapp.properties("system.caching_enabled") == "true")
-          BOOST_FOREACH(std::string &val, filtered_extensions)
+          for (auto& val : filtered_extensions)
             {
               if(val == ext)
                 {

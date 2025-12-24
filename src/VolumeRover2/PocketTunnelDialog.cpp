@@ -52,7 +52,7 @@ PocketTunnelDialog::PocketTunnelDialog(QWidget *parent,Qt::WindowFlags flags)
 
   std::vector<std::string> geoms = 
     cvcapp.data<cvcraw_geometry::cvcgeom_t>();
-  BOOST_FOREACH(std::string key, geoms)
+  for (const auto& key : geoms)
     _ui->GeometryList->addItem(QString::fromStdString(key));  
 
   if(!geoms.empty())
@@ -61,7 +61,7 @@ PocketTunnelDialog::PocketTunnelDialog(QWidget *parent,Qt::WindowFlags flags)
   /*
   bool found = 0;
   CVC_NAMESPACE::DataMap map = cvcapp.data();
-  BOOST_FOREACH(CVC_NAMESPACE::DataMap::value_type val, map) { 
+  for (const auto& val : map) { 
     //std::cout << val.first << " " << val.second.type().name() << std::endl;
     std::string myname(val.first);
     std::string mytype(val.second.type().name());

@@ -28,7 +28,7 @@ void get_current_contours(const boost::unordered_map<Contour_handle, list<Contou
       LOG4CPLUS_TRACE(logger, "final a100 - changing");
     }
 
-    BOOST_FOREACH (const Contour_handle c, changing.find(orig)->second) {
+    for (const auto& c : changing.find(orig)->second) {
       get_current_contours(changing, c, current);
     }
     // const list<Contour_handle>& new_contours = changing.find(orig)->second;
@@ -65,7 +65,7 @@ void new_contours(const Polygon_2& p, const Contour::Info& info, Out_iter out)
     if (info.name() == "a100") {
       // LOG4CPLUS_TRACE(logger, "a100 contour: " << pp(p));
       LOG4CPLUS_TRACE(logger, "a100 splitting non-simple");
-      // BOOST_FOREACH (const Polygon_2& sp, polygons) {
+      // for (const auto& sp : polygons) {
       //   // LOG4CPLUS_TRACE(logger, "  result: " << pp(sp));
       //   LOG4CPLUS_TRACE(logger, "  result: " << pp(sp));
       // }
@@ -78,7 +78,7 @@ void new_contours(const Polygon_2& p, const Contour::Info& info, Out_iter out)
     polygons.push_back(p);
   }
 
-  BOOST_FOREACH (const Polygon_2& subp, polygons) {
+  for (const auto& subp : polygons) {
     Contour_handle newc = Contour::create(subp, info);
     *out++ = newc;
 
@@ -93,9 +93,10 @@ template <typename Out_iter>
 void diffed_contours(const list<Polygon_with_holes_2>& polygons, const Contour::Info& info, 
                      log4cplus::Logger& logger, Out_iter out)
 {
-  BOOST_FOREACH (const Polygon_with_holes_2& pwh, polygons) {
+  for (const auto& pwh : polygons) {
     new_contours(pwh.outer_boundary(), info, out);
-    BOOST_FOREACH (Polygon_2 hole, make_pair(pwh.holes_begin(), pwh.holes_end())) {
+    for (auto hole_it = pwh.holes_begin(); hole_it != pwh.holes_end(); ++hole_it) {
+      Polygon_2 hole = *hole_it;
       hole.reverse_orientation();
       new_contours(hole, info, out);
     }
@@ -124,7 +125,7 @@ void remove_differences(InputIterator pairs_begin, InputIterator pairs_end,
 
     // Check to see if p or q has been modified since this pair was enqueued.
     if (changing.find(p) != changing.end()) {
-      BOOST_FOREACH (const Contour_handle c, changing.find(p)->second) {
+      for (const auto& c : changing.find(p)->second) {
 	pairs.push_back(make_pair(c, q));
       }
 
@@ -133,13 +134,13 @@ void remove_differences(InputIterator pairs_begin, InputIterator pairs_end,
         list<Contour_handle> a100;
         get_current_contours(changing, p, back_inserter(a100));
         LOG4CPLUS_TRACE(logger, "a100 " << p.get() << " children");
-        BOOST_FOREACH (Contour_handle c, a100) {
+        for (const auto& c : a100) {
           LOG4CPLUS_TRACE(logger, "  size = " << c->size() << " (" << c.get() << ")");
         }
       }
     }
     else if (changing.find(q) != changing.end()) {
-      BOOST_FOREACH (const Contour_handle c, changing.find(q)->second) {
+      for (const auto& c : changing.find(q)->second) {
 	pairs.push_back(make_pair(p, c));
       }
     }
@@ -157,7 +158,7 @@ void remove_differences(InputIterator pairs_begin, InputIterator pairs_end,
         if (pdiff.size() == 3) {
           LOG4CPLUS_TRACE(logger, "  origp = " << pp(p->polygon()));
           LOG4CPLUS_TRACE(logger, "  origq = " << pp(q->polygon()));
-          BOOST_FOREACH (const Polygon_with_holes_2& pwh, pdiff) {
+          for (const auto& pwh : pdiff) {
             LOG4CPLUS_TRACE(logger, "  " << pp(pwh.outer_boundary()));
           }
         }
@@ -214,7 +215,7 @@ void remove_contour_intersections(Contour_iter begin, Contour_iter end,
   remove_differences(pairs.begin(), pairs.end(), changing);
 
   list<Contour_handle> temp;
-  BOOST_FOREACH (Contour_handle c, contours) {
+  for (const auto& c : contours) {
     get_current_contours(changing, c, back_inserter(temp));
 
     // debug
@@ -222,7 +223,7 @@ void remove_contour_intersections(Contour_iter begin, Contour_iter end,
       list<Contour_handle> a100;
       get_current_contours(changing, c, back_inserter(a100));
       LOG4CPLUS_TRACE(logger, "Final a100 contours");
-      BOOST_FOREACH (Contour_handle c100, a100) {
+      for (const auto& c100 : a100) {
         LOG4CPLUS_TRACE(logger, "  " << pp(c100->polygon()));
       }
     }
@@ -241,7 +242,7 @@ void remove_contour_intersections(Contour_iter begin, Contour_iter end,
 
   // for (Iter p = contours.begin(); p != contours.end(); ++p) {
   //   Contour_handle c = *p;
-  BOOST_FOREACH (Contour_handle c, contours) {
+  for (const auto& c : contours) {
     LOG4CPLUS_TRACE(logger, "Eroding: " << pp(c->polygon()));
 
     list<Polygon_with_holes_2> polys;
@@ -252,7 +253,7 @@ void remove_contour_intersections(Contour_iter begin, Contour_iter end,
       LOG4CPLUS_ERROR(logger, "Discarded polygon in contour " << c->info().name());
       throw e;
     }
-    BOOST_FOREACH (const Polygon_with_holes_2& pwh, polys) {
+    for (const auto& pwh : polys) {
       if (pwh.holes_begin() != pwh.holes_end()) {
         LOG4CPLUS_ERROR(logger, "Can't yet handle polygons with holes when eroding: " << pp(c->polygon()));
         // return;

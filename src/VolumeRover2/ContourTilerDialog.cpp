@@ -63,7 +63,7 @@ ContourTilerDialog::ContourTilerDialog(QWidget *parent,Qt::WindowFlags flags)
       _ui->buttonBox->button(QDialogButtonBox::Ok)->setEnabled(false);
   }
   else {
-    BOOST_FOREACH(std::string key, geoms)
+    for (const auto& key : geoms)
       _ui->geometryList->addItem(QString::fromStdString(key));
 
     LOG4CPLUS_TRACE(logger, "found contours: " << geoms.size());
@@ -71,7 +71,7 @@ ContourTilerDialog::ContourTilerDialog(QWidget *parent,Qt::WindowFlags flags)
     cvcraw_geometry::contours_t contours =
       cvcapp.data<cvcraw_geometry::contours_t>(geoms[0]);
     LOG4CPLUS_TRACE(logger, "Got something!");
-    BOOST_FOREACH(string component, contours.components()) {
+    for (const auto& component : contours.components()) {
       LOG4CPLUS_TRACE(logger, "Component: " << component);
       _ui->componentList->addItem(QString::fromStdString(component));
     }
@@ -108,7 +108,7 @@ void ContourTilerDialog::geometryChangedSlot(int index) {
   cvcraw_geometry::contours_t contours =
     cvcapp.data<cvcraw_geometry::contours_t>(_ui->geometryList->itemText(index).toStdString());
   LOG4CPLUS_TRACE(logger, "Got something!");
-  BOOST_FOREACH(string component, contours.components()) {
+  for (const auto& component : contours.components()) {
     LOG4CPLUS_TRACE(logger, "Component: " << component);
     _ui->componentList->addItem(QString::fromStdString(component));
   }
@@ -224,7 +224,7 @@ void ContourTilerDialog::RunContourTiler() {
 
   set<string> components;
   QList<QListWidgetItem *> selected = _ui->componentList->selectedItems();
-  BOOST_FOREACH(QListWidgetItem* item, selected) {
+  for (const auto& item : selected) {
     LOG4CPLUS_TRACE(logger, "Component: " << item->text().toStdString());
     components.insert(item->text().toStdString());
   }
@@ -241,7 +241,7 @@ void ContourTilerDialog::RunContourTiler() {
     vector<string> sc;
     s.components(back_inserter(sc));
     if (!components.empty()) {
-      BOOST_FOREACH(string c, sc) {
+      for (const auto& c : sc) {
 	if (components.find(c) == components.end()) {
 	  s.erase(c);
 	}
@@ -260,7 +260,7 @@ void ContourTilerDialog::RunContourTiler() {
   arg_arr.insert(arg_arr.end(), tok.begin(), tok.end());
   arg_arr.push_back("Filename");
   LOG4CPLUS_TRACE(logger, "Extra arguments:");
-  BOOST_FOREACH(string s, arg_arr) {
+  for (const auto& s : arg_arr) {
     LOG4CPLUS_TRACE(logger, "  " << s);
   }
   CONTOURTILER_NAMESPACE::cl_options clo = cl_parse(arg_arr);

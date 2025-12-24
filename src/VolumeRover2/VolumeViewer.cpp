@@ -461,8 +461,7 @@ namespace CVC_NAMESPACE
 
     //Make sure the volume dimensions and bounding boxes all match.  Force non-matching volume
     //dimensions to match the first volume.
-    BOOST_FOREACH(VolMagick::Volume& vol, vols)
-      {
+    for (auto& vol : vols) {
         if(vol.dimension() != vols[0].dimension())
           {
             cvcapp.log(2,
@@ -757,7 +756,7 @@ namespace CVC_NAMESPACE
   {
     //Every geometry in the new collection that has an existing geometry
     //of the same name needs to be marked for VBO reinitialization.
-    BOOST_FOREACH(scene_geometry_collection::value_type val, coll)
+    for (const auto& val : coll)
       if(_geometries.find(val.first)!=_geometries.end())
         _allocatedBuffersToReInit.push_back(val.first);
     _vboUpdated = false;
@@ -2232,9 +2231,7 @@ namespace CVC_NAMESPACE
 
     //clean up all previously allocated buffers for geometry that has been removed
     vector<string> removeBuffers;
-    BOOST_FOREACH(AllocatedBuffersPerGeom::value_type val, 
-                  _allocatedBuffersPerGeom)
-      {
+    for (auto val : _allocatedBuffersPerGeom) {
         if(_geometries.find(val.first)==_geometries.end())
           {
             removeBuffers.push_back(val.first);
@@ -2252,8 +2249,7 @@ namespace CVC_NAMESPACE
       }
 
     //clean up VBO info for geometry that is going to be reinitialized
-    BOOST_FOREACH(string name, _allocatedBuffersToReInit)
-      {
+    for (const auto& name : _allocatedBuffersToReInit) {
         removeBuffers.push_back(name);
         cvcapp.log(4,str(boost::format("%s: viewer %s re-generating buffers for geometry %s\n") 
                          % BOOST_CURRENT_FUNCTION
@@ -2270,7 +2266,7 @@ namespace CVC_NAMESPACE
     _allocatedBuffersToReInit.clear();
 
     //now remove the allocated buffers entry
-    BOOST_FOREACH(string name, removeBuffers)
+    for (const auto& name : removeBuffers)
       _allocatedBuffersPerGeom.erase(name);
 
     for(scene_geometry_collection::iterator i = _geometries.begin();
@@ -2824,7 +2820,7 @@ namespace CVC_NAMESPACE
 #ifdef USING_TILING
     vector<cvcraw_geometry::contours_t> contours_sets =
       cvcapp.propertyData<cvcraw_geometry::contours_t>(getObjectName("geometries"),true);
-    BOOST_FOREACH(cvcraw_geometry::contours_t contours, contours_sets) {
+    for (const auto& contours : contours_sets) {
       geoms.push_back(contours.geom());
     }
 #endif
@@ -2988,8 +2984,7 @@ namespace CVC_NAMESPACE
     if(key == "all")
       {
         PropertyMap map = cvcapp.properties();
-        BOOST_FOREACH(PropertyMap::value_type val, map)
-          {
+        for (const auto& val : map) {
             assert(val.first!="all");
             handlePropertiesChanged(val.first);
           }
@@ -3344,10 +3339,10 @@ namespace CVC_NAMESPACE
                     QColor color;
                     qreal comp[4] = { 0.0, 0.0, 0.0, 1.0 };
                     vector<qreal> components;
-                    BOOST_FOREACH(string val, color_components)
+                    for (const auto& val : color_components)
                       components.push_back(lexical_cast<qreal>(val));
                     int i=0;
-                    BOOST_FOREACH(qreal val, components)
+                    for (const auto& val : components)
                       if(i < 4) comp[i++] = val;
                     color = QColor::fromRgbF(comp[0],comp[1],comp[2],comp[3]);
                   }
@@ -3374,20 +3369,19 @@ namespace CVC_NAMESPACE
                      inserter(geo_names_set, geo_names_set.begin()));
 
                 set<string> orig_geo_names_set;
-                BOOST_FOREACH(scene_geometry_collection::value_type val, _geometries)
+                for (const auto& val : _geometries)
                   orig_geo_names_set.insert(val.first);
                   
                 set<string> remove_names;
-                BOOST_FOREACH(string name, orig_geo_names_set)
+                for (const auto& name : orig_geo_names_set)
                   if(geo_names_set.find(name)==geo_names_set.end())
                     remove_names.insert(name);
 
                 //Now remove the geometries from the internal map
-                BOOST_FOREACH(string name, remove_names)
+                for (const auto& name : remove_names)
                   _geometries.erase(name);
                
-                BOOST_FOREACH(string name, geo_names)
-                  {
+                for (auto name : geo_names) {
                     //No need to add if already present
                     if(_geometries.find(name)!=_geometries.end())
                       continue;
@@ -3479,7 +3473,7 @@ namespace CVC_NAMESPACE
             std::vector<std::string> geo_names =
               cvcapp.listProperty(getObjectName("geometries"),true);
             if(key_idents.size()>1)
-              BOOST_FOREACH(std::string name, geo_names)
+              for (const auto& name : geo_names)
                 if(name == key_idents[0] && _geometries[name])
                   {
                     if(key_idents[1] == "render_mode")
@@ -3536,8 +3530,7 @@ namespace CVC_NAMESPACE
     if(key == "all")
       {
         DataMap map = cvcapp.data();
-        BOOST_FOREACH(DataMap::value_type val, map)
-          {
+        for (const auto& val : map) {
             assert(val.first!="all");
             handleDataChanged(val.first);
           }
@@ -3574,8 +3567,7 @@ namespace CVC_NAMESPACE
 	  vector<string> vol_names =
             cvcapp.listProperty(getObjectName("volumes"));
 	  vector<VolMagick::Volume> vols;
-	  BOOST_FOREACH(string name, vol_names)
-	    {
+	  for (const auto& name : vol_names) {
 	      if(cvcapp.isData<VolMagick::Volume>(name))
 		{
 		  vols.push_back(cvcapp.data<VolMagick::Volume>(name));
@@ -3610,8 +3602,7 @@ namespace CVC_NAMESPACE
 	{
 	  vector<string> geo_names =
             cvcapp.listProperty(getObjectName("geometries"));
-	  BOOST_FOREACH(string name, geo_names)
-            {
+	  for (auto name : geo_names) {
               trim(name);
               if(name == key)
                 {
@@ -4060,10 +4051,10 @@ namespace CVC_NAMESPACE
                 QColor color;
                 qreal comp[4] = { 0.0, 0.0, 0.0, 1.0 };
                 vector<qreal> components;
-                BOOST_FOREACH(string val, color_components)
+                for (const auto& val : color_components)
                   components.push_back(lexical_cast<qreal>(val));
                 int i=0;
-                BOOST_FOREACH(qreal val, components)
+                for (const auto& val : components)
                   if(i < 4) comp[i++] = val;
                 color = QColor::fromRgbF(comp[0],comp[1],comp[2],comp[3]);
               }
@@ -4093,20 +4084,19 @@ namespace CVC_NAMESPACE
                  inserter(geo_names_set, geo_names_set.begin()));
 
             set<string> orig_geo_names_set;
-            BOOST_FOREACH(scene_geometry_collection::value_type val, _geometries)
+            for (const auto& val : _geometries)
               orig_geo_names_set.insert(val.first);
                   
             set<string> remove_names;
-            BOOST_FOREACH(string name, orig_geo_names_set)
+            for (const auto& name : orig_geo_names_set)
               if(geo_names_set.find(name)==geo_names_set.end())
                 remove_names.insert(name);
 
             //Now remove the geometries from the internal map
-            BOOST_FOREACH(string name, remove_names)
+            for (const auto& name : remove_names)
               _geometries.erase(name);
                
-            BOOST_FOREACH(string name, geo_names)
-              {
+            for (auto name : geo_names) {
                 //No need to add if already present
                 if(_geometries.find(name)!=_geometries.end())
                   continue;

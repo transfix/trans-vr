@@ -174,14 +174,14 @@ void offset_polygon(const Polygon_2& polygon, Number_type offset, Out_iter out) 
     }
     outer_offset_polygons = CGAL::arrange_offset_polygons_2<Offset_polygon_with_holes_2, Offset_polygon_2>(good_polys);
 
-    BOOST_FOREACH(PolygonPtr oop, outer_offset_polygons) {
+    for (const auto& oop : outer_offset_polygons) {
       opolys.push_back(*oop);
     }
 
     // // Take the bigger one
     // int max_size = -1;
     // set<int> sizes;
-    // BOOST_FOREACH(PolygonPtr oop, outer_offset_polygons) {
+    // for (const auto& oop : outer_offset_polygons) {
     //   sizes.insert(oop->outer_boundary().size());
     //   if (oop->outer_boundary().size() > max_size) {
     //     max_size = oop->outer_boundary().size();
@@ -218,7 +218,7 @@ void offset_polygon(const Polygon_2& polygon, Number_type offset, Out_iter out) 
     opolys.push_back(**outer_offset_polygons.rbegin());
   }
 
-  BOOST_FOREACH (const Offset_polygon_with_holes_2& op, opolys) {
+  for (const auto& op : opolys) {
     Polygon_2 outer_boundary = fix_simple(to_common(op.outer_boundary(), z));
     list<Polygon_2> holes;
     for (Offset_polygon_with_holes_2::Hole_const_iterator it = op.holes_begin(); it != op.holes_end(); ++it) {

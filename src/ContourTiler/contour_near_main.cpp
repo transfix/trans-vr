@@ -103,7 +103,8 @@ struct Component
 Point_2 centroid(const Polygon_2& P)
 {
   Point_2 sum(0,0);
-  BOOST_FOREACH (const Point_2& p, make_pair(P.vertices_begin(), P.vertices_end())) {
+  for (auto p_it = P.vertices_begin(); p_it != P.vertices_end(); ++p_it) {
+    const Point_2& p = *p_it;
     sum = Point_2(sum.x() + p.x(), sum.y() + p.y());
   }
   return Point_2(sum.x()/P.size(), sum.y()/P.size());
@@ -132,35 +133,35 @@ int main(int argc, char** argv)
                     components.begin(), components.end(),
                     components_skip.begin(), components_skip.end());
 
-  BOOST_FOREACH (const Contour_exception& e, exceptions) {
+  for (const auto& e : exceptions) {
     LOG4CPLUS_WARN(logger, "Error in reading contours: " << e.what());
   }
 
   list<Point_2> ccents;
-  BOOST_FOREACH (Contour_handle contour, contours) {
+  for (const auto& contour : contours) {
     if (contour->info().object_name() == o.component) {
       ccents.push_back(centroid(contour->polygon()));
     }
   }
 
   list<Component> comps;
-  BOOST_FOREACH (Contour_handle contour, contours) {
+  for (const auto& contour : contours) {
     const string component = contour->info().object_name();
     const Point_2 cent = centroid(contour->polygon());
-    BOOST_FOREACH(const Point_2& ccent, ccents) {
+    for (const auto& ccent : ccents) {
       Component c(component, sqrt(CGAL::squared_distance(cent, ccent)));
       comps.push_back(c);
     }
   }
   comps.sort();
   comps.reverse();
-  BOOST_FOREACH (const Component& c, comps) {
+  for (const auto& c : comps) {
     cout << c.name() << " dist=" << c.dist() << endl;
   }
   
   comps.reverse();
   set<string> include;
-  BOOST_FOREACH (const Component& c, comps) {
+  for (const auto& c : comps) {
     if (include.size() < o.num && c.name() != o.component) {
       include.insert(c.name());
     }
@@ -168,7 +169,7 @@ int main(int argc, char** argv)
 
   cout << "./ContourTilerBin -e 1e-15 -C 0.01 -d output -o raw -z 0.05 -n data -s " << o.slice << " " << o.slice+1 << " ";
   cout << "-c " << o.component << " ";
-  BOOST_FOREACH (const string& c, include) {
+  for (const auto& c : include) {
     cout << "-c " << c << " ";
   }
   cout << "AxonsDendrites" << endl;

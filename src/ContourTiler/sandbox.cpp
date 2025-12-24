@@ -54,7 +54,7 @@ int main(int argc, char** argv) {
   LOG4CPLUS_INFO(logger, pp(P));
   // vector<Polygon_2> polygons;
   // split_nonsimple(P, back_inserter(polygons));
-  // BOOST_FOREACH (const Polygon_2& p, polygons) {
+  // for (const auto& p : polygons) {
   //   LOG4CPLUS_INFO(logger, pp(p));
   // }
 

@@ -173,7 +173,7 @@ void GeometryInterface::setViewerState()
       cvcraw_geometry::cvcgeom_t initial_geom;
       
       //find a non empty geom to supply an initial bbox
-      BOOST_FOREACH(cvcraw_geometry::cvcgeom_t geom, geoms)
+      for (const auto& geom : geoms)
         if(!geom.empty())
           {
             initial_geom = geom;
@@ -202,8 +202,7 @@ void GeometryInterface::setViewerState()
         }
       
       //build a bounding box that encompasses all bounding boxes of the geometries
-      BOOST_FOREACH(cvcraw_geometry::cvcgeom_t geom, geoms)
-        {
+      for (const auto& geom : geoms) {
           if(geom.empty()) continue;
           minpt = geom.min_point();
           maxpt = geom.max_point();

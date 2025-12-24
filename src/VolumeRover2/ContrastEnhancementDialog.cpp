@@ -66,11 +66,11 @@ ContrastEnhancementDialog::ContrastEnhancementDialog(QWidget *parent,Qt::WindowF
       return;
     }
   
-  BOOST_FOREACH(std::string key, keys)
+  for (const auto& key : keys)
     _ui->VolumeList->addItem(QString::fromStdString(key));    
   
   std::vector<std::string> extensions = VolMagick::VolumeFile_IO::getExtensions();
-  BOOST_FOREACH(std::string ext, extensions)
+  for (const auto& ext : extensions)
     _ui->FileTypeComboBox->addItem(QString::fromStdString(ext));
   
   //default to .cvc type if available

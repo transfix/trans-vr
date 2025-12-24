@@ -143,7 +143,7 @@ namespace VolMagick
     VolumeFileInfo vfi(filename);
     vfi.boundingBox(bbox);
     VolMagick::readVolumeFile(vols,filename);
-    BOOST_FOREACH(Volume& vol, vols)
+    for (auto& vol : vols)
       vol.boundingBox(bbox);
     VolMagick::createVolumeFile(filename,vfi); //TODO: don't overwrite existing file until temp file write is complete
     VolMagick::writeVolumeFile(vols,filename);
@@ -238,8 +238,7 @@ namespace VolMagick
   std::vector<std::string> VolumeFile_IO::getExtensions()
   {
     std::vector<std::string> ret;
-    BOOST_FOREACH(HandlerMap::value_type& i, handlerMap())
-      {
+    for (auto& i : handlerMap()) {
         ret.push_back(i.first);
       }
     return ret;

@@ -188,8 +188,7 @@ namespace
         split(parts,fn,is_any_of(CVC_NAMESPACE::State::SEPARATOR));
         if(parts.size()<=1) return;
         bool filter = true;
-        BOOST_FOREACH(string name, vals)
-          {
+        for (const auto& name : vals) {
             if(parts[0] == name)
               filter = false; //if it is one of the notify_states, call xmlrpc
           }
@@ -197,8 +196,7 @@ namespace
       }
 
       vector<string> hosts = cvcstate("__system.xmlrpc.hosts").values(true);
-      BOOST_FOREACH(string host, hosts)
-        {
+      for (const auto& host : hosts) {
           vector<string> parts;
           split(parts,host,is_any_of(":"));
           if(parts.empty()) continue;
@@ -250,8 +248,7 @@ namespace
           std::vector<std::string> keys = cvcapp.data<NotifyXmlRpcThread>();
           std::vector<NotifyXmlRpcThread> threads = 
             cvcapp.data<NotifyXmlRpcThread>(keys);
-          BOOST_FOREACH(NotifyXmlRpcThread thread, threads)
-            {
+          for (const auto& thread : threads) {
               cvcapp.startThread(thread.threadName(),thread,false);
               cvcapp.data(thread.threadName(),boost::any()); //erase from the datamap
             }
@@ -381,7 +378,7 @@ namespace
         cvcstate(fullStateName).value(stateval);
 
         std::vector<std::string> children = cvcstate().children();
-        BOOST_FOREACH(std::string child, children)
+        for (const auto& child : children)
           cvcapp.log(4,str(format("%s :: %s = %s\n")
                            % BOOST_CURRENT_FUNCTION
                            % child
@@ -664,7 +661,7 @@ namespace CVC_NAMESPACE
 
     string valstr = _value;
     split(vals,valstr,is_any_of(","));
-    BOOST_FOREACH(string& val, vals) trim(val);
+    for (auto& val : vals) trim(val);
     if(unique)
       {
         set<string> vals_set;
@@ -745,7 +742,7 @@ namespace CVC_NAMESPACE
       _comment = std::string();
       _hidden = false;
       _initialized = false;
-      BOOST_FOREACH(ChildMap::value_type val, _children)
+      for (const auto& val : _children)
         val.second->reset();
     }
     touch();
@@ -775,8 +772,7 @@ namespace CVC_NAMESPACE
     
     {
       boost::mutex::scoped_lock lock(_mutex);
-      BOOST_FOREACH(ChildMap::value_type val, _children)
-        {
+      for (const auto& val : _children) {
           boost::this_thread::interruption_point();
           property_tree::ptree child_pt = val.second->ptree();
           pt.push_back(property_tree::ptree::value_type(val.second->fullName(), 
@@ -798,7 +794,7 @@ namespace CVC_NAMESPACE
   void State::ptree(const boost::property_tree::ptree& pt)
   {
     using namespace boost;
-    BOOST_FOREACH(const property_tree::ptree::value_type &v, pt)
+    for (const auto& v : pt)
       (*this)(v.first).value(v.second.get_value<std::string>());
   }  
 
@@ -851,7 +847,7 @@ namespace CVC_NAMESPACE
     traverseEnter();
     func(fullName());
     std::vector<std::string> ch = children(re);
-    BOOST_FOREACH(std::string c, ch)
+    for (const auto& c : ch)
       cvcstate(c).traverse(func,re);
     traverseExit();
   }
@@ -923,7 +919,7 @@ namespace CVC_NAMESPACE
     vector<string> keys;
     split(keys, childname, is_any_of(SEPARATOR));
     if(keys.empty()) return *this;
-    BOOST_FOREACH(string& key, keys) trim(key);
+    for (auto& key : keys) trim(key);
     //Ignore beginning empty keys
     while(!keys.empty() && keys.front().empty())
       keys.erase(keys.begin());
@@ -964,8 +960,7 @@ namespace CVC_NAMESPACE
     boost::this_thread::interruption_point();
     boost::mutex::scoped_lock lock(_mutex);
     std::vector<std::string> ret;
-    BOOST_FOREACH(ChildMap::value_type val, _children)
-      {
+    for (const auto& val : _children) {
         if(!re.empty())
           {
             boost::regex expression(re.c_str());

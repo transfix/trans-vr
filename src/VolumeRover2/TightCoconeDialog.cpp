@@ -56,7 +56,7 @@ TightCoconeDialog::TightCoconeDialog(QWidget *parent,Qt::WindowFlags flags)
   
   std::vector<std::string> geoms = 
     cvcapp.data<cvcraw_geometry::cvcgeom_t>();
-  BOOST_FOREACH(std::string key, geoms)
+  for (const auto& key : geoms)
     _ui->GeometryList->addItem(QString::fromStdString(key));  
 
 }

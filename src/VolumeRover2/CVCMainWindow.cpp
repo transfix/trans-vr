@@ -663,7 +663,7 @@ namespace CVC_NAMESPACE
   {
     QList<QTreeWidgetItem*> items = _ui->_propertyMap->selectedItems();
     PropertyMap map = cvcapp.properties();
-    BOOST_FOREACH(QTreeWidgetItem* item, items)
+    for (const auto& item : items)
       map[item->text(0).toStdString()] = "";
     cvcapp.properties(map);
   }
@@ -704,8 +704,7 @@ namespace CVC_NAMESPACE
 
     std::vector<std::string> extensions = VolMagick::VolumeFile_IO::getExtensions();
     QString list("volume (");
-    BOOST_FOREACH(std::string ext, extensions)
-      {
+    for (const auto& ext : extensions) {
         list += QString("*%1 ").arg(QString::fromStdString(ext));
       }
     list += ");;";
@@ -748,7 +747,7 @@ namespace CVC_NAMESPACE
 
     bool found = false;
     DataMap map = cvcapp.data();
-    BOOST_FOREACH(DataMap::value_type val, map) { 
+    for (const auto& val : map) { 
       std::string myname(val.first);
       std::string mytype(val.second.type().name());
       // only deal with geometry files for now...
@@ -892,7 +891,7 @@ namespace CVC_NAMESPACE
 
     bool found = false;
     DataMap map = cvcapp.data();
-    BOOST_FOREACH(DataMap::value_type val, map) { 
+    for (const auto& val : map) { 
       std::string myname(val.first);
 
   if (cvcapp.isData<VolMagick::Volume>(myname) || 
@@ -1019,7 +1018,7 @@ namespace CVC_NAMESPACE
     if(filenames.isEmpty()) return;
     try
       {
-        BOOST_FOREACH(QString& str, filenames)
+        for (auto& str : filenames)
           cvcapp.readPropertyMap(str.toStdString());
 
 	// load datafiles
@@ -1154,7 +1153,7 @@ namespace CVC_NAMESPACE
 	return;
       }
     
-    BOOST_FOREACH(std::string key, keys) {
+    for (const auto& key : keys) {
       if (key.compare("zoomed_volume") != 0  && 
 	  key.compare("thumbnail_volume") != 0  )
       ui.VolumeList->addItem(QString::fromStdString(key));
@@ -1393,8 +1392,7 @@ QMessageBox::warning(this,"Warning", "here it is");
     //re-initialize the TreeWidget with the newest contents of the propertymap
     PropertyMap map = cvcapp.properties();
     QList<QTreeWidgetItem*> items;
-    BOOST_FOREACH(PropertyMap::value_type val, map)
-    {    
+    for (const auto& val : map) {    
       QStringList slval;
       slval.append(QString::fromStdString(val.first));
       slval.append(QString::fromStdString(val.second));
@@ -1417,8 +1415,7 @@ QMessageBox::warning(this,"Warning", "here it is");
     //re-initialize the TreeWidget with the newest contents of the datamap
     DataMap map = cvcapp.data();
     QList<QTreeWidgetItem*> items;
-    BOOST_FOREACH(DataMap::value_type & val, map)
-    {    
+    for (auto& val : map) {    
       QStringList slval;
       slval.append(QString::fromStdString(val.first));
       slval.append(QString(QString::fromStdString(cvcapp.dataTypeName(val.first))));
@@ -1442,8 +1439,7 @@ QMessageBox::warning(this,"Warning", "here it is");
     //re-initialize the TreeWidget with the newest contents of the thread map
     ThreadMap map = cvcapp.threads();
     QList<QTreeWidgetItem*> items;
-    BOOST_FOREACH(ThreadMap::value_type val, map)
-    {    
+    for (const auto& val : map) {    
       QStringList slval;
 
       //First column
@@ -1485,7 +1481,7 @@ QMessageBox::warning(this,"Warning", "here it is");
      std::string volSelected;
 
      CVC_NAMESPACE::DataMap map = cvcapp.data();
-     BOOST_FOREACH(CVC_NAMESPACE::DataMap::value_type val, map) { 
+     for (const auto& val : map) { 
        std::string myname(val.first);
        // only deal with files for now...
        if (cvcapp.isData<VolMagick::VolumeFileInfo>(myname)) {
@@ -1606,7 +1602,7 @@ QMessageBox::warning(this,"Warning", "here it is");
 
      bool hasSource = false;
      DataMap map = cvcapp.data();
-     BOOST_FOREACH(DataMap::value_type val, map) { 
+     for (const auto& val : map) { 
        //std::cout << val.first << " " << val.second.type().name() << std::endl;
        std::string myname(val.first);
        std::string mytype(val.second.type().name());
@@ -1752,7 +1748,7 @@ void CVCMainWindow::showHistogramDialogSlot() {
     DataMap map = App::instance().data();
 
     bool Isgeom = 0;
-    BOOST_FOREACH(DataMap::value_type val, map) { 
+    for (const auto& val : map) { 
     //  std::cout << val.first << " " << val.second.type().name() << std::endl;
       std::string myname(val.first);
       std::string mytype(val.second.type().name());
@@ -2004,7 +2000,7 @@ void CVCMainWindow::showHistogramDialogSlot() {
     ui.MaxDimEdit->insert("100");
 
    DataMap map = cvcapp.data();
-    BOOST_FOREACH(DataMap::value_type val, map) { 
+    for (const auto& val : map) { 
       //std::cout << val.first << " " << val.second.type().name() << std::endl;
       std::string myname(val.first);
       std::string mytype(val.second.type().name());
@@ -2187,7 +2183,7 @@ void CVCMainWindow::showHistogramDialogSlot() {
     DataMap map = cvcapp.data();
 
     bool found = false;
-    BOOST_FOREACH(DataMap::value_type val, map){
+    for (const auto& val : map) {
       std::string myname(val.first);
       std::string mytype(val.second.type().name());
       if(cvcapp.isData<VolMagick::VolumeFileInfo>(myname)) {
@@ -2213,7 +2209,7 @@ void CVCMainWindow::showHistogramDialogSlot() {
       ui.m_InnerIsoValue->setText("0.0");
     }else{
       std::vector<double> values;
-      BOOST_FOREACH(CVCColorTable::ColorTable::isocontour_node node, cti.isocontourNodes() ){
+      for (const auto& node : cti.isocontourNodes()) {
 	//cout << "Iso " << node.position << endl;
 	values.push_back(vfi.min() + node.position*(vfi.max()-vfi.min()));
       }
@@ -2461,7 +2457,7 @@ void CVCMainWindow::showHistogramDialogSlot() {
     
     DataMap map = cvcapp.data();
     bool found = false;
-    BOOST_FOREACH(DataMap::value_type val, map) { 
+    for (const auto& val : map) { 
       //std::cout << val.first << " " << val.second.type().name() << std::endl;
       std::string myname(val.first);
       std::string mytype(val.second.type().name());
@@ -2674,7 +2670,7 @@ void CVCMainWindow::generateRawVSlot() {
 	DataMap map = App::instance().data();
 
 
-    BOOST_FOREACH(DataMap::value_type val, map) { 
+    for (const auto& val : map) { 
   //    std::cout << val.first << " " << val.second.type().name() << std::endl;
       std::string myname(val.first);
       std::string mytype(val.second.type().name());
@@ -2783,7 +2779,7 @@ void CVCMainWindow::MSLevelSetSlot()
   DataMap map = App::instance().data();
   VolMagick::VolumeFileInfo vif;
 
-  BOOST_FOREACH(DataMap::value_type val, map){
+  for (const auto& val : map) {
   	std::string myname(val.first);
 	std::string mytype(val.second.type().name());
 	if(mytype.compare("N9VolMagick14VolumeFileInfoE") == 0) {
@@ -2980,7 +2976,7 @@ void CVCMainWindow::HOSegmentationSlot()
   	DataMap map = App::instance().data();
 	VolMagick::VolumeFileInfo vif;
 
-  	BOOST_FOREACH(DataMap::value_type val, map){
+  	for (const auto& val : map) {
   		std::string myname(val.first);
 		std::string mytype(val.second.type().name());
 		if(mytype.compare("N9VolMagick14VolumeFileInfoE") == 0) {
@@ -3188,7 +3184,7 @@ void CVCMainWindow::MPSegmentationSlot()
   	DataMap map = App::instance().data();
 	VolMagick::VolumeFileInfo vif;
 
-  	BOOST_FOREACH(DataMap::value_type val, map){
+  	for (const auto& val : map) {
   		std::string myname(val.first);
 		std::string mytype(val.second.type().name());
 		if(mytype.compare("N9VolMagick14VolumeFileInfoE") == 0) {

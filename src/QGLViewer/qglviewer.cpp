@@ -1455,7 +1455,7 @@ void QGLViewer::mouseMoveEvent(QMouseEvent *e) {
       else
         manipulatedFrame()->mouseMoveEvent(e, camera());
     else if (hasMouseTracking()) {
-      Q_FOREACH (MouseGrabber *mg, MouseGrabber::MouseGrabberPool()) {
+      for (auto* mg : MouseGrabber::MouseGrabberPool()) {
         mg->checkIfGrabsMouse(e->x(), e->y(), camera());
         if (mg->grabsMouse()) {
           setMouseGrabber(mg);
@@ -3694,7 +3694,7 @@ void QGLViewer::drawGrid(qreal size, int nbSubdivisions) {
 /*! saveStateToFile() is called on all the QGLViewers using the QGLViewerPool().
  */
 void QGLViewer::saveStateToFileForAllViewers() {
-  Q_FOREACH (QGLViewer *viewer, QGLViewer::QGLViewerPool()) {
+  for (auto* viewer : QGLViewer::QGLViewerPool()) {
     if (viewer)
       viewer->saveStateToFile();
   }
