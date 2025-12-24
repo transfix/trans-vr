@@ -278,8 +278,8 @@ SliceCanvas::SliceCanvas(SliceCanvas::SliceAxis a, QWidget * parent, const char 
 
   gsl_set_error_handler_off();
 
-  // Left and right buttons together make a camera zoom: emulates a mouse third button if needed.
-  setMouseBinding(Qt::LeftButton | Qt::RightButton, CAMERA, ZOOM);
+  // Use middle button for camera zoom (Qt6 doesn't support button combinations)
+  setMouseBinding(Qt::NoModifier, Qt::MiddleButton, CAMERA, ZOOM);
 }
 
 // TODO: Qt6 - QGLFormat constructor removed, use the standard constructor instead
@@ -310,8 +310,8 @@ SliceCanvas::SliceCanvas(SliceCanvas::SliceAxis a, const QGLFormat& format, QWid
 
   gsl_set_error_handler_off();
 
-  // Left and right buttons together make a camera zoom: emulates a mouse third button if needed.
-  setMouseBinding(Qt::LeftButton | Qt::RightButton, CAMERA, ZOOM);
+  // Use middle button for camera zoom (Qt6 doesn't support button combinations)
+  setMouseBinding(Qt::NoModifier, Qt::MiddleButton, CAMERA, ZOOM);
 }
 #endif
 
@@ -2482,7 +2482,7 @@ VolumeGridRover::VolumeGridRover(QWidget* parent, Qt::WindowFlags fl)
 
   //-----------------------------------------------------------------------------------------------
 
-  connect(_ui->m_Objects,SIGNAL(currentChanged(QListView*)),SLOT(currentObjectSelectionChanged(QListView*)));
+  connect(_ui->m_Objects,SIGNAL(currentItemChanged(QListWidgetItem*,QListWidgetItem*)),SLOT(currentObjectSelectionChanged()));
   
   _ui->m_ThresholdLow->setValidator(new QIntValidator(0,255, _ui->m_ThresholdLow));
   _ui->m_ThresholdHigh->setValidator(new QIntValidator(0,255, _ui->m_ThresholdHigh));
@@ -2495,16 +2495,17 @@ VolumeGridRover::VolumeGridRover(QWidget* parent, Qt::WindowFlags fl)
   connect(this,SIGNAL(cellMarkingModeChanged(int)),m_XZSliceCanvas,SLOT(setCellMarkingMode(int)));
   connect(this,SIGNAL(cellMarkingModeChanged(int)),m_ZYSliceCanvas,SLOT(setCellMarkingMode(int)));
 
-  connect(_ui->m_InterpolationType,SIGNAL(activated(int)),m_XYSliceCanvas,SLOT(setInterpolationType(int)));
-  connect(_ui->m_InterpolationType,SIGNAL(activated(int)),m_XZSliceCanvas,SLOT(setInterpolationType(int)));
-  connect(_ui->m_InterpolationType,SIGNAL(activated(int)),m_ZYSliceCanvas,SLOT(setInterpolationType(int)));
+  // TODO: setInterpolationType slot is commented out, uncomment if needed
+  // connect(_ui->m_InterpolationType,SIGNAL(activated(int)),m_XYSliceCanvas,SLOT(setInterpolationType(int)));
+  // connect(_ui->m_InterpolationType,SIGNAL(activated(int)),m_XZSliceCanvas,SLOT(setInterpolationType(int)));
+  // connect(_ui->m_InterpolationType,SIGNAL(activated(int)),m_ZYSliceCanvas,SLOT(setInterpolationType(int)));
 
   setCellMarkingMode(0); //start with point class marking
   m_XYSliceCanvas->setCellMarkingMode(0);
   m_XZSliceCanvas->setCellMarkingMode(0);
   m_ZYSliceCanvas->setCellMarkingMode(0);
 
-  connect(_ui->m_Objects,SIGNAL(selectionChanged()),SLOT(setSelectedContours()));
+  connect(_ui->m_Objects,SIGNAL(itemSelectionChanged()),SLOT(setSelectedContours()));
   connect(_ui->m_Isocontouring,SIGNAL(toggled(bool)),SLOT(doIsocontouring(bool)));
 
   // set varialbles
@@ -6485,7 +6486,7 @@ void VolumeGridRover::showContourInterpolationSampling(const QString& name)
 */
 }
 
-void VolumeGridRover::currentObjectSelectionChanged(QListView *lvi)
+void VolumeGridRover::currentObjectSelectionChanged()
 {
 /*
   m_XYSliceCanvas->setCurrentContour(lvi ? lvi->text(0).toStdString().c_str() : "");

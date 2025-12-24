@@ -91,7 +91,7 @@ namespace CVCColorTable
 #if QT_VERSION < 0x040000
     connect(_xoomedIn,SIGNAL(changed()),_xoomedOut,SLOT(update()));
 #else
-    connect(_xoomedIn,SIGNAL(changed()),_xoomedOut,SLOT(updateGL()));
+    connect(_xoomedIn,SIGNAL(changed()),_xoomedOut,SLOT(update()));
 #endif
     connect(_xoomedIn,SIGNAL(changed()),SIGNAL(changed()));
 

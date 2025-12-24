@@ -459,7 +459,7 @@ class VolumeGridRover : public QWidget
   void showContourInterpolationType(const QString& name);
   void showContourInterpolationSampling(const QString& name);
 
-  void currentObjectSelectionChanged(QListView *lvi);
+  void currentObjectSelectionChanged();
 
   void setCellMarkingMode(int m);
   
