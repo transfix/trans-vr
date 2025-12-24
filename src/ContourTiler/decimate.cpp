@@ -706,8 +706,8 @@ void single(int argc, char** argv)
 
   double epsilon = boost::lexical_cast<double>(argv[2]);
   list<Polygon_with_holes_2> all_inner, all_outer;
-  offset_polygon(p, -epsilon/2, back_inserter(all_inner));
-  offset_polygon(p, epsilon/2, back_inserter(all_outer));
+  ContourTiler::offset_polygon_negative(p, -epsilon/2, back_inserter(all_inner));
+  all_outer.push_back(ContourTiler::offset_polygon_positive(p, epsilon/2));
   Polygon_2 outer = all_outer.begin()->outer_boundary();
   gnuplot_print_polygon("output/outer.dat", outer);
 

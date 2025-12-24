@@ -344,7 +344,7 @@ namespace CVCColorTable
   void XoomedOut::mouseMoveEventVertical( QMouseEvent* q )
   {
     //int x = q->x();
-    int y = q->y();
+    int y = qRound(q->position().y());
     QRect rect = contentsRect();
     QRect reducedRect(rect.x(), rect.y()+5, rect.width(), rect.height()-10);
 
@@ -375,7 +375,7 @@ namespace CVCColorTable
   void XoomedOut::mousePressEventVertical( QMouseEvent* q )
   {
     //int x = q->x();
-    int y = q->y();
+    int y = qRound(q->position().y());
     QRect rect = contentsRect();
     QRect reducedRect(rect.x(), rect.y()+5, rect.width(), rect.height()-10);
     int intMin, intMax;
@@ -409,7 +409,7 @@ namespace CVCColorTable
 
   void XoomedOut::mouseMoveEventHorizontal( QMouseEvent* q )
   {
-    int x = q->x();
+    int x = qRound(q->position().x());
     //int y = q->y();
     QRect rect = contentsRect();
     QRect reducedRect(rect.x()+5, rect.y(), rect.width()-10, rect.height());
@@ -440,7 +440,7 @@ namespace CVCColorTable
 
   void XoomedOut::mousePressEventHorizontal( QMouseEvent* q )
   {
-    int x = q->x();
+    int x = qRound(q->position().x());
     //int y = q->y();
     QRect rect = contentsRect();
     QRect reducedRect(rect.x()+5, rect.y(), rect.width()-10, rect.height());

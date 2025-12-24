@@ -33,7 +33,7 @@ namespace CEP {
     intersection( const CGAL::Segment_3<R>& s, 
 		  const CGAL::Point_3<R>& p )
     {
-      if ( do_intersect(s,p) )
+      if ( CEP::intersection::do_intersect(s,p) )
         return CGAL::make_object(p);
       return CGAL::Object();
     }

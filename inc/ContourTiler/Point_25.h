@@ -83,7 +83,7 @@ public:
   Number_type& hy() { return y(); }
   Number_type& hz() { return z(); }
 
-  static size_t& default_id() { return DEFAULT_ID(); }
+  static size_t default_id() { return DEFAULT_ID(); }
 
   Point_25_<Kernel>& point()
   { return *this; }
@@ -154,7 +154,7 @@ public:
   std::ostream& insert(std::ostream &os) const
   {
     const Point_25_ &p(*this);
-    switch(os.iword(CGAL::IO::mode)) {
+    switch(CGAL::IO::get_mode(os)) {
     case CGAL::IO::ASCII :
       return os << p.x() << ' ' << p.y() << ' ' << p.z();// << ' ' << p.color();
     case CGAL::IO::BINARY :
@@ -170,7 +170,7 @@ public:
   friend std::ostream &
   operator<<(std::ostream &os, const Point_25_ &p)
   {
-    switch(os.iword(CGAL::IO::mode)) {
+    switch(CGAL::IO::get_mode(os)) {
     case CGAL::IO::ASCII :
       return os << p.x() << ' ' << p.y() << ' ' << p.z();
     case CGAL::IO::BINARY :
@@ -187,7 +187,7 @@ public:
   operator>>(std::istream &is, Point_25_ &p)
   {
     double x, y, z;
-    switch(is.iword(CGAL::IO::mode)) {
+    switch(CGAL::IO::get_mode(is)) {
     case CGAL::IO::ASCII :
       is >> x >> y >> z;
       break;
@@ -273,6 +273,10 @@ public:
   { return Point_25_<K>(0, 0, 0); }
 
   Point_2
+  operator()(const Point_2& p) const
+  { return p; }
+
+  Point_2
   operator()(const RT& x, const RT& y) const
   {
     return Point_25_<K>(x, y, 0);
@@ -304,6 +308,19 @@ public:
     }
   }
 };
+
+CONTOURTILER_END_NAMESPACE
+
+// boost::result_of specialization for C++17 compatibility
+// MUST be outside ContourTiler namespace to avoid namespace collision
+namespace boost {
+  template <typename K, typename OldK>
+  struct result_of<const ContourTiler::MyConstruct_point_2<K, OldK>(const typename K::Point_2&)> {
+    typedef typename K::Point_2 type;
+  };
+}
+
+CONTOURTILER_BEGIN_NAMESPACE
 
 template <typename Kernel>
 std::size_t hash_value(const Point_25_<Kernel>& point);

@@ -343,6 +343,8 @@ namespace SDF2D {
   };
 
   struct Distance2DWrapper {
+    typedef double FT;
+    typedef Point2DWrapper Point_d;
     typedef Point2DWrapper Query_item;
 
     double transformed_distance(const Point2DWrapper& p1, const Point2DWrapper& p2) const {
@@ -354,7 +356,8 @@ namespace SDF2D {
 
     template <class TreeTraits>
     double min_distance_to_rectangle(const Point2DWrapper& p,
-				     const CGAL::Kd_tree_rectangle<TreeTraits>& b) const {
+				     const CGAL::Kd_tree_rectangle<TreeTraits>& b,
+				     std::vector<double>& dists) const {
       double distance(0.0), h = p.x();
       if (h < b.min_coord(0)) distance += (b.min_coord(0)-h)*(b.min_coord(0)-h);
       if (h > b.max_coord(0)) distance += (h-b.max_coord(0))*(h-b.max_coord(0));
@@ -369,7 +372,8 @@ namespace SDF2D {
 
     template <class TreeTraits>
     double max_distance_to_rectangle(const Point2DWrapper& p,
-				     const CGAL::Kd_tree_rectangle<TreeTraits>& b) const {
+				     const CGAL::Kd_tree_rectangle<TreeTraits>& b,
+				     std::vector<double>& dists) const {
       double h = p.x();
 
       double d0 = (h >= (b.min_coord(0)+b.max_coord(0))/2.0) ?

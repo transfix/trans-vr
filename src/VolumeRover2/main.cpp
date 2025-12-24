@@ -36,6 +36,7 @@
 #include <QFileInfo>
 #include <QDir>
 #include <QDateTime>
+#include <QRegularExpression>
 
 #include <VolMagick/VolMagick.h>
 #include <cvcraw_geometry/cvcgeom.h>
@@ -262,7 +263,7 @@ namespace
               getAttribute(cache_filename,"/cvc/volumes/"+val,"lastchange",modtime);
 
               QFileInfo fileinfo(QString::fromStdString(origin));
-              CVC::uint64 new_modtime = fileinfo.lastModified().toTime_t();
+              CVC::uint64 new_modtime = fileinfo.lastModified().toSecsSinceEpoch();
 
               if(_filepath == origin && new_modtime <= modtime)
                 {
@@ -303,7 +304,7 @@ namespace
               VolMagick::volconvert(_filepath,filename_to_open);
               setAttribute(cache_filename,cache_object,"origin",_filepath);
               CVC::uint64 modtime = 
-                QFileInfo(QString::fromStdString(_filepath)).lastModified().toTime_t();
+                QFileInfo(QString::fromStdString(_filepath)).lastModified().toSecsSinceEpoch();
               setAttribute(cache_filename,cache_object,"lastchange",modtime);
               load_volumeFileInfo(filename_to_open);
             }
@@ -706,13 +707,13 @@ namespace
 	// Iterate over directory and find all files of the form
 	// dirbasename.[0-9]* and find the smallest and largest numbers.
 	QDir serDir = fileInfo.dir();
-        QRegExp rx(".*" + QString::fromStdString(basename) + "\\.[0-9]+$");
+        QRegularExpression rx(".*" + QString::fromStdString(basename) + "\\.[0-9]+$");
 	QStringList files = serDir.entryList();
 	int start = 999999;
 	int end = -1;
 	for (QStringList::const_iterator it = files.begin(); it != files.end(); ++it) {
           string filename = it->toStdString();
-          if (rx.exactMatch(*it)) {
+          if (rx.match(*it).hasMatch()) {
               QFileInfo fi(*it);
               string sf = fi.suffix().toStdString();
               try {

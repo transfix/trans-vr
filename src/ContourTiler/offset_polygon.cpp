@@ -172,7 +172,7 @@ void offset_polygon(const Polygon_2& polygon, Number_type offset, Out_iter out) 
 	good_polys.push_back(*it);
       }
     }
-    outer_offset_polygons = arrange_offset_polygons_2(good_polys);
+    outer_offset_polygons = CGAL::arrange_offset_polygons_2<Offset_polygon_with_holes_2, Offset_polygon_2>(good_polys);
 
     BOOST_FOREACH(PolygonPtr oop, outer_offset_polygons) {
       opolys.push_back(*oop);
@@ -212,7 +212,7 @@ void offset_polygon(const Polygon_2& polygon, Number_type offset, Out_iter out) 
       (*it)->reverse_orientation();
     }
     // Arrange the polygons as a polygon with holes
-    outer_offset_polygons = CGAL::arrange_offset_polygons_2(polys);
+    outer_offset_polygons = CGAL::arrange_offset_polygons_2<Offset_polygon_with_holes_2, Offset_polygon_2>(polys);
     LOG4CPLUS_TRACE(logger, "Number of polygons resulting in offset: " << outer_offset_polygons.size());
     // opolys = **outer_offset_polygons.rbegin();
     opolys.push_back(**outer_offset_polygons.rbegin());

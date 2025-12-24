@@ -1,4 +1,6 @@
-cmake_minimum_required(VERSION 2.6)
+cmake_minimum_required(VERSION 3.16)
+
+SetupQt()
 
 file(GLOB SOURCE_FILES *.cpp)
 file(GLOB INCLUDE_FILES ../../inc/Curation/*.[Hh])

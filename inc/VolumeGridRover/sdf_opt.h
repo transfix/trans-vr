@@ -36,7 +36,7 @@ class sdf_opt : public QDialog
   Q_OBJECT
 
  public:
-  sdf_opt(QWidget *parent = 0, const char *name = 0, bool modal = FALSE);
+  sdf_opt(QWidget *parent = 0, const char *name = 0, bool modal = false);
   ~sdf_opt();
 
  public:

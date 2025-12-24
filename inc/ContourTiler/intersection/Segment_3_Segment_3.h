@@ -235,9 +235,9 @@ namespace intersection {
                   const CGAL::Segment_3<R>& s2 )
     {
         if ( s1.is_degenerate() ) 
-            return intersection( s2, s1.source() );
+            return CEP::intersection::intersection( s2, s1.source() );
         if ( s2.is_degenerate() )
-            return intersection( s1, s2.source() );
+            return CEP::intersection::intersection( s1, s2.source() );
 
         // Check all cases of collinear endpoints
 
@@ -245,14 +245,14 @@ namespace intersection {
             if ( collinear( s1, s2.target() )) {
                 return collinear_intersection( s1, s2 );
             } else {
-                return intersection( s1, s2.source() );
+                return CEP::intersection::intersection( s1, s2.source() );
             }
         } else if ( collinear( s1, s2.target() )) {
-            return intersection( s1, s2.target() );
+            return CEP::intersection::intersection( s1, s2.target() );
         } else if ( collinear( s2, s1.source() )) {
-            return intersection( s2, s1.source() );
+            return CEP::intersection::intersection( s2, s1.source() );
         } else if ( collinear( s2, s1.target() )) {
-            return intersection( s2, s1.target() );
+            return CEP::intersection::intersection( s2, s1.target() );
         }
 
         // If no three points are collinear, the intersection can only

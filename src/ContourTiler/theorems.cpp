@@ -43,10 +43,11 @@ bool test_theorem3(const Segment_3& segment, const Point_3& opposite, Tiler_work
   for (int i = 0; pass && i < 2; ++i)
   {
     Point_3 v = segment[i];
-    bool overlapping;
+    Contour_handle overlap_contour;
     Contour_handle nec;
     Polygon_2::Vertex_circulator ci;
-    boost::tie(overlapping, nec, ci) = h.is_overlapping(v.point_2());
+    boost::tie(overlap_contour, nec, ci) = h.is_overlapping(v.point_2());
+    bool overlapping = (overlap_contour != NULL);
     if (!overlapping)
     {
       // RS = negative side
@@ -263,11 +264,13 @@ bool test_theorem8(const Segment_3& segment, const Point_3& opposite, const Tile
   const Hierarchy& h_ = w.hierarchies.find(opposite.z())->second;
   Contour_handle contour = w.contour(source);
 
-  bool overlapping1, overlapping2;
+  Contour_handle overlap_contour1, overlap_contour2;
   Contour_handle nec1, nec2;
   Polygon_2::Vertex_circulator ci1, ci2;
-  boost::tie(overlapping1, nec1, ci1) = h_.is_overlapping(source.point_2());
-  boost::tie(overlapping2, nec2, ci2) = h_.is_overlapping(target.point_2());
+  boost::tie(overlap_contour1, nec1, ci1) = h_.is_overlapping(source.point_2());
+  boost::tie(overlap_contour2, nec2, ci2) = h_.is_overlapping(target.point_2());
+  bool overlapping1 = (overlap_contour1 != NULL);
+  bool overlapping2 = (overlap_contour2 != NULL);
   if (overlapping1 && overlapping2)
   {
     if (target != w.vertices.ccw(source) && target != w.vertices.cw(source))
@@ -307,11 +310,13 @@ bool test_theorem9(const Segment_3& segment, const Point_3& opposite, Tiler_work
   {
     Point_3 u = segment[i];
     Point_3 v = segment[1-i];
-    bool u_overlaps, v_overlaps;
+    Contour_handle u_overlap_contour, v_overlap_contour;
     Contour_handle nec;
     Polygon_2::Vertex_circulator ci;
-    boost::tie(u_overlaps, nec, ci) = h_.is_overlapping(u.point_2());
-    boost::tie(v_overlaps, nec, ci) = h_.is_overlapping(v.point_2());
+    boost::tie(u_overlap_contour, nec, ci) = h_.is_overlapping(u.point_2());
+    boost::tie(v_overlap_contour, nec, ci) = h_.is_overlapping(v.point_2());
+    bool u_overlaps = (u_overlap_contour != NULL);
+    bool v_overlaps = (v_overlap_contour != NULL);
     if (u_overlaps && !v_overlaps && xy_equal(u, opposite))
     {
       Vertex_sign sign = Vertex_sign::POSITIVE;

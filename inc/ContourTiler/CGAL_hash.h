@@ -14,21 +14,26 @@
 using namespace CONTOURTILER_NAMESPACE;
 using namespace std;
 
+// Note: CGAL 5.6+ provides built-in hash functions for Point_2, Point_3, Segment_2, Segment_3
+// The custom implementations below conflict with CGAL's standard ones, so they are disabled.
+// If needed for custom kernels, use a different namespace or function name.
+
 namespace CGAL {
 //   std::size_t hash_value(const CGAL::Point_2<CGAL::Cartesian<double> >& point);
 
-  template <typename Kernel>
-  std::size_t hash_value(const CGAL::Point_2<Kernel>& point);
+  // Disabled - conflicts with CGAL 5.6+ built-in hash functions
+  // template <typename Kernel>
+  // std::size_t hash_value(const CGAL::Point_2<Kernel>& point);
 
-  template <typename Kernel>
-  std::size_t hash_value(const CGAL::Point_3<Kernel>& point);
+  // template <typename Kernel>
+  // std::size_t hash_value(const CGAL::Point_3<Kernel>& point);
 
 //   std::size_t hash_value(const CGAL::Point_3<CGAL::Cartesian<double> >& point);
-  template <typename Kernel>
-  std::size_t hash_value(const CGAL::Segment_3<Kernel>& segment);
+  // template <typename Kernel>
+  // std::size_t hash_value(const CGAL::Segment_3<Kernel>& segment);
 
-  template <typename Kernel>
-  std::size_t hash_value(const CGAL::Segment_2<Kernel>& segment);
+  // template <typename Kernel>
+  // std::size_t hash_value(const CGAL::Segment_2<Kernel>& segment);
 
 //   std::size_t hash_value(const CGAL::Segment_3<CGAL::Cartesian<double> >& segment);
 //   std::size_t hash_value(const CGAL::Segment_3<Cartesian_25<double> >& segment);

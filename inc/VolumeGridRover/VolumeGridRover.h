@@ -39,6 +39,7 @@
 #include <QRect>
 #include <QTabWidget>
 #include <QImage>
+#include <GL/glew.h>
 #include <QGLViewer/qglviewer.h>
 #include <QGLViewer/camera.h>
 
@@ -148,7 +149,8 @@ class SliceCanvas : public QGLViewer
     public:
   enum SliceAxis { XY, XZ, ZY };
   SliceCanvas(SliceAxis a, QWidget * parent = 0, const char * name = 0);
-  SliceCanvas(SliceAxis a, const QGLFormat& format, QWidget * parent = 0, const char * name = 0);
+  // TODO: Qt6 migration - QGLFormat removed, use QSurfaceFormat if needed
+  // SliceCanvas(SliceAxis a, const QGLFormat& format, QWidget * parent = 0, const char * name = 0);
   ~SliceCanvas();
 
   void setVolume(const VolMagick::VolumeFileInfo& vfi);
@@ -405,9 +407,9 @@ class VolumeGridRover : public QWidget
 
   void updateGL()
   {
-    m_XYSliceCanvas->updateGL();
-    m_XZSliceCanvas->updateGL();
-    m_ZYSliceCanvas->updateGL();
+    m_XYSliceCanvas->update();
+    m_XZSliceCanvas->update();
+    m_ZYSliceCanvas->update();
   }
 
   public slots:
@@ -486,7 +488,7 @@ class VolumeGridRover : public QWidget
  protected:
   void hideEvent(QHideEvent *e);
   void showEvent(QShowEvent *e);
-  void customEvent(QCustomEvent *e);
+  void customEvent(QEvent *e);
   void setColorName();
     	  
   //just emits the current page index of the current page in the cell

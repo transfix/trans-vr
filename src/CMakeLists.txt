@@ -6,7 +6,7 @@ add_subdirectory(CVC)
 add_subdirectory(log4cplus)
 
 # 11/3/11 edwardsj - converting to new contour tiler
-option(BUILD_TILING_LIB "Tiling - 3D reconstruction of plane parallel 2D contours" OFF)
+option(BUILD_TILING_LIB "Tiling - 3D reconstruction of plane parallel 2D contours" ON)
 if(BUILD_TILING_LIB AND NOT DISABLE_CGAL)
   add_definitions(-DUSING_TILING)
   add_subdirectory(ContourTiler)
@@ -32,7 +32,7 @@ add_subdirectory(volren)
 add_subdirectory(XmlRPC)
 
 # Optional: Virus Segmentation
-option(BUILD_SEGMENTATION_LIB "Build Virus Segmentation library" OFF)
+option(BUILD_SEGMENTATION_LIB "Build Virus Segmentation library" ON)
 if(BUILD_SEGMENTATION_LIB AND NOT DISABLE_CGAL)
   add_definitions(-DUSING_SEGMENTATION)
   add_subdirectory(Segmentation)
@@ -50,7 +50,7 @@ IF(BUILD_SWEETLBIE)
   ADD_SUBDIRECTORY(SweetLBIE)
 ENDIF(BUILD_SWEETLBIE)
 
-OPTION(BUILD_HLEVELSET_LIB "Build HLeveSet library." OFF)
+OPTION(BUILD_HLEVELSET_LIB "Build HLeveSet library." ON)
 IF(BUILD_HLEVELSET_LIB)
   ADD_DEFINITIONS(-DUSING_HLEVELSET)
   ADD_SUBDIRECTORY(HLevelSet)
@@ -99,19 +99,19 @@ IF(BUILD_PEDETECTION_LIB)
   ADD_SUBDIRECTORY(PEDetection)
 ENDIF(BUILD_PEDETECTION_LIB)
 
-OPTION(BUILD_CURATION_LIB "Build Samrat's Curation library." OFF)
+OPTION(BUILD_CURATION_LIB "Build Samrat's Curation library." ON)
 IF(BUILD_CURATION_LIB AND NOT DISABLE_CGAL)
   ADD_DEFINITIONS(-DUSING_CURATION)
   ADD_SUBDIRECTORY(Curation)
 ENDIF(BUILD_CURATION_LIB AND NOT DISABLE_CGAL)
 
-OPTION(BUILD_POCKETTUNNEL_LIB "Build Samrat's Pocket/Tunnel detection library." OFF)
+OPTION(BUILD_POCKETTUNNEL_LIB "Build Samrat's Pocket/Tunnel detection library." ON)
 IF(BUILD_POCKETTUNNEL_LIB AND NOT DISABLE_CGAL)
   ADD_DEFINITIONS(-DUSING_POCKET_TUNNEL)
   ADD_SUBDIRECTORY(PocketTunnel)
 ENDIF(BUILD_POCKETTUNNEL_LIB AND NOT DISABLE_CGAL)
 
-OPTION(BUILD_SKELETONIZATION_LIB "Build Samrat's Skeletonization library." OFF)
+OPTION(BUILD_SKELETONIZATION_LIB "Build Samrat's Skeletonization library." ON)
 IF(BUILD_SKELETONIZATION_LIB AND NOT DISABLE_CGAL)
   ADD_DEFINITIONS(-DUSING_SKELETONIZATION)
   ADD_SUBDIRECTORY(Skeletonization)
@@ -140,13 +140,13 @@ IF(BUILD_RAWIVEDITOR)
 ENDIF(BUILD_RAWIVEDITOR)
 
 
-OPTION(BUILD_TIGHTCOCONE_LIB "TightCocone - Samrat's geometry fitting algoritm" OFF)
+OPTION(BUILD_TIGHTCOCONE_LIB "TightCocone - Samrat's geometry fitting algoritm" ON)
 IF(BUILD_TIGHTCOCONE_LIB AND NOT DISABLE_CGAL)
   ADD_DEFINITIONS(-DUSING_TIGHT_COCONE)
   ADD_SUBDIRECTORY(TightCocone)
 ENDIF(BUILD_TIGHTCOCONE_LIB AND NOT DISABLE_CGAL)
 
-OPTION(BUILD_SUPERSECONDARYSTRUCTURES_LIB "SuperSecondaryStructures - Samrat's supersecondary structures identification algoritm" OFF)
+OPTION(BUILD_SUPERSECONDARYSTRUCTURES_LIB "SuperSecondaryStructures - Samrat's supersecondary structures identification algoritm" ON)
 IF(BUILD_SUPERSECONDARYSTRUCTURES_LIB AND NOT DISABLE_CGAL)
   ADD_DEFINITIONS(-DUSING_SUPERSECONDARY_STRUCTURES)
   ADD_SUBDIRECTORY(SuperSecondaryStructures)
@@ -154,7 +154,7 @@ ENDIF(BUILD_SUPERSECONDARYSTRUCTURES_LIB AND NOT DISABLE_CGAL)
 
 
 
-OPTION(BUILD_VOLUMEGRIDROVER "Build the VolumeGridRover." OFF)
+OPTION(BUILD_VOLUMEGRIDROVER "Build the VolumeGridRover." ON)
 IF(BUILD_VOLUMEGRIDROVER AND NOT DISABLE_CGAL)
   ADD_DEFINITIONS(-DUSING_VOLUMEGRIDROVER)
 #  add_definitions(-DVOLUMEGRIDROVER) # need to change all uses of this to USING_VOLUMEGRIDROVER for consistency

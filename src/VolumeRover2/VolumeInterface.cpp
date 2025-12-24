@@ -560,10 +560,7 @@ void VolumeInterface::deleteTimestepSlot()
     {
       QMessageBox::critical(this,
 			    "Error",
-			    "Cannot remove any more timesteps!",
-			    QMessageBox::Ok,
-			    QMessageBox::NoButton,
-			    QMessageBox::NoButton);
+			    "Cannot remove any more timesteps!");
       return;
     }
 
@@ -656,10 +653,7 @@ void VolumeInterface::deleteVariableSlot()
     {
       QMessageBox::critical(this,
 			    "Error",
-			    "Cannot remove any more variables!",
-			    QMessageBox::Ok,
-			    QMessageBox::NoButton,
-			    QMessageBox::NoButton);
+			    "Cannot remove any more variables!");
       return;
     }
 

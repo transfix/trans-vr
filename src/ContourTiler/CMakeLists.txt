@@ -1,11 +1,13 @@
-cmake_minimum_required (VERSION 2.6)
+cmake_minimum_required(VERSION 3.16)
+
+SetupQt()
 
 #SET(CONTOURTILER_NAMESPACE      CONTOURTILER CACHE STRING "Namespace to use for contour tiler")
 
 #MARK_AS_ADVANCED(FORCE CONTOURTILER_NAMESPACE)
 
 #Make sure we've got boost
-set(Boost_USE_STATIC_LIBS ON)
+set(Boost_USE_STATIC_LIBS OFF)
 set(Boost_USE_MULTITHREADED ON)
 find_package(Boost 1.41.0 COMPONENTS filesystem system regex thread)
 if(Boost_FOUND)
@@ -166,15 +168,21 @@ ADD_EXECUTABLE (ContourNear contour_near_main.cpp)
 
 # CGAL must be set up for each individual project
 SetupCGAL(ContourTilerBin)
-SET(LINK_LIBS /h1/edwardsj/local/lib/libCGAL_Core.so log4cplus)
+SetupCGAL(ContourTilerDecimate)
+SetupCGAL(ContourTilerSandbox)
+SetupCGAL(ecs)
+SetupCGAL(smfconvert)
+SetupCGAL(ContourNear)
 
-TARGET_LINK_LIBRARIES(ContourTilerBin ContourTiler ${LINK_LIBS} ${Boost_LIBRARIES})
-#TARGET_LINK_LIBRARIES(ContourTilerTest ContourTiler ${LINK_LIBS} ${Boost_LIBRARIES})
-TARGET_LINK_LIBRARIES(ContourTilerSandbox ContourTiler ${LINK_LIBS} ${Boost_LIBRARIES})
-TARGET_LINK_LIBRARIES(ContourTilerDecimate ContourTiler ${LINK_LIBS} ${Boost_LIBRARIES})
-TARGET_LINK_LIBRARIES(ecs ContourTiler ${LINK_LIBS} ${Boost_LIBRARIES})
-TARGET_LINK_LIBRARIES(smfconvert ContourTiler ${LINK_LIBS} ${Boost_LIBRARIES})
-TARGET_LINK_LIBRARIES(ContourNear ContourTiler ${LINK_LIBS} ${Boost_LIBRARIES})
+SET(LINK_LIBS log4cplus)
+
+TARGET_LINK_LIBRARIES(ContourTilerBin PUBLIC ContourTiler ${LINK_LIBS} Boost::filesystem Boost::system Boost::regex Boost::thread)
+#TARGET_LINK_LIBRARIES(ContourTilerTest ContourTiler ${LINK_LIBS} Boost::filesystem Boost::system Boost::regex Boost::thread)
+TARGET_LINK_LIBRARIES(ContourTilerSandbox PUBLIC ContourTiler ${LINK_LIBS} Boost::filesystem Boost::system Boost::regex Boost::thread)
+TARGET_LINK_LIBRARIES(ContourTilerDecimate PUBLIC ContourTiler ${LINK_LIBS} Boost::filesystem Boost::system Boost::regex Boost::thread)
+TARGET_LINK_LIBRARIES(ecs PUBLIC ContourTiler ${LINK_LIBS} Boost::filesystem Boost::system Boost::regex Boost::thread)
+TARGET_LINK_LIBRARIES(smfconvert PUBLIC ContourTiler ${LINK_LIBS} Boost::filesystem Boost::system Boost::regex Boost::thread)
+TARGET_LINK_LIBRARIES(ContourNear PUBLIC ContourTiler ContourFilterLib ${LINK_LIBS} Boost::filesystem Boost::system Boost::regex Boost::thread)
 
 SET_TARGET_PROPERTIES(ContourTiler PROPERTIES COMPILE_FLAGS "-rdynamic")# OUTPUT_NAME "ContourTiler")
 #SET_TARGET_PROPERTIES(ContourTilerBin PROPERTIES OUTPUT_NAME "ContourTiler")

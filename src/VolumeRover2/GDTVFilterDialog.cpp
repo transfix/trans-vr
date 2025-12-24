@@ -211,14 +211,14 @@ void GDTVFilterDialog::RunGDTVFilter() {
   double nhood = _ui->NhoodEdit->displayText().toDouble();
   if(nhood < 1.0) {
     QMessageBox::warning(this, tr("GDTV Filter"),
-			 tr("Neighborhood size should be at least 1.0."), 0,0);
+			 tr("Neighborhood size should be at least 1.0."));
     return;
   }
   
   double exp = _ui->ExpEdit->displayText().toDouble();
   if(exp < 0.0 || exp > 2.0) {
     QMessageBox::warning(this, tr("GDTV Filter"),
-			 tr("Exponent value must be between 0.0 and 2.0."), 0,0);
+			 tr("Exponent value must be between 0.0 and 2.0."));
     return;
   }
 

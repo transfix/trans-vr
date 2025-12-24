@@ -153,7 +153,7 @@ namespace
       {
         CVC::ThreadInfo ti("sleeping");
         boost::xtime xt;
-        boost::xtime_get( &xt, boost::TIME_UTC );
+        boost::xtime_get( &xt, boost::TIME_UTC_ );
         xt.sec++;
         boost::thread::sleep( xt );
       }

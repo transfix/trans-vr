@@ -36,7 +36,7 @@ class bspline_opt : public QDialog
   Q_OBJECT
 
  public:
-  bspline_opt(QWidget *parent = 0, const char *name = 0, bool modal = FALSE);
+  bspline_opt(QWidget *parent = 0, const char *name = 0, bool modal = false);
   ~bspline_opt();
 
  public slots:

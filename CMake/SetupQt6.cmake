@@ -6,6 +6,12 @@
 macro(SetupQt)
   message(STATUS "Setting up Qt6 for VolumeRover...")
   
+  # Enable automatic MOC, UIC, RCC for Qt
+  # These must be set in each subdirectory due to CMake policy scopes
+  set(CMAKE_AUTOMOC ON)
+  set(CMAKE_AUTOUIC ON)
+  set(CMAKE_AUTORCC ON)
+  
   # Find Qt6 with required components
   find_package(Qt6 REQUIRED COMPONENTS
     Core

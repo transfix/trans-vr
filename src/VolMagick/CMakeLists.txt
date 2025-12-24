@@ -77,7 +77,15 @@ if(CVC_USING_HDF5)
        HDF5_IO.cpp
     )
 
-    include_directories(${HDF5_INCLUDE_DIR})
+    # Store HDF5 include dirs for target_include_directories later
+    # Modern FindHDF5 uses different variable names
+    set(VOLMAGICK_HDF5_INCLUDE_DIRS ${HDF5_INCLUDE_DIRS} ${HDF5_C_INCLUDE_DIRS} ${HDF5_CXX_INCLUDE_DIRS} ${HDF5_INCLUDE_DIR})
+    if(EXISTS "/usr/include/hdf5/serial")
+      list(APPEND VOLMAGICK_HDF5_INCLUDE_DIRS "/usr/include/hdf5/serial")
+    endif()
+    if(VOLMAGICK_HDF5_INCLUDE_DIRS)
+      list(REMOVE_DUPLICATES VOLMAGICK_HDF5_INCLUDE_DIRS)
+    endif()
 
     SET(VOLMAGICK_LINK_LIBS ${VOLMAGICK_LINK_LIBS} ${HDF5_LIBRARIES})
   else(HDF5_FOUND)
@@ -157,6 +165,11 @@ INCLUDE_DIRECTORIES(
 )
 
 ADD_LIBRARY (VolMagick STATIC ${SOURCE_FILES} ${INCLUDE_FILES})
+
+# Add HDF5 include directories if enabled
+if(CVC_USING_HDF5 AND HDF5_FOUND)
+  target_include_directories(VolMagick PUBLIC ${VOLMAGICK_HDF5_INCLUDE_DIRS})
+endif()
 
 set_target_properties(VolMagick PROPERTIES
   AUTOMOC OFF

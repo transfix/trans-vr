@@ -2,6 +2,9 @@ cmake_minimum_required(VERSION 3.16)
 
 SetupQt()
 
+# Prevent Qt's foreach macro from interfering with Boost.Foreach namespace
+add_definitions(-DQT_NO_FOREACH)
+
 if(ENABLE_STEREO_DISPLAY)
   add_definitions(-DENABLE_STEREO_DISPLAY)
 endif()
@@ -247,7 +250,7 @@ if(BUILD_SEGMENTATION_LIB AND NOT DISABLE_CGAL)
 endif(BUILD_SEGMENTATION_LIB AND NOT DISABLE_CGAL)
 
 if(BUILD_TILING_LIB AND NOT DISABLE_CGAL)
-  set(LIBS ${LIBS} ContourTiler CGAL CGALcore++ gsl gslcblas mpfr gmp ContourFilterLib)
+  set(LIBS ${LIBS} ContourTiler CGAL::CGAL gsl gslcblas mpfr gmp ContourFilterLib)
 endif(BUILD_TILING_LIB AND NOT DISABLE_CGAL)
 
 if(BUILD_MMHLS_LIB)
@@ -315,6 +318,35 @@ add_executable(VolumeRover2 MACOSX_BUNDLE
   ${INCLUDE_FILES}
   ${UI_FORMS}
 )
+
+# Generate wrapper script to run VolumeRover2 with clean environment
+# This avoids conflicts with snap-provided libraries on Linux
+if(UNIX AND NOT APPLE)
+  set(WRAPPER_SCRIPT "${CMAKE_BINARY_DIR}/bin/run-volumerover2.sh")
+  file(WRITE ${WRAPPER_SCRIPT}
+"#!/bin/bash
+# Wrapper script to run VolumeRover2 with clean environment
+# Avoids conflicts with snap-provided libraries (GTK_PATH, LD_LIBRARY_PATH pollution)
+
+# Get the directory where this script is located
+SCRIPT_DIR=\"\$(cd \"\$(dirname \"\${BASH_SOURCE[0]}\")\" && pwd)\"
+
+# Clean environment - remove snap-related variables that cause library conflicts
+exec env -i \\
+  HOME=\"\$HOME\" \\
+  USER=\"\$USER\" \\
+  LOGNAME=\"\$LOGNAME\" \\
+  PATH=\"/usr/local/bin:/usr/bin:/bin:/usr/local/sbin:/usr/sbin:/sbin\" \\
+  DISPLAY=\"\$DISPLAY\" \\
+  XAUTHORITY=\"\$XAUTHORITY\" \\
+  XDG_RUNTIME_DIR=\"\$XDG_RUNTIME_DIR\" \\
+  TERM=\"\$TERM\" \\
+  LANG=\"\$LANG\" \\
+  \"\${SCRIPT_DIR}/VolumeRover2\" \"\$@\"
+")
+  # Make the script executable using execute_process at configure time
+  execute_process(COMMAND chmod +x ${WRAPPER_SCRIPT})
+endif()
 
 # Tell AUTOUIC where to find .ui files when headers are in inc/ but .ui files are in src/
 set_target_properties(VolumeRover2 PROPERTIES

@@ -172,7 +172,7 @@ void print_contours(InputIterator start, InputIterator end)
   using namespace std;
   using namespace CONTOURTILER_NAMESPACE;
   typedef typename iterator_traits<InputIterator>::value_type Contour_handle;
-  typedef typename Contour_handle::value_type::Info_type::Slice_type Slice_type;
+  typedef typename Contour_handle::element_type::Info_type::Slice_type Slice_type;
 
   set<Slice_type> slices;
   contour_slices(start, end, asso_inserter<set<Slice_type> >(slices));
@@ -254,7 +254,7 @@ const Triangle& get_tri(const Tri& tri)
 { return tri; }
 
 template <>
-inline const Triangle& get_tri<boost::shared_ptr<Triangle> >(const boost::shared_ptr<Triangle>& tri)
+inline const Triangle& get_tri<::boost::shared_ptr<Triangle> >(const ::boost::shared_ptr<Triangle>& tri)
 { return *tri; }
 
 template <typename Tile_iter>

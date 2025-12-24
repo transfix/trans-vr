@@ -3064,7 +3064,7 @@ namespace CVC_NAMESPACE
 		  rm=4;
 		} 
 		// loop through the geometries and set rendering mode...
-		foreach (scene_geometry_collection::value_type mypair, _geometries) {
+		for (const auto& mypair : _geometries) {
                   if(cvcapp.hasProperty(mypair.first+".render_mode"))
                     {
                       cvcapp.log(3,str(boost::format("%s :: %s has a render mode set, ignoring\n")
@@ -3784,7 +3784,7 @@ namespace CVC_NAMESPACE
               rm=4;
             } 
             // loop through the geometries and set rendering mode...
-            foreach (scene_geometry_collection::value_type mypair, _geometries) {
+            for (const auto& mypair : _geometries) {
               if(cvcstate(mypair.first+".render_mode").initialized())
                 {
                   cvcapp.log(3,str(boost::format("%s :: %s has a render mode set, ignoring\n")

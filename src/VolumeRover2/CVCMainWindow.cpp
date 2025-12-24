@@ -1630,7 +1630,7 @@ QMessageBox::warning(this,"Warning", "here it is");
 			{
 				if( m_LocalSegThread )
 				{
-                                        if( m_LocalSegThread->running() )
+                                        if( m_LocalSegThread->isRunning() )
 						QMessageBox::critical(this,"Error","Local Segmentation thread already running!",QMessageBox::Ok,Qt::NoButton,Qt::NoButton);
 					else
 					{
@@ -1647,7 +1647,7 @@ QMessageBox::warning(this,"Warning", "here it is");
 			}
                         else
 			{
-				if(m_RemoteSegThread && m_RemoteSegThread->running())
+				if(m_RemoteSegThread && m_RemoteSegThread->isRunning())
 					QMessageBox::critical(this,"Error","Remote Segmentation thread already running!",QMessageBox::Ok,Qt::NoButton,Qt::NoButton);
 				else
 				{
@@ -2063,7 +2063,7 @@ void CVCMainWindow::showHistogramDialogSlot() {
 	if(!tmpdir.exists()) tmpdir.mkdir(tmpdir.absPath());
 	QFileInfo tmpfile(tmpdir,"tmp.rawiv");
 	std::stringstream ss;
-	ss << "Creating volume " << tmpfile.absFilePath().ascii() <<std::endl;
+	ss << "Creating volume " << tmpfile.absFilePath().toStdString().c_str() <<std::endl;
 	cvcapp.log(5,ss.str());
 	QString newfilename = QDir::convertSeparators(tmpfile.absFilePath());
 	VolMagick::createVolumeFile(newfilename.toStdString(),
@@ -2901,7 +2901,7 @@ void CVCMainWindow::MSLevelSetSlot()
 
 	      if(!tmpdir.exists()) tmpdir.mkdir(tmpdir.absPath());
 	      QFileInfo tmpfile(tmpdir,QFileInfo("MSLevelSet_outputPhi.rawiv").fileName());
-	      qDebug("Writting volume %s to %s (%s)", "MSLevelSet_outputPhi.rawiv", tmpfile.absFilePath().ascii(), QString::fromStdString(originalName).ascii());
+	      qDebug("Writting volume %s to %s (%s)", "MSLevelSet_outputPhi.rawiv", tmpfile.absFilePath().toStdString().c_str(), QString::fromStdString(originalName).toStdString().c_str());
 	      QString newfilename = QDir::convertSeparators(tmpfile.absFilePath());
 	      if(tmpfile.exists()) QFile::remove(newfilename);	    
 	        VolMagick::createVolumeFile(vol,
@@ -3080,7 +3080,7 @@ void CVCMainWindow::HOSegmentationSlot()
 
 		      if(!tmpdir.exists()) tmpdir.mkdir(tmpdir.absPath());
 	    	  QFileInfo tmpfile(tmpdir,QFileInfo("HOLevelSet_outputPhi.rawiv").fileName());
-		      qDebug("Writting volume %s to %s (%s)", "HOLevelSet_outputPhi.rawiv", tmpfile.absFilePath().ascii(), QString::fromStdString(originalName).ascii());
+		      qDebug("Writting volume %s to %s (%s)", "HOLevelSet_outputPhi.rawiv", tmpfile.absFilePath().toStdString().c_str(), QString::fromStdString(originalName).toStdString().c_str());
 		      QString newfilename = QDir::convertSeparators(tmpfile.absFilePath());
 	    	  if(tmpfile.exists()) QFile::remove(newfilename);	    
 	        	VolMagick::createVolumeFile(vol,
@@ -3153,7 +3153,7 @@ void CVCMainWindow::on_UserSegReadButton_clickedSlot()
 		strcpy(MPLSParams->userSegFileName, "");
 	else
 	{
-		strncpy(MPLSParams->userSegFileName, s.ascii(), s.length());
+		strncpy(MPLSParams->userSegFileName, s.toStdString().c_str(), s.length());
 		MPLSParams->userSegFileName[s.length()]='\0';
 	}
 	MPLevelSetDialogUi->m_userSegFileEdit->setText(QString("%1").arg(MPLSParams->userSegFileName));
@@ -3325,7 +3325,7 @@ void CVCMainWindow::MPSegmentationSlot()
 	 	
 		  //Dump all the implicit functions
 	      QFileInfo tmpfile(tmpdir,QFileInfo("MPLevelSet_outputPhi.rawv").fileName());
-	      qDebug("Writting volume %s to %s (%s)", "MPLevelSet_outputPhi.rawv", tmpfile.absFilePath().ascii(), QString::fromStdString(originalName).ascii());
+	      qDebug("Writting volume %s to %s (%s)", "MPLevelSet_outputPhi.rawv", tmpfile.absFilePath().toStdString().c_str(), QString::fromStdString(originalName).toStdString().c_str());
 	      QString newfilename = QDir::convertSeparators(tmpfile.absFilePath());
 	      if(tmpfile.exists()) QFile::remove(newfilename);	    
 		  std::vector<VolMagick::Volume> implicit_vols(nvols);
@@ -3555,7 +3555,7 @@ void CVCMainWindow::unimplementedSlot() {
 #ifdef USING_SEGMENTATION
 	 type = dialog->m_TabSegmentationType->currentIndex();
 	 
-	 m_Params[0] = std::string(dialog->m_RemoteSegmentationFilename->text().ascii());
+	 m_Params[0] = std::string(dialog->m_RemoteSegmentationFilename->text().toStdString().c_str());
 	 
 	 switch(dialog->m_TabSegmentationType->currentIndex())
 	 {
