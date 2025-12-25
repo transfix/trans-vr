@@ -100,6 +100,7 @@
 
 #include <QGLViewer/manipulatedCameraFrame.h>
 #include <QGLViewer/constraint.h>
+#include <QSurfaceFormat>
 
 #include <VolumeGridRover/VolumeGridRover.h>
 #include <VolumeGridRover/bspline_opt.h>
@@ -257,8 +258,14 @@ SliceCanvas::SliceCanvas(SliceCanvas::SliceAxis a, QWidget * parent, const char 
     m_CurrentPointClass(NULL), m_SliceAxis(a), m_PointSize(1), m_Variable(0), m_Timestep(0), m_Drawable(true),
     m_SliceTiles(NULL), m_NumSliceTiles(0), m_MouseIsDown(false), m_SelectionMode(0), m_Drag(false),
     /*m_SliceRenderer(NULL),*/ m_RenderSDF(false), m_RenderControlPoints(true), m_SliceDirty(true),
-    m_MouseZoomStarted(false), m_UpdateSliceOnRelease(false)
+    m_MouseZoomStarted(false), m_UpdateSliceOnRelease(false), m_CameraInitialized(false)
 {
+  // Request OpenGL compatibility profile for ARB fragment program support
+  QSurfaceFormat format;
+  format.setProfile(QSurfaceFormat::CompatibilityProfile);
+  format.setVersion(3, 3);
+  setFormat(format);
+  
   /* initialize the color maps */
   m_Palette = m_ByteMap;
   memset(m_ByteMap,0,256*4);
@@ -750,6 +757,23 @@ void SliceCanvas::updateSlice()
 
   uploadSlice(m_Slice.get(), m_SliceAxis == XY ? imgx : m_SliceAxis == XZ ? imgx : m_SliceAxis == ZY ? imgz : 0,
 	      m_SliceAxis == XY ? imgy : m_SliceAxis == XZ ? imgz : m_SliceAxis == ZY ? imgy : 0);
+  
+  // Update scene bounding box for proper camera framing
+  float centerX = (m_VertCoordMinX + m_VertCoordMaxX) / 2.0;
+  float centerY = (m_VertCoordMinY + m_VertCoordMaxY) / 2.0;
+  float width = m_VertCoordMaxX - m_VertCoordMinX;
+  float height = m_VertCoordMaxY - m_VertCoordMinY;
+  float radius = std::sqrt(width*width + height*height) / 2.0;
+  
+  setSceneCenter(Vec(centerX, centerY, 0.0));
+  setSceneRadius(radius);
+  
+  // Only reset camera view on first slice load, not when changing slices
+  if(!m_CameraInitialized && m_VolumeFileInfo.isSet()) {
+    camera()->showEntireScene();
+    m_CameraInitialized = true;
+  }
+  
   m_SliceDirty = false;
 }
 
@@ -1239,27 +1263,34 @@ void SliceCanvas::init()
   glDisable(GL_LIGHTING);
 
   /* initialize the slice renderer */
+  fprintf(stderr, "SliceCanvas::init(): Trying ARB Fragment Program Renderer...\n");
   m_SliceRenderer.reset(new ARBFragmentProgramSliceRenderer(this));
   if(m_SliceRenderer->init())
     {
+      fprintf(stderr, "SliceCanvas::init(): SUCCESS - using ARB Fragment Program Renderer\n");
       cvcapp.log(5, "SliceCanvas::init(): using ARB Fragment Program Renderer");
       goto initscene;
     }
 
+  fprintf(stderr, "SliceCanvas::init(): Trying Paletted Slice Renderer...\n");
   m_SliceRenderer.reset(new PalettedSliceRenderer(this));
   if(m_SliceRenderer->init())
     {
+      fprintf(stderr, "SliceCanvas::init(): SUCCESS - using Paletted Slice Renderer\n");
       cvcapp.log(5, "SliceCanvas::init(): using Paletted Slice Renderer");
       goto initscene;
     }
   
+  fprintf(stderr, "SliceCanvas::init(): Trying SGI Color Table Slice Renderer...\n");
   m_SliceRenderer.reset(new SGIColorTableSliceRenderer(this));
   if(m_SliceRenderer->init())
     {
+      fprintf(stderr, "SliceCanvas::init(): SUCCESS - using SGI Color Table Slice Renderer\n");
       cvcapp.log(5, "SliceCanvas::init(): using SGI Color Table Slice Renderer");
       goto initscene;
     }
 
+  fprintf(stderr, "SliceCanvas::init(): ERROR - could not find suitable slice renderer!\n");
   cvcapp.log(5, "SliceCanvas::init(): could not find suitable slice renderer!");
   if(m_SliceAxis == XY) //only pop up a message box for 1 of the slice canvases
     QMessageBox::critical(this,"Error","Cannot render slices using hardware! No suitable renderer available.",QMessageBox::Ok,QMessageBox::NoButton,QMessageBox::NoButton);
@@ -1283,7 +1314,24 @@ void SliceCanvas::init()
       cvcapp.log(5, boost::str(boost::format("gl: GL Vendor: %s")%glGetString(GL_VENDOR)));
       cvcapp.log(5, boost::str(boost::format("gl: GL Renderer: %s")%glGetString(GL_RENDERER)));
       cvcapp.log(5, boost::str(boost::format("gl: GL Version: %s")%glGetString(GL_VERSION)));
-      cvcapp.log(5, boost::str(boost::format("gl: GL Extensions: %s")%glGetString(GL_EXTENSIONS)));
+      
+      // In OpenGL 3.0+, glGetString(GL_EXTENSIONS) may return NULL
+      // Use glGetStringi instead for modern contexts
+      const GLubyte* extensions = glGetString(GL_EXTENSIONS);
+      if(extensions)
+        cvcapp.log(5, boost::str(boost::format("gl: GL Extensions: %s")%extensions));
+      else
+        {
+          GLint numExtensions = 0;
+          glGetIntegerv(GL_NUM_EXTENSIONS, &numExtensions);
+          std::string extList;
+          for(GLint i = 0; i < numExtensions; i++)
+            {
+              if(i > 0) extList += " ";
+              extList += reinterpret_cast<const char*>(glGetStringi(GL_EXTENSIONS, i));
+            }
+          cvcapp.log(5, boost::str(boost::format("gl: GL Extensions: %s")%extList));
+        }
       
       /* initialize GL extensions */
       cvcapp.log(5, boost::str(boost::format("gl: Initializing GL_VERSION_1_2: %s")%(glewIsSupported("GL_VERSION_1_2") ? "OK" : "FAILED")));
@@ -1880,6 +1928,11 @@ ARBFragmentProgramSliceRenderer::~ARBFragmentProgramSliceRenderer() {}
 bool ARBFragmentProgramSliceRenderer::init()
 {
   /* make sure the proper extensions are initialized */
+  fprintf(stderr, "ARBFragmentProgramSliceRenderer::init(): Checking extensions - ARB_vertex_program=%d ARB_fragment_program=%d ARB_multitexture=%d\n",
+    glewIsSupported("GL_ARB_vertex_program"),
+    glewIsSupported("GL_ARB_fragment_program"), 
+    glewIsSupported("GL_ARB_multitexture"));
+  
   if(//glewIsSupported("GL_VERSION_1_3") &&
      glewIsSupported("GL_ARB_vertex_program") &&
      glewIsSupported("GL_ARB_fragment_program") &&
@@ -1913,6 +1966,9 @@ void ARBFragmentProgramSliceRenderer::draw()
 {
   if(!m_SliceCanvas->m_Drawable || !m_SliceCanvas->m_VolumeFileInfo.isSet()) return;
 
+  fprintf(stderr, "ARBFragmentProgramSliceRenderer::draw(): NumSliceTiles=%u, Drawable=%d, VolumeFileInfo.isSet()=%d\n",
+    m_SliceCanvas->m_NumSliceTiles, m_SliceCanvas->m_Drawable, m_SliceCanvas->m_VolumeFileInfo.isSet());
+
   glColor3f(1.0,1.0,1.0);
   
   glPushAttrib(GL_ENABLE_BIT);
@@ -1922,6 +1978,13 @@ void ARBFragmentProgramSliceRenderer::draw()
   
   glEnable(GL_FRAGMENT_PROGRAM_ARB);
   glBindProgramARB(GL_FRAGMENT_PROGRAM_ARB, m_FragmentProgram);
+  
+  static int debugCount = 0;
+  if(debugCount < 3) {  // Only print first 3 frames to avoid spam
+    fprintf(stderr, "ARBFragmentProgramSliceRenderer::draw(): FragmentProgram=%u, PaletteTexture=%u\n",
+      m_FragmentProgram, m_PaletteTexture);
+    debugCount++;
+  }
   
   for(unsigned int i=0; i<m_SliceCanvas->m_NumSliceTiles; i++)
     {
@@ -1934,6 +1997,19 @@ void ARBFragmentProgramSliceRenderer::draw()
       glActiveTextureARB(GL_TEXTURE0_ARB);
       glEnable(GL_TEXTURE_2D);
       glBindTexture(GL_TEXTURE_2D, m_SliceCanvas->m_SliceTiles[i].texture);
+      
+      if(debugCount <= 3) {
+        fprintf(stderr, "  Tile[%u]: texture=%u, tex_coords=[%.3f,%.3f %.3f,%.3f %.3f,%.3f %.3f,%.3f], vert_coords=[%.3f,%.3f %.3f,%.3f %.3f,%.3f %.3f,%.3f]\n",
+          i, m_SliceCanvas->m_SliceTiles[i].texture,
+          m_SliceCanvas->m_SliceTiles[i].tex_coords[0], m_SliceCanvas->m_SliceTiles[i].tex_coords[1],
+          m_SliceCanvas->m_SliceTiles[i].tex_coords[2], m_SliceCanvas->m_SliceTiles[i].tex_coords[3],
+          m_SliceCanvas->m_SliceTiles[i].tex_coords[4], m_SliceCanvas->m_SliceTiles[i].tex_coords[5],
+          m_SliceCanvas->m_SliceTiles[i].tex_coords[6], m_SliceCanvas->m_SliceTiles[i].tex_coords[7],
+          m_SliceCanvas->m_SliceTiles[i].vert_coords[0], m_SliceCanvas->m_SliceTiles[i].vert_coords[1],
+          m_SliceCanvas->m_SliceTiles[i].vert_coords[2], m_SliceCanvas->m_SliceTiles[i].vert_coords[3],
+          m_SliceCanvas->m_SliceTiles[i].vert_coords[4], m_SliceCanvas->m_SliceTiles[i].vert_coords[5],
+          m_SliceCanvas->m_SliceTiles[i].vert_coords[6], m_SliceCanvas->m_SliceTiles[i].vert_coords[7]);
+      }
 	  
       glBegin(GL_QUADS);
       for(unsigned int j=0; j<4; j++)
@@ -1969,6 +2045,8 @@ void ARBFragmentProgramSliceRenderer::uploadSlice(unsigned char *slice, unsigned
      0.5, -0.5, -0.5, -0.5 };  
 			   
   */
+  fprintf(stderr, "ARBFragmentProgramSliceRenderer::uploadSlice(): dimx=%u, dimy=%u, slice=%p\n", dimx, dimy, slice);
+  
   if(!m_SliceCanvas->m_Drawable) return;
   
   m_SliceCanvas->makeCurrent();
@@ -1996,11 +2074,16 @@ void ARBFragmentProgramSliceRenderer::uploadSlice(unsigned char *slice, unsigned
   m_SliceCanvas->m_SliceTiles[0].vert_coords[6] = m_SliceCanvas->m_VertCoordMinX; m_SliceCanvas->m_SliceTiles[0].vert_coords[7] = m_SliceCanvas->m_VertCoordMinY;  /* bottom left */
   
   glBindTexture(GL_TEXTURE_2D, m_SliceCanvas->m_SliceTiles[0].texture);
-  glTexImage2D(GL_TEXTURE_2D, 0, GL_LUMINANCE8, dimx, dimy, 0, GL_LUMINANCE, GL_UNSIGNED_BYTE, slice);
+  glTexImage2D(GL_TEXTURE_2D, 0, GL_R8, dimx, dimy, 0, GL_RED, GL_UNSIGNED_BYTE, slice);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+  // Set swizzle to replicate red channel to all components for compatibility
+  GLint swizzleMask[] = {GL_RED, GL_RED, GL_RED, GL_ONE};
+  glTexParameteriv(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_RGBA, swizzleMask);
+  
+  uploadColorTable();
 #else
   
   //dimx and dimy must be 2^n so that makes things easier!
@@ -2055,11 +2138,14 @@ void ARBFragmentProgramSliceRenderer::uploadSlice(unsigned char *slice, unsigned
       //extract a tile from the slice to upload, then upload it!
       unsigned char sub_dimx = (x_split+1)*max_dimx - x_split*max_dimx;
 
-      glTexImage2D(GL_TEXTURE_2D, 0, GL_LUMINANCE8, dimx, dimy, 0, GL_LUMINANCE, GL_UNSIGNED_BYTE, slice);
+      glTexImage2D(GL_TEXTURE_2D, 0, GL_R8, dimx, dimy, 0, GL_RED, GL_UNSIGNED_BYTE, slice);
       glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
       glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
       glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
       glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+      // Set swizzle to replicate red channel to all components for compatibility
+      GLint swizzleMask[] = {GL_RED, GL_RED, GL_RED, GL_ONE};
+      glTexParameteriv(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_RGBA, swizzleMask);
     }
 
 #endif
@@ -2288,11 +2374,14 @@ void SGIColorTableSliceRenderer::uploadSlice(unsigned char *slice, unsigned int 
   m_SliceCanvas->m_SliceTiles[0].vert_coords[6] = m_SliceCanvas->m_VertCoordMinX; m_SliceCanvas->m_SliceTiles[0].vert_coords[7] = m_SliceCanvas->m_VertCoordMinY;  /* bottom left */
   
   glBindTexture(GL_TEXTURE_2D, m_SliceCanvas->m_SliceTiles[0].texture);
-  glTexImage2D(GL_TEXTURE_2D, 0, GL_INTENSITY8, dimx, dimy, 0, GL_LUMINANCE, GL_UNSIGNED_BYTE, slice);
+  glTexImage2D(GL_TEXTURE_2D, 0, GL_R8, dimx, dimy, 0, GL_RED, GL_UNSIGNED_BYTE, slice);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+  // Set swizzle to replicate red channel to all components for compatibility
+  GLint swizzleMask[] = {GL_RED, GL_RED, GL_RED, GL_ONE};
+  glTexParameteriv(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_RGBA, swizzleMask);
 
   uploadColorTable();
 }

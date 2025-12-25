@@ -310,6 +310,7 @@ class SliceCanvas : public QGLViewer
   bool m_SliceDirty;
   bool m_MouseZoomStarted;
   bool m_UpdateSliceOnRelease;
+  bool m_CameraInitialized;
 };
 
 class ARBFragmentProgramSliceRenderer : public SliceRenderer
