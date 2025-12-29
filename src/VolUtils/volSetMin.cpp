@@ -17,50 +17,51 @@
 
   You should have received a copy of the GNU Lesser General Public
   License along with this library; if not, write to the Free Software
-  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301
+  USA
 */
-
-#include <iostream>
-#include <sstream>
-#include <vector>
-#include <set>
-#include <algorithm>
-#include <stdio.h>
-#include <stdlib.h>
-
-#include <boost/tuple/tuple.hpp>
-#include <boost/tuple/tuple_comparison.hpp>
-#include <boost/tuple/tuple_io.hpp>
 
 #include <VolMagick/VolMagick.h>
 #include <VolMagick/VolumeCache.h>
 #include <VolMagick/endians.h>
-
-
+#include <algorithm>
+#include <boost/tuple/tuple.hpp>
+#include <boost/tuple/tuple_comparison.hpp>
+#include <boost/tuple/tuple_io.hpp>
+#include <iostream>
+#include <set>
+#include <sstream>
+#include <stdio.h>
+#include <stdlib.h>
+#include <vector>
 
 using namespace std;
 
-class VolMagickOpStatus : public VolMagick::VoxelOperationStatusMessenger
-{
+class VolMagickOpStatus : public VolMagick::VoxelOperationStatusMessenger {
 public:
-  void start(const VolMagick::Voxels *vox, Operation op, VolMagick::uint64 numSteps) const
-  {
+  void start(const VolMagick::Voxels *vox, Operation op,
+             VolMagick::uint64 numSteps) const {
     _numSteps = numSteps;
   }
 
-  void step(const VolMagick::Voxels *vox, Operation op, VolMagick::uint64 curStep) const
-  {
-    const char *opStrings[] = { "CalculatingMinMax", "CalculatingMin", "CalculatingMax",
-				"SubvolumeExtraction", "Fill", "Map", "Resize", "Composite",
-				"BilateralFilter", "ContrastEnhancement"};
+  void step(const VolMagick::Voxels *vox, Operation op,
+            VolMagick::uint64 curStep) const {
+    const char *opStrings[] = {"CalculatingMinMax",
+                               "CalculatingMin",
+                               "CalculatingMax",
+                               "SubvolumeExtraction",
+                               "Fill",
+                               "Map",
+                               "Resize",
+                               "Composite",
+                               "BilateralFilter",
+                               "ContrastEnhancement"};
 
-    fprintf(stderr,"%s: %5.2f %%\r",opStrings[op],(((float)curStep)/((float)((int)(_numSteps-1))))*100.0);
+    fprintf(stderr, "%s: %5.2f %%\r", opStrings[op],
+            (((float)curStep) / ((float)((int)(_numSteps - 1)))) * 100.0);
   }
 
-  void end(const VolMagick::Voxels *vox, Operation op) const
-  {
-    printf("\n");
-  }
+  void end(const VolMagick::Voxels *vox, Operation op) const { printf("\n"); }
 
 private:
   mutable VolMagick::uint64 _numSteps;
@@ -68,74 +69,62 @@ private:
 
 typedef boost::tuple<double, double, double> Color;
 
-int main(int argc, char **argv)
-{
-  if(argc < 4)
-    {
-      cerr << "Usage: volSetMin <volume> <min> <output>" << endl 
-	   << "This program sets minimum value of a volume." << endl;
+int main(int argc, char **argv) {
+  if (argc < 4) {
+    cerr << "Usage: volSetMin <volume> <min> <output>" << endl
+         << "This program sets minimum value of a volume." << endl;
 
-      return 1;
-    }
+    return 1;
+  }
 
-  try
-    {
-      VolMagick::Volume inputVol;
-      VolMagick::Volume outputVol;
-   
-      VolMagick::readVolumeFile(inputVol,argv[1]); ///first argument is input volume
+  try {
+    VolMagick::Volume inputVol;
+    VolMagick::Volume outputVol;
 
-   
-      double minval = atof(argv[2]);
+    VolMagick::readVolumeFile(inputVol,
+                              argv[1]); /// first argument is input volume
 
-      int xsize, ysize, zsize;
-      xsize = inputVol.XDim();
-      ysize = inputVol.YDim();
-      zsize = inputVol.ZDim();
+    double minval = atof(argv[2]);
 
-      cout << "Volume Size: " << xsize << " x " << ysize << " x " << zsize << endl;
-      int count = 0;
-      
-      outputVol.voxelType(inputVol.voxelType());
-      outputVol.dimension(inputVol.dimension());
-      outputVol.boundingBox(inputVol.boundingBox());
-      
+    int xsize, ysize, zsize;
+    xsize = inputVol.XDim();
+    ysize = inputVol.YDim();
+    zsize = inputVol.ZDim();
 
-      for(unsigned int i=0; i<xsize; i++) {
-	for(unsigned int j=0; j<ysize; j++) {
-	  for(unsigned int k=0; k<zsize; k++)
-	    {
-	      if(inputVol(i,j,k) < minval) {
+    cout << "Volume Size: " << xsize << " x " << ysize << " x " << zsize
+         << endl;
+    int count = 0;
 
-		count++;
-		outputVol(i,j,k,minval);
+    outputVol.voxelType(inputVol.voxelType());
+    outputVol.dimension(inputVol.dimension());
+    outputVol.boundingBox(inputVol.boundingBox());
 
-	      } else {
-		outputVol(i,j,k,inputVol(i,j,k));
-	      }
-		 
-	    }    
-	}
+    for (unsigned int i = 0; i < xsize; i++) {
+      for (unsigned int j = 0; j < ysize; j++) {
+        for (unsigned int k = 0; k < zsize; k++) {
+          if (inputVol(i, j, k) < minval) {
+
+            count++;
+            outputVol(i, j, k, minval);
+
+          } else {
+            outputVol(i, j, k, inputVol(i, j, k));
+          }
+        }
       }
-
-
-      VolMagick::createVolumeFile(argv[3],outputVol);
-      VolMagick::writeVolumeFile(outputVol,argv[3]);
-
-              
-      cout << "New Minimum: " << minval << endl;
-      cout << "Voxels changed: " << count << endl;
-
     }
-  catch(VolMagick::Exception &e)
-    {
-      cerr << e.what() << endl;
-    }
-  catch(std::exception &e)
-    {
-      cerr << e.what() << endl;
-    }
-  
+
+    VolMagick::createVolumeFile(argv[3], outputVol);
+    VolMagick::writeVolumeFile(outputVol, argv[3]);
+
+    cout << "New Minimum: " << minval << endl;
+    cout << "Voxels changed: " << count << endl;
+
+  } catch (VolMagick::Exception &e) {
+    cerr << e.what() << endl;
+  } catch (std::exception &e) {
+    cerr << e.what() << endl;
+  }
+
   return 0;
-
 }

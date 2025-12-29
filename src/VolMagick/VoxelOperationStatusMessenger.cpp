@@ -17,24 +17,38 @@
 
   You should have received a copy of the GNU Lesser General Public
   License along with this library; if not, write to the Free Software
-  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301
+  USA
 */
 
-/* $Id: VoxelOperationStatusMessenger.cpp 4742 2011-10-21 22:09:44Z transfix $ */
+/* $Id: VoxelOperationStatusMessenger.cpp 4742 2011-10-21 22:09:44Z transfix $
+ */
 
 #include <VolMagick/VoxelOperationStatusMessenger.h>
 
-namespace VolMagick
-{
-  const VoxelOperationStatusMessenger* vosmDefault = NULL;
-  void setDefaultMessenger(const VoxelOperationStatusMessenger* vosm) { vosmDefault = vosm; }
-
-  const char *VoxelOperationStatusMessenger::opStrings[] =
-    {
-      "Calculating Min/Max", "Calculating Min", "Calculating Max",
-      "Subvolume Extraction", "Fill", "Map", "Resize", "Composite",
-      "Bilateral Filter", "Contrast Enhancement", "Anisotropic Diffusion",
-      "CombineWith", "ReadVolumeFile", "WriteVolumeFile", "CreateVolumeFile",
-      "CalcGradient", "GDTVFilter", "CalculatingHistogram"
-    };
+namespace VolMagick {
+const VoxelOperationStatusMessenger *vosmDefault = NULL;
+void setDefaultMessenger(const VoxelOperationStatusMessenger *vosm) {
+  vosmDefault = vosm;
 }
+
+const char *VoxelOperationStatusMessenger::opStrings[] = {
+    "Calculating Min/Max",
+    "Calculating Min",
+    "Calculating Max",
+    "Subvolume Extraction",
+    "Fill",
+    "Map",
+    "Resize",
+    "Composite",
+    "Bilateral Filter",
+    "Contrast Enhancement",
+    "Anisotropic Diffusion",
+    "CombineWith",
+    "ReadVolumeFile",
+    "WriteVolumeFile",
+    "CreateVolumeFile",
+    "CalcGradient",
+    "GDTVFilter",
+    "CalculatingHistogram"};
+} // namespace VolMagick

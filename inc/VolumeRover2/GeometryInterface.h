@@ -1,8 +1,8 @@
 /*
   Copyright 2008-2011 The University of Texas at Austin
-  
-	Authors: Jose Rivera <transfix@ices.utexas.edu>
-	Advisor: Chandrajit Bajaj <bajaj@cs.utexas.edu>
+
+        Authors: Jose Rivera <transfix@ices.utexas.edu>
+        Advisor: Chandrajit Bajaj <bajaj@cs.utexas.edu>
 
   This file is part of Volume Rover.
 
@@ -29,42 +29,38 @@
 #include <CVC/Namespace.h>
 #include <VolumeRover2/DataWidget.h>
 #include <cvcraw_geometry/cvcgeom.h>
-#include <cvcraw_geometry/io.h>
 #include <cvcraw_geometry/cvcraw_geometry.h>
+#include <cvcraw_geometry/io.h>
 
-namespace Ui
-{
-  class GeometryInterface;
+namespace Ui {
+class GeometryInterface;
 }
 
-namespace CVC_NAMESPACE
-{
-  class VolumeViewer;
+namespace CVC_NAMESPACE {
+class VolumeViewer;
 }
 
 // 12/02/2011 -- transfix -- added a viewer widget for visual data inspection
-class GeometryInterface : public CVC_NAMESPACE::DataWidget
-{
+class GeometryInterface : public CVC_NAMESPACE::DataWidget {
   Q_OBJECT
 
- public:
-  GeometryInterface(const cvcraw_geometry::cvcgeom_t & geom= cvcraw_geometry::cvcgeom_t(),
-                  QWidget* parent = nullptr, 
-                  Qt::WindowFlags flags=Qt::WindowFlags());
+public:
+  GeometryInterface(
+      const cvcraw_geometry::cvcgeom_t &geom = cvcraw_geometry::cvcgeom_t(),
+      QWidget *parent = nullptr, Qt::WindowFlags flags = Qt::WindowFlags());
   virtual ~GeometryInterface();
 
-  virtual void initialize(const std::string& datakey);
-  virtual void initialize(const boost::any& datum);
+  virtual void initialize(const std::string &datakey);
+  virtual void initialize(const boost::any &datum);
 
   void setInterfaceInfo(const cvcraw_geometry::cvcgeom_t &geom);
 
- protected slots:
+protected slots:
   void setViewerState();
 
- signals:
+signals:
 
- protected:
-
+protected:
   Ui::GeometryInterface *_ui;
   CVC_NAMESPACE::VolumeViewer *_geometryInterfaceViewer;
 };

@@ -21,40 +21,41 @@
 #define __MESHER_H
 
 #include "Grid.h"
-#include "Mesh.h"
 #include "MCTester.h"
+#include "Mesh.h"
+
 #include <VolMagick/VolMagick.h>
-#include <vector>
 #include <map>
 #include <string>
+#include <vector>
 
 using namespace std;
 
-struct Minimizer
-{
+struct Minimizer {
   Point p;
   vector<unsigned int> edgeIndices;
 };
 
-class Mesher
-{
-  private:
-    Grid *grid;
-    Mesh *mesh;
-    map<unsigned int, vector<Minimizer> > boundaryMinimizers;
-    map<unsigned int, MCCase> boundaryMCCases;
-    vector<unsigned int> boundaryCells;
-    
-    vector<Minimizer> computeMinimizers(Cell &c,float isovalue,MCCase &mcCase);
-    Minimizer getMinimizer(Cell &c,float isovalue,vector<unsigned int> edges);
-    Point getMinimizerForEdge(unsigned int index, unsigned int edgeIndex);
-    vector<Point> computeDualElement(unsigned int index,unsigned int edgeIndex, float isovalue,vector<Index> neighbors);
+class Mesher {
+private:
+  Grid *grid;
+  Mesh *mesh;
+  map<unsigned int, vector<Minimizer>> boundaryMinimizers;
+  map<unsigned int, MCCase> boundaryMCCases;
+  vector<unsigned int> boundaryCells;
 
-  public:
-    void setGrid(Grid &g) { grid=&g; }
-    void setMesh(Mesh *m) { mesh=m; }
-    void generateMesh(float isovalue);
-    void saveMesh(string filename,VolMagick::Volume *volume);
+  vector<Minimizer> computeMinimizers(Cell &c, float isovalue,
+                                      MCCase &mcCase);
+  Minimizer getMinimizer(Cell &c, float isovalue, vector<unsigned int> edges);
+  Point getMinimizerForEdge(unsigned int index, unsigned int edgeIndex);
+  vector<Point> computeDualElement(unsigned int index, unsigned int edgeIndex,
+                                   float isovalue, vector<Index> neighbors);
+
+public:
+  void setGrid(Grid &g) { grid = &g; }
+  void setMesh(Mesh *m) { mesh = m; }
+  void generateMesh(float isovalue);
+  void saveMesh(string filename, VolMagick::Volume *volume);
 };
 
 #endif

@@ -17,7 +17,8 @@
 
   You should have received a copy of the GNU Lesser General Public
   License along with this library; if not, write to the Free Software
-  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301
+  USA
 */
 
 /* $Id: DimensionModify.cpp 4741 2011-10-21 21:22:06Z transfix $ */
@@ -25,10 +26,10 @@
 #include <qglobal.h>
 
 #if QT_VERSION < 0x040000
-#include <qvalidator.h>
 #include <qlineedit.h>
 #include <qmessagebox.h>
 #include <qpushbutton.h>
+#include <qvalidator.h>
 #else
 #include <QIntValidator>
 #include <QLineEdit>
@@ -44,22 +45,21 @@
 #include "ui_DimensionModify.h"
 #endif
 
-DimensionModify::DimensionModify(QWidget* parent,
+DimensionModify::DimensionModify(QWidget *parent,
 #if QT_VERSION < 0x040000
-                                 const char* name, WFlags f
+                                 const char *name, WFlags f
 #else
                                  Qt::WindowFlags flags
 #endif
                                  )
-  : QDialog(parent,
+    : QDialog(parent,
 #if QT_VERSION < 0x040000
-            name,false,f
+              name, false, f
 #else
-            flags
+              flags
 #endif
-            ),
-    _ui(NULL)
-{
+              ),
+      _ui(NULL) {
 #if QT_VERSION < 0x040000
   _ui = new DimensionModifyBase(this);
 #else
@@ -67,41 +67,37 @@ DimensionModify::DimensionModify(QWidget* parent,
   _ui->setupUi(this);
 #endif
 
-  QIntValidator* intv = new QIntValidator(this);
+  QIntValidator *intv = new QIntValidator(this);
 
   _ui->_dimensionX->setValidator(intv);
   _ui->_dimensionY->setValidator(intv);
   _ui->_dimensionZ->setValidator(intv);
 
-  connect(_ui->_ok,SIGNAL(clicked()),SLOT(okSlot()));
+  connect(_ui->_ok, SIGNAL(clicked()), SLOT(okSlot()));
 }
 
-DimensionModify::~DimensionModify()
-{ delete _ui; }
+DimensionModify::~DimensionModify() { delete _ui; }
 
-VolMagick::Dimension DimensionModify::dimension() const
-{
+VolMagick::Dimension DimensionModify::dimension() const {
   return VolMagick::Dimension(_ui->_dimensionX->text().toInt(),
                               _ui->_dimensionY->text().toInt(),
                               _ui->_dimensionZ->text().toInt());
 }
 
-void DimensionModify::dimension(const VolMagick::Dimension& dim)
-{
+void DimensionModify::dimension(const VolMagick::Dimension &dim) {
   _ui->_dimensionX->setText(QString("%1").arg(dim.XDim()));
   _ui->_dimensionY->setText(QString("%1").arg(dim.YDim()));
   _ui->_dimensionZ->setText(QString("%1").arg(dim.ZDim()));
 }
 
-void DimensionModify::okSlot()
-{
-  if(_ui->_dimensionX->text().toInt() <= 0 ||
-     _ui->_dimensionY->text().toInt() <= 0 ||
-     _ui->_dimensionZ->text().toInt() <= 0)
-    {
-      QMessageBox::critical( this, "Input error", "Dimension should be at least 1x1x1!" );
-      return;
-    }
+void DimensionModify::okSlot() {
+  if (_ui->_dimensionX->text().toInt() <= 0 ||
+      _ui->_dimensionY->text().toInt() <= 0 ||
+      _ui->_dimensionZ->text().toInt() <= 0) {
+    QMessageBox::critical(this, "Input error",
+                          "Dimension should be at least 1x1x1!");
+    return;
+  }
 
   accept();
 }

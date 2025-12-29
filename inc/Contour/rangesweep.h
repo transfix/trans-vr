@@ -1,7 +1,7 @@
 /*
   Copyright 2011 The University of Texas at Austin
 
-	Advisor: Chandrajit Bajaj <bajaj@cs.utexas.edu>
+        Advisor: Chandrajit Bajaj <bajaj@cs.utexas.edu>
 
   This file is part of MolSurf.
 
@@ -22,32 +22,32 @@
 #ifndef RANGE_SWEEP_H
 #define RANGE_SWEEP_H
 
-#include <Utility/utility.h>
 #include <Contour/Conplot.h>
 #include <Contour/data.h>
 #include <Contour/ipqueue.h>
 #include <Contour/range.h>
 #include <Contour/seedcells.h>
+#include <Utility/utility.h>
 
-class RangeSweepRec
-{
-	public:
-		int cellid;
-		Range range;
+class RangeSweepRec {
+public:
+  int cellid;
+  Range range;
 };
 
-class rangeSweep
-{
-	public:
-		rangeSweep(Data& d, SeedCells& s, Conplot& p) : data(d), seeds(s), plot(p) {}
-		~rangeSweep() {}
-		void compSeeds(void);
-	private:
-		void PropagateRegion(int cellid, float min, float max);
-		IndexedPriorityQueue<RangeSweepRec, double, int> queue;
-		Data& data;
-		SeedCells& seeds;
-		Conplot&   plot;
+class rangeSweep {
+public:
+  rangeSweep(Data &d, SeedCells &s, Conplot &p)
+      : data(d), seeds(s), plot(p) {}
+  ~rangeSweep() {}
+  void compSeeds(void);
+
+private:
+  void PropagateRegion(int cellid, float min, float max);
+  IndexedPriorityQueue<RangeSweepRec, double, int> queue;
+  Data &data;
+  SeedCells &seeds;
+  Conplot &plot;
 };
 
 #endif

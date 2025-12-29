@@ -1,7 +1,7 @@
 /*
   Copyright 2002-2003 The University of Texas at Austin
 
-	Authors: Anthony Thane <thanea@ices.utexas.edu>
+        Authors: Anthony Thane <thanea@ices.utexas.edu>
         Advisor: Chandrajit Bajaj <bajaj@cs.utexas.edu>
 
   This file is part of VolumeLibrary.
@@ -17,15 +17,16 @@
 
   You should have received a copy of the GNU Lesser General Public
   License along with this library; if not, write to the Free Software
-  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301
+  USA
 */
 
 // PolygonArray.cpp: implementation of the PolygonArray class.
 //
 //////////////////////////////////////////////////////////////////////
 
-#include <VolumeRenderer/PolygonArray.h>
 #include <VolumeRenderer/Polygon.h>
+#include <VolumeRenderer/PolygonArray.h>
 
 using namespace OpenGLVolumeRendering;
 
@@ -34,21 +35,13 @@ using namespace OpenGLVolumeRendering;
 //////////////////////////////////////////////////////////////////////
 
 PolygonArray::PolygonArray(unsigned int sizeGuess)
-  : m_PolygonArray(sizeGuess)
-{
-}
+    : m_PolygonArray(sizeGuess) {}
 
-PolygonArray::~PolygonArray()
-{
-}
+PolygonArray::~PolygonArray() {}
 
-void PolygonArray::clearPolygons()
-{
-  m_PolygonArray.clear();
-}
+void PolygonArray::clearPolygons() { m_PolygonArray.clear(); }
 
-void PolygonArray::addPolygon(const Polygon& polygon)
-{
+void PolygonArray::addPolygon(const Polygon &polygon) {
   //	doubleArray();
   //	m_PolygonArray[m_NumPolygons] = polygon;
   //	m_NumPolygons++;
@@ -56,17 +49,13 @@ void PolygonArray::addPolygon(const Polygon& polygon)
   m_PolygonArray.push_back(polygon);
 }
 
-Polygon* PolygonArray::getPolygon(unsigned int i)
-{
-  if(i<m_PolygonArray.size())
+Polygon *PolygonArray::getPolygon(unsigned int i) {
+  if (i < m_PolygonArray.size())
     return (&m_PolygonArray[i]);
   return 0;
 }
 
-unsigned int PolygonArray::getNumPolygons()
-{
-  return m_PolygonArray.size();
-}
+unsigned int PolygonArray::getNumPolygons() { return m_PolygonArray.size(); }
 
 #if 0
 void PolygonArray::doubleArray()

@@ -1,10 +1,9 @@
 #ifndef PARSE_CONFIG_H
 #define PARSE_CONFIG_H
 
-namespace Tiling
-{
+namespace Tiling {
 
-char * read_parse_file(char *filename);
+char *read_parse_file(char *filename);
 
 int parse_config(char *str);
 
@@ -16,6 +15,6 @@ int tcp_read_database(char *str, Interpo_struct *pstru, Name_struct *nstru);
 
 int do_database(Interpo_struct *pstru, Name_struct *nstru);
 
-};
+}; // namespace Tiling
 
 #endif

@@ -1,7 +1,7 @@
 /*
   Copyright 2002-2003 The University of Texas at Austin
 
-	Authors: Anthony Thane <thanea@ices.utexas.edu>
+        Authors: Anthony Thane <thanea@ices.utexas.edu>
         Advisor: Chandrajit Bajaj <bajaj@cs.utexas.edu>
 
   This file is part of VolumeLibrary.
@@ -17,32 +17,32 @@
 
   You should have received a copy of the GNU Lesser General Public
   License along with this library; if not, write to the Free Software
-  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301
+  USA
 */
 
 // VolumeRendererFactory.h: interface for the VolumeRendererFactory class.
 //
 //////////////////////////////////////////////////////////////////////
 
-#if !defined(AFX_VOLUMERENDERERFACTORY_H__565249A1_B920_4AFE_8A52_D1099907333C__INCLUDED_)
+#if !defined(                                                                \
+    AFX_VOLUMERENDERERFACTORY_H__565249A1_B920_4AFE_8A52_D1099907333C__INCLUDED_)
 #define AFX_VOLUMERENDERERFACTORY_H__565249A1_B920_4AFE_8A52_D1099907333C__INCLUDED_
 
 namespace OpenGLVolumeRendering {
-	class RGBABase;
-	class UnshadedBase;
+class RGBABase;
+class UnshadedBase;
 
-	class VolumeRendererFactory  
-	{
-	public:
-		VolumeRendererFactory();
-		virtual ~VolumeRendererFactory();
+class VolumeRendererFactory {
+public:
+  VolumeRendererFactory();
+  virtual ~VolumeRendererFactory();
 
-		static RGBABase* getRGBARenderer();
+  static RGBABase *getRGBARenderer();
 
-		static UnshadedBase* getUnshadedRenderer();
-
-	};
-
+  static UnshadedBase *getUnshadedRenderer();
 };
+
+}; // namespace OpenGLVolumeRendering
 
 #endif // !defined(AFX_VOLUMERENDERERFACTORY_H__565249A1_B920_4AFE_8A52_D1099907333C__INCLUDED_)

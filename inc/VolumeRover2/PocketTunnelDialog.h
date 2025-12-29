@@ -1,8 +1,8 @@
 /*
   Copyright 2011 The University of Texas at Austin
-  
-	Authors: Alex Rand <arand@ices.utexas.edu>
-	Advisor: Chandrajit Bajaj <bajaj@cs.utexas.edu>
+
+        Authors: Alex Rand <arand@ices.utexas.edu>
+        Advisor: Chandrajit Bajaj <bajaj@cs.utexas.edu>
 
   This file is part of Volume Rover.
 
@@ -24,37 +24,32 @@
 #ifndef __POCKETTUNNELDIALOG_H__
 #define __POCKETTUNNELDIALOG_H__
 
-//#include <qglobal.h>
+// #include <qglobal.h>
 
 #include <QDialog>
 #include <QString>
 
-namespace Ui
-{
-  class PocketTunnelDialog;
+namespace Ui {
+class PocketTunnelDialog;
 }
 
 #include "ui_PocketTunnelDialog.h"
-      
-class PocketTunnelDialog : public QDialog
-{
+
+class PocketTunnelDialog : public QDialog {
   Q_OBJECT
 
- public:
-  PocketTunnelDialog(QWidget *parent=nullptr,Qt::WindowFlags flags=Qt::WindowFlags());
+public:
+  PocketTunnelDialog(QWidget *parent = nullptr,
+                     Qt::WindowFlags flags = Qt::WindowFlags());
 
   virtual ~PocketTunnelDialog();
 
   void RunPocketTunnel();
 
-  
-  public slots:
+public slots:
 
-
-  protected:
-
+protected:
   Ui::PocketTunnelDialog *_ui;
-
 };
 
 #endif

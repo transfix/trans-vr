@@ -18,14 +18,16 @@
 
   You should have received a copy of the GNU Lesser General Public
   License along with this library; if not, write to the Free Software
-  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301
+  USA
 */
 
 // Quaternion.h: interface for the Quaternion class.
 //
 //////////////////////////////////////////////////////////////////////
 
-#if !defined(AFX_QUATERNION_H__4A5485F3_5ADE_437D_A2C9_6D864A63C23B__INCLUDED_)
+#if !defined(                                                                \
+    AFX_QUATERNION_H__4A5485F3_5ADE_437D_A2C9_6D864A63C23B__INCLUDED_)
 #define AFX_QUATERNION_H__4A5485F3_5ADE_437D_A2C9_6D864A63C23B__INCLUDED_
 
 #if _MSC_VER > 1000
@@ -34,66 +36,72 @@
 
 #include <FastContouring/Tuple.h>
 
-namespace FastContouring
-{
+namespace FastContouring {
 
 class Vector;
 class Matrix;
 class Ray;
 
-class Quaternion : public Tuple  
-{
+class Quaternion : public Tuple {
 public:
-	Quaternion();
-	virtual ~Quaternion();
-	Quaternion(const Quaternion& copy);
-	Quaternion& operator=(const Quaternion& copy);
-	Quaternion(float w, float x, float y, float z);
+  Quaternion();
+  virtual ~Quaternion();
+  Quaternion(const Quaternion &copy);
+  Quaternion &operator=(const Quaternion &copy);
+  Quaternion(float w, float x, float y, float z);
 
-	Quaternion& set(float w, float x, float y, float z);
-	Quaternion& set(float* array);
-	Quaternion& set(const Quaternion& copy);
+  Quaternion &set(float w, float x, float y, float z);
+  Quaternion &set(float *array);
+  Quaternion &set(const Quaternion &copy);
 
-	Quaternion operator+(const Quaternion& quat) const;
-	Quaternion operator-(const Quaternion& quat) const;
-	Quaternion operator-() const;
-	Quaternion operator*(const Quaternion& quat) const;
-	Quaternion operator*(float scalar) const;
-	Quaternion& operator*=(float scalar);
-	Quaternion operator/(float scalar) const;
-	Quaternion& operator/=(float scalar);
+  Quaternion operator+(const Quaternion &quat) const;
+  Quaternion operator-(const Quaternion &quat) const;
+  Quaternion operator-() const;
+  Quaternion operator*(const Quaternion &quat) const;
+  Quaternion operator*(float scalar) const;
+  Quaternion &operator*=(float scalar);
+  Quaternion operator/(float scalar) const;
+  Quaternion &operator/=(float scalar);
 
-	Quaternion& preMultiply(const Quaternion& quat);
-	Quaternion& postMultiply(const Quaternion& quat);
-	Quaternion& rotate(float angle, float x, float y, float z);
-	Quaternion& normalize();
+  Quaternion &preMultiply(const Quaternion &quat);
+  Quaternion &postMultiply(const Quaternion &quat);
+  Quaternion &rotate(float angle, float x, float y, float z);
+  Quaternion &normalize();
 
-	Quaternion conjugate() const;
-	Quaternion inverse() const;
-	float norm() const;
+  Quaternion conjugate() const;
+  Quaternion inverse() const;
+  float norm() const;
 
-	Vector applyRotation(const Vector& vec) const;
-	Ray applyRotation(const Ray& ray) const;
-	Matrix buildMatrix() const;
-	Quaternion power(double scalar) const;
-	
-	static Quaternion log(const Quaternion& a);
-	static Quaternion exponent(const Quaternion& a);
+  Vector applyRotation(const Vector &vec) const;
+  Ray applyRotation(const Ray &ray) const;
+  Matrix buildMatrix() const;
+  Quaternion power(double scalar) const;
 
-	static Quaternion rotation(float angle, float x, float y, float z);
-	static Quaternion rotation(float angle, const Vector& axis);
-	static Quaternion interpolate(const Quaternion& a, const Quaternion& b, float alpha);
-	static Quaternion startCubicInterpolate(const Quaternion& a, const Quaternion& b, const Quaternion& c, float alpha);
-	static Quaternion endCubicInterpolate(const Quaternion& a, const Quaternion& b, const Quaternion& c, float alpha);
-	static Quaternion cubicInterpolate(const Quaternion& a, const Quaternion& b, const Quaternion& c, const Quaternion& d, float alpha);
+  static Quaternion log(const Quaternion &a);
+  static Quaternion exponent(const Quaternion &a);
+
+  static Quaternion rotation(float angle, float x, float y, float z);
+  static Quaternion rotation(float angle, const Vector &axis);
+  static Quaternion interpolate(const Quaternion &a, const Quaternion &b,
+                                float alpha);
+  static Quaternion startCubicInterpolate(const Quaternion &a,
+                                          const Quaternion &b,
+                                          const Quaternion &c, float alpha);
+  static Quaternion endCubicInterpolate(const Quaternion &a,
+                                        const Quaternion &b,
+                                        const Quaternion &c, float alpha);
+  static Quaternion cubicInterpolate(const Quaternion &a, const Quaternion &b,
+                                     const Quaternion &c, const Quaternion &d,
+                                     float alpha);
 
 protected:
-	static Quaternion determineQi(const Quaternion& aiminus1, const Quaternion& ai, const Quaternion& aiplus1);
+  static Quaternion determineQi(const Quaternion &aiminus1,
+                                const Quaternion &ai,
+                                const Quaternion &aiplus1);
 
-	explicit Quaternion(const Vector& vec);
-
+  explicit Quaternion(const Vector &vec);
 };
 
-}
+} // namespace FastContouring
 
 #endif // !defined(AFX_QUATERNION_H__4A5485F3_5ADE_437D_A2C9_6D864A63C23B__INCLUDED_)

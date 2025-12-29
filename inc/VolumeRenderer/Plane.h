@@ -1,7 +1,7 @@
 /*
   Copyright 2002-2003 The University of Texas at Austin
 
-	Authors: Anthony Thane <thanea@ices.utexas.edu>
+        Authors: Anthony Thane <thanea@ices.utexas.edu>
         Advisor: Chandrajit Bajaj <bajaj@cs.utexas.edu>
 
   This file is part of VolumeLibrary.
@@ -17,7 +17,8 @@
 
   You should have received a copy of the GNU Lesser General Public
   License along with this library; if not, write to the Free Software
-  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301
+  USA
 */
 
 // Plane.h: interface for the Plane class.
@@ -29,114 +30,75 @@
 
 namespace OpenGLVolumeRendering {
 
-	/** Encapsulates a plane */
-	class Plane  
-	{
-	public:
-		Plane();
-		Plane(double a, double b, double c, double d);
-		virtual ~Plane();
+/** Encapsulates a plane */
+class Plane {
+public:
+  Plane();
+  Plane(double a, double b, double c, double d);
+  virtual ~Plane();
 
-		double signedDistance(double x, double y, double z) const;
+  double signedDistance(double x, double y, double z) const;
 
-		void normalizeNormal();
+  void normalizeNormal();
 
-		inline double& operator[](unsigned int index);
-		inline const double& operator[](unsigned int index) const;
+  inline double &operator[](unsigned int index);
+  inline const double &operator[](unsigned int index) const;
 
-		inline double& a();
-		inline double& b();
-		inline double& c();
-		inline double& d();
+  inline double &a();
+  inline double &b();
+  inline double &c();
+  inline double &d();
 
-		inline const double& a() const;
-		inline const double& b() const;
-		inline const double& c() const;
-		inline const double& d() const;
+  inline const double &a() const;
+  inline const double &b() const;
+  inline const double &c() const;
+  inline const double &d() const;
 
-	protected:
-		double m_A, m_B, m_C, m_D;
-
-	};
-
+protected:
+  double m_A, m_B, m_C, m_D;
 };
 
+}; // namespace OpenGLVolumeRendering
 
-inline double& OpenGLVolumeRendering::Plane::operator[](unsigned int index)
-{
-	if (index == 0) {
-		return m_A;
-	}
-	else if (index == 1) {
-		return m_B;
-	}
-	else if (index == 2) {
-		return m_C;
-	}
-	else {
-		return m_D;
-	}
+inline double &OpenGLVolumeRendering::Plane::operator[](unsigned int index) {
+  if (index == 0) {
+    return m_A;
+  } else if (index == 1) {
+    return m_B;
+  } else if (index == 2) {
+    return m_C;
+  } else {
+    return m_D;
+  }
 }
 
-inline const double& OpenGLVolumeRendering::Plane::operator[](unsigned int index) const
-{
-	if (index == 0) {
-		return m_A;
-	}
-	else if (index == 1) {
-		return m_B;
-	}
-	else if (index == 2) {
-		return m_C;
-	}
-	else {
-		return m_D;
-	}
+inline const double &
+OpenGLVolumeRendering::Plane::operator[](unsigned int index) const {
+  if (index == 0) {
+    return m_A;
+  } else if (index == 1) {
+    return m_B;
+  } else if (index == 2) {
+    return m_C;
+  } else {
+    return m_D;
+  }
 }
 
+inline double &OpenGLVolumeRendering::Plane::a() { return m_A; }
 
-inline double& OpenGLVolumeRendering::Plane::a()
-{
-	return m_A;
-}
+inline double &OpenGLVolumeRendering::Plane::b() { return m_B; }
 
-inline double& OpenGLVolumeRendering::Plane::b()
-{
-	return m_B;
-}
+inline double &OpenGLVolumeRendering::Plane::c() { return m_C; }
 
-inline double& OpenGLVolumeRendering::Plane::c()
-{
-	return m_C;
-}
+inline double &OpenGLVolumeRendering::Plane::d() { return m_D; }
 
-inline double& OpenGLVolumeRendering::Plane::d()
-{
-	return m_D;
-}
+inline const double &OpenGLVolumeRendering::Plane::a() const { return m_A; }
 
+inline const double &OpenGLVolumeRendering::Plane::b() const { return m_B; }
 
-inline const double& OpenGLVolumeRendering::Plane::a() const
-{
-	return m_A;
-}
+inline const double &OpenGLVolumeRendering::Plane::c() const { return m_C; }
 
-inline const double& OpenGLVolumeRendering::Plane::b() const
-{
-	return m_B;
-}
-
-inline const double& OpenGLVolumeRendering::Plane::c() const
-{
-	return m_C;
-}
-
-inline const double& OpenGLVolumeRendering::Plane::d() const
-{
-	return m_D;
-}
-
-
+inline const double &OpenGLVolumeRendering::Plane::d() const { return m_D; }
 
 #endif // !defined(AFX_OPENGLVOLUMEPLANE_H__04F216E9_22AB_4373_9CF5_754D66B0F950__INCLUDED_)
-

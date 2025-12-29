@@ -17,59 +17,50 @@
 
   You should have received a copy of the GNU Lesser General Public
   License along with this library; if not, write to the Free Software
-  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301
+  USA
 */
 
 #ifndef FILE_MEMBRANE_H
 #define FILE_MEMBRANE_H
 
-#include <stdlib.h>
+#include <fcntl.h>
+#include <float.h>
+#include <math.h>
 #include <stdio.h>
+#include <stdlib.h>
+#include <stream.h>
 #include <string.h>
+#include <sys/stat.h>
 #include <sys/time.h>
 #include <sys/types.h>
-#include <sys/stat.h>
-#include <fcntl.h>
 #include <unistd.h>
-#include <stdlib.h>
-#include <math.h>
-#include <float.h>
-#include <stream.h>
 
+template <class _DataType> class cMembraneSeg {
+protected:
+  _DataType *Data_mT;
+  float MinData_mf, MaxData_mf;
+  int Width_mi, Height_mi, Depth_mi;
+  int WtimesH_mi, WHD_mi;
+  double ZeroSurfaceValue_md;
+  char *TargetName_mc;
+  unsigned char *ClassData_muc;
 
-template <class _DataType> 
-class cMembraneSeg
-{
-	protected:
-		_DataType		*Data_mT;
-		float			MinData_mf, MaxData_mf;
-		int				Width_mi, Height_mi, Depth_mi;
-		int				WtimesH_mi, WHD_mi;
-		double			ZeroSurfaceValue_md;
-		char			*TargetName_mc;
-		unsigned char	*ClassData_muc;
+public:
+  cMembraneSeg();
+  ~cMembraneSeg();
 
+public:
+  void setData(_DataType *Data, float Min, float Max);
+  void setWHD(int W, int H, int D);
+  void setZeroSurface(double ZeroSurface);
+  void setFileName(char *FileName);
+  _DataType *TopSurfaceSeg();
+  _DataType *DownSurfaceSeg();
+  _DataType *Class(int ClassNum);
 
-	public:
-		cMembraneSeg();
-		~cMembraneSeg();
-
-	public:
-		void setData(_DataType *Data, float Min, float Max);
-		void setWHD(int W, int H, int D);
-		void setZeroSurface(double ZeroSurface);
-		void setFileName(char *FileName);
-		_DataType* TopSurfaceSeg();
-		_DataType* DownSurfaceSeg();
-		_DataType* Class(int ClassNum);
-		
-		
-	public:
-		int	Index(int X, int Y, int Z);
-
-
+public:
+  int Index(int X, int Y, int Z);
 };
 
 #endif
-
-

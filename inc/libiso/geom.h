@@ -1,7 +1,7 @@
 /*
   Copyright 2000-2002 The University of Texas at Austin
 
-	Authors: Sanghun Park <hun@ices.utexas.edu>
+        Authors: Sanghun Park <hun@ices.utexas.edu>
                  Xiaoyu Zhang <xiaoyu@ices.utexas.edu>
         Advisor: Chandrajit Bajaj <bajaj@cs.utexas.edu>
 
@@ -18,37 +18,38 @@
 
   You should have received a copy of the GNU Lesser General Public
   License along with this library; if not, write to the Free Software
-  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301
+  USA
 */
 
 #ifndef CCV_ISO_GEOMETRY
-#define	CCV_ISO_GEOMETRY
+#define CCV_ISO_GEOMETRY
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-	typedef float Point[3];
-	typedef float Normal[3];
-	typedef float Vector[3];
+typedef float Point[3];
+typedef float Normal[3];
+typedef float Vector[3];
 
-	typedef struct ray {
-		Point orig;				/* starting point of ray */
-		Vector dir;				/* ray direction */
-	} iRay;
+typedef struct ray {
+  Point orig; /* starting point of ray */
+  Vector dir; /* ray direction */
+} iRay;
 
-	typedef struct triangle {
-		Point vert[3];
-	} Triangle;
+typedef struct triangle {
+  Point vert[3];
+} Triangle;
 
-	typedef struct cell {
-		int id[3];
-		float orig[3];
-		float span[3];
-		float func[8];
-		/*Normal *norm;*/
-		Normal norm[8];
-	} Cell;
+typedef struct cell {
+  int id[3];
+  float orig[3];
+  float span[3];
+  float func[8];
+  /*Normal *norm;*/
+  Normal norm[8];
+} Cell;
 
 #ifdef __cplusplus
 }

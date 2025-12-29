@@ -1,8 +1,8 @@
 /*
   Copyright 2008 The University of Texas at Austin
-  
-	Authors: Jose Rivera <transfix@ices.utexas.edu>
-	Advisor: Chandrajit Bajaj <bajaj@cs.utexas.edu>
+
+        Authors: Jose Rivera <transfix@ices.utexas.edu>
+        Advisor: Chandrajit Bajaj <bajaj@cs.utexas.edu>
 
   This file is part of Volume Rover.
 
@@ -28,42 +28,36 @@
 #ifndef __CONTOURSINTERFACE_H__
 #define __CONTOURSINTERFACE_H__
 
-
 #include <VolumeRover2/DataWidget.h>
 #include <cvcraw_geometry/contours.h>
-#include <cvcraw_geometry/io.h>
 #include <cvcraw_geometry/cvcraw_geometry.h>
+#include <cvcraw_geometry/io.h>
 
-
-namespace Ui
-{
-  class ContoursInterface;
+namespace Ui {
+class ContoursInterface;
 }
 
-class ContoursInterface : public CVC_NAMESPACE::DataWidget
-{
+class ContoursInterface : public CVC_NAMESPACE::DataWidget {
   Q_OBJECT
 
- public:
-  ContoursInterface(const cvcraw_geometry::contours_t & geom= cvcraw_geometry::contours_t(),
-                  QWidget* parent = 0, 
-                  Qt::WindowFlags flags=Qt::WindowFlags());
+public:
+  ContoursInterface(
+      const cvcraw_geometry::contours_t &geom = cvcraw_geometry::contours_t(),
+      QWidget *parent = 0, Qt::WindowFlags flags = Qt::WindowFlags());
   virtual ~ContoursInterface();
 
-  virtual void initialize(const boost::any& datum)
-  {
+  virtual void initialize(const boost::any &datum) {
     setInterfaceInfo(boost::any_cast<cvcraw_geometry::contours_t>(datum));
   }
 
   void setInterfaceInfo(const cvcraw_geometry::contours_t &geom);
 
- signals:
+signals:
 
 public slots:
   void changeZ();
 
- protected:
-
+protected:
   Ui::ContoursInterface *_ui;
 
 private:

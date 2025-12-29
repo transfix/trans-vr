@@ -1,7 +1,7 @@
 /*
   Copyright 2011 The University of Texas at Austin
 
-	Advisor: Chandrajit Bajaj <bajaj@cs.utexas.edu>
+        Advisor: Chandrajit Bajaj <bajaj@cs.utexas.edu>
 
   This file is part of MolSurf.
 
@@ -24,31 +24,29 @@
 #ifndef BUCKET_SEARCH_H
 #define BUCKET_SEARCH_H
 
-#include <Utility/utility.h>
 #include <Contour/CellSearch.h>
+#include <Utility/utility.h>
 
 // Bucket search structure
-class BucketSearch : public CellSearch
-{
-	public:
-		BucketSearch(u_int n = 0, float* v = NULL);
-		~BucketSearch();
-		void Init(u_int n, float* v);
-		void InsertSeg(u_int cellid, float min, float max);
-		void Dump(void);
-		void Info(void);
-		void Traverse(float, void (*f)(u_int, void*), void*);
-		u_int getCells(float, u_int*);
-		void Done(void);
-	protected:
-		u_int whichBucket(float f)
-		{
-			return u_int(f-minval);
-		}
-	private:
-		int nbuckets;
-		float minval, maxval;
-		CellBucket* buckets;
+class BucketSearch : public CellSearch {
+public:
+  BucketSearch(u_int n = 0, float *v = NULL);
+  ~BucketSearch();
+  void Init(u_int n, float *v);
+  void InsertSeg(u_int cellid, float min, float max);
+  void Dump(void);
+  void Info(void);
+  void Traverse(float, void (*f)(u_int, void *), void *);
+  u_int getCells(float, u_int *);
+  void Done(void);
+
+protected:
+  u_int whichBucket(float f) { return u_int(f - minval); }
+
+private:
+  int nbuckets;
+  float minval, maxval;
+  CellBucket *buckets;
 };
 
 #endif

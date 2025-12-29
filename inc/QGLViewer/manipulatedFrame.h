@@ -25,23 +25,23 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 #ifndef QGLVIEWER_MANIPULATED_FRAME_H
 #define QGLVIEWER_MANIPULATED_FRAME_H
 
+#include <QDateTime>
+#include <QElapsedTimer>
 #include <QGLViewer/frame.h>
 #include <QGLViewer/mouseGrabber.h>
 #include <QGLViewer/qglviewer.h>
-
-#include <QDateTime>
 #include <QString>
-#include <QElapsedTimer>
 
 namespace qglviewer {
 /*! \brief A ManipulatedFrame is a Frame that can be rotated and translated
   using the mouse. \class ManipulatedFrame manipulatedFrame.h
   QGLViewer/manipulatedFrame.h
 
-  It converts the mouse motion into a translation and an orientation updates. A
-  ManipulatedFrame is used to move an object in the scene. Combined with object
-  selection, its MouseGrabber properties and a dynamic update of the scene, the
-  ManipulatedFrame introduces a great reactivity in your applications.
+  It converts the mouse motion into a translation and an orientation updates.
+  A ManipulatedFrame is used to move an object in the scene. Combined with
+  object selection, its MouseGrabber properties and a dynamic update of the
+  scene, the ManipulatedFrame introduces a great reactivity in your
+  applications.
 
   A ManipulatedFrame is attached to a QGLViewer using
   QGLViewer::setManipulatedFrame(): \code init() { setManipulatedFrame( new
@@ -70,30 +70,31 @@ namespace qglviewer {
   Frame::transformOf(), ...) can hence be applied to a ManipulatedFrame.
 
   A ManipulatedFrame is also a MouseGrabber. If the mouse cursor gets within a
-  distance of 10 pixels from the projected position of the ManipulatedFrame, the
-  ManipulatedFrame becomes the new QGLViewer::mouseGrabber(). It can then be
-  manipulated directly, without any specific state key, object selection or GUI
-  intervention. This is very convenient to directly move some objects in the
-  scene (typically a light). See the <a
+  distance of 10 pixels from the projected position of the ManipulatedFrame,
+  the ManipulatedFrame becomes the new QGLViewer::mouseGrabber(). It can then
+  be manipulated directly, without any specific state key, object selection or
+  GUI intervention. This is very convenient to directly move some objects in
+  the scene (typically a light). See the <a
   href="../examples/mouseGrabber.html">mouseGrabber example</a> as an
   illustration. Note that QWidget::setMouseTracking() needs to be enabled in
   order to use this feature (see the MouseGrabber documentation).
 
   <h3>Advanced functionalities</h3>
 
-  A QGLViewer can handle at most one ManipulatedFrame at a time. If you want to
-  move several objects in the scene, you simply have to keep a list of the
+  A QGLViewer can handle at most one ManipulatedFrame at a time. If you want
+  to move several objects in the scene, you simply have to keep a list of the
   different ManipulatedFrames, and to activate the right one (using
   QGLViewer::setManipulatedFrame()) when needed. This can for instance be done
-  according to an object selection: see the <a href="../examples/luxo.html">luxo
-  example</a> for an illustration.
+  according to an object selection: see the <a
+  href="../examples/luxo.html">luxo example</a> for an illustration.
 
-  When the ManipulatedFrame is being manipulated using the mouse (mouse pressed
-  and not yet released), isManipulated() returns \c true. This might be used to
-  trigger a specific action or display (as is done with QGLViewer::fastDraw()).
+  When the ManipulatedFrame is being manipulated using the mouse (mouse
+  pressed and not yet released), isManipulated() returns \c true. This might
+  be used to trigger a specific action or display (as is done with
+  QGLViewer::fastDraw()).
 
-  The ManipulatedFrame also emits a manipulated() signal each time its state is
-  modified by the mouse. This signal is automatically connected to the
+  The ManipulatedFrame also emits a manipulated() signal each time its state
+  is modified by the mouse. This signal is automatically connected to the
   QGLViewer::update() slot when the ManipulatedFrame is attached to a viewer
   using QGLViewer::setManipulatedFrame().
 
@@ -118,9 +119,9 @@ public:
   ManipulatedFrame &operator=(const ManipulatedFrame &mf);
 
 Q_SIGNALS:
-  /*! This signal is emitted when ever the ManipulatedFrame is manipulated (i.e.
-  rotated or translated) using the mouse. Connect this signal to any object that
-  should be notified.
+  /*! This signal is emitted when ever the ManipulatedFrame is manipulated
+  (i.e. rotated or translated) using the mouse. Connect this signal to any
+  object that should be notified.
 
   Note that this signal is automatically connected to the QGLViewer::update()
   slot, when the ManipulatedFrame is attached to a viewer using
@@ -135,8 +136,8 @@ Q_SIGNALS:
 
   /*! This signal is emitted when the ManipulatedFrame isSpinning().
 
-  Note that for the QGLViewer::manipulatedFrame(), this signal is automatically
-  connected to the QGLViewer::update() slot.
+  Note that for the QGLViewer::manipulatedFrame(), this signal is
+  automatically connected to the QGLViewer::update() slot.
 
   Connect this signal to any object that should be notified. Use the
   QGLViewer::QGLViewerPool() if you need to connect this signal to all the
@@ -166,15 +167,17 @@ public Q_SLOTS:
     wheelSensitivity_ = sensitivity;
   }
   /*! Defines the zoomSensitivity(). */
-  void setZoomSensitivity(qreal sensitivity) { zoomSensitivity_ = sensitivity; }
+  void setZoomSensitivity(qreal sensitivity) {
+    zoomSensitivity_ = sensitivity;
+  }
 
 public:
   /*! Returns the influence of a mouse displacement on the ManipulatedFrame
   rotation.
 
   Default value is 1.0. With an identical mouse displacement, a higher value
-  will generate a larger rotation (and inversely for lower values). A 0.0 value
-  will forbid ManipulatedFrame mouse rotation (see also constraint()).
+  will generate a larger rotation (and inversely for lower values). A 0.0
+  value will forbid ManipulatedFrame mouse rotation (see also constraint()).
 
   See also setRotationSensitivity(), translationSensitivity(),
   spinningSensitivity() and wheelSensitivity(). */
@@ -182,8 +185,8 @@ public:
   /*! Returns the influence of a mouse displacement on the ManipulatedFrame
   translation.
 
-  Default value is 1.0. You should not have to modify this value, since with 1.0
-  the ManipulatedFrame precisely stays under the mouse cursor.
+  Default value is 1.0. You should not have to modify this value, since
+  with 1.0 the ManipulatedFrame precisely stays under the mouse cursor.
 
   With an identical mouse displacement, a higher value will generate a larger
   translation (and inversely for lower values). A 0.0 value will forbid
@@ -194,8 +197,8 @@ public:
   of your scene, the camera may translate too fast. For a camera, it is the
   Camera::pivotPoint() that exactly matches the mouse displacement. Hence,
   instead of changing the translationSensitivity(), solve the problem by
-  (temporarily) setting the Camera::pivotPoint() to a point on the zoomed region
-  (see the QGLViewer::RAP_FROM_PIXEL mouse binding in the <a
+  (temporarily) setting the Camera::pivotPoint() to a point on the zoomed
+  region (see the QGLViewer::RAP_FROM_PIXEL mouse binding in the <a
   href="../mouse.html">mouse page</a>).
 
   See also setTranslationSensitivity(), rotationSensitivity(),
@@ -206,10 +209,10 @@ public:
 
   See spin(), spinningQuaternion() and startSpinning() for details.
 
-  Mouse speed is expressed in pixels per milliseconds. Default value is 0.3 (300
-  pixels per second). Use setSpinningSensitivity() to tune this value. A higher
-  value will make spinning more difficult (a value of 100.0 forbids spinning in
-  practice).
+  Mouse speed is expressed in pixels per milliseconds. Default value is 0.3
+  (300 pixels per second). Use setSpinningSensitivity() to tune this value. A
+  higher value will make spinning more difficult (a value of 100.0 forbids
+  spinning in practice).
 
   See also setSpinningSensitivity(), translationSensitivity(),
   rotationSensitivity() and wheelSensitivity(). */
@@ -220,14 +223,14 @@ public:
   Default value is 1.0. A higher value will make the zoom faster.
   Use a negative value to invert the zoom in and out directions.
 
-  See also setZoomSensitivity(), translationSensitivity(), rotationSensitivity()
-  wheelSensitivity() and spinningSensitivity(). */
+  See also setZoomSensitivity(), translationSensitivity(),
+  rotationSensitivity() wheelSensitivity() and spinningSensitivity(). */
   qreal zoomSensitivity() const { return zoomSensitivity_; }
   /*! Returns the mouse wheel sensitivity.
 
-  Default value is 1.0. A higher value will make the wheel action more efficient
-  (usually meaning a faster zoom). Use a negative value to invert the zoom in
-  and out directions.
+  Default value is 1.0. A higher value will make the wheel action more
+  efficient (usually meaning a faster zoom). Use a negative value to invert
+  the zoom in and out directions.
 
   See also setWheelSensitivity(), translationSensitivity(),
   rotationSensitivity() zoomSensitivity() and spinningSensitivity(). */
@@ -243,8 +246,8 @@ public:
   spinningQuaternion() at a frequency defined when the ManipulatedFrame
   startSpinning().
 
-  Use startSpinning() and stopSpinning() to change this state. Default value is
-  \c false. */
+  Use startSpinning() and stopSpinning() to change this state. Default value
+  is \c false. */
   bool isSpinning() const { return isSpinning_; }
   /*! Returns the incremental rotation that is applied by spin() to the
    ManipulatedFrame orientation when it isSpinning().
@@ -263,8 +266,8 @@ public Q_SLOTS:
     spinningQuaternion_ = spinningQuaternion;
   }
   virtual void startSpinning(int updateInterval);
-  /*! Stops the spinning motion started using startSpinning(). isSpinning() will
-    return \c false after this call. */
+  /*! Stops the spinning motion started using startSpinning(). isSpinning()
+    will return \c false after this call. */
   virtual void stopSpinning() {
     spinningTimer_.stop();
     isSpinning_ = false;
@@ -278,7 +281,8 @@ private Q_SLOTS:
   /*! @name Mouse event handlers */
   //@{
 protected:
-  virtual void mousePressEvent(QMouseEvent *const event, Camera *const camera);
+  virtual void mousePressEvent(QMouseEvent *const event,
+                               Camera *const camera);
   virtual void mouseMoveEvent(QMouseEvent *const event, Camera *const camera);
   virtual void mouseReleaseEvent(QMouseEvent *const event,
                                  Camera *const camera);
@@ -298,8 +302,8 @@ public:
 
    The binding between mouse buttons and key modifiers and MouseAction is set
    using QGLViewer::setMouseBinding(Qt::Key key, Qt::KeyboardModifiers
-   modifiers, Qt::MouseButton buttons, MouseHandler handler, MouseAction action,
-   bool withConstraint).
+   modifiers, Qt::MouseButton buttons, MouseHandler handler, MouseAction
+   action, bool withConstraint).
     */
   QGLViewer::MouseAction currentMouseAction() const { return action_; }
   //@}
@@ -317,7 +321,7 @@ public:
                                  QDomDocument &document) const;
 public Q_SLOTS:
   virtual void initFromDOMElement(const QDomElement &element);
-//@}
+  //@}
 
 #ifndef DOXYGEN
 protected:
@@ -333,10 +337,12 @@ protected:
   void computeMouseSpeed(const QMouseEvent *const e);
   int mouseOriginalDirection(const QMouseEvent *const e);
 
-  /*! Returns a screen scaled delta from event's position to prevPos_, along the
-          X or Y direction, whichever has the largest magnitude. */
-  qreal deltaWithPrevPos(QMouseEvent *const event, Camera *const camera) const;
-  /*! Returns a normalized wheel delta, proportionnal to wheelSensitivity(). */
+  /*! Returns a screen scaled delta from event's position to prevPos_, along
+     the X or Y direction, whichever has the largest magnitude. */
+  qreal deltaWithPrevPos(QMouseEvent *const event,
+                         Camera *const camera) const;
+  /*! Returns a normalized wheel delta, proportionnal to wheelSensitivity().
+   */
   qreal wheelDelta(const QWheelEvent *event) const;
 
   // Previous mouse position (used for incremental updates) and mouse press

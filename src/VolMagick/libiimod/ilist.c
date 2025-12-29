@@ -1,15 +1,15 @@
-/* 
+/*
  *  ilist.c -- Model list structure library routines.
  *
  *  Original author: James Kremer
  *  Modified by David Mastronarde  email: mast@colorado.edu
  *
  *  Copyright (C) 1995-2004 by Boulder Laboratory for 3-Dimensional Electron
- *  Microscopy of Cells ("BL3DEMC") and the Regents of the University of 
+ *  Microscopy of Cells ("BL3DEMC") and the Regents of the University of
  *  Colorado.  See dist/COPYRIGHT for full copyright notice.
  */
 /*
-  
+
 $Id: ilist.c 1478 2010-03-07 22:58:12Z transfix $
 
 $Log: ilist.c,v $
@@ -27,23 +27,22 @@ Fixed a declaration for Windows
 
 */
 
+#include <VolMagick/libiimod/ilist.h>
 #include <stdlib.h>
 #include <string.h>
-#include <VolMagick/libiimod/ilist.h>
 
 /*!
- * Gets a new list with data size given by [dsize], initial allocation by 
- * [asize].  Returns NULL for error. 
+ * Gets a new list with data size given by [dsize], initial allocation by
+ * [asize].  Returns NULL for error.
  */
-Ilist *ilistNew(int dsize, int asize)
-{
+Ilist *ilistNew(int dsize, int asize) {
   Ilist *l = (Ilist *)malloc(sizeof(Ilist));
 
   if (!l)
-    return(NULL);
+    return (NULL);
   l->dsize = dsize;
   l->current = -1;
-  l->size  = 0;
+  l->size = 0;
   l->store = asize;
   l->data = NULL;
   l->quantum = LIST_QUANTUM;
@@ -51,124 +50,115 @@ Ilist *ilistNew(int dsize, int asize)
     l->data = malloc(asize * dsize);
     if (!l->data) {
       ilistDelete(l);
-      return(NULL);
+      return (NULL);
     }
   }
-  return(l);
+  return (l);
 }
 
 /*! Limits the size of [list] to [size] */
-void ilistTruncate(Ilist *list, int size)
-{
+void ilistTruncate(Ilist *list, int size) {
   if (size >= 0 && size < list->size)
     list->size = size;
 }
 
-/*! Sets the quantum for increasing the size of [list] when needed to [size] */
-void ilistQuantum(Ilist *list, int size)
-{
+/*! Sets the quantum for increasing the size of [list] when needed to [size]
+ */
+void ilistQuantum(Ilist *list, int size) {
   if (size > 0)
     list->quantum = size;
 }
 
 /*! Returns a duplicate of [list], or NULL for an error */
-Ilist *ilistDup(Ilist *list)
-{
+Ilist *ilistDup(Ilist *list) {
   void *dsave;
   Ilist *newList;
   if (!list)
-    return(NULL);
+    return (NULL);
 
   /* First get a new list, then copy the structure, saving the data pointer */
   newList = ilistNew(list->dsize, list->store);
   if (!newList)
-    return(NULL);
+    return (NULL);
   dsave = newList->data;
   memcpy(newList, list, sizeof(Ilist));
   newList->data = dsave;
   if (list->size)
     memcpy(newList->data, list->data, list->dsize * list->size);
-  return(newList);
+  return (newList);
 }
 
-
 /*! Deletes [list] and frees all memory */
-void ilistDelete (Ilist *list)
-{
-  if (!list) 
+void ilistDelete(Ilist *list) {
+  if (!list)
     return;
-  if (list->data) 
+  if (list->data)
     free(list->data);
   free(list);
 }
 
-/*! 
+/*!
  * Returns a pointer to the first item from [list], or NULL for an error or
  * empty list.
  */
-void *ilistFirst(Ilist *list)
-{
+void *ilistFirst(Ilist *list) {
   if (!list || !list->size)
-    return(NULL);
+    return (NULL);
   list->current = 0;
-  return(list->data);
+  return (list->data);
 }
 
-/*! Returns a pointer to the next item from [list], or NULL at the end of the 
+/*! Returns a pointer to the next item from [list], or NULL at the end of the
   list */
-void *ilistNext(Ilist *list)
-{
+void *ilistNext(Ilist *list) {
   char *rptr;
   list->current++;
   if (list->current >= list->size)
-    return(NULL);
+    return (NULL);
   rptr = (char *)list->data + (list->current * list->dsize);
-  return((void *)rptr);
+  return ((void *)rptr);
 }
 
-/*! 
+/*!
  * Returns a pointer to the last item from [list], or NULL for an error or
  * empty list.
  */
-void *ilistLast(Ilist *list)
-{
+void *ilistLast(Ilist *list) {
   char *rptr;
   if (!list || !list->size)
-    return(NULL);
+    return (NULL);
   list->current = list->size - 1;
   rptr = (char *)list->data + (list->current * list->dsize);
-  return((void *)rptr);
+  return ((void *)rptr);
 }
 
 /*!
  * Returns a pointer to the item in [list] at the index given by [element],
  * or NULL for error. */
-void *ilistItem(Ilist *list, int element)
-{
+void *ilistItem(Ilist *list, int element) {
   char *rptr;
 
   if (!list || !list->size || element < 0 || element >= list->size)
-    return(NULL);
+    return (NULL);
   list->current = element;
   rptr = (char *)list->data + (list->current * list->dsize);
-  return((void *)rptr);
+  return ((void *)rptr);
 }
 
 /*! Returns size of [list] */
-int ilistSize(Ilist *list)
-{
-  if (!list) return(0);
-  return(list->size);
+int ilistSize(Ilist *list) {
+  if (!list)
+    return (0);
+  return (list->size);
 }
 
 /*! Appends [data] to the end of [list]; returns 1 if memory error */
-int ilistAppend(Ilist *list, void *data)
-{
+int ilistAppend(Ilist *list, void *data) {
   char *to;
-  if (list->store <= list->size){
+  if (list->store <= list->size) {
     if (list->store)
-      list->data = realloc(list->data, 
-                           list->dsize * (list->size + list->quantum));
+      list->data =
+          realloc(list->data, list->dsize * (list->size + list->quantum));
     else
       list->data = malloc(list->dsize * list->quantum);
     if (!list->data)
@@ -183,8 +173,7 @@ int ilistAppend(Ilist *list, void *data)
 }
 
 /*! Removes the item at [element] from [list] */
-void ilistRemove(Ilist *list, int element)
-{
+void ilistRemove(Ilist *list, int element) {
   int i;
   char *to, *from;
 
@@ -196,8 +185,7 @@ void ilistRemove(Ilist *list, int element)
 }
 
 /*! Swaps the two elements [e1] and [e2] on [list]; returns 1 if error */
-int ilistSwap(Ilist *list, int e1, int e2)
-{
+int ilistSwap(Ilist *list, int e1, int e2) {
   char *p1, *p2;
   void *tptr;
 
@@ -212,38 +200,33 @@ int ilistSwap(Ilist *list, int e1, int e2)
     return 1;
 
   memcpy(tptr, p1, list->dsize);
-  memcpy(p1,   p2, list->dsize);
+  memcpy(p1, p2, list->dsize);
   memcpy(p2, tptr, list->dsize);
   free(tptr);
   return 0;
 }
 
 /*! Inserts the item in [data] on the front of [list]; returns 1 if error */
-int ilistPush(Ilist *list, void *data)
-{
-  return ilistInsert(list, data, 0);
-}
+int ilistPush(Ilist *list, void *data) { return ilistInsert(list, data, 0); }
 
 /*!
  * Pops an item off the front of [list] and returns it; returns NULL if error.
  * The item has been malloc'ed and must be freed */
-void *ilistPop(Ilist *list)
-{
+void *ilistPop(Ilist *list) {
   void *data;
-     
-  if (!list->size) 
+
+  if (!list->size)
     return (NULL);
   data = (void *)malloc(list->dsize);
   if (!data)
-    return(NULL);
+    return (NULL);
   memcpy(data, list->data, list->dsize);
   ilistRemove(list, 0);
-  return(data);
+  return (data);
 }
 
 /*! Moves the item at [element] to the front of [list]; returns 1 if error */
-int ilistFloat(Ilist *list, int element)
-{
+int ilistFloat(Ilist *list, int element) {
   void *data;
   char *p1;
   int err;
@@ -265,10 +248,9 @@ int ilistFloat(Ilist *list, int element)
 
 /*!
  * Inserts an item in [data] into [list] at the position given by [element];
- * returns 1 if error 
+ * returns 1 if error
  */
-int ilistInsert(Ilist *list, void *data, int element)
-{
+int ilistInsert(Ilist *list, void *data, int element) {
   char *to;
   if (element < 0 || element > list->size)
     return 1;
@@ -277,7 +259,7 @@ int ilistInsert(Ilist *list, void *data, int element)
     return 1;
   if (element == list->size - 1)
     return 0;
-      
+
   ilistShift(list, element, 1);
   to = (char *)list->data + element * list->dsize;
   memcpy(to, data, list->dsize);
@@ -285,11 +267,10 @@ int ilistInsert(Ilist *list, void *data, int element)
 }
 
 /*!
- * Shift all items in [list] from the point given by [start] to the end by 
+ * Shift all items in [list] from the point given by [start] to the end by
  * [amount].
  */
-void ilistShift(Ilist *list, int start, int amount)
-{
+void ilistShift(Ilist *list, int start, int amount) {
   int l, lst, lnd, ldir;
   char *to, *from;
 
@@ -301,7 +282,7 @@ void ilistShift(Ilist *list, int start, int amount)
     lst = start;
     lnd = list->size - 1;
     ldir = 1;
-  } 
+  }
 
   for (l = lst; ldir * (l - lnd) <= 0; l += ldir) {
     from = (char *)list->data + l * list->dsize;

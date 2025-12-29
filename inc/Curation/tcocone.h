@@ -17,33 +17,27 @@
 
   You should have received a copy of the GNU Lesser General Public
   License along with this library; if not, write to the Free Software
-  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301
+  USA
 */
 
 #ifndef TCOCONE_H
 #define TCOCONE_H
 
 #include <Curation/datastruct.h>
-#include <Curation/util.h>
 #include <Curation/robust_cc.h>
+#include <Curation/util.h>
 
+namespace Curation {
+void compute_poles(Triangulation &triang);
 
-namespace Curation{
-void 
-compute_poles( Triangulation &triang);
+void mark_flat_vertices(Triangulation &triang, double ratio,
+                        double cocone_phi, double flat_phi);
 
-void 
-mark_flat_vertices( Triangulation &triang,
-		    double ratio, double cocone_phi, double flat_phi);
+void tcocone(const double DEFAULT_ANGLE, const double DEFAULT_SHARP,
+             const double DEFAULT_FLAT, const double DEFAULT_RATIO,
+             Triangulation &triang);
 
-void
-tcocone(const double DEFAULT_ANGLE,
-        const double DEFAULT_SHARP,
-	const double DEFAULT_FLAT,
-	const double DEFAULT_RATIO,
-	Triangulation &triang);
-
-}
+} // namespace Curation
 
 #endif // TCOCONE_H
-

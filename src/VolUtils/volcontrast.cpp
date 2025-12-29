@@ -17,83 +17,83 @@
 
   You should have received a copy of the GNU Lesser General Public
   License along with this library; if not, write to the Free Software
-  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301
+  USA
 */
 
 /* $Id: volcontrast.cpp 4742 2011-10-21 22:09:44Z transfix $ */
 
-#include <iostream>
-#include <vector>
-#include <stdio.h>
-#include <stdlib.h>
-
 #include <VolMagick/VolMagick.h>
 #include <VolMagick/VolumeCache.h>
 #include <VolMagick/endians.h>
-
 #include <fstream>
+#include <iostream>
+#include <stdio.h>
+#include <stdlib.h>
+#include <vector>
 
 using namespace std;
 
-class VolMagickOpStatus : public VolMagick::VoxelOperationStatusMessenger
-{
+class VolMagickOpStatus : public VolMagick::VoxelOperationStatusMessenger {
 public:
-  void start(const VolMagick::Voxels *vox, Operation op, VolMagick::uint64 numSteps) const
-  {
+  void start(const VolMagick::Voxels *vox, Operation op,
+             VolMagick::uint64 numSteps) const {
     _numSteps = numSteps;
   }
 
-  void step(const VolMagick::Voxels *vox, Operation op, VolMagick::uint64 curStep) const
-  {
-    const char *opStrings[] = { (char *)"CalculatingMinMax", (char *)"CalculatingMin", (char *)"CalculatingMax",
-				(char *)"SubvolumeExtraction", (char *)"Fill", (char *)"Map", (char *)"Resize", (char *)"Composite",
-				(char *)"BilateralFilter", (char *)"ContrastEnhancement", (char *)"AnisotropicDiffusion"};
+  void step(const VolMagick::Voxels *vox, Operation op,
+            VolMagick::uint64 curStep) const {
+    const char *opStrings[] = {(char *)"CalculatingMinMax",
+                               (char *)"CalculatingMin",
+                               (char *)"CalculatingMax",
+                               (char *)"SubvolumeExtraction",
+                               (char *)"Fill",
+                               (char *)"Map",
+                               (char *)"Resize",
+                               (char *)"Composite",
+                               (char *)"BilateralFilter",
+                               (char *)"ContrastEnhancement",
+                               (char *)"AnisotropicDiffusion"};
 
-    fprintf(stderr,"%s: %5.2f %%\r",opStrings[op],(((float)curStep)/((float)((int)(_numSteps-1))))*100.0);
+    fprintf(stderr, "%s: %5.2f %%\r", opStrings[op],
+            (((float)curStep) / ((float)((int)(_numSteps - 1)))) * 100.0);
   }
 
-  void end(const VolMagick::Voxels *vox, Operation op) const
-  {
-    printf("\n");
-  }
+  void end(const VolMagick::Voxels *vox, Operation op) const { printf("\n"); }
 
 private:
   mutable VolMagick::uint64 _numSteps;
 };
 
-int main(int argc, char **argv)
-{
-  if(argc < 5)
-    {
-      cerr << "Usage: " << argv[0] << " <input volume file> <var> <time> <output volume file> [resistor value (default 0.95)]" << endl;
-      return 1;
-    }
+int main(int argc, char **argv) {
+  if (argc < 5) {
+    cerr << "Usage: " << argv[0]
+         << " <input volume file> <var> <time> <output volume file> "
+            "[resistor value (default 0.95)]"
+         << endl;
+    return 1;
+  }
 
-  try
-    {
-      VolMagickOpStatus status;
-      VolMagick::setDefaultMessenger(&status);
+  try {
+    VolMagickOpStatus status;
+    VolMagick::setDefaultMessenger(&status);
 
-      unsigned int var, time;
-      var = atoi(argv[2]);
-      time = atoi(argv[3]);
+    unsigned int var, time;
+    var = atoi(argv[2]);
+    time = atoi(argv[3]);
 
-      VolMagick::Volume vol;
-      VolMagick::readVolumeFile(vol,argv[1],var,time);
-      if(argc == 6)
-	vol.contrastEnhancement(atof(argv[5]));
-      else
-	vol.contrastEnhancement();
-      VolMagick::writeVolumeFile(vol,argv[4]);
-    }
-  catch(VolMagick::Exception &e)
-    {
-      cerr << e.what() << endl;
-    }
-  catch(std::exception &e)
-    {
-      cerr << e.what() << endl;
-    }
+    VolMagick::Volume vol;
+    VolMagick::readVolumeFile(vol, argv[1], var, time);
+    if (argc == 6)
+      vol.contrastEnhancement(atof(argv[5]));
+    else
+      vol.contrastEnhancement();
+    VolMagick::writeVolumeFile(vol, argv[4]);
+  } catch (VolMagick::Exception &e) {
+    cerr << e.what() << endl;
+  } catch (std::exception &e) {
+    cerr << e.what() << endl;
+  }
 
   return 0;
 }

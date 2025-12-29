@@ -16,7 +16,8 @@
 
   You should have received a copy of the GNU Lesser General Public
   License along with this library; if not, write to the Free Software
-  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301
+  USA
 */
 
 #ifndef __E_FACE_H__
@@ -24,17 +25,15 @@
 
 #include <boost/array.hpp>
 
-namespace LBIE
-{
+namespace LBIE {
 
 typedef struct _edge_face {
   int faceidx;
-  //int orientation[4];
-  boost::array<int,4> orientation;
+  // int orientation[4];
+  boost::array<int, 4> orientation;
   int facebit;
 } edge_face;
 
-}
+} // namespace LBIE
 
 #endif
-

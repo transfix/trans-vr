@@ -18,32 +18,32 @@
 
   You should have received a copy of the GNU Lesser General Public
   License along with this library; if not, write to the Free Software
-  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301
+  USA
 */
 
+#include "ui_SuperSecondaryStructuresDialog.h"
+
 #include <CVC/App.h>
-#include <VolumeRover2/SuperSecondaryStructuresDialog.h>
-
-#include <cvcraw_geometry/cvcgeom.h>
-
 #include <QFileDialog>
 #include <QMessageBox>
-
-#include "ui_SuperSecondaryStructuresDialog.h"
+#include <VolumeRover2/SuperSecondaryStructuresDialog.h>
+#include <cvcraw_geometry/cvcgeom.h>
 
 #ifdef USING_SUPERSECONDARY_STRUCTURES
 #include <SuperSecondaryStructures/supersecondary_structures.h>
 #endif
 
 // arand, 5-4-2011: initial implementation
-#include <iostream> 
+#include <iostream>
 using namespace std;
 
-SuperSecondaryStructuresDialog::SuperSecondaryStructuresDialog(QWidget *parent,Qt::WindowFlags flags) 
-  : QDialog(parent, flags) {
+SuperSecondaryStructuresDialog::SuperSecondaryStructuresDialog(
+    QWidget *parent, Qt::WindowFlags flags)
+    : QDialog(parent, flags) {
 
   _ui = new Ui::SuperSecondaryStructuresDialog;
-  _ui->setupUi(this);   
+  _ui->setupUi(this);
 
   _ui->RobustCoconeCheckbox->setCheckState(Qt::Checked);
   _ui->BigBallEdit->insert("16");
@@ -54,71 +54,64 @@ SuperSecondaryStructuresDialog::SuperSecondaryStructuresDialog(QWidget *parent,Q
   _ui->FlatPhiEdit->insert("1.0472");
   _ui->MergeRatioEdit->insert("1.2");
   _ui->SegNumberEdit->insert("10");
- 
-  
-  
-  std::vector<std::string> geoms = 
-    cvcapp.data<cvcraw_geometry::cvcgeom_t>();
-  for (const auto& key : geoms)
-    _ui->GeometryList->addItem(QString::fromStdString(key));  
 
+  std::vector<std::string> geoms = cvcapp.data<cvcraw_geometry::cvcgeom_t>();
+  for (const auto &key : geoms)
+    _ui->GeometryList->addItem(QString::fromStdString(key));
 }
 
 SuperSecondaryStructuresDialog::~SuperSecondaryStructuresDialog() {
   delete _ui;
 }
 
-class SuperSecondaryStructuresThread
-{
+class SuperSecondaryStructuresThread {
 public:
-  SuperSecondaryStructuresThread(const std::string& geomSelected,
-		    const bool robust,
-		    const double bigBall,
-		    const double iF,
-		    const double fF,
-		    const double flatness,
-		    const double coconePhi,
-		    const double flatPhi,
-			const double mergeRatio,
-			const int segNumber,
-		    const std::string& resultName)
-    : _geomSelected(geomSelected), _robust(robust), _bigBall(bigBall),
-      _iF(iF), _fF(fF), _flatness(flatness),_coconePhi(coconePhi), _flatPhi(flatPhi), _mergeRatio(mergeRatio),
-	  _segNumber(segNumber), _resultName(resultName) {}
+  SuperSecondaryStructuresThread(const std::string &geomSelected,
+                                 const bool robust, const double bigBall,
+                                 const double iF, const double fF,
+                                 const double flatness,
+                                 const double coconePhi, const double flatPhi,
+                                 const double mergeRatio, const int segNumber,
+                                 const std::string &resultName)
+      : _geomSelected(geomSelected), _robust(robust), _bigBall(bigBall),
+        _iF(iF), _fF(fF), _flatness(flatness), _coconePhi(coconePhi),
+        _flatPhi(flatPhi), _mergeRatio(mergeRatio), _segNumber(segNumber),
+        _resultName(resultName) {}
 
-  void operator()()
-  {
+  void operator()() {
     CVC::ThreadFeedback feedback;
 
 #ifdef USING_SUPERSECONDARY_STRUCTURES
 
-	// get the selected geometry... 
-    CVCGEOM_NAMESPACE::cvcgeom_t geom = boost::any_cast<CVCGEOM_NAMESPACE::cvcgeom_t>(cvcapp.data()[_geomSelected]);
-    
-    SuperSecondaryStructures::Parameters params;    
+    // get the selected geometry...
+    CVCGEOM_NAMESPACE::cvcgeom_t geom =
+        boost::any_cast<CVCGEOM_NAMESPACE::cvcgeom_t>(
+            cvcapp.data()[_geomSelected]);
 
-	if (_resultName.empty()){
-		_resultName = _geomSelected;
-	}
+    SuperSecondaryStructures::Parameters params;
 
-    SuperSecondaryStructures::surfaceReconstruction(geom,
-					 params.b_robust(_robust).
-					 bb_ratio(_bigBall).
-					 theta_if(_iF).
-					 theta_ff(_fF).
-					 flatness_ratio(_flatness).
-					 cocone_phi(_coconePhi).
-					 flat_phi(_flatPhi).
-					 merge_ratio(_mergeRatio).
-					 seg_number(_segNumber).
-					 out_prefix(_resultName));
-   
- //   if (_resultName.empty()){
-  //    _resultName = _geomSelected + "_supersecondary_structures";
-   // }
-   // cvcapp.data(_resultName,result);
-   // cvcapp.listPropertyAppend("thumbnail.geometries", _resultName);
-  //  cvcapp.listPropertyAppend("zoomed.geometries", _resultName);
+    if (_resultName.empty()) {
+      _resultName = _geomSelected;
+    }
+
+    SuperSecondaryStructures::surfaceReconstruction(
+        geom, params.b_robust(_robust)
+                  .bb_ratio(_bigBall)
+                  .theta_if(_iF)
+                  .theta_ff(_fF)
+                  .flatness_ratio(_flatness)
+                  .cocone_phi(_coconePhi)
+                  .flat_phi(_flatPhi)
+                  .merge_ratio(_mergeRatio)
+                  .seg_number(_segNumber)
+                  .out_prefix(_resultName));
+
+    //   if (_resultName.empty()){
+    //    _resultName = _geomSelected + "_supersecondary_structures";
+    // }
+    // cvcapp.data(_resultName,result);
+    // cvcapp.listPropertyAppend("thumbnail.geometries", _resultName);
+    //  cvcapp.listPropertyAppend("zoomed.geometries", _resultName);
 
     // TODO: send a success message via CVCCustomEvent
 
@@ -140,7 +133,7 @@ private:
 };
 
 void SuperSecondaryStructuresDialog::RunSuperSecondaryStructures() {
-  // get parameters  
+  // get parameters
   std::string geomSelected = _ui->GeometryList->currentText().toStdString();
   bool robust = _ui->RobustCoconeCheckbox->isChecked();
   double bigBall = _ui->BigBallEdit->displayText().toDouble();
@@ -153,10 +146,10 @@ void SuperSecondaryStructuresDialog::RunSuperSecondaryStructures() {
   int segNumber = _ui->SegNumberEdit->displayText().toInt();
 
   std::string resultName = _ui->ResultEdit->displayText().toStdString();
-  
+
   cvcapp.startThread("supersecondary_structure_thread",
-                     SuperSecondaryStructuresThread(geomSelected,robust, bigBall,
-				       infiniteFinite, finiteFinite,
-				       flatness,coconePhi,flatPhi, mergeRatio, segNumber,
-				       resultName));
+                     SuperSecondaryStructuresThread(
+                         geomSelected, robust, bigBall, infiniteFinite,
+                         finiteFinite, flatness, coconePhi, flatPhi,
+                         mergeRatio, segNumber, resultName));
 }

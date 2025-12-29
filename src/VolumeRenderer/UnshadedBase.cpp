@@ -1,7 +1,7 @@
 /*
   Copyright 2002-2003 The University of Texas at Austin
 
-	Authors: Anthony Thane <thanea@ices.utexas.edu>
+        Authors: Anthony Thane <thanea@ices.utexas.edu>
         Advisor: Chandrajit Bajaj <bajaj@cs.utexas.edu>
 
   This file is part of VolumeLibrary.
@@ -17,15 +17,16 @@
 
   You should have received a copy of the GNU Lesser General Public
   License along with this library; if not, write to the Free Software
-  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301
+  USA
 */
 
 // UnshadedBase.cpp: implementation of the UnshadedBase class.
 //
 //////////////////////////////////////////////////////////////////////
 
-#include <VolumeRenderer/UnshadedBase.h>
 #include <VolumeRenderer/Polygon.h>
+#include <VolumeRenderer/UnshadedBase.h>
 
 using namespace OpenGLVolumeRendering;
 
@@ -33,29 +34,21 @@ using namespace OpenGLVolumeRendering;
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
 
-UnshadedBase::UnshadedBase()
-{
-}
+UnshadedBase::UnshadedBase() {}
 
-UnshadedBase::~UnshadedBase()
-{
-}
+UnshadedBase::~UnshadedBase() {}
 
 // Initializes the renderer.  Should be called again if the renderer is
 // moved to a different openGL context.  If this returns false, do not try
 // to use it to do volumeRendering
-bool UnshadedBase::initRenderer()
-{
-  return RendererBase::initRenderer();
-}
+bool UnshadedBase::initRenderer() { return RendererBase::initRenderer(); }
 
 // Uploads the transfer function for the colormapped data
 // Defaults to the unsigned char version
-bool UnshadedBase::uploadColorMap(const GLfloat* colorMap)
-{
-  GLubyte colors[256*4];
-  
-  for(int i = 0; i < 256*4; i++)
-    colors[i] = GLubyte(colorMap[i]*255.0f);
+bool UnshadedBase::uploadColorMap(const GLfloat *colorMap) {
+  GLubyte colors[256 * 4];
+
+  for (int i = 0; i < 256 * 4; i++)
+    colors[i] = GLubyte(colorMap[i] * 255.0f);
   uploadColorMap(colors);
 }

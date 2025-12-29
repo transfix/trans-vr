@@ -22,10 +22,9 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 
 **********************************************************************/
 
-#include <QGLViewer/manipulatedCameraFrame.h>
 #include <QGLViewer/domUtils.h>
+#include <QGLViewer/manipulatedCameraFrame.h>
 #include <QGLViewer/qglviewer.h>
-
 #include <QMouseEvent>
 
 using namespace qglviewer;
@@ -47,8 +46,8 @@ ManipulatedCameraFrame::ManipulatedCameraFrame()
 
 /*! Equal operator. Calls ManipulatedFrame::operator=() and then copy
  * attributes. */
-ManipulatedCameraFrame &ManipulatedCameraFrame::
-operator=(const ManipulatedCameraFrame &mcf) {
+ManipulatedCameraFrame &
+ManipulatedCameraFrame::operator=(const ManipulatedCameraFrame &mcf) {
   ManipulatedFrame::operator=(mcf);
 
   setFlySpeed(mcf.flySpeed());
@@ -59,7 +58,8 @@ operator=(const ManipulatedCameraFrame &mcf) {
   return *this;
 }
 
-/*! Copy constructor. Performs a deep copy of all members using operator=(). */
+/*! Copy constructor. Performs a deep copy of all members using operator=().
+ */
 ManipulatedCameraFrame::ManipulatedCameraFrame(
     const ManipulatedCameraFrame &mcf)
     : ManipulatedFrame(mcf) {
@@ -117,21 +117,21 @@ void ManipulatedCameraFrame::setFlyUpVector(const Vec &up) {
 
 #endif
 
-/*! This method will be called by the Camera when its orientation is changed, so
-that the sceneUpVector (private) is changed accordingly. You should not need to
-call this method. */
+/*! This method will be called by the Camera when its orientation is changed,
+so that the sceneUpVector (private) is changed accordingly. You should not
+need to call this method. */
 void ManipulatedCameraFrame::updateSceneUpVector() {
   sceneUpVector_ = inverseTransformOf(Vec(0.0, 1.0, 0.0));
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-//          S t a t e   s a v i n g   a n d   r e s t o r i n g               //
+//          S t a t e   s a v i n g   a n d   r e s t o r i n g //
 ////////////////////////////////////////////////////////////////////////////////
 
 /*! Returns an XML \c QDomElement that represents the ManipulatedCameraFrame.
 
- Adds to the ManipulatedFrame::domElement() the ManipulatedCameraFrame specific
- informations in a \c ManipulatedCameraParameters child QDomElement.
+ Adds to the ManipulatedFrame::domElement() the ManipulatedCameraFrame
+ specific informations in a \c ManipulatedCameraParameters child QDomElement.
 
  \p name is the name of the QDomElement tag. \p doc is the \c QDomDocument
  factory used to create QDomElement.
@@ -187,7 +187,7 @@ void ManipulatedCameraFrame::initFromDOMElement(const QDomElement &element) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-//                 M o u s e    h a n d l i n g                               //
+//                 M o u s e    h a n d l i n g //
 ////////////////////////////////////////////////////////////////////////////////
 
 #ifndef DOXYGEN
@@ -229,9 +229,9 @@ void ManipulatedCameraFrame::zoom(qreal delta, const Camera *const camera) {
 
 /*! Overloading of ManipulatedFrame::mouseMoveEvent().
 
-Motion depends on mouse binding (see <a href="../mouse.html">mouse page</a> for
-details). The resulting displacements are basically inverted from those of a
-ManipulatedFrame. */
+Motion depends on mouse binding (see <a href="../mouse.html">mouse page</a>
+for details). The resulting displacements are basically inverted from those of
+a ManipulatedFrame. */
 void ManipulatedCameraFrame::mouseMoveEvent(QMouseEvent *const event,
                                             Camera *const camera) {
   // #CONNECTION# QGLViewer::mouseMoveEvent does the update().
@@ -262,12 +262,13 @@ void ManipulatedCameraFrame::mouseMoveEvent(QMouseEvent *const event,
 #if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
     Quaternion rot = pitchYawQuaternion(event->x(), event->y(), camera);
 #else
-    Quaternion rot = pitchYawQuaternion(event->position().x(), event->position().y(), camera);
+    Quaternion rot = pitchYawQuaternion(event->position().x(),
+                                        event->position().y(), camera);
 #endif
     rotate(rot);
-    //#CONNECTION# wheelEvent MOVE_FORWARD case
-    // actual translation is made in flyUpdate().
-    // translate(inverseTransformOf(Vec(0.0, 0.0, -flySpeed())));
+    // #CONNECTION# wheelEvent MOVE_FORWARD case
+    //  actual translation is made in flyUpdate().
+    //  translate(inverseTransformOf(Vec(0.0, 0.0, -flySpeed())));
     break;
   }
 
@@ -275,7 +276,8 @@ void ManipulatedCameraFrame::mouseMoveEvent(QMouseEvent *const event,
 #if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
     Quaternion rot = pitchYawQuaternion(event->x(), event->y(), camera);
 #else
-    Quaternion rot = pitchYawQuaternion(event->position().x(), event->position().y(), camera);
+    Quaternion rot = pitchYawQuaternion(event->position().x(),
+                                        event->position().y(), camera);
 #endif
     rotate(rot);
     // actual translation is made in flyUpdate().
@@ -308,7 +310,8 @@ void ManipulatedCameraFrame::mouseMoveEvent(QMouseEvent *const event,
 #if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
     Quaternion rot = pitchYawQuaternion(event->x(), event->y(), camera);
 #else
-    Quaternion rot = pitchYawQuaternion(event->position().x(), event->position().y(), camera);
+    Quaternion rot = pitchYawQuaternion(event->position().x(),
+                                        event->position().y(), camera);
 #endif
     rotate(rot);
     break;
@@ -325,9 +328,11 @@ void ManipulatedCameraFrame::mouseMoveEvent(QMouseEvent *const event,
       qreal dy = 2.0 * rotationSensitivity() * (prevPos_.y() - event->y()) /
                  camera->screenHeight();
 #else
-      qreal dx = 2.0 * rotationSensitivity() * (prevPos_.x() - event->position().x()) /
+      qreal dx = 2.0 * rotationSensitivity() *
+                 (prevPos_.x() - event->position().x()) /
                  camera->screenWidth();
-      qreal dy = 2.0 * rotationSensitivity() * (prevPos_.y() - event->position().y()) /
+      qreal dy = 2.0 * rotationSensitivity() *
+                 (prevPos_.y() - event->position().y()) /
                  camera->screenHeight();
 #endif
       if (constrainedRotationIsReversed_)
@@ -337,13 +342,17 @@ void ManipulatedCameraFrame::mouseMoveEvent(QMouseEvent *const event,
     } else {
       Vec trans = camera->projectedCoordinatesOf(pivotPoint());
 #if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
-      rot = deformedBallQuaternion(event->x(), event->y(), trans[0], trans[1], camera);
+      rot = deformedBallQuaternion(event->x(), event->y(), trans[0], trans[1],
+                                   camera);
 #else
-      rot = deformedBallQuaternion(event->position().x(), event->position().y(), trans[0], trans[1], camera);
+      rot =
+          deformedBallQuaternion(event->position().x(), event->position().y(),
+                                 trans[0], trans[1], camera);
 #endif
     }
-    //#CONNECTION# These two methods should go together (spinning detection and
-    // activation)
+    // #CONNECTION# These two methods should go together (spinning detection
+    // and
+    //  activation)
     computeMouseSpeed(event);
     setSpinningQuaternion(rot);
     spin();
@@ -354,16 +363,20 @@ void ManipulatedCameraFrame::mouseMoveEvent(QMouseEvent *const event,
     Vec trans = camera->projectedCoordinatesOf(pivotPoint());
 
 #if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
-    const qreal angle = atan2(event->y() - trans[1], event->x() - trans[0]) -
-                        atan2(prevPos_.y() - trans[1], prevPos_.x() - trans[0]);
+    const qreal angle =
+        atan2(event->y() - trans[1], event->x() - trans[0]) -
+        atan2(prevPos_.y() - trans[1], prevPos_.x() - trans[0]);
 #else
-    const qreal angle = atan2(event->position().y() - trans[1], event->position().x() - trans[0]) -
-                        atan2(prevPos_.y() - trans[1], prevPos_.x() - trans[0]);
+    const qreal angle =
+        atan2(event->position().y() - trans[1],
+              event->position().x() - trans[0]) -
+        atan2(prevPos_.y() - trans[1], prevPos_.x() - trans[0]);
 #endif
 
     Quaternion rot(Vec(0.0, 0.0, 1.0), angle);
-    //#CONNECTION# These two methods should go together (spinning detection and
-    // activation)
+    // #CONNECTION# These two methods should go together (spinning detection
+    // and
+    //  activation)
     computeMouseSpeed(event);
     setSpinningQuaternion(rot);
     spin();
@@ -373,9 +386,11 @@ void ManipulatedCameraFrame::mouseMoveEvent(QMouseEvent *const event,
 
   case QGLViewer::ROLL: {
 #if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
-    const qreal angle = M_PI * (event->x() - prevPos_.x()) / camera->screenWidth();
+    const qreal angle =
+        M_PI * (event->x() - prevPos_.x()) / camera->screenWidth();
 #else
-    const qreal angle = M_PI * (event->position().x() - prevPos_.x()) / camera->screenWidth();
+    const qreal angle =
+        M_PI * (event->position().x() - prevPos_.x()) / camera->screenWidth();
 #endif
     Quaternion rot(Vec(0.0, 0.0, 1.0), angle);
     rotate(rot);
@@ -449,14 +464,14 @@ void ManipulatedCameraFrame::mouseReleaseEvent(QMouseEvent *const event,
 
 /*! This is an overload of ManipulatedFrame::wheelEvent().
 
-The wheel behavior depends on the wheel binded action. Current possible actions
-are QGLViewer::ZOOM, QGLViewer::MOVE_FORWARD, QGLViewer::MOVE_BACKWARD.
-QGLViewer::ZOOM speed depends on wheelSensitivity() while
-QGLViewer::MOVE_FORWARD and QGLViewer::MOVE_BACKWARD depend on flySpeed(). See
-QGLViewer::setWheelBinding() to customize the binding. */
+The wheel behavior depends on the wheel binded action. Current possible
+actions are QGLViewer::ZOOM, QGLViewer::MOVE_FORWARD,
+QGLViewer::MOVE_BACKWARD. QGLViewer::ZOOM speed depends on wheelSensitivity()
+while QGLViewer::MOVE_FORWARD and QGLViewer::MOVE_BACKWARD depend on
+flySpeed(). See QGLViewer::setWheelBinding() to customize the binding. */
 void ManipulatedCameraFrame::wheelEvent(QWheelEvent *const event,
                                         Camera *const camera) {
-  //#CONNECTION# QGLViewer::setWheelBinding, ManipulatedFrame::wheelEvent.
+  // #CONNECTION# QGLViewer::setWheelBinding, ManipulatedFrame::wheelEvent.
   switch (action_) {
   case QGLViewer::ZOOM: {
     zoom(wheelDelta(event), camera);
@@ -465,12 +480,13 @@ void ManipulatedCameraFrame::wheelEvent(QWheelEvent *const event,
   }
   case QGLViewer::MOVE_FORWARD:
   case QGLViewer::MOVE_BACKWARD:
-    //#CONNECTION# mouseMoveEvent() MOVE_FORWARD case
+    // #CONNECTION# mouseMoveEvent() MOVE_FORWARD case
     translate(
 #if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
         inverseTransformOf(Vec(0.0, 0.0, 0.2 * flySpeed() * event->delta())));
 #else
-        inverseTransformOf(Vec(0.0, 0.0, 0.2 * flySpeed() * event->angleDelta().y())));
+        inverseTransformOf(
+            Vec(0.0, 0.0, 0.2 * flySpeed() * event->angleDelta().y())));
 #endif
     Q_EMIT manipulated();
     break;
@@ -485,8 +501,8 @@ void ManipulatedCameraFrame::wheelEvent(QWheelEvent *const event,
   // The wheel triggers a fastDraw. A final update() is needed after the last
   // wheel event to polish the rendering using draw(). Since the last wheel
   // event does not say its name, we use the flyTimer_ to trigger flyUpdate(),
-  // which emits manipulated. Two wheel events separated by more than this delay
-  // milliseconds will trigger a draw().
+  // which emits manipulated. Two wheel events separated by more than this
+  // delay milliseconds will trigger a draw().
   const int finalDrawAfterWheelEventDelay = 400;
 
   // Starts (or prolungates) the timer.
@@ -504,15 +520,15 @@ void ManipulatedCameraFrame::wheelEvent(QWheelEvent *const event,
 
 /*! Returns a Quaternion that is a rotation around current camera Y,
  * proportionnal to the horizontal mouse position. */
-Quaternion ManipulatedCameraFrame::turnQuaternion(int x,
-                                                  const Camera *const camera) {
+Quaternion
+ManipulatedCameraFrame::turnQuaternion(int x, const Camera *const camera) {
   return Quaternion(Vec(0.0, 1.0, 0.0), rotationSensitivity() *
                                             (prevPos_.x() - x) /
                                             camera->screenWidth());
 }
 
-/*! Returns a Quaternion that is the composition of two rotations, inferred from
-  the mouse pitch (X axis) and yaw (sceneUpVector() axis). */
+/*! Returns a Quaternion that is the composition of two rotations, inferred
+  from the mouse pitch (X axis) and yaw (sceneUpVector() axis). */
 Quaternion
 ManipulatedCameraFrame::pitchYawQuaternion(int x, int y,
                                            const Camera *const camera) {

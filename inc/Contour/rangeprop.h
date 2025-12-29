@@ -1,7 +1,7 @@
 /*
   Copyright 2011 The University of Texas at Austin
 
-	Advisor: Chandrajit Bajaj <bajaj@cs.utexas.edu>
+        Advisor: Chandrajit Bajaj <bajaj@cs.utexas.edu>
 
   This file is part of MolSurf.
 
@@ -22,40 +22,33 @@
 #ifndef RANGE_PROP_H
 #define RANGE_PROP_H
 
-#include <Utility/utility.h>
 #include <Contour/Conplot.h>
 #include <Contour/data.h>
 #include <Contour/range.h>
 #include <Contour/seedcells.h>
 #include <Contour/squeue.h>
+#include <Utility/utility.h>
 
-class RangePropRec
-{
-	public:
-		int operator <(RangePropRec& r2)
-		{
-			return(this->cellid < r2.cellid);
-		}
-		int operator ==(RangePropRec& r2)
-		{
-			return(this->cellid == r2.cellid);
-		}
-		int cellid;
-		Range resp;
-		Range comp;
+class RangePropRec {
+public:
+  int operator<(RangePropRec &r2) { return (this->cellid < r2.cellid); }
+  int operator==(RangePropRec &r2) { return (this->cellid == r2.cellid); }
+  int cellid;
+  Range resp;
+  Range comp;
 };
 
-class rangeProp
-{
-	public:
-		rangeProp(Data& d, SeedCells& s, Conplot& p) : data(d), seeds(s), plot(p) {}
-		~rangeProp() {}
-		void compSeeds(void);
-	private:
-		SQueue<RangePropRec> queue;
-		Data& data;
-		SeedCells& seeds;
-		Conplot&   plot;
+class rangeProp {
+public:
+  rangeProp(Data &d, SeedCells &s, Conplot &p) : data(d), seeds(s), plot(p) {}
+  ~rangeProp() {}
+  void compSeeds(void);
+
+private:
+  SQueue<RangePropRec> queue;
+  Data &data;
+  SeedCells &seeds;
+  Conplot &plot;
 };
 
 #endif

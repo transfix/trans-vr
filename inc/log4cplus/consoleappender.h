@@ -23,52 +23,51 @@
 #ifndef _LOG4CPLUS_CONSOLE_APPENDER_HEADER_
 #define _LOG4CPLUS_CONSOLE_APPENDER_HEADER_
 
-#include <log4cplus/config.hxx>
 #include <log4cplus/appender.h>
+#include <log4cplus/config.hxx>
 
 namespace log4cplus {
-    /**
-     * ConsoleAppender appends log events to <code>std::cout</code> or
-     * <code>std::cerr</code> using a layout specified by the
-     * user. The default target is <code>std::cout</code>.
-     *
-     * <h3>Properties</h3>
-     * <dl>
-     * <dt><tt>logToStdErr</tt></dt>
-     * <dd>When it is set true, the output stream will be
-     * <code>std::cerr</code> instead of <code>std::cout</code>.</dd>
-     *
-     * <dt><tt>ImmediateFlush</tt></dt>
-     * <dd>When it is set true, output stream will be flushed after
-     * each appended event.</dd>
-     * 
-     * </dl>
-     */
-    class LOG4CPLUS_EXPORT ConsoleAppender : public Appender {
-    public:
-      // Ctors
-        ConsoleAppender(bool logToStdErr = false, bool immediateFlush = false);
-        ConsoleAppender(const log4cplus::helpers::Properties properties);
+/**
+ * ConsoleAppender appends log events to <code>std::cout</code> or
+ * <code>std::cerr</code> using a layout specified by the
+ * user. The default target is <code>std::cout</code>.
+ *
+ * <h3>Properties</h3>
+ * <dl>
+ * <dt><tt>logToStdErr</tt></dt>
+ * <dd>When it is set true, the output stream will be
+ * <code>std::cerr</code> instead of <code>std::cout</code>.</dd>
+ *
+ * <dt><tt>ImmediateFlush</tt></dt>
+ * <dd>When it is set true, output stream will be flushed after
+ * each appended event.</dd>
+ *
+ * </dl>
+ */
+class LOG4CPLUS_EXPORT ConsoleAppender : public Appender {
+public:
+  // Ctors
+  ConsoleAppender(bool logToStdErr = false, bool immediateFlush = false);
+  ConsoleAppender(const log4cplus::helpers::Properties properties);
 
-      // Dtor
-        ~ConsoleAppender();
+  // Dtor
+  ~ConsoleAppender();
 
-      // Methods
-        virtual void close();
+  // Methods
+  virtual void close();
 
-    protected:
-        virtual void append(const spi::InternalLoggingEvent& event);
+protected:
+  virtual void append(const spi::InternalLoggingEvent &event);
 
-      // Data
-        bool logToStdErr;
-        /**
-         * Immediate flush means that the underlying output stream
-         * will be flushed at the end of each append operation.
-         */
-        bool immediateFlush;
-    };
+  // Data
+  bool logToStdErr;
+  /**
+   * Immediate flush means that the underlying output stream
+   * will be flushed at the end of each append operation.
+   */
+  bool immediateFlush;
+};
 
 } // end namespace log4cplus
 
 #endif // _LOG4CPLUS_CONSOLE_APPENDER_HEADER_
-

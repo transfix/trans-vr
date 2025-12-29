@@ -17,23 +17,20 @@
 
   You should have received a copy of the GNU Lesser General Public
   License along with this library; if not, write to the Free Software
-  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301
+  USA
 */
 
 #include <CVC/Namespace.h>
 #include <QApplication>
 
-namespace CVC_NAMESPACE
-{
-  class Application : public QApplication
-  {
-    //    Q_OBJECT
+namespace CVC_NAMESPACE {
+class Application : public QApplication {
+  //    Q_OBJECT
 
-  public:
+public:
+  Application(int &argc, char **argv) : QApplication(argc, argv) {}
 
-    Application(int &argc, char **argv)
-      : QApplication(argc,argv) {}
-    
-    virtual bool notify(QObject *receiver, QEvent *e);
-  };
-}
+  virtual bool notify(QObject *receiver, QEvent *e);
+};
+} // namespace CVC_NAMESPACE

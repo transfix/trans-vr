@@ -17,15 +17,15 @@
 
   You should have received a copy of the GNU Lesser General Public
   License along with this library; if not, write to the Free Software
-  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301
+  USA
 */
 
 /* $Id: SceneLight.cpp 5746 2012-06-17 23:21:45Z transfix $ */
 
 #include <GeometryRenderer/SceneLight.h>
 
-namespace CVC_NAMESPACE
-{
+namespace CVC_NAMESPACE {
 #if 0
   void SceneLight::operator()()
   {
@@ -48,4 +48,4 @@ namespace CVC_NAMESPACE
     glLightModeli(GL_LIGHT_MODEL_TWO_SIDE, GL_TRUE);
   }
 #endif
-}
+} // namespace CVC_NAMESPACE

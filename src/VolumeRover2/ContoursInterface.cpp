@@ -17,47 +17,43 @@
 
   You should have received a copy of the GNU Lesser General Public
   License along with this library; if not, write to the Free Software
-  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301
+  USA
 */
 
 /* $Id: VolumeInterface.cpp 3602 2011-02-12 00:02:44Z transfix $ */
 
 #ifdef USING_TILING
 
-#include <qglobal.h>
-
-#include <QString>
-#include <QLabel>
-#include <QLineEdit>
-#include <QTreeWidget>
-#include <QPushButton>
-#include <QMessageBox>
-#include <QButtonGroup>
-#include <QComboBox>
-#include <QCheckBox>
-#include <QFileInfo>
 #include "ui_ContoursInterface.h"
 
-#include <VolumeRover2/ContoursInterface.h>
-#include <log4cplus/logger.h>
-
 #include <CVC/App.h>
-#include <cvcraw_geometry/cvcgeom.h>
-#include <cvcraw_geometry/io.h>
-#include <cvcraw_geometry/cvcraw_geometry.h>
-
+#include <QButtonGroup>
+#include <QCheckBox>
+#include <QComboBox>
+#include <QFileInfo>
+#include <QLabel>
+#include <QLineEdit>
+#include <QMessageBox>
+#include <QPushButton>
+#include <QString>
+#include <QTreeWidget>
+#include <VolumeRover2/ContoursInterface.h>
 #include <boost/filesystem.hpp>
-
+#include <cvcraw_geometry/cvcgeom.h>
+#include <cvcraw_geometry/cvcraw_geometry.h>
+#include <cvcraw_geometry/io.h>
+#include <iostream>
+#include <iterator>
+#include <log4cplus/logger.h>
+#include <qglobal.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <vector>
-#include <iterator>
-#include <iostream>
 
-ContoursInterface::ContoursInterface(const cvcraw_geometry::contours_t & geom,
-                  QWidget* parent,Qt::WindowFlags flags)  
-  : DataWidget(parent,flags),_ui(NULL)
-{
+ContoursInterface::ContoursInterface(const cvcraw_geometry::contours_t &geom,
+                                     QWidget *parent, Qt::WindowFlags flags)
+    : DataWidget(parent, flags), _ui(NULL) {
   _ui = new Ui::ContoursInterface;
   _ui->setupUi(this);
 
@@ -68,21 +64,22 @@ ContoursInterface::ContoursInterface(const cvcraw_geometry::contours_t & geom,
 
 ContoursInterface::~ContoursInterface() {}
 
-void ContoursInterface::setInterfaceInfo(const cvcraw_geometry::contours_t &contours)
-{
+void ContoursInterface::setInterfaceInfo(
+    const cvcraw_geometry::contours_t &contours) {
   _ui->_z_spacing->setText(QString("%1").arg(contours.z_scale()));
   _mapName = contours.name();
 }
 
-void ContoursInterface::changeZ()
-{
-  log4cplus::Logger logger = log4cplus::Logger::getInstance("VolumeRover2.ContoursInterface.changeZ");
+void ContoursInterface::changeZ() {
+  log4cplus::Logger logger = log4cplus::Logger::getInstance(
+      "VolumeRover2.ContoursInterface.changeZ");
 
   double zspacing = _ui->_z_spacing->displayText().toDouble();
   LOG4CPLUS_TRACE(logger, "zSpacing = " << zspacing);
   // string dataset = key.substr(0, key.rfind('.'));
   // LOG4CPLUS_TRACE(logger, "dataset = " << zspacing);
-  cvcraw_geometry::contours_t c = cvcapp.data<cvcraw_geometry::contours_t>(_mapName);
+  cvcraw_geometry::contours_t c =
+      cvcapp.data<cvcraw_geometry::contours_t>(_mapName);
   c.set_z_scale(zspacing);
   cvcapp.data(_mapName, c);
 

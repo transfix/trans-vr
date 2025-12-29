@@ -34,7 +34,8 @@
 // //   {
 // //     std::list<Point_3> verts;
 // // //     vertices(std::back_inserter(verts));
-// //     for (Vertex_list::const_iterator it = _vertices.begin(); it != _vertices.end(); ++it)
+// //     for (Vertex_list::const_iterator it = _vertices.begin(); it !=
+// _vertices.end(); ++it)
 // //       verts.push_back(it->first);
 // //     return verts;
 // //   }
@@ -42,7 +43,8 @@
 //   template <typename Output_iterator>
 //   void vertices(Output_iterator verts) const
 //   {
-//     for (Vertex_list::const_iterator it = _vertices.begin(); it != _vertices.end(); ++it)
+//     for (Vertex_list::const_iterator it = _vertices.begin(); it !=
+//     _vertices.end(); ++it)
 //     {
 //       *verts = it->first;
 //       ++verts;
@@ -54,11 +56,13 @@
 // //     // Update indices of vertices
 // //     size_t index = 0;
 // //     Vertex_list& verts = const_cast<Vertex_list&>(_vertices);
-// //     for (Vertex_list::iterator it = verts.begin(); it != verts.end(); ++it)
+// //     for (Vertex_list::iterator it = verts.begin(); it != verts.end();
+// ++it)
 // //       it->second = index++;
 
 // //     std::list<size_t> indices;
-// //     for(Tile_const_iterator it = _tiles.begin(); it != _tiles.end(); ++it)
+// //     for(Tile_const_iterator it = _tiles.begin(); it != _tiles.end();
+// ++it)
 // //     {
 // //       indices.push_back((*it)->second);
 // //     }

@@ -18,7 +18,8 @@
 
   You should have received a copy of the GNU Lesser General Public
   License along with this library; if not, write to the Free Software
-  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301
+  USA
 */
 
 // Ray.h: interface for the Ray class.
@@ -34,35 +35,35 @@
 
 #include <FastContouring/Vector.h>
 
-namespace FastContouring
-{
+namespace FastContouring {
 
-class Ray  
-{
+class Ray {
 public:
-	Ray();
-	Ray(const Vector& origin, const Vector& dir);
-	virtual ~Ray();
+  Ray();
+  Ray(const Vector &origin, const Vector &dir);
+  virtual ~Ray();
 
-	Vector getPointOnRay(float t) const;
+  Vector getPointOnRay(float t) const;
 
-	float nearestTOnXAxis(Vector Origin = Vector(0.0, 0.0, 0.0, 1.0)) const;
-	float nearestTOnYAxis(Vector Origin = Vector(0.0, 0.0, 0.0, 1.0)) const;
-	float nearestTOnZAxis(Vector Origin = Vector(0.0, 0.0, 0.0, 1.0)) const;
+  float nearestTOnXAxis(Vector Origin = Vector(0.0, 0.0, 0.0, 1.0)) const;
+  float nearestTOnYAxis(Vector Origin = Vector(0.0, 0.0, 0.0, 1.0)) const;
+  float nearestTOnZAxis(Vector Origin = Vector(0.0, 0.0, 0.0, 1.0)) const;
 
-	Vector nearestPointOnXAxis(Vector Origin = Vector(0.0, 0.0, 0.0, 1.0)) const;
-	Vector nearestPointOnYAxis(Vector Origin = Vector(0.0, 0.0, 0.0, 1.0)) const;
-	Vector nearestPointOnZAxis(Vector Origin = Vector(0.0, 0.0, 0.0, 1.0)) const;
+  Vector nearestPointOnXAxis(Vector Origin = Vector(0.0, 0.0, 0.0,
+                                                    1.0)) const;
+  Vector nearestPointOnYAxis(Vector Origin = Vector(0.0, 0.0, 0.0,
+                                                    1.0)) const;
+  Vector nearestPointOnZAxis(Vector Origin = Vector(0.0, 0.0, 0.0,
+                                                    1.0)) const;
 
-	float distanceToXAxis(Vector Origin = Vector(0.0, 0.0, 0.0, 1.0)) const;
-	float distanceToYAxis(Vector Origin = Vector(0.0, 0.0, 0.0, 1.0)) const;
-	float distanceToZAxis(Vector Origin = Vector(0.0, 0.0, 0.0, 1.0)) const;
+  float distanceToXAxis(Vector Origin = Vector(0.0, 0.0, 0.0, 1.0)) const;
+  float distanceToYAxis(Vector Origin = Vector(0.0, 0.0, 0.0, 1.0)) const;
+  float distanceToZAxis(Vector Origin = Vector(0.0, 0.0, 0.0, 1.0)) const;
 
-	Vector m_Origin;
-	Vector m_Dir;
-
+  Vector m_Origin;
+  Vector m_Dir;
 };
 
-}
+} // namespace FastContouring
 
 #endif // !defined(AFX_RAY_H__8760CFFE_A656_460F_A893_4C81FF806264__INCLUDED_)

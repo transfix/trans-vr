@@ -25,15 +25,15 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 #include <QGLViewer/qglviewer.h>
 
 #ifndef NO_VECTORIAL_RENDER
-#include <QGLViewer/VRender/VRender.h>
 #include "ui_VRenderInterface.h"
+
+#include <QGLViewer/VRender/VRender.h>
 #endif
 
 #include "ui_ImageInterface.h"
 
 // Output format list
 #include <QImageWriter>
-
 #include <qapplication.h>
 #include <qcursor.h>
 #include <qfiledialog.h>
@@ -63,17 +63,20 @@ void QGLViewer::setSnapshotFileName(const QString &name) {
 
 #ifndef DOXYGEN
 const QString &QGLViewer::snapshotFilename() const {
-  qWarning("snapshotFilename is deprecated. Use snapshotFileName() (uppercase "
-           "N) instead.");
+  qWarning(
+      "snapshotFilename is deprecated. Use snapshotFileName() (uppercase "
+      "N) instead.");
   return snapshotFileName();
 }
 #endif
 
 /*! Opens a dialog that displays the different available snapshot formats.
 
-Then calls setSnapshotFormat() with the selected one (unless the user cancels).
+Then calls setSnapshotFormat() with the selected one (unless the user
+cancels).
 
-Returns \c false if the user presses the Cancel button and \c true otherwise. */
+Returns \c false if the user presses the Cancel button and \c true otherwise.
+*/
 bool QGLViewer::openSnapshotFormatDialog() {
   bool ok = false;
 #if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
@@ -82,9 +85,9 @@ bool QGLViewer::openSnapshotFormatDialog() {
   QStringList list = formats.split(";;", Qt::SkipEmptyParts);
 #endif
   int current = list.indexOf(FDFormatString[snapshotFormat()]);
-  QString format =
-      QInputDialog::getItem(this, "Snapshot format", "Select a snapshot format",
-                            list, current, false, &ok);
+  QString format = QInputDialog::getItem(this, "Snapshot format",
+                                         "Select a snapshot format", list,
+                                         current, false, &ok);
   if (ok)
     setSnapshotFormat(Qtformat[format]);
   return ok;
@@ -97,11 +100,11 @@ void QGLViewer::initializeSnapshotFormats() {
   QStringList formatList;
   for (int i = 0; i < list.size(); ++i)
     formatList << QString(list.at(i).toUpper());
-//        qWarning("Available image formats: ");
-//        QStringList::Iterator it = formatList.begin();
-//        while( it != formatList.end() )
-//  	      qWarning((*it++).);  QT4 change this. qWarning no longer accepts
-//  QString
+    //        qWarning("Available image formats: ");
+    //        QStringList::Iterator it = formatList.begin();
+    //        while( it != formatList.end() )
+    //  	      qWarning((*it++).);  QT4 change this. qWarning no longer
+    //  accepts QString
 
 #ifndef NO_VECTORIAL_RENDER
   // We add the 3 vectorial formats to the list
@@ -110,8 +113,8 @@ void QGLViewer::initializeSnapshotFormats() {
   formatList += "XFIG";
 #endif
 
-  // Check that the interesting formats are available and add them in "formats"
-  // Unused formats: XPM XBM PBM PGM
+  // Check that the interesting formats are available and add them in
+  // "formats" Unused formats: XPM XBM PBM PGM
   QStringList QtText, MenuText, Ext;
   QtText += "JPEG";
   MenuText += "JPEG (*.jpg)";
@@ -140,7 +143,8 @@ void QGLViewer::initializeSnapshotFormats() {
   QStringList::iterator itExt = Ext.begin();
 
   while (itText != QtText.end()) {
-    // QMessageBox::information(this, "Snapshot ", "Trying format\n"+(*itText));
+    // QMessageBox::information(this, "Snapshot ", "Trying
+    // format\n"+(*itText));
     if (formatList.contains((*itText))) {
       // QMessageBox::information(this, "Snapshot ", "Recognized
       // format\n"+(*itText));
@@ -222,7 +226,8 @@ void ProgressDialog::showProgressDialog(QOpenGLWidget *parent) {
   progressDialog->show();
 }
 
-void ProgressDialog::updateProgress(float progress, const QString &stepString) {
+void ProgressDialog::updateProgress(float progress,
+                                    const QString &stepString) {
   progressDialog->setValue(int(progress * 100));
   QString message(stepString);
   if (message.length() > 33)
@@ -246,9 +251,10 @@ public:
 #endif // DOXYGEN
 
 // Pops-up a vectorial output option dialog box and save to fileName
-// Returns -1 in case of Cancel, 0 for success and (todo) error code in case of
-// problem.
-static int saveVectorialSnapshot(const QString &fileName, QOpenGLWidget *widget,
+// Returns -1 in case of Cancel, 0 for success and (todo) error code in case
+// of problem.
+static int saveVectorialSnapshot(const QString &fileName,
+                                 QOpenGLWidget *widget,
                                  const QString &snapshotFormat) {
   static VRenderInterface *VRinterface = nullptr;
 
@@ -358,7 +364,8 @@ bool QGLViewer::saveImageSnapshot(const QString &fileName) {
   QSize subSize(int(dipWidth / oversampling), int(dipHeight / oversampling));
 
   qreal aspectRatio = dipWidth / static_cast<qreal>(dipHeight);
-  qreal newAspectRatio = finalSize.width() / static_cast<qreal>(finalSize.height());
+  qreal newAspectRatio =
+      finalSize.width() / static_cast<qreal>(finalSize.height());
 
   qreal zNear = camera()->zNear();
   qreal zFar = camera()->zFar();
@@ -395,8 +402,9 @@ bool QGLViewer::saveImageSnapshot(const QString &fileName) {
     return false;
   }
 
-  // ProgressDialog disabled since it interfers with the screen grabing mecanism
-  // on some platforms. Too bad. ProgressDialog::showProgressDialog(this);
+  // ProgressDialog disabled since it interfers with the screen grabing
+  // mecanism on some platforms. Too bad.
+  // ProgressDialog::showProgressDialog(this);
 
   qreal scaleX = subSize.width() / static_cast<qreal>(finalSize.width());
   qreal scaleY = subSize.height() / static_cast<qreal>(finalSize.height());
@@ -507,17 +515,18 @@ bool QGLViewer::saveImageSnapshot(const QString &fileName) {
 /*! Saves a snapshot of the current image displayed by the widget.
 
  Options are set using snapshotFormat(), snapshotFileName() and
- snapshotQuality(). For non vectorial image formats, the image size is equal to
- the current viewer's dimensions (see width() and height()). See
+ snapshotQuality(). For non vectorial image formats, the image size is equal
+ to the current viewer's dimensions (see width() and height()). See
  snapshotFormat() for details on supported formats.
 
- If \p automatic is \c false (or if snapshotFileName() is empty), a file dialog
- is opened to ask for the file name.
+ If \p automatic is \c false (or if snapshotFileName() is empty), a file
+ dialog is opened to ask for the file name.
 
- When \p automatic is \c true, the file name is set to \c NAME-NUMBER, where \c
- NAME is snapshotFileName() and \c NUMBER is snapshotCounter(). The
- snapshotCounter() is automatically incremented after each snapshot saving. This
- is useful to create videos from your application: \code void Viewer::init()
+ When \p automatic is \c true, the file name is set to \c NAME-NUMBER, where
+ \c NAME is snapshotFileName() and \c NUMBER is snapshotCounter(). The
+ snapshotCounter() is automatically incremented after each snapshot saving.
+ This is useful to create videos from your application: \code void
+ Viewer::init()
  {
    resize(720, 576); // PAL DV format (use 720x480 for NTSC DV)
    connect(this, SIGNAL(drawFinished(bool)), SLOT(saveSnapshot(bool)));
@@ -543,10 +552,10 @@ bool QGLViewer::saveImageSnapshot(const QString &fileName) {
  and the snapshotCounter() is not incremented. This is useful to force the
  creation of a file, overwriting the previous one.
 
- When \p overwrite is set to \c false (default), a window asks for confirmation
- if the file already exists. In \p automatic mode, the snapshotCounter() is
- incremented (if positive) until a non-existing file name is found instead.
- Otherwise the file is overwritten without confirmation.
+ When \p overwrite is set to \c false (default), a window asks for
+ confirmation if the file already exists. In \p automatic mode, the
+ snapshotCounter() is incremented (if positive) until a non-existing file name
+ is found instead. Otherwise the file is overwritten without confirmation.
 
  The VRender library was written by Cyril Soler (Cyril dot Soler at imag dot
  fr). If the generated PS or EPS file is not properly displayed, remove the
@@ -602,7 +611,7 @@ void QGLViewer::saveSnapshot(bool automatic, bool overwrite) {
                                     snapshotFormat()) <= 0);
   else
 #endif
-  if (automatic) {
+      if (automatic) {
     QImage snapshot = frameBufferSnapshot();
     saveOK = snapshot.save(fileInfo.filePath(),
                            snapshotFormat().toLatin1().constData(),
@@ -612,7 +621,8 @@ void QGLViewer::saveSnapshot(bool automatic, bool overwrite) {
 
   if (!saveOK)
     QMessageBox::warning(this, "Snapshot problem",
-                         "Unable to save snapshot in\n" + fileInfo.filePath());
+                         "Unable to save snapshot in\n" +
+                             fileInfo.filePath());
 }
 
 QImage QGLViewer::frameBufferSnapshot() {
@@ -622,8 +632,8 @@ QImage QGLViewer::frameBufferSnapshot() {
   // Hack: Qt has problems if the frame buffer is grabbed after QFileDialog is
   // displayed. We grab the frame buffer before, even if it might be not
   // necessary (vectorial rendering). The problem could not be reproduced on a
-  // simple example to submit a Qt bug. However, only grabs the backgroundImage
-  // in the eponym example. May come from the driver.
+  // simple example to submit a Qt bug. However, only grabs the
+  // backgroundImage in the eponym example. May come from the driver.
   return QOpenGLWidget::grabFramebuffer();
 }
 

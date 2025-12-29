@@ -1,7 +1,7 @@
 /*
   Copyright 2002-2003 The University of Texas at Austin
 
-	Authors: Anthony Thane <thanea@ices.utexas.edu>
+        Authors: Anthony Thane <thanea@ices.utexas.edu>
         Advisor: Chandrajit Bajaj <bajaj@cs.utexas.edu>
 
   This file is part of VolumeLibrary.
@@ -17,7 +17,8 @@
 
   You should have received a copy of the GNU Lesser General Public
   License along with this library; if not, write to the Free Software
-  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301
+  USA
 */
 
 // Renderer.h: interface for the Renderer class.
@@ -28,73 +29,74 @@
 #define AFX_RENDERER_H__458FC25A_6D79_4B38_AF34_B758C4C43596__INCLUDED_
 
 #include <GL/glew.h>
-
 #include <VolumeRenderer/Plane.h>
-#include <VolumeRenderer/UnshadedBase.h>
 #include <VolumeRenderer/RGBABase.h>
+#include <VolumeRenderer/UnshadedBase.h>
 
 namespace OpenGLVolumeRendering {
 
-	/// Automatically initializes a colormapped and non-colormapped volume renderer.
-	class Renderer  
-	{
-	public:
-		Renderer();
-		virtual ~Renderer();
+/// Automatically initializes a colormapped and non-colormapped volume
+/// renderer.
+class Renderer {
+public:
+  Renderer();
+  virtual ~Renderer();
 
-		bool initRenderer();
-		
-		bool setAspectRatio(double ratioX, double ratioY, double ratioZ);
-		bool setTextureSubCube(double minX, double minY, double minZ, double maxX, double maxY, double maxZ);
+  bool initRenderer();
 
-		bool setQuality(double quality);
-		double getQuality() const;
+  bool setAspectRatio(double ratioX, double ratioY, double ratioZ);
+  bool setTextureSubCube(double minX, double minY, double minZ, double maxX,
+                         double maxY, double maxZ);
 
-		bool setMaxPlanes(int maxPlanes);
-		int getMaxPlanes() const;
+  bool setQuality(double quality);
+  double getQuality() const;
 
-		bool setNearPlane(double nearPlane);
-		double getNearPlane();
+  bool setMaxPlanes(int maxPlanes);
+  int getMaxPlanes() const;
 
-		bool isShadedRenderingAvailable() const;
-		bool enableShadedRendering();
-		bool disableShadedRendering();
+  bool setNearPlane(double nearPlane);
+  double getNearPlane();
 
-		bool uploadColorMappedData(const GLubyte* data, int width, int height, int depth);
-		bool uploadColorMappedDataWithBorder(const GLubyte* data, int width, int height, int depth);
-		bool testColorMappedData(int width, int height, int depth);
-		bool testColorMappedDataWithBorder(int width, int height, int depth);
-		bool uploadRGBAData(const GLubyte* data, int width, int height, int depth);
-		bool uploadGradients(const GLubyte* data, int width, int height, int depth);
-		bool calculateGradientsFromDensities(const GLubyte* data, int width, int height, int depth);
+  bool isShadedRenderingAvailable() const;
+  bool enableShadedRendering();
+  bool disableShadedRendering();
 
-		bool uploadColorMap(const GLubyte* colorMap);
-                bool uploadColorMap(const GLfloat* colorMap);
+  bool uploadColorMappedData(const GLubyte *data, int width, int height,
+                             int depth);
+  bool uploadColorMappedDataWithBorder(const GLubyte *data, int width,
+                                       int height, int depth);
+  bool testColorMappedData(int width, int height, int depth);
+  bool testColorMappedDataWithBorder(int width, int height, int depth);
+  bool uploadRGBAData(const GLubyte *data, int width, int height, int depth);
+  bool uploadGradients(const GLubyte *data, int width, int height, int depth);
+  bool calculateGradientsFromDensities(const GLubyte *data, int width,
+                                       int height, int depth);
 
-		// For Shading
-		void setLight(float *lightf);
-		void setView(float *viewf);
+  bool uploadColorMap(const GLubyte *colorMap);
+  bool uploadColorMap(const GLfloat *colorMap);
 
-		int getNumberOfPlanesRendered() const;
+  // For Shading
+  void setLight(float *lightf);
+  void setView(float *viewf);
 
-		bool renderVolume();
+  int getNumberOfPlanesRendered() const;
 
+  bool renderVolume();
 
-	protected:
-		bool initColormappedRenderer();
-		bool initRGBARenderer();
+protected:
+  bool initColormappedRenderer();
+  bool initRGBARenderer();
 
-		bool m_UseColormapped;
-                bool m_UseRGBA;
-		bool m_DataLoaded;
+  bool m_UseColormapped;
+  bool m_UseRGBA;
+  bool m_DataLoaded;
 
-		bool initFlags();
+  bool initFlags();
 
-		UnshadedBase* m_Colormapped;
-		RGBABase* m_RGBA;
-
-	};
-
+  UnshadedBase *m_Colormapped;
+  RGBABase *m_RGBA;
 };
+
+}; // namespace OpenGLVolumeRendering
 
 #endif // !defined(AFX_RENDERER_H__458FC25A_6D79_4B38_AF34_B758C4C43596__INCLUDED_)

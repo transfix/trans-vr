@@ -15,7 +15,7 @@
 // void remove_collinear(Slice2& slice, Number_type epsilon);
 // void remove_intersections(Slice2& slice, Number_type delta);
 
-// // /// Represents a slice that contains contours.  Maps component names to 
+// // /// Represents a slice that contains contours.  Maps component names to
 // // /// a list of contours.
 // // class Slice
 // // {
@@ -45,14 +45,16 @@
 // //   }
 
 // //   template <typename Contour_iter>
-// //   void insert(const std::string& component, Contour_iter begin, Contour_iter end)
+// //   void insert(const std::string& component, Contour_iter begin,
+// Contour_iter end)
 // //   { _map[component].insert(_map[component].end(), begin, end); }
 
 // //   template <typename Contour_iter>
-// //   void replace(const std::string& component, Contour_iter begin, Contour_iter end)
-// //   { 
+// //   void replace(const std::string& component, Contour_iter begin,
+// Contour_iter end)
+// //   {
 // //     _map[component].clear();
-// //     _map[component].insert(_map[component].end(), begin, end); 
+// //     _map[component].insert(_map[component].end(), begin, end);
 // //   }
 
 // //   Contour_iterator begin(const std::string& component)
@@ -62,16 +64,16 @@
 // //   { return _map[component].end(); }
 
 // //   Contour_const_iterator begin(const std::string& component) const
-// //   { 
+// //   {
 // //     if (_map.find(component) != _map.end())
-// //       return _map.find(component)->second.begin(); 
+// //       return _map.find(component)->second.begin();
 // //     return _empty.begin();
 // //   }
 
 // //   Contour_const_iterator end(const std::string& component) const
-// //   { 
+// //   {
 // //     if (_map.find(component) != _map.end())
-// //       return _map.find(component)->second.end(); 
+// //       return _map.find(component)->second.end();
 // //     return _empty.end();
 // //   }
 
@@ -90,7 +92,8 @@
 // //   /// delta - After calling this function, all contours will be
 // //   /// separated by at least delta.
 // //   ///
-// //   /// This function will fail if any points are close to being collinear.
+// //   /// This function will fail if any points are close to being
+// collinear.
 // //   /// Be sure to call remove_collinear first.
 // //   void remove_intersections(Number_type delta);
 
@@ -100,7 +103,8 @@
 
 // //   Number_type z() const;
 
-// //   void augment(const boost::unordered_map<Segment_3_undirected, std::list<Point_3> >& edge2points);
+// //   void augment(const boost::unordered_map<Segment_3_undirected,
+// std::list<Point_3> >& edge2points);
 
 // //   string to_string() const;
 

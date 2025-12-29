@@ -17,91 +17,99 @@
 
   You should have received a copy of the GNU Lesser General Public
   License along with this library; if not, write to the Free Software
-  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301
+  USA
 */
 
+#include <SignDistanceFunction/common.h>
+#include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <math.h>
-
-#include <SignDistanceFunction/common.h>
 
 using namespace SDFLibrary;
 
-extern void update_bounding_box(long int current_triangle, double xmin, double xmax, double ymin, double ymax, double zmin, double zmax, int cur_level);
+extern void update_bounding_box(long int current_triangle, double xmin,
+                                double xmax, double ymin, double ymax,
+                                double zmin, double zmax, int cur_level);
 extern void start_fireworks();
 extern void write_octree();
 
 int maxInd;
 
-void build_octree()
-{
-	double t1, t2;
+void build_octree() {
+  double t1, t2;
 
-	t1 = getTime();
+  t1 = getTime();
 
-	for (int i =0; i<total_triangles; i++)
-	{
-		update_bounding_box((long)i, minext[0], maxext[0], minext[1], maxext[1],minext[2], maxext[2], 0);
-		//update_bounding_box((long)i, 0, size, 0, size, 0, size, 0);
-		if (i%1000 == 0)
-			printf("%d processed in octree\n", i);
-	}
+  for (int i = 0; i < total_triangles; i++) {
+    update_bounding_box((long)i, minext[0], maxext[0], minext[1], maxext[1],
+                        minext[2], maxext[2], 0);
+    // update_bounding_box((long)i, 0, size, 0, size, 0, size, 0);
+    if (i % 1000 == 0)
+      printf("%d processed in octree\n", i);
+  }
 
-	t2 = getTime();
-	printf("Octree constructed for the data in %f seconds\n", (t2-t1));
+  t2 = getTime();
+  printf("Octree constructed for the data in %f seconds\n", (t2 - t1));
 
-	//write_octree();
+  // write_octree();
 }
 
-void process_triangle(int i)
-{
-	double p1x, p1y, p1z, p2x, p2y, p2z;
-	double nx, ny, nz;
-	double denom;
-	int v1,v2,v3;
+void process_triangle(int i) {
+  double p1x, p1y, p1z, p2x, p2y, p2z;
+  double nx, ny, nz;
+  double denom;
+  int v1, v2, v3;
 
-	v1 = surface[i].v1;	v2 = surface[i].v2;	v3 = surface[i].v3;
+  v1 = surface[i].v1;
+  v2 = surface[i].v2;
+  v3 = surface[i].v3;
 
-	//assume that the triangles are consistently oriented V1-V2-V3.
-	p1x = vertices[v3].x - vertices[v2].x;
-	p1y = vertices[v3].y - vertices[v2].y;
-	p1z = vertices[v3].z - vertices[v2].z;
-	p2x = vertices[v1].x - vertices[v2].x;
-	p2y = vertices[v1].y - vertices[v2].y;
-	p2z = vertices[v1].z - vertices[v2].z;
+  // assume that the triangles are consistently oriented V1-V2-V3.
+  p1x = vertices[v3].x - vertices[v2].x;
+  p1y = vertices[v3].y - vertices[v2].y;
+  p1z = vertices[v3].z - vertices[v2].z;
+  p2x = vertices[v1].x - vertices[v2].x;
+  p2y = vertices[v1].y - vertices[v2].y;
+  p2z = vertices[v1].z - vertices[v2].z;
 
-	nx = ( ( p1y * p2z ) - ( p1z * p2y ) );
-	ny = ( ( p1z * p2x ) - ( p1x * p2z ) );
-	nz = ( ( p1x * p2y ) - ( p1y * p2x ) );
+  nx = ((p1y * p2z) - (p1z * p2y));
+  ny = ((p1z * p2x) - (p1x * p2z));
+  nz = ((p1x * p2y) - (p1y * p2x));
 
-	denom = (double)sqrt( nx*nx + ny*ny + nz*nz );
+  denom = (double)sqrt(nx * nx + ny * ny + nz * nz);
 
-	nx /= denom;
-	ny /= denom;
-	nz /= denom;
-	normals[i].x = (double)nx;	normals[i].y = (double)ny;	normals[i].z = (double)nz;
+  nx /= denom;
+  ny /= denom;
+  nz /= denom;
+  normals[i].x = (double)nx;
+  normals[i].y = (double)ny;
+  normals[i].z = (double)nz;
 
-	//calculate the Distance of the current Triangle from the Origin
-	distances[i] =(double) (-1* ( ( nx * vertices[v1].x ) + ( ny * vertices[v1].y ) + ( nz * vertices[v1].z ) ));
-	surface[i].type = -1;
+  // calculate the Distance of the current Triangle from the Origin
+  distances[i] =
+      (double)(-1 * ((nx * vertices[v1].x) + (ny * vertices[v1].y) +
+                     (nz * vertices[v1].z)));
+  surface[i].type = -1;
 }
 
-void reverse_ptrs()
-{
-	int i, flag=0;
+void reverse_ptrs() {
+  int i, flag = 0;
 
-	for (i=0; i<total_triangles; i++)
-	{
-		process_triangle(i);
-		
-		//vertices[ surface[i].v1 ].tris [ vertices[ surface[i].v1 ].trisUsed++ ] = i;
-		//vertices[ surface[i].v2 ].tris [ vertices[ surface[i].v2 ].trisUsed++ ] = i;
-		//vertices[ surface[i].v3 ].tris [ vertices[ surface[i].v3 ].trisUsed++ ] = i;
+  for (i = 0; i < total_triangles; i++) {
+    process_triangle(i);
 
-		vertices[ surface[i].v1 ].tris.push_back(i); vertices[ surface[i].v1 ].trisUsed++;
-		vertices[ surface[i].v2 ].tris.push_back(i); vertices[ surface[i].v2 ].trisUsed++;
-		vertices[ surface[i].v3 ].tris.push_back(i); vertices[ surface[i].v3 ].trisUsed++;
+    // vertices[ surface[i].v1 ].tris [ vertices[ surface[i].v1 ].trisUsed++ ]
+    // = i; vertices[ surface[i].v2 ].tris [ vertices[ surface[i].v2
+    // ].trisUsed++ ] = i; vertices[ surface[i].v3 ].tris [ vertices[
+    // surface[i].v3 ].trisUsed++ ] = i;
+
+    vertices[surface[i].v1].tris.push_back(i);
+    vertices[surface[i].v1].trisUsed++;
+    vertices[surface[i].v2].tris.push_back(i);
+    vertices[surface[i].v2].trisUsed++;
+    vertices[surface[i].v3].tris.push_back(i);
+    vertices[surface[i].v3].trisUsed++;
 
 #if 0
 		if (vertices[ surface[i].v1 ].trisUsed >= MAX_TRIS_PER_VERT) 
@@ -127,11 +135,10 @@ void reverse_ptrs()
 			exit(0);
 		}
 #endif
-	}
+  }
 }
 
-void SDFLibrary::adjustData()
-{
+void SDFLibrary::adjustData() {
 #if 0
 	if (minx < minext[0])
 	{
@@ -170,156 +177,162 @@ void SDFLibrary::adjustData()
 	}
 #endif
 
-	//not sure why span is re-calculated here with the denominator != size-1
-	//if i change it to size-1, i get errors in the output... -Joe R.
-	span[0] = (maxext[0]-minext[0])/(size);
-	span[1] = (maxext[1]-minext[1])/(size);
-	span[2] = (maxext[2]-minext[2])/(size);
+  // not sure why span is re-calculated here with the denominator != size-1
+  // if i change it to size-1, i get errors in the output... -Joe R.
+  span[0] = (maxext[0] - minext[0]) / (size);
+  span[1] = (maxext[1] - minext[1]) / (size);
+  span[2] = (maxext[2] - minext[2]) / (size);
 
-	printf("\n\nSurface Bounding box is: %f %f %f to %f %f %f \n", minx, miny, minz, maxx, maxy, maxz);
-	printf("\nVolume Bounding box is %f %f %f to %f %f %f \n", minext[0], minext[1], minext[2], maxext[0], maxext[1], maxext[2]);
+  printf("\n\nSurface Bounding box is: %f %f %f to %f %f %f \n", minx, miny,
+         minz, maxx, maxy, maxz);
+  printf("\nVolume Bounding box is %f %f %f to %f %f %f \n", minext[0],
+         minext[1], minext[2], maxext[0], maxext[1], maxext[2]);
 
+  // Then calculate the normals and back-pointers of the triangles.
+  reverse_ptrs();
 
-	//Then calculate the normals and back-pointers of the triangles. 
-	reverse_ptrs();
+  // This wud align them in a consistent manner. ie: all out or all in. :-)
+  if (flipNormals)
+    start_fireworks();
 
-	//This wud align them in a consistent manner. ie: all out or all in. :-)
-	if (flipNormals)
-		start_fireworks();
-
-	//Then build the Octree.
-	build_octree();
+  // Then build the Octree.
+  build_octree();
 }
 
-bool setOctree_depth()
-{
-	switch (size) {
-	case (16):
-		octree_depth = 4;
-	break;
-	case (32):
-		octree_depth = 5;
-	break;
-	case (64):
-		octree_depth = 6;
-	break;
-	case (128):
-		octree_depth = 7;
-	break;
-	case (256):
-		octree_depth = 8;
-	break;
-	case (512):
-		octree_depth = 9;
-	break;
-	case (1024):
-		octree_depth = 10;
-	break;
+bool setOctree_depth() {
+  switch (size) {
+  case (16):
+    octree_depth = 4;
+    break;
+  case (32):
+    octree_depth = 5;
+    break;
+  case (64):
+    octree_depth = 6;
+    break;
+  case (128):
+    octree_depth = 7;
+    break;
+  case (256):
+    octree_depth = 8;
+    break;
+  case (512):
+    octree_depth = 9;
+    break;
+  case (1024):
+    octree_depth = 10;
+    break;
 
-	default:
-		printf("This version can only deal with Volumes of sizes 16, 32, 64, 128, 256, 512 or 1024\n");
-		return false;
-	}
+  default:
+    printf("This version can only deal with Volumes of sizes 16, 32, 64, "
+           "128, 256, 512 or 1024\n");
+    return false;
+  }
 
-	return true;
+  return true;
 }
 
-bool SDFLibrary::initSDF()
-{
-    int i, j, k;
-	
-	MAX_DIST =(double) (size * sqrt(3.0));
-	minx = miny = minz = 10000.0;
-	maxx = maxy = maxz = -10000.0;
-	
-	maxInd =-1;
-		
-	if( !setOctree_depth() ) 
-	{
-		return false;
-	}
-	sdf = (cell***) malloc( sizeof(cell**) * (size));
-    for (i = 0; i < size; i++)
-	{
-		sdf[i] = (cell**) malloc( sizeof(cell*) * (size));
-		for (j = 0; j < size; j++)
-		{
-			sdf[i][j] = (cell*) malloc( sizeof(cell) * (size));
-			for (k = 0; k < size; k++)
-			{
-				sdf[i][j][k].useful = 0;
-				sdf[i][j][k].type = 1;
-				sdf[i][j][k].no = 0;
-				sdf[i][j][k].tindex = NULL;					
-			}
-		}
-	}
+bool SDFLibrary::initSDF() {
+  int i, j, k;
 
-	k = (size+1)*(size+1)*(size+1);
-	values = (voxel*)(malloc(sizeof(voxel) * k));
-	bverts = (bool*)(malloc(sizeof(bool)*k));
-	queues = (int*)(malloc(sizeof(int)*k));
+  MAX_DIST = (double)(size * sqrt(3.0));
+  minx = miny = minz = 10000.0;
+  maxx = maxy = maxz = -10000.0;
 
-	for (i=0; i<k; i++)
-	{
-		values[i].value = (float)MAX_DIST;
-		values[i].signe = 0;
-		values[i].processed =0;
-		values[i].closestV = 0;
-		bverts[i] = 0;
-	}
+  maxInd = -1;
 
-	return true;
+  if (!setOctree_depth()) {
+    return false;
+  }
+  sdf = (cell ***)malloc(sizeof(cell **) * (size));
+  for (i = 0; i < size; i++) {
+    sdf[i] = (cell **)malloc(sizeof(cell *) * (size));
+    for (j = 0; j < size; j++) {
+      sdf[i][j] = (cell *)malloc(sizeof(cell) * (size));
+      for (k = 0; k < size; k++) {
+        sdf[i][j][k].useful = 0;
+        sdf[i][j][k].type = 1;
+        sdf[i][j][k].no = 0;
+        sdf[i][j][k].tindex = NULL;
+      }
+    }
+  }
+
+  k = (size + 1) * (size + 1) * (size + 1);
+  values = (voxel *)(malloc(sizeof(voxel) * k));
+  bverts = (bool *)(malloc(sizeof(bool) * k));
+  queues = (int *)(malloc(sizeof(int) * k));
+
+  for (i = 0; i < k; i++) {
+    values[i].value = (float)MAX_DIST;
+    values[i].signe = 0;
+    values[i].processed = 0;
+    values[i].closestV = 0;
+    bverts[i] = 0;
+  }
+
+  return true;
 }
 
-void check_bounds(int i)
-{
-	if (vertices[i].x < minx) minx = (double) vertices[i].x;
-	if (vertices[i].y < miny) miny = (double) vertices[i].y;
-	if (vertices[i].z < minz) minz = (double) vertices[i].z;
+void check_bounds(int i) {
+  if (vertices[i].x < minx)
+    minx = (double)vertices[i].x;
+  if (vertices[i].y < miny)
+    miny = (double)vertices[i].y;
+  if (vertices[i].z < minz)
+    minz = (double)vertices[i].z;
 
-	if (vertices[i].x > maxx) maxx = (double) vertices[i].x;
-	if (vertices[i].y > maxy) maxy = (double) vertices[i].y;
-	if (vertices[i].z > maxz) maxz = (double) vertices[i].z;
+  if (vertices[i].x > maxx)
+    maxx = (double)vertices[i].x;
+  if (vertices[i].y > maxy)
+    maxy = (double)vertices[i].y;
+  if (vertices[i].z > maxz)
+    maxz = (double)vertices[i].z;
 }
 
-void SDFLibrary::readGeom(int nverts, float* verts, int ntris, int* tris)
-{
-    int	i;
+void SDFLibrary::readGeom(int nverts, float *verts, int ntris, int *tris) {
+  int i;
 
-	total_points = nverts;
-	total_triangles = ntris;
+  total_points = nverts;
+  total_triangles = ntris;
 
-	printf("vert= %d and tri = %d \n", total_points,total_triangles);
+  printf("vert= %d and tri = %d \n", total_points, total_triangles);
 
-	vertices = (myVert*) malloc (sizeof (myVert) * total_points);
-	surface = (triangle*) malloc (sizeof (triangle) * total_triangles);
-	normals = (myPoint*) malloc (sizeof (myPoint) * total_triangles);
-	distances = (double*) malloc (sizeof (double) * total_triangles);
+  vertices = (myVert *)malloc(sizeof(myVert) * total_points);
+  surface = (triangle *)malloc(sizeof(triangle) * total_triangles);
+  normals = (myPoint *)malloc(sizeof(myPoint) * total_triangles);
+  distances = (double *)malloc(sizeof(double) * total_triangles);
 
-	for (i=0; i<total_points; i++)
-	{
-		vertices[i].x = verts[3*i+0];	vertices[i].y = verts[3*i+1];	vertices[i].z = verts[3*i+2];
-		check_bounds(i);
-		vertices[i].isNull = 0;		vertices[i].trisUsed =0;
-		
-		if (!(i% 5000))
-			printf("still working on points !!!! %d \n",i);
-	}
-	
-	printf("Finished reading the Vertices.. Now reading the Triangles\n");
+  for (i = 0; i < total_points; i++) {
+    vertices[i].x = verts[3 * i + 0];
+    vertices[i].y = verts[3 * i + 1];
+    vertices[i].z = verts[3 * i + 2];
+    check_bounds(i);
+    vertices[i].isNull = 0;
+    vertices[i].trisUsed = 0;
 
-	for (i=0; i<total_triangles; i++)
-	{
-		surface[i].v1 = tris[3*i+0];	surface[i].v2 = tris[3*i+1];	surface[i].v3 = tris[3*i+2];
+    if (!(i % 5000))
+      printf("still working on points !!!! %d \n", i);
+  }
 
-		if (maxInd < surface[i].v1) maxInd = surface[i].v1;
-		if (maxInd < surface[i].v2) maxInd = surface[i].v2;
-		if (maxInd < surface[i].v3) maxInd = surface[i].v3;
+  printf("Finished reading the Vertices.. Now reading the Triangles\n");
 
-		if (!(i% 5000))
-			printf("still working on Triangles !!!! %d \n",i);
-	}
-	
-	printf("Bounding box is: %f %f %f to %f %f %f \n", minx, miny, minz, maxx, maxy, maxz);
+  for (i = 0; i < total_triangles; i++) {
+    surface[i].v1 = tris[3 * i + 0];
+    surface[i].v2 = tris[3 * i + 1];
+    surface[i].v3 = tris[3 * i + 2];
+
+    if (maxInd < surface[i].v1)
+      maxInd = surface[i].v1;
+    if (maxInd < surface[i].v2)
+      maxInd = surface[i].v2;
+    if (maxInd < surface[i].v3)
+      maxInd = surface[i].v3;
+
+    if (!(i % 5000))
+      printf("still working on Triangles !!!! %d \n", i);
+  }
+
+  printf("Bounding box is: %f %f %f to %f %f %f \n", minx, miny, minz, maxx,
+         maxy, maxz);
 }

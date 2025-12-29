@@ -1,8 +1,8 @@
 /*
   Copyright 2011 The University of Texas at Austin
-  
-	Authors: Alex Rand <arand@ices.utexas.edu>
-	Advisor: Chandrajit Bajaj <bajaj@cs.utexas.edu>
+
+        Authors: Alex Rand <arand@ices.utexas.edu>
+        Advisor: Chandrajit Bajaj <bajaj@cs.utexas.edu>
 
   This file is part of Volume Rover.
 
@@ -24,36 +24,32 @@
 #ifndef __SKELETONIZATIONDIALOG_H__
 #define __SKELETONIZATIONDIALOG_H__
 
-//#include <qglobal.h>
+// #include <qglobal.h>
 
 #include <QDialog>
 #include <QString>
 
-namespace Ui
-{
-  class SkeletonizationDialog;
+namespace Ui {
+class SkeletonizationDialog;
 }
 
 #include "ui_SkeletonizationDialog.h"
-      
-class SkeletonizationDialog : public QDialog
-{
+
+class SkeletonizationDialog : public QDialog {
   Q_OBJECT
 
- public:
-  SkeletonizationDialog(QWidget *parent=nullptr,Qt::WindowFlags flags=Qt::WindowFlags());
+public:
+  SkeletonizationDialog(QWidget *parent = nullptr,
+                        Qt::WindowFlags flags = Qt::WindowFlags());
 
   virtual ~SkeletonizationDialog();
 
   void RunSkeletonization();
 
-  public slots:
+public slots:
 
-
-  protected:
-
+protected:
   Ui::SkeletonizationDialog *_ui;
-
 };
 
 #endif

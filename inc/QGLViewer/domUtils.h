@@ -22,13 +22,11 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 
 **********************************************************************/
 
-#include <QGLViewer/config.h>
-
 #include <QColor>
 #include <QDomElement>
+#include <QGLViewer/config.h>
 #include <QString>
 #include <QStringList>
-
 #include <math.h>
 
 #ifndef DOXYGEN
@@ -49,12 +47,13 @@ public:
       bool ok;
       value = s.toDouble(&ok);
       if (!ok) {
-        warning(QString("'%1' is not a valid qreal syntax for attribute \"%2\" "
-                        "in initialization of \"%3\". Setting value to %4.")
-                    .arg(s)
-                    .arg(attribute)
-                    .arg(e.tagName())
-                    .arg(QString::number(defValue)));
+        warning(
+            QString("'%1' is not a valid qreal syntax for attribute \"%2\" "
+                    "in initialization of \"%3\". Setting value to %4.")
+                .arg(s)
+                .arg(attribute)
+                .arg(e.tagName())
+                .arg(QString::number(defValue)));
         value = defValue;
       }
     } else {
@@ -69,11 +68,10 @@ public:
     // The "isnan" method may not be available on all platforms.
     // Find its equivalent or simply remove these two lines
     if (isnan(value))
-      warning(
-          QString(
-              "Warning, attribute \"%1\" initialized to Not a Number in \"%2\"")
-              .arg(attribute)
-              .arg(e.tagName()));
+      warning(QString("Warning, attribute \"%1\" initialized to Not a Number "
+                      "in \"%2\"")
+                  .arg(attribute)
+                  .arg(e.tagName()));
 #endif
 
     return value;
@@ -117,8 +115,9 @@ public:
       value = s.toUInt(&ok);
       if (!ok) {
         warning(
-            QString("'%1' is not a valid unsigned integer syntax for attribute "
-                    "\"%2\" in initialization of \"%3\". Setting value to %4.")
+            QString(
+                "'%1' is not a valid unsigned integer syntax for attribute "
+                "\"%2\" in initialization of \"%3\". Setting value to %4.")
                 .arg(s)
                 .arg(attribute)
                 .arg(e.tagName())
@@ -170,7 +169,8 @@ public:
     element.setAttribute(attribute, (value ? "true" : "false"));
   }
 
-  static QDomElement QColorDomElement(const QColor &color, const QString &name,
+  static QDomElement QColorDomElement(const QColor &color,
+                                      const QString &name,
                                       QDomDocument &doc) {
     QDomElement de = doc.createElement(name);
     de.setAttribute("red", QString::number(color.red()));
@@ -182,9 +182,7 @@ public:
   static QColor QColorFromDom(const QDomElement &e) {
     int color[3];
     QStringList attribute;
-    attribute << "red"
-              << "green"
-              << "blue";
+    attribute << "red" << "green" << "blue";
     for (int i = 0; i < attribute.count(); ++i)
       color[i] = DomUtils::intFromDom(e, attribute[i], 0);
     return QColor(color[0], color[1], color[2]);

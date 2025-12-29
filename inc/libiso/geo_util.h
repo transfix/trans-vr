@@ -1,7 +1,7 @@
 /*
   Copyright 2000-2002 The University of Texas at Austin
 
-	Authors: Sanghun Park <hun@ices.utexas.edu>
+        Authors: Sanghun Park <hun@ices.utexas.edu>
                  Xiaoyu Zhang <xiaoyu@ices.utexas.edu>
         Advisor: Chandrajit Bajaj <bajaj@cs.utexas.edu>
 
@@ -18,12 +18,13 @@
 
   You should have received a copy of the GNU Lesser General Public
   License along with this library; if not, write to the Free Software
-  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301
+  USA
 */
 
 /******
-*	geo_util.h: collects often used geometrical subroutines
-******/
+ *	geo_util.h: collects often used geometrical subroutines
+ ******/
 
 #ifndef GEO_UTIL_H
 #define GEO_UTIL_h
@@ -32,15 +33,15 @@
 extern "C" {
 #endif
 
-	void cross_product(float v1[3], float v2[3], float normal[3]);
+void cross_product(float v1[3], float v2[3], float normal[3]);
 
-	float dot_product(float v1[3], float v2[3]);
+float dot_product(float v1[3], float v2[3]);
 
-	void normalize(float v[3]);
+void normalize(float v[3]);
 
-	float length(float v[3]);
+float length(float v[3]);
 
-	float distance(float v1[3], float v2[3]);
+float distance(float v1[3], float v2[3]);
 
 #ifdef __cplusplus
 }

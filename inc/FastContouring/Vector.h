@@ -18,7 +18,8 @@
 
   You should have received a copy of the GNU Lesser General Public
   License along with this library; if not, write to the Free Software
-  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301
+  USA
 */
 
 // Vector.h: interface for the Vector class.
@@ -34,50 +35,49 @@
 
 #include <FastContouring/Tuple.h>
 
-namespace FastContouring
-{
+namespace FastContouring {
 
-class Vector : public Tuple  
-{
+class Vector : public Tuple {
 public:
-	Vector(float x, float y, float z, float w);
-	Vector(float* array);
-	Vector();
-	virtual ~Vector();
-	Vector(const Vector& copy);
-	Vector& operator=(const Vector& copy);
+  Vector(float x, float y, float z, float w);
+  Vector(float *array);
+  Vector();
+  virtual ~Vector();
+  Vector(const Vector &copy);
+  Vector &operator=(const Vector &copy);
 
-	Vector& set(float x, float y, float z, float w);
-	Vector& set(float* array);
-	Vector& set(const Vector& copy);
+  Vector &set(float x, float y, float z, float w);
+  Vector &set(float *array);
+  Vector &set(const Vector &copy);
 
-	Vector cross(const Vector& vec) const;
-	Vector& crossEquals(const Vector& vec);
-	float dot(const Vector& vec) const;
+  Vector cross(const Vector &vec) const;
+  Vector &crossEquals(const Vector &vec);
+  float dot(const Vector &vec) const;
 
-	Vector operator+(const Vector vec) const;
-	Vector& operator+=(const Vector vec);
-	Vector operator-(const Vector vec) const;
-	Vector& operator-=(const Vector vec);
+  Vector operator+(const Vector vec) const;
+  Vector &operator+=(const Vector vec);
+  Vector operator-(const Vector vec) const;
+  Vector &operator-=(const Vector vec);
 
-	Vector operator*(float scalar) const;
-	Vector& operator*=(float scalar);
+  Vector operator*(float scalar) const;
+  Vector &operator*=(float scalar);
 
-	Vector operator-() const;
+  Vector operator-() const;
 
-	Vector& normalize();
-	float norm();
+  Vector &normalize();
+  float norm();
 
-	bool isBad();
+  bool isBad();
 
-	static Vector badVector();
-	virtual Vector* clone() const;
+  static Vector badVector();
+  virtual Vector *clone() const;
 
-	static Vector interpolate(const Vector& a, const Vector& b, float alpha);
-	static Vector cubicInterpolate(const Vector& a, const Vector& b, const Vector& c, const Vector& d, float alpha);
-
+  static Vector interpolate(const Vector &a, const Vector &b, float alpha);
+  static Vector cubicInterpolate(const Vector &a, const Vector &b,
+                                 const Vector &c, const Vector &d,
+                                 float alpha);
 };
 
-}
+} // namespace FastContouring
 
 #endif // !defined(AFX_VECTOR_H__C73C6BDB_2D75_4770_B86A_E3329C07A817__INCLUDED_)

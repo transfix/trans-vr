@@ -1,8 +1,7 @@
 #ifndef TILE_HASH_H
 #define TILE_HASH_H
 
-namespace Tiling
-{
+namespace Tiling {
 
 void free_tile_hash_table();
 
@@ -14,6 +13,6 @@ int is_in_tile_hash_table(int addr1, int addr2);
 
 void add_an_entrance_to_tile_hash(int addr1, int addr2);
 
-};
+}; // namespace Tiling
 
 #endif

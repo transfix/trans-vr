@@ -1,7 +1,7 @@
 //
 // C++ Implementation: main
 //
-// Description: 
+// Description:
 //
 //
 // Author:  <>, (C) 2010
@@ -11,14 +11,15 @@
 //
 
 #include <SweetMesh/hexmesh.h>
-#include <SweetMesh/meshTools.h>
 #include <SweetMesh/meshIO.h>
+#include <SweetMesh/meshTools.h>
 #include <SweetMesh/volRoverDisplay.h>
 
-//main()============================
-int main(int argc, char **argv){
-	if(argc != 3){
-		std::cerr << "Usage " << argv[0] << " <input_mesh.rawhs> <output_vis.linec>\n";
-		return 1;
-	}
+// main()============================
+int main(int argc, char **argv) {
+  if (argc != 3) {
+    std::cerr << "Usage " << argv[0]
+              << " <input_mesh.rawhs> <output_vis.linec>\n";
+    return 1;
+  }
 }

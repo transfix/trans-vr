@@ -17,7 +17,8 @@
 
   You should have received a copy of the GNU Lesser General Public
   License along with this library; if not, write to the Free Software
-  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301
+  USA
 */
 
 #ifndef __DEGEN_H__
@@ -26,11 +27,9 @@
 #include <SecondaryStructures/datastruct_ss.h>
 #include <SecondaryStructures/op.h>
 
-bool is_degenerate_VF(const SecondaryStructures::Triangulation& triang,
-					  const SecondaryStructures::Cell_handle& c,
-					  const int& fid,
-					  const int& uid,
-					  const int& vid,
-					  const SecondaryStructures::Point& d,
-					  const char* prefix);
+bool is_degenerate_VF(const SecondaryStructures::Triangulation &triang,
+                      const SecondaryStructures::Cell_handle &c,
+                      const int &fid, const int &uid, const int &vid,
+                      const SecondaryStructures::Point &d,
+                      const char *prefix);
 #endif

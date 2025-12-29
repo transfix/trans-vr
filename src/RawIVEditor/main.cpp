@@ -1,8 +1,8 @@
 /*
   Copyright 2002-2003 The University of Texas at Austin
-  
-	Authors: Anthony Thane <thanea@ices.utexas.edu>
-	Advisor: Chandrajit Bajaj <bajaj@cs.utexas.edu>
+
+        Authors: Anthony Thane <thanea@ices.utexas.edu>
+        Advisor: Chandrajit Bajaj <bajaj@cs.utexas.edu>
 
   This file is part of Volume Rover.
 
@@ -21,19 +21,16 @@
   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-#include <qapplication.h>
 #include <RawIVEditor/rawiveditordialog.h>
+#include <qapplication.h>
 
+int main(int argc, char **argv) {
+  QApplication app(argc, argv);
 
-int main( int argc, char** argv )
-{
-	QApplication app( argc, argv );
+  RawIVEditorDialog dialog(0, 0, TRUE);
+  app.setMainWidget(&dialog);
 
-	RawIVEditorDialog dialog( 0, 0, TRUE );
-	app.setMainWidget(&dialog);
+  dialog.exec();
 
-	dialog.exec();
-
-	return 0;
+  return 0;
 }
-

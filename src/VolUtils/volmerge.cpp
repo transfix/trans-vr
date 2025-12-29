@@ -17,31 +17,31 @@
 
   You should have received a copy of the GNU Lesser General Public
   License along with this library; if not, write to the Free Software
-  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301
+  USA
 */
 
 /* $Id: volmerge.cpp 5196 2012-02-28 16:18:50Z zqyork $ */
 
-#include <iostream>
-#include <vector>
-#include <stdio.h>
-#include <stdlib.h>
-
 #include <VolMagick/VolMagick.h>
 #include <VolMagick/VolumeCache.h>
 #include <VolMagick/endians.h>
-
 #include <fstream>
+#include <iostream>
+#include <stdio.h>
+#include <stdlib.h>
+#include <vector>
 
 using namespace std;
 
-class VolMagickOpStatus : public VolMagick::VoxelOperationStatusMessenger
-{
+class VolMagickOpStatus : public VolMagick::VoxelOperationStatusMessenger {
 public:
   VolMagickOpStatus();
 
-  void start(const VolMagick::Voxels *vox, Operation op, VolMagick::uint64 numSteps) const;
-  void step(const VolMagick::Voxels *vox, Operation op, VolMagick::uint64 curStep) const;
+  void start(const VolMagick::Voxels *vox, Operation op,
+             VolMagick::uint64 numSteps) const;
+  void step(const VolMagick::Voxels *vox, Operation op,
+            VolMagick::uint64 curStep) const;
   void end(const VolMagick::Voxels *vox, Operation op) const;
 
 private:
@@ -49,79 +49,77 @@ private:
   char *_opStrings[12];
 };
 
-VolMagickOpStatus::VolMagickOpStatus()
-{
-  _opStrings[0] = (char *)"CalculatingMinMax"; _opStrings[1] = (char *)"CalculatingMin";
-  _opStrings[2] = (char *)"CalculatingMax"; _opStrings[3] = (char *)"SubvolumeExtraction";
-  _opStrings[4] = (char *)"Fill"; _opStrings[5] = (char *)"Map"; _opStrings[6] = (char *)"Resize";
-  _opStrings[7] = (char *)"Composite"; _opStrings[8] = (char *)"BilateralFilter";
-  _opStrings[9] = (char *)"ContrastEnhancement"; _opStrings[10] = (char *)"AnisotropicDiffusion";
+VolMagickOpStatus::VolMagickOpStatus() {
+  _opStrings[0] = (char *)"CalculatingMinMax";
+  _opStrings[1] = (char *)"CalculatingMin";
+  _opStrings[2] = (char *)"CalculatingMax";
+  _opStrings[3] = (char *)"SubvolumeExtraction";
+  _opStrings[4] = (char *)"Fill";
+  _opStrings[5] = (char *)"Map";
+  _opStrings[6] = (char *)"Resize";
+  _opStrings[7] = (char *)"Composite";
+  _opStrings[8] = (char *)"BilateralFilter";
+  _opStrings[9] = (char *)"ContrastEnhancement";
+  _opStrings[10] = (char *)"AnisotropicDiffusion";
   _opStrings[11] = (char *)"CombineWith";
 }
 
-void VolMagickOpStatus::start(const VolMagick::Voxels *vox, Operation op, VolMagick::uint64 numSteps) const
-{
+void VolMagickOpStatus::start(const VolMagick::Voxels *vox, Operation op,
+                              VolMagick::uint64 numSteps) const {
   _numSteps = numSteps;
 }
 
-void VolMagickOpStatus::step(const VolMagick::Voxels *vox, Operation op, VolMagick::uint64 curStep) const
-{
-  fprintf(stderr,"%s: %5.2f %%\r",_opStrings[op],(((float)curStep)/((float)((int)(_numSteps-1))))*100.0);
+void VolMagickOpStatus::step(const VolMagick::Voxels *vox, Operation op,
+                             VolMagick::uint64 curStep) const {
+  fprintf(stderr, "%s: %5.2f %%\r", _opStrings[op],
+          (((float)curStep) / ((float)((int)(_numSteps - 1)))) * 100.0);
 }
 
-void VolMagickOpStatus::end(const VolMagick::Voxels *vox, Operation op) const
-{
+void VolMagickOpStatus::end(const VolMagick::Voxels *vox,
+                            Operation op) const {
   printf("\n");
 }
 
-
-int main(int argc, char **argv)
-{
+int main(int argc, char **argv) {
   VolMagickOpStatus status;
   VolMagick::setDefaultMessenger(&status);
 
-  if(argc < 4)
-    {
-      cerr << "Usage: " 
-	   << argv[0]
-	   << " <copy | add | subtract>"
-	   << " <input volume file> [<input volume file ...>] <output volume file> <dimx> <dimy> <dimz> " << endl
-	   << "Example: " << argv[0] << " add vol1.rawiv vol2.rawiv outvol.rawiv 100 100 100" << endl;
-      return 1;
+  if (argc < 4) {
+    cerr << "Usage: " << argv[0] << " <copy | add | subtract>"
+         << " <input volume file> [<input volume file ...>] <output volume "
+            "file> <dimx> <dimy> <dimz> "
+         << endl
+         << "Example: " << argv[0]
+         << " add vol1.rawiv vol2.rawiv outvol.rawiv 100 100 100" << endl;
+    return 1;
+  }
+
+  try {
+    VolMagick::Volume outvol, invol;
+
+    VolMagick::readVolumeFile(invol, argv[2]); // read the first volume file
+
+    outvol = invol;
+
+    for (unsigned int i = 3; i < (unsigned int)(argc - 4); i++) {
+      VolMagick::readVolumeFile(invol, argv[i]);
+      outvol.combineWith(invol, VolMagick::Dimension(atoi(argv[argc - 3]),
+                                                     atoi(argv[argc - 2]),
+                                                     atoi(argv[argc - 1])));
+      outvol.desc(outvol.desc() + "&" + invol.desc());
     }
 
-  try
-    {
-      VolMagick::Volume outvol,invol;
+    //      VolMagick::createVolumeFile(argv[argc-4],
+    //				  outvol.boundingBox(),
+    //				  outvol.dimension(),
+    //				  std::vector<VolMagick::VoxelType>(1,outvol.voxelType()));
 
-      VolMagick::readVolumeFile(invol,argv[2]); //read the first volume file
-
-      outvol = invol;
-
-      for(unsigned int i = 3; i < (unsigned int)(argc-4); i++)
-	{
-	  VolMagick::readVolumeFile(invol,argv[i]);
-	  outvol.combineWith(invol,VolMagick::Dimension(atoi(argv[argc-3]),
-							atoi(argv[argc-2]),
-							atoi(argv[argc-1])));
-	  outvol.desc(outvol.desc() + "&" + invol.desc());
-	}
-
-//      VolMagick::createVolumeFile(argv[argc-4],
-//				  outvol.boundingBox(),
-//				  outvol.dimension(),
-//				  std::vector<VolMagick::VoxelType>(1,outvol.voxelType()));
-
-      VolMagick::createVolumeFile(outvol,argv[argc-4]);
-    }
-  catch(VolMagick::Exception &e)
-    {
-      cerr << e.what() << endl;
-    }
-  catch(std::exception &e)
-    {
-      cerr << e.what() << endl;
-    }
+    VolMagick::createVolumeFile(outvol, argv[argc - 4]);
+  } catch (VolMagick::Exception &e) {
+    cerr << e.what() << endl;
+  } catch (std::exception &e) {
+    cerr << e.what() << endl;
+  }
 
   return 0;
 }

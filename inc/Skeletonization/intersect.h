@@ -17,7 +17,8 @@
 
   You should have received a copy of the GNU Lesser General Public
   License along with this library; if not, write to the Free Software
-  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301
+  USA
 */
 
 #ifndef __SKELETONIZATION__INTERSECT_H__
@@ -26,17 +27,13 @@
 #include <Skeletonization/datastruct.h>
 #include <Skeletonization/util.h>
 
-namespace Skeletonization
-{
-  bool does_intersect_ray3_seg3_in_plane(const Ray& r, 
-					 const Segment& s);
+namespace Skeletonization {
+bool does_intersect_ray3_seg3_in_plane(const Ray &r, const Segment &s);
 
-  Point intersect_ray3_seg3(const Ray& r, 
-			    const Segment& s, 
-			    bool& is_correct_intersection);
+Point intersect_ray3_seg3(const Ray &r, const Segment &s,
+                          bool &is_correct_intersection);
 
-  bool does_intersect_convex_polygon_segment_3_in_3d(const vector<Point>& conv_poly, 
-						     const Segment& s);
-}
+bool does_intersect_convex_polygon_segment_3_in_3d(
+    const vector<Point> &conv_poly, const Segment &s);
+} // namespace Skeletonization
 #endif // INTERSECT_H
-

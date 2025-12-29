@@ -4,14 +4,14 @@
  *    Authors:  James Kremer and David Mastronarde
  *
  *   Copyright (C) 1995-2006 by Boulder Laboratory for 3-Dimensional Electron
- *   Microscopy of Cells ("BL3DEMC") and the Regents of the University of 
+ *   Microscopy of Cells ("BL3DEMC") and the Regents of the University of
  *   Colorado.
  *
  *  $Id: iitif.c 1478 2010-03-07 22:58:12Z transfix $
  *  Log at end of file
  */
 
-/************************************************************************** 
+/**************************************************************************
 This software uses the tiff library which has the following copyright:
 Copyright (c) 1988-1996 Sam Leffler
 Copyright (c) 1991-1996 Silicon Graphics, Inc.
@@ -38,17 +38,17 @@ OF THIS SOFTWARE.
 Additional documentation is at <ftp://ftp.sgi.com/graphics/tiff/doc>
 ****************************************************************************/
 
+#include <VolMagick/libiimod/imodconfig.h>
 #include <stdlib.h>
 #include <string.h>
-#include <VolMagick/libiimod/imodconfig.h>
 #ifdef NOTIFFLIBS
 #include <VolMagick/libiimod/notiffio.h>
 #else
 #include "tiffio.h"
 #endif
 
-#include <VolMagick/libiimod/iimage.h>
 #include <VolMagick/libiimod/b3dutil.h>
+#include <VolMagick/libiimod/iimage.h>
 
 int tiffReopen(ImodImageFile *inFile);
 void tiffDelete(ImodImageFile *inFile);
@@ -56,9 +56,8 @@ static int ReadSection(ImodImageFile *inFile, char *buf, int inSection,
                        int byte);
 static TIFF *openWithoutBMode(ImodImageFile *inFile);
 
-int iiTIFFCheck(ImodImageFile *inFile)
-{
-  TIFF* tif;
+int iiTIFFCheck(ImodImageFile *inFile) {
+  TIFF *tif;
   FILE *fp;
   b3dUInt16 buf;
   int dirnum = 1;
@@ -68,7 +67,7 @@ int iiTIFFCheck(ImodImageFile *inFile)
   double minmax;
   b3dUInt16 *redp, *greenp, *bluep;
 
-  if (!inFile) 
+  if (!inFile)
     return IIERR_BAD_CALL;
   fp = inFile->fp;
   if (!fp)
@@ -85,7 +84,7 @@ int iiTIFFCheck(ImodImageFile *inFile)
     err = IIERR_NOT_FORMAT;
   if (err) {
     if (err == IIERR_IO_ERROR)
-      b3dError(stderr, "ERROR: iiTIFFCheck - Reading file %s\n", 
+      b3dError(stderr, "ERROR: iiTIFFCheck - Reading file %s\n",
                inFile->filename);
     return err;
   }
@@ -93,13 +92,13 @@ int iiTIFFCheck(ImodImageFile *inFile)
   /* Close file now, but reopen it if there is a TIFF failure */
   fclose(fp);
   tif = openWithoutBMode(inFile);
-  if (!tif){
+  if (!tif) {
     inFile->fp = fopen(inFile->filename, inFile->fmode);
     b3dError(stderr, "ERROR: iiTIFFCheck - Calling TIFFOpen on file %s\n",
              inFile->filename);
-    return(IIERR_IO_ERROR);
+    return (IIERR_IO_ERROR);
   }
-    
+
   TIFFGetField(tif, TIFFTAG_IMAGEWIDTH, &inFile->nx);
   TIFFGetField(tif, TIFFTAG_IMAGELENGTH, &inFile->ny);
   TIFFGetField(tif, TIFFTAG_BITSPERSAMPLE, &bits);
@@ -110,24 +109,24 @@ int iiTIFFCheck(ImodImageFile *inFile)
   if (!defined)
     samples = 1;
 
-  while (TIFFReadDirectory(tif)) 
+  while (TIFFReadDirectory(tif))
     dirnum++;
   TIFFSetDirectory(tif, 0);
 
-  /* Don't know how to get the multiple bit entries from libtiff, so can't test
-     if they are all 8 */
-  if (!((samples == 1 && (bits == 8 || bits ==16 || bits == 32) && 
+  /* Don't know how to get the multiple bit entries from libtiff, so can't
+     test if they are all 8 */
+  if (!((samples == 1 && (bits == 8 || bits == 16 || bits == 32) &&
          photometric < 2) ||
-        (samples == 3 && photometric == 2 && bits == 8) || 
+        (samples == 3 && photometric == 2 && bits == 8) ||
         (photometric == 3 && bits == 8))) {
     TIFFClose(tif);
     inFile->fp = fopen(inFile->filename, inFile->fmode);
     b3dError(stderr, "ERROR: iiTIFFCheck - Unsupported type of TIFF file\n");
-    return(IIERR_NO_SUPPORT);
+    return (IIERR_NO_SUPPORT);
   }
 
-  inFile->nz     = dirnum;
-  inFile->file   = IIFILE_TIFF;
+  inFile->nz = dirnum;
+  inFile->file = IIFILE_TIFF;
   inFile->format = IIFORMAT_LUMINANCE;
 
   /* 11/22/08: define this for all types, not just for 3-sample data */
@@ -135,19 +134,19 @@ int iiTIFFCheck(ImodImageFile *inFile)
   inFile->readSectionByte = tiffReadSectionByte;
 
   if (bits == 8) {
-    inFile->type   = IITYPE_UBYTE;
-    inFile->amin  = 0;
-    inFile->amean  = 128;
-    inFile->amax   = 255;
-    inFile->mode   = MRC_MODE_BYTE;
+    inFile->type = IITYPE_UBYTE;
+    inFile->amin = 0;
+    inFile->amean = 128;
+    inFile->amax = 255;
+    inFile->mode = MRC_MODE_BYTE;
     if (samples == 3) {
       inFile->format = IIFORMAT_RGB;
-      inFile->mode   = MRC_MODE_RGB;
+      inFile->mode = MRC_MODE_RGB;
       inFile->readSectionByte = NULL;
     } else if (photometric == 3) {
 
       /* For palette images, define as colormap, better send byte reading
-         to routine that will ignore any scaling, get the colormap and 
+         to routine that will ignore any scaling, get the colormap and
          convert it to bytes */
       inFile->format = IIFORMAT_COLORMAP;
       inFile->readSectionByte = tiffReadSection;
@@ -155,16 +154,19 @@ int iiTIFFCheck(ImodImageFile *inFile)
       if (!inFile->colormap) {
         TIFFClose(tif);
         inFile->fp = fopen(inFile->filename, inFile->fmode);
-        b3dError(stderr, "ERROR: iiTIFFCheck - Getting memory for colormap\n");
-        return(IIERR_MEMORY_ERR);
+        b3dError(stderr,
+                 "ERROR: iiTIFFCheck - Getting memory for colormap\n");
+        return (IIERR_MEMORY_ERR);
       }
       for (j = 0; j < dirnum; j++) {
         TIFFSetDirectory(tif, j);
         TIFFGetField(tif, TIFFTAG_COLORMAP, &redp, &greenp, &bluep);
         for (i = 0; i < 256; i++) {
-          inFile->colormap[j*768 + i] = (unsigned char)(redp[i] >> 8);
-          inFile->colormap[j*768 + i + 256] = (unsigned char)(greenp[i] >> 8);
-          inFile->colormap[j*768 + i + 512] = (unsigned char)(bluep[i] >> 8);
+          inFile->colormap[j * 768 + i] = (unsigned char)(redp[i] >> 8);
+          inFile->colormap[j * 768 + i + 256] =
+              (unsigned char)(greenp[i] >> 8);
+          inFile->colormap[j * 768 + i + 512] =
+              (unsigned char)(bluep[i] >> 8);
         }
       }
       TIFFSetDirectory(tif, 0);
@@ -174,74 +176,69 @@ int iiTIFFCheck(ImodImageFile *inFile)
        otherwise set up for unsigned */
     defined = TIFFGetField(tif, TIFFTAG_SAMPLEFORMAT, &sampleformat);
     if (defined && sampleformat == SAMPLEFORMAT_INT) {
-      inFile->type   = IITYPE_SHORT;
-      inFile->amean  = 0;
-      inFile->amin   = -32767;
-      inFile->amax   = 32767;
-      inFile->mode   = MRC_MODE_SHORT;
-    } else if ((defined && sampleformat == SAMPLEFORMAT_IEEEFP) || bits == 32){
-      inFile->type   = IITYPE_FLOAT;
-      inFile->amean  = 128.;
-      inFile->amin   = 0;
-      inFile->amax   = 255.;
-      inFile->mode   = MRC_MODE_FLOAT;
+      inFile->type = IITYPE_SHORT;
+      inFile->amean = 0;
+      inFile->amin = -32767;
+      inFile->amax = 32767;
+      inFile->mode = MRC_MODE_SHORT;
+    } else if ((defined && sampleformat == SAMPLEFORMAT_IEEEFP) ||
+               bits == 32) {
+      inFile->type = IITYPE_FLOAT;
+      inFile->amean = 128.;
+      inFile->amin = 0;
+      inFile->amax = 255.;
+      inFile->mode = MRC_MODE_FLOAT;
     } else {
-      inFile->type   = IITYPE_USHORT;
-      inFile->amean  = 32767;
-      inFile->amin   = 0;
-      inFile->amax   = 65535;
-      inFile->mode   = MRC_MODE_USHORT;   /* Why was this SHORT for both? */
+      inFile->type = IITYPE_USHORT;
+      inFile->amean = 32767;
+      inFile->amin = 0;
+      inFile->amax = 65535;
+      inFile->mode = MRC_MODE_USHORT; /* Why was this SHORT for both? */
     }
   }
-  
+
   /* Use min and max from file if defined (better be there for float) */
   if (TIFFGetField(tif, TIFFTAG_SMINSAMPLEVALUE, &minmax))
     inFile->amin = minmax;
   if (TIFFGetField(tif, TIFFTAG_SMAXSAMPLEVALUE, &minmax))
     inFile->amax = minmax;
 
-  inFile->smin   = inFile->amin;
-  inFile->smax   = inFile->amax;
+  inFile->smin = inFile->amin;
+  inFile->smax = inFile->amax;
   inFile->headerSize = 8;
   inFile->sectionSkip = 0;
   inFile->header = (char *)tif;
-  inFile->fp = (FILE *)tif;    
+  inFile->fp = (FILE *)tif;
   inFile->cleanUp = tiffDelete;
   inFile->reopen = tiffReopen;
   inFile->close = tiffClose;
-  return(0);
+  return (0);
 }
 
-int tiffReopen(ImodImageFile *inFile)
-{
-  TIFF* tif;
+int tiffReopen(ImodImageFile *inFile) {
+  TIFF *tif;
   tif = openWithoutBMode(inFile);
   if (!tif)
     return 1;
   inFile->headerSize = 8;
   inFile->sectionSkip = 0;
-  inFile->header = (char *)tif;    
-  inFile->fp = (FILE *)tif;    
+  inFile->header = (char *)tif;
+  inFile->fp = (FILE *)tif;
   return 0;
 }
 
-void tiffClose(ImodImageFile *inFile)
-{
-  TIFF* tif = (TIFF *)inFile->header;
+void tiffClose(ImodImageFile *inFile) {
+  TIFF *tif = (TIFF *)inFile->header;
   if (tif)
     TIFFClose(tif);
   inFile->header = NULL;
   inFile->fp = NULL;
 }
 
-void tiffDelete(ImodImageFile *inFile)
-{
-  tiffClose(inFile);
-}
+void tiffDelete(ImodImageFile *inFile) { tiffClose(inFile); }
 
 /* Get the value for a field that returns a single value */
-int tiffGetField(ImodImageFile *inFile, int tag, void *value)
-{
+int tiffGetField(ImodImageFile *inFile, int tag, void *value) {
   TIFF *tif;
   if (!inFile)
     return -1;
@@ -254,8 +251,7 @@ int tiffGetField(ImodImageFile *inFile, int tag, void *value)
 }
 /* Get the value for a field that returns the address of an array.  The count
    argument seems to be required but does not seem to return the count */
-int tiffGetArray(ImodImageFile *inFile, int tag, int *count, void *value)
-{
+int tiffGetArray(ImodImageFile *inFile, int tag, int *count, void *value) {
   TIFF *tif;
   if (!inFile)
     return -1;
@@ -267,19 +263,12 @@ int tiffGetArray(ImodImageFile *inFile, int tag, int *count, void *value)
   return TIFFGetField(tif, (ttag_t)tag, count, value);
 }
 
-void tiffSuppressErrors(void)
-{
-  TIFFSetErrorHandler(NULL);
-}
+void tiffSuppressErrors(void) { TIFFSetErrorHandler(NULL); }
 
-void tiffSuppressWarnings(void)
-{
-  TIFFSetWarningHandler(NULL);
-}
+void tiffSuppressWarnings(void) { TIFFSetWarningHandler(NULL); }
 
 /* Mode 'b' means something completely different for TIFF, so strip it */
-static TIFF *openWithoutBMode(ImodImageFile *inFile)
-{
+static TIFF *openWithoutBMode(ImodImageFile *inFile) {
   TIFF *tif;
   int len, stripped = 0;
   char *tmpmode = inFile->fmode;
@@ -304,12 +293,11 @@ static TIFF *openWithoutBMode(ImodImageFile *inFile)
 
 /* DNM 12/24/00: Got this working for bytes, shorts, and RGBs, for whole
    images or subsets, and using maps for scaling */
-/* DNM 11/18/01: Added ability to read tiles, made tiffReadSection and 
+/* DNM 11/18/01: Added ability to read tiles, made tiffReadSection and
    tiffReadSectionByte call a common routine to reduce duplicate code */
 
 static int ReadSection(ImodImageFile *inFile, char *buf, int inSection,
-                       int byte)
-{
+                       int byte) {
   int nstrip, si;
   int xout, xcopy;
   int xsize = inFile->nx;
@@ -335,8 +323,8 @@ static int ReadSection(ImodImageFile *inFile, char *buf, int inSection,
   uint32 rowsperstrip;
   int nread;
   int tilesize, tilewidth, tilelength, xtiles, ytiles, xti, yti;
-     
-  TIFF* tif = (TIFF *)inFile->header;
+
+  TIFF *tif = (TIFF *)inFile->header;
   if (inFile->axis == 2)
     return -1;
   if (byte && (inFile->format != IIFORMAT_LUMINANCE))
@@ -347,24 +335,23 @@ static int ReadSection(ImodImageFile *inFile, char *buf, int inSection,
   if (!tif)
     return -1;
 
-
   /* set the dimensions to read in */
   /* DNM 2/26/03: replace upper right only if negative */
-  xmin   = inFile->llx;
-  ymin   = inFile->lly;
+  xmin = inFile->llx;
+  ymin = inFile->lly;
   if (inFile->urx < 0)
-    xmax = inFile->nx-1;
+    xmax = inFile->nx - 1;
   else
     xmax = inFile->urx;
   if (inFile->ury < 0)
-    ymax = inFile->ny-1;
+    ymax = inFile->ny - 1;
   else
     ymax = inFile->ury;
   xout = xmax + 1 - xmin;
-  doscale = (offset <= -1.0 || offset >= 1.0 || 
-             slope < 0.995 || slope > 1.005);
-     
-  TIFFSetDirectory(tif, inSection);   
+  doscale =
+      (offset <= -1.0 || offset >= 1.0 || slope < 0.995 || slope > 1.005);
+
+  TIFFSetDirectory(tif, inSection);
   if (byte) {
     if (inFile->type == IITYPE_SHORT) {
       pixsize = 2;
@@ -401,13 +388,13 @@ static int ReadSection(ImodImageFile *inFile, char *buf, int inSection,
         free(map);
       return -1;
     }
-               
+
     nstrip = TIFFNumberOfStrips(tif);
-    /* printf("%d %d %d %d\n", stripsize, rowsperstrip, nstrip, 
+    /* printf("%d %d %d %d\n", stripsize, rowsperstrip, nstrip,
        pixsize); */
 
-    for (si = 0 ; si < nstrip; si++){
-               
+    for (si = 0; si < nstrip; si++) {
+
       /* Compute starting and ending Y values to use in each strip */
       ystart = ysize - 1 - (rowsperstrip * (si + 1) - 1);
       yend = ysize - 1 - (rowsperstrip * si);
@@ -417,7 +404,7 @@ static int ReadSection(ImodImageFile *inFile, char *buf, int inSection,
         yend = ymax;
       if (ystart > yend)
         continue;
-               
+
       /* Read the strip if necessary */
       nread = TIFFReadEncodedStrip(tif, si, tmp, stripsize);
       /* printf("%d %d %d %d\n", nread, si, ystart, yend); */
@@ -432,7 +419,7 @@ static int ReadSection(ImodImageFile *inFile, char *buf, int inSection,
         bdata = tmp + ofsin;
         if (byte) {
           if (pixsize == 1) {
-                              
+
             /* Bytes */
             if (doscale)
               for (i = 0; i < xout; i++)
@@ -440,7 +427,7 @@ static int ReadSection(ImodImageFile *inFile, char *buf, int inSection,
             else
               memcpy(obuf, bdata, xout);
           } else if (pixsize == 2) {
-                              
+
             /* Integers */
             usdata = (b3dUInt16 *)tmp + ofsin;
             for (i = 0; i < xout; i++)
@@ -455,7 +442,7 @@ static int ReadSection(ImodImageFile *inFile, char *buf, int inSection,
         } else {
           memcpy(obuf, bdata, xout * pixsize);
         }
-      }    
+      }
     }
   } else {
 
@@ -472,14 +459,14 @@ static int ReadSection(ImodImageFile *inFile, char *buf, int inSection,
     TIFFGetField(tif, TIFFTAG_TILELENGTH, &tilelength);
     xtiles = (xsize + tilewidth - 1) / tilewidth;
     ytiles = (ysize + tilelength - 1) / tilelength;
-               
-    /* printf("%d %d %d %d %d %d\n", tilesize, tilewidth, tilelength, 
+
+    /* printf("%d %d %d %d %d %d\n", tilesize, tilewidth, tilelength,
        xtiles, ytiles, pixsize); */
 
     for (yti = 0; yti < ytiles; yti++) {
       for (xti = 0; xti < xtiles; xti++) {
-                    
-        /* Compute starting and ending Y then X values to use in 
+
+        /* Compute starting and ending Y then X values to use in
            this tile */
         ystart = ysize - 1 - (tilelength * (yti + 1) - 1);
         yend = ysize - 1 - (tilelength * yti);
@@ -498,26 +485,24 @@ static int ReadSection(ImodImageFile *inFile, char *buf, int inSection,
           xend = xmax;
         if (xstart > xend)
           continue;
-                    
+
         /* Read the tile if necessary */
         si = xti + yti * xtiles;
         nread = TIFFReadEncodedTile(tif, si, tmp, tilesize);
         xcopy = xend + 1 - xstart;
         /* printf("%d %d %d %d\n", nread, si, ystart, yend); */
         for (y = ystart; y <= yend; y++) {
-                         
-          /* for each y, compute back to row, and get offsets 
+
+          /* for each y, compute back to row, and get offsets
              into input and output arrays */
           row = ysize - 1 - y - tilelength * yti;
-          ofsin = movesize * 
-            (row * tilewidth + xstart - xti * tilewidth);
-          ofsout = movesize * 
-            ((y - ymin) * xout + xstart - xmin);
+          ofsin = movesize * (row * tilewidth + xstart - xti * tilewidth);
+          ofsout = movesize * ((y - ymin) * xout + xstart - xmin);
           obuf = (unsigned char *)buf + ofsout;
           bdata = tmp + ofsin;
           if (byte) {
             if (pixsize == 1) {
-                                   
+
               /* Bytes */
               if (doscale)
                 for (i = 0; i < xcopy; i++)
@@ -525,13 +510,13 @@ static int ReadSection(ImodImageFile *inFile, char *buf, int inSection,
               else
                 memcpy(obuf, bdata, xcopy);
             } else if (pixsize == 2) {
-                                   
+
               /* Integers */
               usdata = (b3dUInt16 *)tmp + ofsin;
               for (i = 0; i < xcopy; i++)
                 *obuf++ = map[*usdata++];
             } else {
-              
+
               /* Floats */
               fdata = (b3dFloat *)tmp + ofsin;
               for (i = 0; i < xcopy; i++)
@@ -542,26 +527,22 @@ static int ReadSection(ImodImageFile *inFile, char *buf, int inSection,
           }
         }
       }
-               
     }
   }
-  free (tmp);
+  free(tmp);
   if (freeMap)
     free(map);
 
   return 0;
 }
 
-int tiffReadSectionByte(ImodImageFile *inFile, char *buf, int inSection)
-{ 
-  return(ReadSection(inFile, buf, inSection, 1));
+int tiffReadSectionByte(ImodImageFile *inFile, char *buf, int inSection) {
+  return (ReadSection(inFile, buf, inSection, 1));
 }
 
-int tiffReadSection(ImodImageFile *inFile, char *buf, int inSection)
-{
-  return(ReadSection(inFile, buf, inSection, 0));
+int tiffReadSection(ImodImageFile *inFile, char *buf, int inSection) {
+  return (ReadSection(inFile, buf, inSection, 0));
 }
-
 
 /*
   $Log: iitif.c,v $
@@ -588,24 +569,24 @@ int tiffReadSection(ImodImageFile *inFile, char *buf, int inSection)
 
   Revision 3.7  2006/08/27 23:46:28  mast
   Added color map support
-  
+
   Revision 3.6  2005/05/19 23:51:40  mast
   Made open routine reopen the file if it fails as a tiff
-  
+
   Revision 3.5  2005/02/11 01:42:33  mast
   Warning cleanup: implicit declarations, main return type, parentheses, etc.
-  
+
   Revision 3.4  2004/11/05 18:53:04  mast
   Include local files with quotes, not brackets
-  
+
   Revision 3.3  2004/01/21 00:56:50  mast
   Stopped freeing map from byte_map
-  
+
   Revision 3.2  2004/01/05 17:51:16  mast
   renamed imin/imax to smin/smax or outmin/outmax as appropriate, changed
   unsigned short to b3dUInt16
-  
+
   Revision 3.1  2003/02/27 17:08:23  mast
   Set default upper coordinates to -1 rather than 0.
-  
+
 */

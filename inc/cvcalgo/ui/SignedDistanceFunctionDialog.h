@@ -1,8 +1,8 @@
 /*
   Copyright 2008-2010 The University of Texas at Austin
-  
-	Authors: Jose Rivera <transfix@ices.utexas.edu>
-	Advisor: Chandrajit Bajaj <bajaj@cs.utexas.edu>
+
+        Authors: Jose Rivera <transfix@ices.utexas.edu>
+        Advisor: Chandrajit Bajaj <bajaj@cs.utexas.edu>
 
   This file is part of Volume Rover.
 
@@ -34,52 +34,50 @@
 #include <QDialog>
 #endif
 
-#include <cvcalgo/cvcalgo.h>
 #include <VolMagick/Dimension.h>
+#include <cvcalgo/cvcalgo.h>
 
 #if QT_VERSION < 0x040000
 class SignedDistanceFunctionDialogBase;
 #else
-namespace Ui
-{
-  class SignedDistanceFunctionDialog;
+namespace Ui {
+class SignedDistanceFunctionDialog;
 }
 #endif
 
-class SignedDistanceFunctionDialog : public QDialog
-{
+class SignedDistanceFunctionDialog : public QDialog {
   Q_OBJECT
 
- public:
-  SignedDistanceFunctionDialog(QWidget* parent = 0,
+public:
+  SignedDistanceFunctionDialog(QWidget *parent = 0,
 #if QT_VERSION < 0x040000
-                  const char* name = 0, WFlags f = WType_TopLevel
+                               const char *name = 0, WFlags f = WType_TopLevel
 #else
-                  Qt::WindowFlags flags={}
+                               Qt::WindowFlags flags = {}
 #endif
-                  );
+  );
   virtual ~SignedDistanceFunctionDialog();
 
   cvcalgo::SDFMethod method() const;
   void method(cvcalgo::SDFMethod method);
-  
+
   VolMagick::Dimension dimension() const;
   void dimension(const VolMagick::Dimension &dim);
 
   VolMagick::BoundingBox boundingBox() const;
-  void boundingBox(const VolMagick::BoundingBox& bbox);
+  void boundingBox(const VolMagick::BoundingBox &bbox);
 
   bool usingBoundingBox() const;
   void usingBoundingBox(bool flag);
 
- signals:
+signals:
   void getSubVolumeBoxButtonClicked();
 
- protected slots:
+protected slots:
   virtual void okSlot();
   void enableBoundingBoxWidgets(bool);
 
- protected:
+protected:
 #if QT_VERSION < 0x040000
   SignedDistanceFunctionDialogBase *_ui;
 #else

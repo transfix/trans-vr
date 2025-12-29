@@ -17,50 +17,45 @@
 
   You should have received a copy of the GNU Lesser General Public
   License along with this library; if not, write to the Free Software
-  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301
+  USA
 */
 
 /* $Id: GeometryRenderer.h 5692 2012-06-01 22:39:25Z transfix $ */
 
-#include <CVC/StateObject.h>
 #include <CVC/BoundingBox.h>
+#include <CVC/StateObject.h>
 #include <boost/function.hpp>
-
 #include <cvcraw_geometry/cvcgeom.h>
 
-namespace qglviewer
-{
-  class Camera;
+namespace qglviewer {
+class Camera;
 }
 
-namespace CVC_NAMESPACE
-{
-  class GeometryRenderer : public StateObject<GeometryRenderer>
-  {
-  public:
-    typedef boost::function<void ()> Callback;
+namespace CVC_NAMESPACE {
+class GeometryRenderer : public StateObject<GeometryRenderer> {
+public:
+  typedef boost::function<void()> Callback;
 
-    GeometryRenderer(const qglviewer::Camera* vc = NULL)
-      : _viewerCamera(vc)
-    { 
-      defaultConstructor(); 
-    }
-    
-    //Render's all the geometry found starting at sceneRoot
-    virtual void render(const std::string& sceneRoot);
+  GeometryRenderer(const qglviewer::Camera *vc = NULL) : _viewerCamera(vc) {
+    defaultConstructor();
+  }
 
-    const qglviewer::Camera *camera() const { return _viewerCamera; }
-    void camera(const qglviewer::Camera* cam) { _viewerCamera = cam; }
+  // Render's all the geometry found starting at sceneRoot
+  virtual void render(const std::string &sceneRoot);
 
-  protected:
-    void defaultConstructor();
+  const qglviewer::Camera *camera() const { return _viewerCamera; }
+  void camera(const qglviewer::Camera *cam) { _viewerCamera = cam; }
 
-    virtual void renderState(const std::string& root, const std::string& s);
-    virtual void handleStateChanged(const std::string& childState);
+protected:
+  void defaultConstructor();
 
-    void doDrawBoundingBox(const std::string& s);
-    void doDrawBoundingBox(const BoundingBox& bbox);
+  virtual void renderState(const std::string &root, const std::string &s);
+  virtual void handleStateChanged(const std::string &childState);
 
-    const qglviewer::Camera *_viewerCamera;
-  };
-}
+  void doDrawBoundingBox(const std::string &s);
+  void doDrawBoundingBox(const BoundingBox &bbox);
+
+  const qglviewer::Camera *_viewerCamera;
+};
+} // namespace CVC_NAMESPACE

@@ -30,53 +30,52 @@
 
 namespace log4cplus {
 
-    /**
-     * Appends log events to a file. 
-     *
-     * <h3>Properties</h3>
-     * <dl>
-     * <dt><tt>ident</tt></dt>
-     * <dd>First argument to <code>openlog()</code>, a string that
-     * will be prepended to every message.</dd>
-     * 
-     * <dt><tt>facility</tt></dt>
-     * <dd>Facility is used in combination with syslog level in first
-     * argument to syslog(). It can be one of the supported facility
-     * names (case insensitive), e.g. auth, cron, kern, mail, news
-     * etc.</dd>
-     * </dl>
-     */
-    class LOG4CPLUS_EXPORT SysLogAppender : public Appender {
-    public:
-      // Ctors
-        SysLogAppender(const tstring& ident);
-        SysLogAppender(const log4cplus::helpers::Properties & properties);
+/**
+ * Appends log events to a file.
+ *
+ * <h3>Properties</h3>
+ * <dl>
+ * <dt><tt>ident</tt></dt>
+ * <dd>First argument to <code>openlog()</code>, a string that
+ * will be prepended to every message.</dd>
+ *
+ * <dt><tt>facility</tt></dt>
+ * <dd>Facility is used in combination with syslog level in first
+ * argument to syslog(). It can be one of the supported facility
+ * names (case insensitive), e.g. auth, cron, kern, mail, news
+ * etc.</dd>
+ * </dl>
+ */
+class LOG4CPLUS_EXPORT SysLogAppender : public Appender {
+public:
+  // Ctors
+  SysLogAppender(const tstring &ident);
+  SysLogAppender(const log4cplus::helpers::Properties &properties);
 
-      // Dtor
-        virtual ~SysLogAppender();
+  // Dtor
+  virtual ~SysLogAppender();
 
-      // Methods
-        virtual void close();
+  // Methods
+  virtual void close();
 
-    protected:
-        virtual int getSysLogLevel(const LogLevel& ll) const;
-        virtual void append(const spi::InternalLoggingEvent& event);
+protected:
+  virtual int getSysLogLevel(const LogLevel &ll) const;
+  virtual void append(const spi::InternalLoggingEvent &event);
 
-      // Data
-        tstring ident;
-        int facility;
+  // Data
+  tstring ident;
+  int facility;
 
-    private:
-      // Disallow copying of instances of this class
-        SysLogAppender(const SysLogAppender&);
-        SysLogAppender& operator=(const SysLogAppender&);
+private:
+  // Disallow copying of instances of this class
+  SysLogAppender(const SysLogAppender &);
+  SysLogAppender &operator=(const SysLogAppender &);
 
-        std::string identStr;
-    };
+  std::string identStr;
+};
 
 } // end namespace log4cplus
 
 #endif // defined(HAVE_SYSLOG_H)
 
 #endif // _LOG4CPLUS_SYSLOG_APPENDER_HEADER_
-

@@ -17,7 +17,8 @@
 
   You should have received a copy of the GNU Lesser General Public
   License along with this library; if not, write to the Free Software
-  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301
+  USA
 */
 
 #include <QApplication>
@@ -27,33 +28,31 @@
 #include <signal.h>
 #endif
 
+#include <GL/glew.h>
 #include <VolumeGridRover/VolumeGridRoverMainWindow.h>
 
-#include <GL/glew.h>
-
-int main(int argc, char **argv)
-{
+int main(int argc, char **argv) {
   int retval;
-  
+
 #ifndef WIN32
   struct sigaction mysigaction;
-    
+
   sigemptyset(&mysigaction.sa_mask);
   mysigaction.sa_flags = 0;
   mysigaction.sa_handler = SIG_IGN;
   sigaction(SIGPIPE, &mysigaction, NULL);
 #endif
-  
+
   QApplication::setColorSpec(QApplication::ManyColor);
-  QApplication app(argc,argv);
-  
+  QApplication app(argc, argv);
+
   VolumeGridRoverMainWindow *mainwindow = new VolumeGridRoverMainWindow;
   app.setMainWidget(mainwindow);
   mainwindow->show();
   retval = app.exec();
-  delete mainwindow; /* make sure the destructor for mainwindow is called before
-				        CVCGL_Shutdown, because GL is still used in SliceCanvas's
-						destructor (calls glDeleteTextures) */
-  
+  delete mainwindow; /* make sure the destructor for mainwindow is called
+                        before CVCGL_Shutdown, because GL is still used in
+                        SliceCanvas's destructor (calls glDeleteTextures) */
+
   return retval;
 }

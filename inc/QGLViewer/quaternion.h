@@ -34,28 +34,29 @@ namespace qglviewer {
         \class Quaternion quaternion.h QGLViewer/quaternion.h
 
         The Quaternion is an appropriate (although not very intuitive)
-   representation for 3D rotations and orientations. Many tools are provided to
-   ease the definition of a Quaternion: see constructors, setAxisAngle(),
+   representation for 3D rotations and orientations. Many tools are provided
+  to ease the definition of a Quaternion: see constructors, setAxisAngle(),
    setFromRotationMatrix(), setFromRotatedBasis().
 
         You can apply the rotation represented by the Quaternion to 3D points
-   using rotate() and inverseRotate(). See also the Frame class that represents
-   a coordinate system and provides other conversion functions like
+   using rotate() and inverseRotate(). See also the Frame class that
+  represents a coordinate system and provides other conversion functions like
    Frame::coordinatesOf() and Frame::transformOf().
 
-        You can apply the Quaternion \c q rotation to the OpenGL matrices using:
-        \code glMultMatrixd(q.matrix()); 
-        // equivalent to glRotate(q.angle()*180.0/M_PI, q.axis().x, q.axis().y, q.axis().z); \endcode
+        You can apply the Quaternion \c q rotation to the OpenGL matrices
+  using: \code glMultMatrixd(q.matrix());
+        // equivalent to glRotate(q.angle()*180.0/M_PI, q.axis().x,
+  q.axis().y, q.axis().z); \endcode
 
         Quaternion is part of the \c qglviewer namespace, specify \c
-   qglviewer::Quaternion or use the qglviewer namespace: 
+   qglviewer::Quaternion or use the qglviewer namespace:
   \code using namespace qglviewer; \endcode
 
         <h3>Internal representation</h3>
 
-        The internal representation of a Quaternion corresponding to a rotation
-   around axis \c axis, with an angle \c alpha is made of four qreals (i.e.
-   doubles) q[i]: \code {q[0],q[1],q[2]} = sin(alpha/2) *
+        The internal representation of a Quaternion corresponding to a
+  rotation around axis \c axis, with an angle \c alpha is made of four qreals
+  (i.e. doubles) q[i]: \code {q[0],q[1],q[2]} = sin(alpha/2) *
    {axis[0],axis[1],axis[2]} q[3] = cos(alpha/2) \endcode
 
         Note that certain implementations place the cosine term in first
@@ -76,8 +77,8 @@ public:
     q[3] = 1.0;
   }
 
-  /*! Constructor from rotation axis (non null) and angle (in radians). See also
-   * setAxisAngle(). */
+  /*! Constructor from rotation axis (non null) and angle (in radians). See
+   * also setAxisAngle(). */
   Quaternion(const Vec &axis, qreal angle) { setAxisAngle(axis, angle); }
 
   Quaternion(const Vec &from, const Vec &to);
@@ -111,8 +112,8 @@ public:
   /*! Sets the Quaternion as a rotation of axis \p axis and angle \p angle (in
      radians).
 
-          \p axis does not need to be normalized. A null \p axis will result in
-     an identity Quaternion. */
+          \p axis does not need to be normalized. A null \p axis will result
+     in an identity Quaternion. */
   void setAxisAngle(const Vec &axis, qreal angle) {
     const qreal norm = axis.norm();
     if (norm < 1E-8) {
@@ -130,8 +131,8 @@ public:
     }
   }
 
-  /*! Sets the Quaternion value. See the Quaternion(qreal, qreal, qreal, qreal)
-   * constructor documentation. */
+  /*! Sets the Quaternion value. See the Quaternion(qreal, qreal, qreal,
+   * qreal) constructor documentation. */
   void setValue(qreal q0, qreal q1, qreal q2, qreal q3) {
     q[0] = q0;
     q[1] = q1;
@@ -152,12 +153,12 @@ public:
   qreal angle() const;
   void getAxisAngle(Vec &axis, qreal &angle) const;
 
-  /*! Bracket operator, with a constant return value. \p i must range in [0..3].
-   * See the Quaternion(qreal, qreal, qreal, qreal) documentation. */
+  /*! Bracket operator, with a constant return value. \p i must range in
+   * [0..3]. See the Quaternion(qreal, qreal, qreal, qreal) documentation. */
   qreal operator[](int i) const { return q[i]; }
 
-  /*! Bracket operator returning an l-value. \p i must range in [0..3]. See the
-   * Quaternion(qreal, qreal, qreal, qreal) documentation. */
+  /*! Bracket operator returning an l-value. \p i must range in [0..3]. See
+   * the Quaternion(qreal, qreal, qreal, qreal) documentation. */
   qreal &operator[](int i) { return q[i]; }
   //@}
 
@@ -174,19 +175,21 @@ public:
           Note that a*b usually differs from b*a.
 
           \attention For efficiency reasons, the resulting Quaternion is not
-     normalized. Use normalize() in case of numerical drift with small rotation
-     composition. */
+     normalized. Use normalize() in case of numerical drift with small
+     rotation composition. */
   friend Quaternion operator*(const Quaternion &a, const Quaternion &b) {
     return Quaternion(
         a.q[3] * b.q[0] + b.q[3] * a.q[0] + a.q[1] * b.q[2] - a.q[2] * b.q[1],
         a.q[3] * b.q[1] + b.q[3] * a.q[1] + a.q[2] * b.q[0] - a.q[0] * b.q[2],
         a.q[3] * b.q[2] + b.q[3] * a.q[2] + a.q[0] * b.q[1] - a.q[1] * b.q[0],
-        a.q[3] * b.q[3] - b.q[0] * a.q[0] - a.q[1] * b.q[1] - a.q[2] * b.q[2]);
+        a.q[3] * b.q[3] - b.q[0] * a.q[0] - a.q[1] * b.q[1] -
+            a.q[2] * b.q[2]);
   }
 
   /*! Quaternion rotation is composed with \p q.
 
-          See operator*(), since this is equivalent to \c this = \c this * \p q.
+          See operator*(), since this is equivalent to \c this = \c this * \p
+     q.
 
           \note For efficiency reasons, the resulting Quaternion is not
      normalized. You may normalize() it after each application in case of
@@ -212,8 +215,8 @@ public:
   /*! Returns the inverse Quaternion (inverse rotation).
 
           Result has a negated axis() direction and the same angle(). A
-     composition (see operator*()) of a Quaternion and its inverse() results in
-     an identity function.
+     composition (see operator*()) of a Quaternion and its inverse() results
+     in an identity function.
 
           Use invert() to actually modify the Quaternion. */
   Quaternion inverse() const { return Quaternion(-q[0], -q[1], -q[2], q[3]); }
@@ -230,13 +233,14 @@ public:
   /*! Negates all the coefficients of the Quaternion.
 
           This results in an other representation of the \e same rotation
-     (opposite rotation angle, but with a negated axis direction: the two cancel
-     out). However, note that the results of axis() and angle() are unchanged
-     after a call to this method since angle() always returns a value in [0,pi].
+     (opposite rotation angle, but with a negated axis direction: the two
+     cancel out). However, note that the results of axis() and angle() are
+     unchanged after a call to this method since angle() always returns a
+     value in [0,pi].
 
-          This method is mainly useful for Quaternion interpolation, so that the
-     spherical interpolation takes the shortest path on the unit sphere. See
-     slerp() for details. */
+          This method is mainly useful for Quaternion interpolation, so that
+     the spherical interpolation takes the shortest path on the unit sphere.
+     See slerp() for details. */
   void negate() {
     invert();
     q[3] = -q[3];
@@ -244,9 +248,9 @@ public:
 
   /*! Normalizes the Quaternion coefficients.
 
-          This method should not need to be called since we only deal with unit
-     Quaternions. This is however useful to prevent numerical drifts, especially
-     with small rotational increments. See also normalized(). */
+          This method should not need to be called since we only deal with
+     unit Quaternions. This is however useful to prevent numerical drifts,
+     especially with small rotational increments. See also normalized(). */
   qreal normalize() {
     const qreal norm =
         sqrt(q[0] * q[0] + q[1] * q[1] + q[2] * q[2] + q[3] * q[3]);
@@ -288,7 +292,8 @@ public:
   static Quaternion slerp(const Quaternion &a, const Quaternion &b, qreal t,
                           bool allowFlip = true);
   static Quaternion squad(const Quaternion &a, const Quaternion &tgA,
-                          const Quaternion &tgB, const Quaternion &b, qreal t);
+                          const Quaternion &tgB, const Quaternion &b,
+                          qreal t);
   /*! Returns the "dot" product of \p a and \p b: a[0]*b[0] + a[1]*b[1] +
    * a[2]*b[2] + a[3]*b[3]. */
   static qreal dot(const Quaternion &a, const Quaternion &b) {
@@ -313,7 +318,7 @@ public:
   explicit Quaternion(const QDomElement &element);
   QDomElement domElement(const QString &name, QDomDocument &document) const;
   void initFromDOMElement(const QDomElement &element);
-//@}
+  //@}
 
 #ifdef DOXYGEN
   /*! @name Output stream */

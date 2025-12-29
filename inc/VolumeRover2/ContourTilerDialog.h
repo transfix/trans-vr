@@ -1,8 +1,8 @@
 /*
   Copyright 2011 The University of Texas at Austin
-  
-	Authors: Alex Rand <arand@ices.utexas.edu>
-	Advisor: Chandrajit Bajaj <bajaj@cs.utexas.edu>
+
+        Authors: Alex Rand <arand@ices.utexas.edu>
+        Advisor: Chandrajit Bajaj <bajaj@cs.utexas.edu>
 
   This file is part of Volume Rover.
 
@@ -26,37 +26,34 @@
 #ifndef __CONTOURTILERDIALOG_H__
 #define __CONTOURTILERDIALOG_H__
 
-//#include <qglobal.h>
+// #include <qglobal.h>
 
 #include <QDialog>
 #include <QString>
 
-namespace Ui
-{
-  class ContourTilerDialog;
+namespace Ui {
+class ContourTilerDialog;
 }
 
 #include "ui_ContourTilerDialog.h"
 
-class ContourTilerDialog : public QDialog
-{
+class ContourTilerDialog : public QDialog {
   Q_OBJECT
 
- public:
-  ContourTilerDialog(QWidget *parent=nullptr,Qt::WindowFlags flags=Qt::WindowFlags());
+public:
+  ContourTilerDialog(QWidget *parent = nullptr,
+                     Qt::WindowFlags flags = Qt::WindowFlags());
 
   virtual ~ContourTilerDialog();
 
   void RunContourTiler();
 
-  
-  public slots:
+public slots:
   void geometryChangedSlot(int index);
   void outputDirSlot();
 
-  protected:
+protected:
   Ui::ContourTilerDialog *_ui;
-
 };
 
 #endif

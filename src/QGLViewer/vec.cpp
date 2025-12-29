@@ -22,8 +22,8 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 
 **********************************************************************/
 
-#include <QGLViewer/vec.h>
 #include <QGLViewer/domUtils.h>
+#include <QGLViewer/vec.h>
 
 // Most of the methods are declared inline in vec.h
 
@@ -37,15 +37,16 @@ the origin.
 void Vec::projectOnAxis(const Vec &direction) {
 #ifndef QT_NO_DEBUG
   if (direction.squaredNorm() < 1.0E-10)
-    qWarning("Vec::projectOnAxis: axis direction is not normalized (norm=%f).",
-             direction.norm());
+    qWarning(
+        "Vec::projectOnAxis: axis direction is not normalized (norm=%f).",
+        direction.norm());
 #endif
 
   *this = (((*this) * direction) / direction.squaredNorm()) * direction;
 }
 
-/*! Projects the Vec on the plane whose normal is \p normal that passes through
-the origin.
+/*! Projects the Vec on the plane whose normal is \p normal that passes
+through the origin.
 
 \p normal does not need to be normalized (but must be non null). */
 void Vec::projectOnPlane(const Vec &normal) {
@@ -71,18 +72,16 @@ Vec Vec::orthogonalVec() const {
     return Vec(-y, x, 0.0);
 }
 
-/*! Constructs a Vec from a \c QDomElement representing an XML code of the form
- \code< anyTagName x=".." y=".." z=".." />\endcode
+/*! Constructs a Vec from a \c QDomElement representing an XML code of the
+form \code< anyTagName x=".." y=".." z=".." />\endcode
 
-If one of these attributes is missing or is not a number, a warning is displayed
-and the associated value is set to 0.0.
+If one of these attributes is missing or is not a number, a warning is
+displayed and the associated value is set to 0.0.
 
 See also domElement() and initFromDOMElement(). */
 Vec::Vec(const QDomElement &element) {
   QStringList attribute;
-  attribute << "x"
-            << "y"
-            << "z";
+  attribute << "x" << "y" << "z";
   for (int i = 0; i < attribute.size(); ++i)
 #ifdef QGLVIEWER_UNION_NOT_SUPPORTED
     this->operator[](i) = DomUtils::qrealFromDom(element, attribute[i], 0.0);
@@ -104,12 +103,9 @@ Vec::Vec(const QDomElement &element) {
  Use initFromDOMElement() to restore the Vec state from the resulting \c
  QDomElement. See also the Vec(const QDomElement&) constructor.
 
- Here is complete example that creates a QDomDocument and saves it into a file:
- \code
- Vec sunPos;
- QDomDocument document("myDocument");
- QDomElement sunElement = document.createElement("Sun");
- document.appendChild(sunElement);
+ Here is complete example that creates a QDomDocument and saves it into a
+ file: \code Vec sunPos; QDomDocument document("myDocument"); QDomElement
+ sunElement = document.createElement("Sun"); document.appendChild(sunElement);
  sunElement.setAttribute("brightness", sunBrightness());
  sunElement.appendChild(sunPos.domElement("sunPosition", document));
  // Other additions to the document hierarchy...
@@ -124,9 +120,11 @@ Vec::Vec(const QDomElement &element) {
  }
  \endcode
 
- See also Quaternion::domElement(), Frame::domElement(), Camera::domElement()...
+ See also Quaternion::domElement(), Frame::domElement(),
+ Camera::domElement()...
  */
-QDomElement Vec::domElement(const QString &name, QDomDocument &document) const {
+QDomElement Vec::domElement(const QString &name,
+                            QDomDocument &document) const {
   QDomElement de = document.createElement(name);
   de.setAttribute("x", QString::number(x));
   de.setAttribute("y", QString::number(y));
@@ -137,8 +135,8 @@ QDomElement Vec::domElement(const QString &name, QDomDocument &document) const {
 /*! Restores the Vec state from a \c QDomElement created by domElement().
 
  The \c QDomElement should contain \c x, \c y and \c z attributes. If one of
- these attributes is missing or is not a number, a warning is displayed and the
- associated value is set to 0.0.
+ these attributes is missing or is not a number, a warning is displayed and
+ the associated value is set to 0.0.
 
  To restore the Vec state from an xml file, use:
  \code

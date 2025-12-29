@@ -17,116 +17,100 @@
 
   You should have received a copy of the GNU Lesser General Public
   License along with this library; if not, write to the Free Software
-  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301
+  USA
 */
-
-#include <iostream>
-#include <sstream>
-#include <vector>
-#include <set>
-#include <algorithm>
-#include <stdio.h>
-#include <stdlib.h>
-
-
-
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <unistd.h>
-#include <errno.h>
-#include <math.h>
-
-#include <boost/tuple/tuple.hpp>
-#include <boost/tuple/tuple_comparison.hpp>
-#include <boost/tuple/tuple_io.hpp>
 
 #include <VolMagick/VolMagick.h>
 #include <VolMagick/VolumeCache.h>
 #include <VolMagick/endians.h>
-
-
+#include <algorithm>
+#include <boost/tuple/tuple.hpp>
+#include <boost/tuple/tuple_comparison.hpp>
+#include <boost/tuple/tuple_io.hpp>
+#include <errno.h>
+#include <iostream>
+#include <math.h>
+#include <set>
+#include <sstream>
+#include <stdio.h>
+#include <stdlib.h>
+#include <sys/stat.h>
+#include <sys/types.h>
+#include <unistd.h>
+#include <vector>
 
 using namespace std;
-int main(int argc, char **argv)
-{
-  if(argc < 6)
-    {
-      std:: cerr << 
-	"Usage: " << argv[0] << 
+int main(int argc, char **argv) {
+  if (argc < 6) {
+    std::cerr << "Usage: " << argv[0] <<
 
-	
-	" <input volume>  <x scalor> <y scalor>  <z scalor>  <output volume> \n";
+        " <input volume>  <x scalor> <y scalor>  <z scalor>  <output volume> "
+        "\n";
 
-      return 1;
-    }
+    return 1;
+  }
 
-  try
-    {
-      VolMagick::Volume inputVol;
+  try {
+    VolMagick::Volume inputVol;
 
+    VolMagick::readVolumeFile(inputVol,
+                              argv[1]); /// first argument is input volume
 
-      
-      
-      VolMagick::readVolumeFile(inputVol,argv[1]); ///first argument is input volume
-      
-	
-	  VolMagick::Volume  outputVol;
+    VolMagick::Volume outputVol;
 
-	
-      VolMagick::VolumeFileInfo volinfo1;
-      volinfo1.read(argv[1]);
-      std::cout << volinfo1.filename() << ":" <<std::endl;
+    VolMagick::VolumeFileInfo volinfo1;
+    volinfo1.read(argv[1]);
+    std::cout << volinfo1.filename() << ":" << std::endl;
 
-      
-      std::cout<<"minVol1 , maxVol1: "<<volinfo1.min()<<" "<<volinfo1.max()<<std::endl;;
- 
-		
-	  VolMagick::BoundingBox bbox;
-	  bbox.minx = volinfo1.XMin();
-	  bbox.miny = volinfo1.YMin();
-	  bbox.minz = volinfo1.ZMin();
-	  bbox.maxx = volinfo1.XMin() + atof(argv[2])*(volinfo1.XMax()-volinfo1.XMin());
-	  bbox.maxy = volinfo1.YMin() + atof(argv[3])*(volinfo1.YMax()-volinfo1.YMin());
-	  bbox.maxz = volinfo1.ZMin() + atof(argv[4])*(volinfo1.ZMax()-volinfo1.ZMin());
+    std::cout << "minVol1 , maxVol1: " << volinfo1.min() << " "
+              << volinfo1.max() << std::endl;
+    ;
 
-/*	  VolMagick::Dimension dim;
-	  dim.xdim = (int) ((bbox.maxx-bbox.minx)/ span[0])+1;
-	  dim.ydim = (int) ((bbox.maxy-bbox.miny)/ span[1])+1;
-	  dim.zdim = (int) ((bbox.maxz-bbox.minz)/ span[2])+1;
+    VolMagick::BoundingBox bbox;
+    bbox.minx = volinfo1.XMin();
+    bbox.miny = volinfo1.YMin();
+    bbox.minz = volinfo1.ZMin();
+    bbox.maxx =
+        volinfo1.XMin() + atof(argv[2]) * (volinfo1.XMax() - volinfo1.XMin());
+    bbox.maxy =
+        volinfo1.YMin() + atof(argv[3]) * (volinfo1.YMax() - volinfo1.YMin());
+    bbox.maxz =
+        volinfo1.ZMin() + atof(argv[4]) * (volinfo1.ZMax() - volinfo1.ZMin());
 
-*/
- 	
- //     outputVol.voxelType(inputVol.voxelType());
- //     outputVol.dimension(inputVol.dimension());
-      outputVol.copy(inputVol);
-      outputVol.boundingBox(bbox);
+    /*	  VolMagick::Dimension dim;
+              dim.xdim = (int) ((bbox.maxx-bbox.minx)/ span[0])+1;
+              dim.ydim = (int) ((bbox.maxy-bbox.miny)/ span[1])+1;
+              dim.zdim = (int) ((bbox.maxz-bbox.minz)/ span[2])+1;
 
- /*     
-	  for( int kz = 0; kz<outputVol.ZDim(); kz++)
-	   for( int jy = 0; jy<outputVol.YDim(); jy++)
-	     for( int ix = 0; ix<outputVol.XDim(); ix++)
-		    {
-				outputVol(ix,jy,kz, inputVol(ix,jy,kz)  );
-			}
-	//		stringstream s;
-	//		s<<argv[3]<< num <<".rawiv";
-*/
-	      VolMagick::createVolumeFile(outputVol, argv[5]);
-    
+    */
 
-    std::cout<<"done!"<<std::endl;
+    //     outputVol.voxelType(inputVol.voxelType());
+    //     outputVol.dimension(inputVol.dimension());
+    outputVol.copy(inputVol);
+    outputVol.boundingBox(bbox);
 
+    /*
+             for( int kz = 0; kz<outputVol.ZDim(); kz++)
+              for( int jy = 0; jy<outputVol.YDim(); jy++)
+                for( int ix = 0; ix<outputVol.XDim(); ix++)
+                       {
+                                   outputVol(ix,jy,kz, inputVol(ix,jy,kz)  );
+                           }
+           //		stringstream s;
+           //		s<<argv[3]<< num <<".rawiv";
+   */
+    VolMagick::createVolumeFile(outputVol, argv[5]);
 
-    }
+    std::cout << "done!" << std::endl;
 
-  catch(VolMagick::Exception &e)
-    {
-      std:: cerr << e.what() << std::endl;
-    }
-  catch(std::exception &e)
-    {
-      std::cerr << e.what() << std::endl;
-    }
+  }
+
+  catch (VolMagick::Exception &e) {
+    std::cerr << e.what() << std::endl;
+  } catch (std::exception &e) {
+    std::cerr << e.what() << std::endl;
+  }
 
   return 0;
 }

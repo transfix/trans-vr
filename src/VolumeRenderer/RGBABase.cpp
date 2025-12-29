@@ -1,7 +1,7 @@
 /*
   Copyright 2002-2003 The University of Texas at Austin
 
-	Authors: Anthony Thane <thanea@ices.utexas.edu>
+        Authors: Anthony Thane <thanea@ices.utexas.edu>
         Advisor: Chandrajit Bajaj <bajaj@cs.utexas.edu>
 
   This file is part of VolumeLibrary.
@@ -17,7 +17,8 @@
 
   You should have received a copy of the GNU Lesser General Public
   License along with this library; if not, write to the Free Software
-  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301
+  USA
 */
 
 // RGBABase.cpp: implementation of the RGBABase class.
@@ -32,22 +33,11 @@ using namespace OpenGLVolumeRendering;
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
 
-RGBABase::RGBABase()
-{
+RGBABase::RGBABase() {}
 
-}
-
-RGBABase::~RGBABase()
-{
-
-}
+RGBABase::~RGBABase() {}
 
 // Initializes the renderer.  Should be called again if the renderer is
 // moved to a different openGL context.  If this returns false, do not try
 // to use it to do volumeRendering
-bool RGBABase::initRenderer()
-{
-	return RendererBase::initRenderer();
-}
-
-
+bool RGBABase::initRenderer() { return RendererBase::initRenderer(); }

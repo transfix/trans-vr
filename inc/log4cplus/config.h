@@ -1,5 +1,6 @@
 /* include/log4cplus/config.h.  Generated from config.h.in by configure.  */
-/* include/log4cplus/config.h.in.  Generated from configure.in by autoheader.  */
+/* include/log4cplus/config.h.in.  Generated from configure.in by autoheader.
+ */
 
 #ifndef LOG4CPLUS_CONFIG_H
 
@@ -94,7 +95,7 @@
 
 /* Defined if the compiler understands __declspec(dllimport) or
    __attribute__((visibility("default"))) construct. */
-#define LOG4CPLUS_DECLSPEC_EXPORT __attribute__ ((visibility("default")))
+#define LOG4CPLUS_DECLSPEC_EXPORT __attribute__((visibility("default")))
 
 /* Defined if the compiler understands __declspec(dllexport) or construct. */
 #define LOG4CPLUS_DECLSPEC_IMPORT /**/
@@ -197,7 +198,7 @@
 /* #undef LOG4CPLUS_WORKING_LOCALE */
 
 /* Define to the sub-directory in which libtool stores uninstalled libraries.
-   */
+ */
 #define LT_OBJDIR ".libs/"
 
 /* Define to the address where bug reports for this package should be sent. */

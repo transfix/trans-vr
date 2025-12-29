@@ -17,47 +17,41 @@
 
   You should have received a copy of the GNU Lesser General Public
   License along with this library; if not, write to the Free Software
-  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301
+  USA
 */
 
 /* $Id: volcache.cpp 4742 2011-10-21 22:09:44Z transfix $ */
 
-#include <iostream>
-#include <vector>
-#include <algorithm>
-#include <stdio.h>
-#include <stdlib.h>
-
-#include <boost/array.hpp>
-#include <boost/format.hpp>
-
-#include <VolMagick/VolMagick.h>
 #include <VolMagick/StdErrOpStatus.h>
+#include <VolMagick/VolMagick.h>
 #include <VolMagick/VolumeCache.h>
 #include <VolMagick/endians.h>
-
+#include <algorithm>
+#include <boost/array.hpp>
+#include <boost/format.hpp>
 #include <fstream>
+#include <iostream>
+#include <stdio.h>
+#include <stdlib.h>
+#include <vector>
 
 #define OUT_OF_CORE
 
 using namespace std;
 
-int main(int argc, char **argv)
-{
-  if(argc < 11)
-    {
-      cerr << "Testing volume cache functionality in VolMagick...\n" 
-	   << "Usage: " << argv[0]
-	   << " <volume file> <var> <time> <minx> <miny> <minz> "
-	   << " <maxx> <maxy> <maxz> <output volume file>"
-	   << endl;
-      return 1;
-    }
+int main(int argc, char **argv) {
+  if (argc < 11) {
+    cerr << "Testing volume cache functionality in VolMagick...\n"
+         << "Usage: " << argv[0]
+         << " <volume file> <var> <time> <minx> <miny> <minz> "
+         << " <maxx> <maxy> <maxz> <output volume file>" << endl;
+    return 1;
+  }
 
-  try
-    {
-      VolMagick::StdErrOpStatus status;
-      VolMagick::setDefaultMessenger(&status);
+  try {
+    VolMagick::StdErrOpStatus status;
+    VolMagick::setDefaultMessenger(&status);
 
 #if 0
       VolMagick::VolumeCache volcache;
@@ -175,25 +169,22 @@ int main(int argc, char **argv)
       }
 #endif
 
-      VolMagick::VolumeFileInfo volinfo(argv[1]);
-      unsigned int var = atoi(argv[2]);
-      unsigned int time = atoi(argv[3]);
+    VolMagick::VolumeFileInfo volinfo(argv[1]);
+    unsigned int var = atoi(argv[2]);
+    unsigned int time = atoi(argv[3]);
 
-      VolMagick::Volume vol;
-      VolMagick::BoundingBox requestRegion(atof(argv[4]),atof(argv[5]),atof(argv[6]),
-					   atof(argv[7]),atof(argv[8]),atof(argv[9]));
-      VolMagick::readVolumeFile(vol,volinfo.filename(),
-				var, time, requestRegion);
-      VolMagick::createVolumeFile(vol,argv[10]);
-    }
-  catch(VolMagick::Exception &e)
-    {
-      cerr << e.what() << endl;
-    }
-  catch(std::exception &e)
-    {
-      cerr << e.what() << endl;
-    }
+    VolMagick::Volume vol;
+    VolMagick::BoundingBox requestRegion(atof(argv[4]), atof(argv[5]),
+                                         atof(argv[6]), atof(argv[7]),
+                                         atof(argv[8]), atof(argv[9]));
+    VolMagick::readVolumeFile(vol, volinfo.filename(), var, time,
+                              requestRegion);
+    VolMagick::createVolumeFile(vol, argv[10]);
+  } catch (VolMagick::Exception &e) {
+    cerr << e.what() << endl;
+  } catch (std::exception &e) {
+    cerr << e.what() << endl;
+  }
 
   return 0;
 }

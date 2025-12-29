@@ -1,25 +1,26 @@
 /******************************************************************************
-				Copyright   
+                                Copyright
 
-This code is developed within the Computational Visualization Center at The 
+This code is developed within the Computational Visualization Center at The
 University of Texas at Austin.
 
-This code has been made available to you under the auspices of a Lesser General 
-Public License (LGPL) (http://www.ices.utexas.edu/cvc/software/license.html) 
-and terms that you have agreed to.
+This code has been made available to you under the auspices of a Lesser
+General Public License (LGPL)
+(http://www.ices.utexas.edu/cvc/software/license.html) and terms that you have
+agreed to.
 
-Upon accepting the LGPL, we request you agree to acknowledge the use of use of 
-the code that results in any published work, including scientific papers, 
+Upon accepting the LGPL, we request you agree to acknowledge the use of use of
+the code that results in any published work, including scientific papers,
 films, and videotapes by citing the following references:
 
 C. Bajaj, Z. Yu, M. Auer
-Volumetric Feature Extraction and Visualization of Tomographic Molecular Imaging
-Journal of Structural Biology, Volume 144, Issues 1-2, October 2003, Pages 
-132-143.
+Volumetric Feature Extraction and Visualization of Tomographic Molecular
+Imaging Journal of Structural Biology, Volume 144, Issues 1-2, October 2003,
+Pages 132-143.
 
-If you desire to use this code for a profit venture, or if you do not wish to 
-accept LGPL, but desire usage of this code, please contact Chandrajit Bajaj 
-(bajaj@ices.utexas.edu) at the Computational Visualization Center at The 
+If you desire to use this code for a profit venture, or if you do not wish to
+accept LGPL, but desire usage of this code, please contact Chandrajit Bajaj
+(bajaj@ices.utexas.edu) at the Computational Visualization Center at The
 University of Texas at Austin for a different license.
 ******************************************************************************/
 
@@ -31,22 +32,22 @@ University of Texas at Austin for a different license.
 namespace SegMed {
 
 typedef struct CriticalPoint CPNT;
-struct CriticalPoint{
+struct CriticalPoint {
   int x;
   int y;
   int z;
   CPNT *next;
 };
 
-
 void Diffuse(int, int, int, float *, float *);
 void GVF_Compute(int, int, int, float *, float *, CPNT **, float);
-void Segment(int, int,int,float *,float *,unsigned char *,CPNT *,float);
-void read_data(int* , int*, int*, float**, const char *);
-void write_data(int, int, int , float *, unsigned char *, FILE*);
+void Segment(int, int, int, float *, float *, unsigned char *, CPNT *, float);
+void read_data(int *, int *, int *, float **, const char *);
+void write_data(int, int, int, float *, unsigned char *, FILE *);
 
-};
+}; // namespace SegMed
 
-int medicalSegmentation(XmlRpc::XmlRpcValue &params, XmlRpc::XmlRpcValue &result);
+int medicalSegmentation(XmlRpc::XmlRpcValue &params,
+                        XmlRpc::XmlRpcValue &result);
 
 #endif

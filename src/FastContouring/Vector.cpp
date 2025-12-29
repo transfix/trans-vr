@@ -18,7 +18,8 @@
 
   You should have received a copy of the GNU Lesser General Public
   License along with this library; if not, write to the Free Software
-  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301
+  USA
 */
 
 // Vector.cpp: implementation of the Vector class.
@@ -32,182 +33,115 @@
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
 
-namespace FastContouring
-{
+namespace FastContouring {
 
 const float EPS = 0.00001f;
 
-Vector::Vector(float x, float y, float z, float w) : Tuple(x,y,z,w)
-{
+Vector::Vector(float x, float y, float z, float w) : Tuple(x, y, z, w) {}
+
+Vector::Vector() : Tuple() {}
+
+Vector::Vector(float *array) { set(array); }
+
+Vector::~Vector() {}
+
+Vector::Vector(const Vector &copy) : Tuple(copy) {}
+
+Vector &Vector::operator=(const Vector &copy) {
+  if (this != &copy) {
+    set(copy);
+  }
+  return *this;
 }
 
-Vector::Vector() : Tuple()
-{
+Vector &Vector::set(float x, float y, float z, float w) {
+  Tuple::set(x, y, z, w);
+  return *this;
 }
 
-Vector::Vector(float* array)
-{
-	set(array);
+Vector &Vector::set(float *array) {
+  Tuple::set(array);
+  return *this;
 }
 
-Vector::~Vector()
-{
-
+Vector &Vector::set(const Vector &copy) {
+  Tuple::set(copy);
+  return *this;
 }
 
-Vector::Vector(const Vector& copy): Tuple(copy)
-{
+Vector Vector::cross(const Vector &vec) const {
+  return Vector(p[1] * vec[2] - p[2] * vec[1], p[2] * vec[0] - p[0] * vec[2],
+                p[0] * vec[1] - p[1] * vec[0], 0.0f);
 }
 
-Vector& Vector::operator=(const Vector& copy)
-{
-	if (this!=&copy) {
-		set(copy);
-	}
-	return *this;
+Vector &Vector::crossEquals(const Vector &vec) {
+  return set(p[1] * vec[2] - p[2] * vec[1], p[2] * vec[0] - p[0] * vec[2],
+             p[0] * vec[1] - p[1] * vec[0], 0.0f);
 }
 
-
-Vector& Vector::set(float x, float y, float z, float w)
-{
-	Tuple::set(x,y,z,w);
-	return *this;
+float Vector::dot(const Vector &vec) const {
+  return p[0] * vec[0] + p[1] * vec[1] + p[2] * vec[2] + p[3] * vec[3];
 }
 
-Vector& Vector::set(float* array)
-{
-	Tuple::set(array);
-	return *this;
+Vector Vector::operator+(const Vector vec) const {
+  return Vector(p[0] + vec[0], p[1] + vec[1], p[2] + vec[2], p[3] + vec[3]);
 }
 
-Vector& Vector::set(const Vector& copy)
-{
-	Tuple::set(copy);
-	return *this;
+Vector &Vector::operator+=(const Vector vec) {
+  return set(p[0] + vec[0], p[1] + vec[1], p[2] + vec[2], p[3] + vec[3]);
 }
 
-Vector Vector::cross(const Vector& vec) const
-{
-	return Vector(
-		p[1]*vec[2] - p[2]*vec[1],
-		p[2]*vec[0] - p[0]*vec[2],
-		p[0]*vec[1] - p[1]*vec[0],		
-		0.0f		
-		);
+Vector Vector::operator-(const Vector vec) const {
+  return Vector(p[0] - vec[0], p[1] - vec[1], p[2] - vec[2], p[3] - vec[3]);
 }
 
-Vector& Vector::crossEquals(const Vector& vec)
-{
-	return set(
-		p[1]*vec[2] - p[2]*vec[1],
-		p[2]*vec[0] - p[0]*vec[2],
-		p[0]*vec[1] - p[1]*vec[0],		
-		0.0f		
-		);
+Vector &Vector::operator-=(const Vector vec) {
+  return set(p[0] - vec[0], p[1] - vec[1], p[2] - vec[2], p[3] - vec[3]);
 }
 
-float Vector::dot(const Vector& vec) const
-{
-	return p[0]*vec[0] + p[1]*vec[1] + p[2]*vec[2] + p[3]*vec[3]; 
+Vector Vector::operator*(float scalar) const {
+  return Vector(p[0] * scalar, p[1] * scalar, p[2] * scalar, p[3]);
 }
 
-
-Vector Vector::operator+(const Vector vec) const
-{
-	return Vector(
-		p[0]+vec[0],
-		p[1]+vec[1],
-		p[2]+vec[2],
-		p[3]+vec[3]);
+Vector &Vector::operator*=(float scalar) {
+  return set(p[0] * scalar, p[1] * scalar, p[2] * scalar, p[3]);
 }
 
-Vector& Vector::operator+=(const Vector vec)
-{
-	return set(
-		p[0]+vec[0],
-		p[1]+vec[1],
-		p[2]+vec[2],
-		p[3]+vec[3]);
+Vector Vector::operator-() const { return Vector(-p[0], -p[1], -p[2], p[3]); }
+
+Vector &Vector::normalize() {
+  if ((float)fabs(p[3]) <= EPS) {
+    float length = (float)sqrt(p[0] * p[0] + p[1] * p[1] + p[2] * p[2]);
+    return set(p[0] / length, p[1] / length, p[2] / length, 0.0f);
+  } else {
+    return set(p[0] / p[3], p[1] / p[3], p[2] / p[3], 1.0f);
+  }
 }
 
-Vector Vector::operator-(const Vector vec) const
-{
-	return Vector(
-		p[0]-vec[0],
-		p[1]-vec[1],
-		p[2]-vec[2],
-		p[3]-vec[3]);
+float Vector::norm() {
+  return (float)sqrt(p[0] * p[0] + p[1] * p[1] + p[2] * p[2]);
 }
 
-Vector& Vector::operator-=(const Vector vec)
-{
-	return set(
-		p[0]-vec[0],
-		p[1]-vec[1],
-		p[2]-vec[2],
-		p[3]-vec[3]);
+bool Vector::isBad() {
+  return (p[0] == 0.0f && p[1] == 0.0f && p[2] == 0.0f && p[3] == 0.0f);
 }
 
-Vector Vector::operator*(float scalar) const
-{
-	return Vector(p[0]*scalar, p[1]*scalar, p[2]*scalar, p[3]);
+Vector Vector::badVector() { return Vector(0.0f, 0.0f, 0.0f, 0.0f); }
+
+Vector *Vector::clone() const { return new Vector(*this); }
+
+Vector Vector::interpolate(const Vector &a, const Vector &b, float alpha) {
+  return Vector(a[0] * (1.0f - alpha) + b[0] * alpha,
+                a[1] * (1.0f - alpha) + b[1] * alpha,
+                a[2] * (1.0f - alpha) + b[2] * alpha,
+                a[3] * (1.0f - alpha) + b[3] * alpha);
 }
 
-Vector& Vector::operator*=(float scalar)
-{
-	return set(p[0]*scalar, p[1]*scalar, p[2]*scalar, p[3]);
+Vector Vector::cubicInterpolate(const Vector &a, const Vector &b,
+                                const Vector &c, const Vector &d,
+                                float alpha) {
+  // for now, just do the linear interpolation
+  return interpolate(b, c, alpha);
 }
 
-Vector Vector::operator-() const
-{
-	return Vector(-p[0], -p[1], -p[2], p[3]);
-}
-
-Vector& Vector::normalize()
-{
-	if ((float)fabs(p[3])<=EPS) {
-		float length = (float)sqrt(p[0]*p[0]+p[1]*p[1]+p[2]*p[2]);
-		return set(p[0]/length,p[1]/length,p[2]/length,0.0f);
-	}
-	else {
-		return set(p[0]/p[3], p[1]/p[3], p[2]/p[3], 1.0f);
-	}
-}
-
-float Vector::norm()
-{
-	return (float)sqrt(p[0]*p[0]+p[1]*p[1]+p[2]*p[2]);
-}
-
-bool Vector::isBad()
-{
-	return (p[0]==0.0f && p[1]==0.0f && p[2]==0.0f && p[3]==0.0f);
-}
-
-Vector Vector::badVector()
-{
-	return Vector(0.0f, 0.0f, 0.0f, 0.0f);
-}
-
-Vector* Vector::clone() const
-{
-	return new Vector(*this);
-}
-
-Vector Vector::interpolate(const Vector& a, const Vector& b, float alpha)
-{
-	return Vector(
-		a[0]*(1.0f-alpha)+b[0]*alpha,
-		a[1]*(1.0f-alpha)+b[1]*alpha,
-		a[2]*(1.0f-alpha)+b[2]*alpha,
-		a[3]*(1.0f-alpha)+b[3]*alpha
-		);
-}
-
-Vector Vector::cubicInterpolate(const Vector& a, const Vector& b, const Vector& c, const Vector& d, float alpha)
-{
-	// for now, just do the linear interpolation
-	return interpolate(b,c,alpha);
-}
-
-}
+} // namespace FastContouring

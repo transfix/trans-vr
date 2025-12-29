@@ -22,15 +22,13 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 
 **********************************************************************/
 
-#include <QGLViewer/manipulatedFrame.h>
 #include <QGLViewer/camera.h>
 #include <QGLViewer/domUtils.h>
 #include <QGLViewer/manipulatedCameraFrame.h>
+#include <QGLViewer/manipulatedFrame.h>
 #include <QGLViewer/qglviewer.h>
-
-#include <cstdlib>
-
 #include <QMouseEvent>
+#include <cstdlib>
 
 using namespace qglviewer;
 using namespace std;
@@ -76,7 +74,8 @@ ManipulatedFrame &ManipulatedFrame::operator=(const ManipulatedFrame &mf) {
   return *this;
 }
 
-/*! Copy constructor. Performs a deep copy of all attributes using operator=().
+/*! Copy constructor. Performs a deep copy of all attributes using
+ * operator=().
  */
 ManipulatedFrame::ManipulatedFrame(const ManipulatedFrame &mf)
     : Frame(mf), MouseGrabber() {
@@ -90,8 +89,8 @@ ManipulatedFrame::ManipulatedFrame(const ManipulatedFrame &mf)
 The ManipulatedFrame grabsMouse() when the mouse is within a 10 pixels region
 around its Camera::projectedCoordinatesOf() position().
 
-See the <a href="../examples/mouseGrabber.html">mouseGrabber example</a> for an
-illustration. */
+See the <a href="../examples/mouseGrabber.html">mouseGrabber example</a> for
+an illustration. */
 void ManipulatedFrame::checkIfGrabsMouse(int x, int y,
                                          const Camera *const camera) {
   const int thresold = 10;
@@ -101,13 +100,13 @@ void ManipulatedFrame::checkIfGrabsMouse(int x, int y,
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-//          S t a t e   s a v i n g   a n d   r e s t o r i n g               //
+//          S t a t e   s a v i n g   a n d   r e s t o r i n g //
 ////////////////////////////////////////////////////////////////////////////////
 
 /*! Returns an XML \c QDomElement that represents the ManipulatedFrame.
 
- Adds to the Frame::domElement() the ManipulatedFrame specific informations in a
- \c ManipulatedParameters child QDomElement.
+ Adds to the Frame::domElement() the ManipulatedFrame specific informations in
+ a \c ManipulatedParameters child QDomElement.
 
  \p name is the name of the QDomElement tag. \p doc is the \c QDomDocument
  factory used to create QDomElement.
@@ -133,8 +132,8 @@ QDomElement ManipulatedFrame::domElement(const QString &name,
 /*! Restores the ManipulatedFrame state from a \c QDomElement created by
 domElement().
 
-Fields that are not described in \p element are set to their default values (see
-ManipulatedFrame()).
+Fields that are not described in \p element are set to their default values
+(see ManipulatedFrame()).
 
 First calls Frame::initFromDOMElement() and then initializes ManipulatedFrame
 specific parameters. Note that constraint() and referenceFrame() are not
@@ -142,8 +141,8 @@ restored and are left unchanged.
 
 See Vec::initFromDOMElement() for a complete code example. */
 void ManipulatedFrame::initFromDOMElement(const QDomElement &element) {
-  // Not called since it would set constraint() and referenceFrame() to nullptr.
-  // *this = ManipulatedFrame();
+  // Not called since it would set constraint() and referenceFrame() to
+  // nullptr. *this = ManipulatedFrame();
   Frame::initFromDOMElement(element);
 
   stopSpinning();
@@ -164,7 +163,7 @@ void ManipulatedFrame::initFromDOMElement(const QDomElement &element) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-//                 M o u s e    h a n d l i n g                               //
+//                 M o u s e    h a n d l i n g //
 ////////////////////////////////////////////////////////////////////////////////
 
 /*! Returns \c true when the ManipulatedFrame is being manipulated with the
@@ -191,14 +190,15 @@ void ManipulatedFrame::startSpinning(int updateInterval) {
   spinningTimer_.start(updateInterval);
 }
 
-/*! Rotates the ManipulatedFrame by its spinningQuaternion(). Called by a timer
-  when the ManipulatedFrame isSpinning(). */
+/*! Rotates the ManipulatedFrame by its spinningQuaternion(). Called by a
+  timer when the ManipulatedFrame isSpinning(). */
 void ManipulatedFrame::spin() { rotate(spinningQuaternion()); }
 
-/* spin() and spinUpdate() differ since spin can be used by itself (for instance
-   by QGLViewer::SCREEN_ROTATE) without a spun emission. Much nicer to use the
-   spinningQuaternion() and hence spin() for these incremental updates. Nothing
-   special to be done for continuous spinning with this design. */
+/* spin() and spinUpdate() differ since spin can be used by itself (for
+   instance by QGLViewer::SCREEN_ROTATE) without a spun emission. Much nicer
+   to use the spinningQuaternion() and hence spin() for these incremental
+   updates. Nothing special to be done for continuous spinning with this
+   design. */
 void ManipulatedFrame::spinUpdate() {
   spin();
   Q_EMIT spun();
@@ -210,8 +210,8 @@ void ManipulatedFrame::startAction(int ma, bool withConstraint) {
   action_ = static_cast<QGLViewer::MouseAction>(ma);
 
   // #CONNECTION# manipulatedFrame::wheelEvent,
-  // manipulatedCameraFrame::wheelEvent and mouseReleaseEvent() restore previous
-  // constraint
+  // manipulatedCameraFrame::wheelEvent and mouseReleaseEvent() restore
+  // previous constraint
   if (withConstraint)
     previousConstraint_ = nullptr;
   else {
@@ -236,11 +236,12 @@ void ManipulatedFrame::startAction(int ma, bool withConstraint) {
 }
 
 /*! Updates mouse speed, measured in pixels/milliseconds. Should be called by
-any method which wants to use mouse speed. Currently used to trigger spinning in
-mouseReleaseEvent(). */
+any method which wants to use mouse speed. Currently used to trigger spinning
+in mouseReleaseEvent(). */
 void ManipulatedFrame::computeMouseSpeed(const QMouseEvent *const e) {
   const QPoint delta = (e->pos() - prevPos_);
-  const qreal dist = sqrt(qreal(delta.x() * delta.x() + delta.y() * delta.y()));
+  const qreal dist =
+      sqrt(qreal(delta.x() * delta.x() + delta.y() * delta.y()));
   delay_ = last_move_time.restart();
   if (delay_ == 0)
     // Less than a millisecond: assume delay = 1ms
@@ -277,8 +278,10 @@ qreal ManipulatedFrame::deltaWithPrevPos(QMouseEvent *const event,
   qreal dx = qreal(event->x() - prevPos_.x()) / camera->screenWidth();
   qreal dy = qreal(event->y() - prevPos_.y()) / camera->screenHeight();
 #else
-  qreal dx = qreal(event->position().x() - prevPos_.x()) / camera->screenWidth();
-  qreal dy = qreal(event->position().y() - prevPos_.y()) / camera->screenHeight();
+  qreal dx =
+      qreal(event->position().x() - prevPos_.x()) / camera->screenWidth();
+  qreal dy =
+      qreal(event->position().y() - prevPos_.y()) / camera->screenHeight();
 #endif
 
   qreal value = fabs(dx) > fabs(dy) ? dx : dy;
@@ -290,7 +293,8 @@ qreal ManipulatedFrame::wheelDelta(const QWheelEvent *event) const {
 #if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
   return event->delta() * wheelSensitivity() * WHEEL_SENSITIVITY_COEF;
 #else
-  return event->angleDelta().y() * wheelSensitivity() * WHEEL_SENSITIVITY_COEF;
+  return event->angleDelta().y() * wheelSensitivity() *
+         WHEEL_SENSITIVITY_COEF;
 #endif
 }
 
@@ -359,8 +363,8 @@ void ManipulatedFrame::mouseMoveEvent(QMouseEvent *const event,
     }
     }
     // Transform to world coordinate system.
-    trans =
-        camera->frame()->orientation().rotate(translationSensitivity() * trans);
+    trans = camera->frame()->orientation().rotate(translationSensitivity() *
+                                                  trans);
     // And then down to frame
     if (referenceFrame())
       trans = referenceFrame()->transformOf(trans);
@@ -381,14 +385,16 @@ void ManipulatedFrame::mouseMoveEvent(QMouseEvent *const event,
 #if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
     const qreal angle = atan2(event->y() - trans[1], event->x() - trans[0]);
 #else
-    const qreal angle = atan2(event->position().y() - trans[1], event->position().x() - trans[0]);
+    const qreal angle = atan2(event->position().y() - trans[1],
+                              event->position().x() - trans[0]);
 #endif
 
     const Vec axis =
         transformOf(camera->frame()->inverseTransformOf(Vec(0.0, 0.0, -1.0)));
     Quaternion rot(axis, angle - prev_angle);
-    //#CONNECTION# These two methods should go together (spinning detection and
-    // activation)
+    // #CONNECTION# These two methods should go together (spinning detection
+    // and
+    //  activation)
     computeMouseSpeed(event);
     setSpinningQuaternion(rot);
     spin();
@@ -426,8 +432,8 @@ void ManipulatedFrame::mouseMoveEvent(QMouseEvent *const event,
     }
     }
     // Transform to world coordinate system.
-    trans =
-        camera->frame()->orientation().rotate(translationSensitivity() * trans);
+    trans = camera->frame()->orientation().rotate(translationSensitivity() *
+                                                  trans);
     // And then down to frame
     if (referenceFrame())
       trans = referenceFrame()->transformOf(trans);
@@ -442,8 +448,9 @@ void ManipulatedFrame::mouseMoveEvent(QMouseEvent *const event,
     Quaternion rot = deformedBallQuaternion(event->x(), event->y(), trans[0],
                                             trans[1], camera);
 #else
-    Quaternion rot = deformedBallQuaternion(event->position().x(), event->position().y(),
-                                            trans[0], trans[1], camera);
+    Quaternion rot =
+        deformedBallQuaternion(event->position().x(), event->position().y(),
+                               trans[0], trans[1], camera);
 #endif
     trans = Vec(-rot[0], -rot[1], -rot[2]);
     trans = camera->frame()->orientation().rotate(trans);
@@ -451,8 +458,9 @@ void ManipulatedFrame::mouseMoveEvent(QMouseEvent *const event,
     rot[0] = trans[0];
     rot[1] = trans[1];
     rot[2] = trans[2];
-    //#CONNECTION# These two methods should go together (spinning detection and
-    // activation)
+    // #CONNECTION# These two methods should go together (spinning detection
+    // and
+    //  activation)
     computeMouseSpeed(event);
     setSpinningQuaternion(rot);
     spin();
@@ -469,8 +477,8 @@ void ManipulatedFrame::mouseMoveEvent(QMouseEvent *const event,
     break;
 
   case QGLViewer::NO_MOUSE_ACTION:
-    // Possible when the ManipulatedFrame is a MouseGrabber. This method is then
-    // called without startAction because of mouseTracking.
+    // Possible when the ManipulatedFrame is a MouseGrabber. This method is
+    // then called without startAction because of mouseTracking.
     break;
   }
 
@@ -486,8 +494,8 @@ Overloading of MouseGrabber::mouseReleaseEvent().
 
 If the action was a QGLViewer::ROTATE QGLViewer::MouseAction, a continuous
 spinning is possible if the speed of the mouse cursor is larger than
-spinningSensitivity() when the button is released. Press the rotate button again
-to stop spinning. See startSpinning() and isSpinning(). */
+spinningSensitivity() when the button is released. Press the rotate button
+again to stop spinning. See startSpinning() and isSpinning(). */
 void ManipulatedFrame::mouseReleaseEvent(QMouseEvent *const event,
                                          Camera *const camera) {
   Q_UNUSED(event)
@@ -532,7 +540,7 @@ Using the wheel is equivalent to a QGLViewer::ZOOM QGLViewer::MouseAction. See
  QGLViewer::setWheelBinding(), setWheelSensitivity(). */
 void ManipulatedFrame::wheelEvent(QWheelEvent *const event,
                                   Camera *const camera) {
-  //#CONNECTION# QGLViewer::setWheelBinding
+  // #CONNECTION# QGLViewer::setWheelBinding
   if (action_ == QGLViewer::ZOOM) {
     zoom(wheelDelta(event), camera);
     Q_EMIT manipulated();
@@ -549,8 +557,9 @@ void ManipulatedFrame::wheelEvent(QWheelEvent *const event,
 
 /*! Returns "pseudo-distance" from (x,y) to ball of radius size.
 \arg for a point inside the ball, it is proportional to the euclidean distance
-to the ball \arg for a point outside the ball, it is proportional to the inverse
-of this distance (tends to zero) on the ball, the function is continuous. */
+to the ball \arg for a point outside the ball, it is proportional to the
+inverse of this distance (tends to zero) on the ball, the function is
+continuous. */
 static qreal projectOnBall(qreal x, qreal y) {
   // If you change the size value, change angle computation in
   // deformedBallQuaternion().
@@ -563,8 +572,8 @@ static qreal projectOnBall(qreal x, qreal y) {
 }
 
 #ifndef DOXYGEN
-/*! Returns a quaternion computed according to the mouse motion. Mouse positions
-are projected on a deformed ball, centered on (\p cx,\p cy). */
+/*! Returns a quaternion computed according to the mouse motion. Mouse
+positions are projected on a deformed ball, centered on (\p cx,\p cy). */
 Quaternion
 ManipulatedFrame::deformedBallQuaternion(int x, int y, qreal cx, qreal cy,
                                          const Camera *const camera) {

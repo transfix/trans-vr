@@ -1,8 +1,8 @@
 /*
   Copyright 2008 The University of Texas at Austin
-  
-	Authors: Jose Rivera <transfix@ices.utexas.edu>
-	Advisor: Chandrajit Bajaj <bajaj@cs.utexas.edu>
+
+        Authors: Jose Rivera <transfix@ices.utexas.edu>
+        Advisor: Chandrajit Bajaj <bajaj@cs.utexas.edu>
 
   This file is part of Volume Rover.
 
@@ -28,28 +28,25 @@
 
 #include <QDialog>
 
-namespace Ui
-{
-  class NewVolumeDialog;
+namespace Ui {
+class NewVolumeDialog;
 }
 
 #include <VolMagick/BoundingBox.h>
 #include <VolMagick/Dimension.h>
-
 #include <string>
 
-class NewVolumeDialog : public QDialog
-{
+class NewVolumeDialog : public QDialog {
   Q_OBJECT
 
- public:
-  NewVolumeDialog(QWidget* parent = 0,
+public:
+  NewVolumeDialog(QWidget *parent = 0,
 #if QT_VERSION < 0x040000
-                  const char* name = 0, WFlags f = WType_TopLevel
+                  const char *name = 0, WFlags f = WType_TopLevel
 #else
-                  Qt::WindowFlags flags={}
+                  Qt::WindowFlags flags = {}
 #endif
-                  );
+  );
   virtual ~NewVolumeDialog();
 
   bool createNewVolume() const;
@@ -61,25 +58,25 @@ class NewVolumeDialog : public QDialog
   std::string filename() const;
   std::string volumeCopyFilename() const;
   bool extractSubVolume() const;
-  
+
   enum ExtractSubVolumeMethod { INDICES, BOUNDING_BOX };
   ExtractSubVolumeMethod extractSubVolumeMethod() const;
 
-  //INDICES
+  // INDICES
   VolMagick::IndexBoundingBox extractIndexSubVolume() const;
 
-  //BOUNDING_BOX
+  // BOUNDING_BOX
   VolMagick::BoundingBox extractSubVolumeBoundingBox() const;
   VolMagick::Dimension extractSubVolumeDimension() const;
-  
- protected slots:
+
+protected slots:
   void okSlot();
   void fileSlot();
   void volumeCopyFilenameSlot();
 
   void acquireVolumeInfo(bool);
 
- protected:
+protected:
 #if QT_VERSION < 0x040000
   NewVolumeDialogBase *_ui;
 #else

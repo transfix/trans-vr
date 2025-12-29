@@ -17,17 +17,20 @@
 
   You should have received a copy of the GNU Lesser General Public
   License along with this library; if not, write to the Free Software
-  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301
+  USA
 */
 
 #ifndef __MEDAX_H__
 #define __MEDAX_H__
 
 #include <SecondaryStructures/datastruct_ss.h>
-#include <SecondaryStructures/util.h>
-#include <SecondaryStructures/robust_cc.h>
 #include <SecondaryStructures/op.h>
+#include <SecondaryStructures/robust_cc.h>
+#include <SecondaryStructures/util.h>
 
-void compute_medial_axis(SecondaryStructures::Triangulation& triang, const double theta, const double medial_ratio, int& biggest_medax_comp_id);
+void compute_medial_axis(SecondaryStructures::Triangulation &triang,
+                         const double theta, const double medial_ratio,
+                         int &biggest_medax_comp_id);
 
 #endif

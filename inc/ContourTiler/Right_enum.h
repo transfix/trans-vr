@@ -14,16 +14,17 @@ CONTOURTILER_BEGIN_NAMESPACE
 ///         red, green, blue
 ///     };
 /// };
-/// 
-/// typedef Right_enum<color_def> color; // use int as enum holder data type (in common platforms)
-/// typedef Right_enum<color_def, unsigned char> color; // use uchar as enum holder
-/// 
+///
+/// typedef Right_enum<color_def> color; // use int as enum holder data type
+/// (in common platforms) typedef Right_enum<color_def, unsigned char> color;
+/// // use uchar as enum holder
+///
 /// // usage:
 /// void f(color p)
 /// {
 ///     p = color::green;
 /// }
-/// 
+///
 /// int main()
 /// {
 ///     color p = color::red;
@@ -31,13 +32,12 @@ CONTOURTILER_BEGIN_NAMESPACE
 /// }
 
 template <typename def, typename inner = typename def::type>
-struct Right_enum : def
-{
+struct Right_enum : def {
   typedef typename def::type type;
-//   typedef typename inner inner;
+  //   typedef typename inner inner;
   inner v;
   Right_enum(type v) : v(static_cast<type>(v)) {}
-  operator inner() const {return v;}
+  operator inner() const { return v; }
 };
 
 CONTOURTILER_END_NAMESPACE

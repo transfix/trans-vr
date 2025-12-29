@@ -25,10 +25,9 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 #ifndef QGLVIEWER_KEY_FRAME_INTERPOLATOR_H
 #define QGLVIEWER_KEY_FRAME_INTERPOLATOR_H
 
+#include <QGLViewer/quaternion.h>
 #include <QObject>
 #include <QTimer>
-
-#include <QGLViewer/quaternion.h>
 // Not actually needed, but some bad compilers (Microsoft VS6) complain.
 #include <QGLViewer/frame.h>
 
@@ -43,8 +42,8 @@ class Frame;
   \class KeyFrameInterpolator keyFrameInterpolator.h
   QGLViewer/keyFrameInterpolator.h
 
-  A KeyFrameInterpolator holds keyFrames (that define a path) and a pointer to a
-  Frame of your application (which will be interpolated). When the user
+  A KeyFrameInterpolator holds keyFrames (that define a path) and a pointer to
+  a Frame of your application (which will be interpolated). When the user
   startInterpolation(), the KeyFrameInterpolator regularly updates the frame()
   position and orientation along the path.
 
@@ -56,8 +55,8 @@ class Frame;
   {
         // The KeyFrameInterpolator kfi is given the Frame that it will drive
   over time. kfi = new KeyFrameInterpolator( new Frame() ); kfi->addKeyFrame(
-  Frame( Vec(1,0,0), Quaternion() ) ); kfi->addKeyFrame( new Frame( Vec(2,1,0),
-  Quaternion() ) );
+  Frame( Vec(1,0,0), Quaternion() ) ); kfi->addKeyFrame( new Frame(
+  Vec(2,1,0), Quaternion() ) );
         // ...and so on for all the keyFrames.
 
         // Ask for a display update after each update of the
@@ -70,15 +69,15 @@ class Frame;
   {
         glPushMatrix();
         glMultMatrixd( kfi->frame()->matrix() );
-        // Draw your object here. Its position and orientation are interpolated.
-        glPopMatrix();
+        // Draw your object here. Its position and orientation are
+  interpolated. glPopMatrix();
   }
   \endcode
 
   The keyFrames are defined by a Frame and a time, expressed in seconds. The
-  Frame can be provided as a const reference or as a pointer to a Frame (see the
-  addKeyFrame() methods). In the latter case, the path will automatically be
-  updated when the Frame is modified (using the Frame::modified() signal).
+  Frame can be provided as a const reference or as a pointer to a Frame (see
+  the addKeyFrame() methods). In the latter case, the path will automatically
+  be updated when the Frame is modified (using the Frame::modified() signal).
 
   The time has to be monotonously increasing over keyFrames. When
   interpolationSpeed() equals 1.0 (default value), these times correspond to
@@ -101,14 +100,14 @@ class Frame;
   During the interpolation, the KeyFrameInterpolator emits an interpolated()
   signal, which will usually be connected to the QGLViewer::update() slot. The
   interpolation is stopped when interpolationTime() is greater than the
-  lastTime() (unless loopInterpolation() is \c true) and the endReached() signal
-  is then emitted.
+  lastTime() (unless loopInterpolation() is \c true) and the endReached()
+  signal is then emitted.
 
   Note that a Camera has Camera::keyFrameInterpolator(), that can be used to
-  drive the Camera along a path, or to restore a saved position (a path made of
-  a single keyFrame). Press Alt+Fx to define a new keyFrame for path x. Pressing
-  Fx plays/pauses path interpolation. See QGLViewer::pathKey() and the <a
-  href="../keyboard.html">keyboard page</a> for details.
+  drive the Camera along a path, or to restore a saved position (a path made
+  of a single keyFrame). Press Alt+Fx to define a new keyFrame for path x.
+  Pressing Fx plays/pauses path interpolation. See QGLViewer::pathKey() and
+  the <a href="../keyboard.html">keyboard page</a> for details.
 
   \attention If a Constraint is attached to the frame() (see
   Frame::constraint()), it should be deactivated before
@@ -117,9 +116,9 @@ class Frame;
 
   <h3>Retrieving interpolated values</h3>
 
-  This code defines a KeyFrameInterpolator, and displays the positions that will
-  be followed by the frame() along the path: \code KeyFrameInterpolator kfi( new
-  Frame() );
+  This code defines a KeyFrameInterpolator, and displays the positions that
+  will be followed by the frame() along the path: \code KeyFrameInterpolator
+  kfi( new Frame() );
   // calls to kfi.addKeyFrame() to define the path.
 
   const qreal deltaTime = 0.04; // output a position every deltaTime seconds
@@ -146,14 +145,14 @@ Q_SIGNALS:
   Frame::interpolated() signal, which may also be useful.
 
   This signal should especially be connected to your QGLViewer::update() slot,
-  so that the display is updated after every update of the KeyFrameInterpolator
-  frame(): \code connect(myKeyFrameInterpolator, SIGNAL(interpolated()),
-  SLOT(update())); \endcode Use the QGLViewer::QGLViewerPool() to connect the
-  signal to all the viewers.
+  so that the display is updated after every update of the
+  KeyFrameInterpolator frame(): \code connect(myKeyFrameInterpolator,
+  SIGNAL(interpolated()), SLOT(update())); \endcode Use the
+  QGLViewer::QGLViewerPool() to connect the signal to all the viewers.
 
-  Note that the QGLViewer::camera() Camera::keyFrameInterpolator() created using
-  QGLViewer::pathKey() have their interpolated() signals automatically connected
-  to the QGLViewer::update() slot. */
+  Note that the QGLViewer::camera() Camera::keyFrameInterpolator() created
+  using QGLViewer::pathKey() have their interpolated() signals automatically
+  connected to the QGLViewer::update() slot. */
   void interpolated();
 
   /*! This signal is emitted when the interpolation reaches the first (when
@@ -182,8 +181,8 @@ public:
   KeyFrameInterpolator.
 
   When interpolationIsStarted(), this Frame's position and orientation will
-  regularly be updated by a timer, so that they follow the KeyFrameInterpolator
-  path.
+  regularly be updated by a timer, so that they follow the
+  KeyFrameInterpolator path.
 
   Set using setFrame() or with the KeyFrameInterpolator constructor. */
   Frame *frame() const { return frame_; }
@@ -219,8 +218,8 @@ public:
   Default value is 1.0, which means keyFrameTime() will be matched during the
   interpolation (provided that your main loop is fast enough).
 
-  A negative value will result in a reverse interpolation of the keyFrames. See
-  also interpolationPeriod(). */
+  A negative value will result in a reverse interpolation of the keyFrames.
+  See also interpolationPeriod(). */
   qreal interpolationSpeed() const { return interpolationSpeed_; }
   /*! Returns the current interpolation period, expressed in milliseconds.
 
@@ -236,16 +235,16 @@ public:
   When \c false (default), the interpolation stops when interpolationTime()
   reaches firstTime() (with negative interpolationSpeed()) or lastTime().
 
-  interpolationTime() is otherwise reset to firstTime() (+ interpolationTime() -
-  lastTime()) (and inversely for negative interpolationSpeed()) and
+  interpolationTime() is otherwise reset to firstTime() (+ interpolationTime()
+  - lastTime()) (and inversely for negative interpolationSpeed()) and
   interpolation continues.
 
   In both cases, the endReached() signal is emitted. */
   bool loopInterpolation() const { return loopInterpolation_; }
 #ifndef DOXYGEN
   /*! Whether or not (default) the path defined by the keyFrames is a closed
-  loop. When \c true, the last and the first KeyFrame are linked by a new spline
-  segment.
+  loop. When \c true, the last and the first KeyFrame are linked by a new
+  spline segment.
 
   Use setLoopInterpolation() to create a continuous animation over the entire
   path. \attention The closed path feature is not yet implemented. */
@@ -254,8 +253,8 @@ public:
 public Q_SLOTS:
   /*! Sets the interpolationTime().
 
-  \attention The frame() state is not affected by this method. Use this function
-  to define the starting time of a future interpolation (see
+  \attention The frame() state is not affected by this method. Use this
+  function to define the starting time of a future interpolation (see
   startInterpolation()). Use interpolateAtTime() to actually interpolate at a
   given time. */
   void setInterpolationTime(qreal time) { interpolationTime_ = time; }
@@ -266,8 +265,8 @@ public Q_SLOTS:
   /*! Sets the loopInterpolation() value. */
   void setLoopInterpolation(bool loop = true) { loopInterpolation_ = loop; }
 #ifndef DOXYGEN
-  /*! Sets the closedPath() value. \attention The closed path feature is not yet
-   * implemented. */
+  /*! Sets the closedPath() value. \attention The closed path feature is not
+   * yet implemented. */
   void setClosedPath(bool closed = true) { closedPath_ = closed; }
 #endif
   //@}
@@ -341,7 +340,8 @@ private:
     const Frame *frame() const { return frame_; }
     void updateValuesFromPointer();
     void flipOrientationIfNeeded(const Quaternion &prev);
-    void computeTangent(const KeyFrame *const prev, const KeyFrame *const next);
+    void computeTangent(const KeyFrame *const prev,
+                        const KeyFrame *const next);
 
   private:
     Vec p_, tgP_;

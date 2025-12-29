@@ -17,18 +17,22 @@
 
   You should have received a copy of the GNU Lesser General Public
   License along with this library; if not, write to the Free Software
-  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301
+  USA
 */
 
 #ifndef __TCOCONE_H__
 #define __TCOCONE_H__
 
 #include <SecondaryStructures/datastruct_ss.h>
-#include <SecondaryStructures/util.h>
 #include <SecondaryStructures/robust_cc.h>
+#include <SecondaryStructures/util.h>
 
-void compute_poles(SecondaryStructures::Triangulation& triang);
-void mark_flat_vertices(SecondaryStructures::Triangulation& triang, double ratio, double cocone_phi, double flat_phi);
-void tcocone(const double DEFAULT_ANGLE, const double DEFAULT_SHARP, const double DEFAULT_FLAT, const double DEFAULT_RATIO, SecondaryStructures::Triangulation& triang);
+void compute_poles(SecondaryStructures::Triangulation &triang);
+void mark_flat_vertices(SecondaryStructures::Triangulation &triang,
+                        double ratio, double cocone_phi, double flat_phi);
+void tcocone(const double DEFAULT_ANGLE, const double DEFAULT_SHARP,
+             const double DEFAULT_FLAT, const double DEFAULT_RATIO,
+             SecondaryStructures::Triangulation &triang);
 
 #endif

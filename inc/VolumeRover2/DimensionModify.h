@@ -1,8 +1,8 @@
 /*
   Copyright 2008 The University of Texas at Austin
-  
-	Authors: Jose Rivera <transfix@ices.utexas.edu>
-	Advisor: Chandrajit Bajaj <bajaj@cs.utexas.edu>
+
+        Authors: Jose Rivera <transfix@ices.utexas.edu>
+        Advisor: Chandrajit Bajaj <bajaj@cs.utexas.edu>
 
   This file is part of Volume Rover.
 
@@ -29,27 +29,25 @@
 #include <QDialog>
 #include <VolMagick/Dimension.h>
 
-namespace Ui
-{
-  class DimensionModify;
+namespace Ui {
+class DimensionModify;
 }
 
-class DimensionModify : public QDialog
-{
+class DimensionModify : public QDialog {
   Q_OBJECT
 
- public:
-  DimensionModify(QWidget* parent = nullptr,
-                  Qt::WindowFlags flags=Qt::WindowFlags());
+public:
+  DimensionModify(QWidget *parent = nullptr,
+                  Qt::WindowFlags flags = Qt::WindowFlags());
   virtual ~DimensionModify();
 
   VolMagick::Dimension dimension() const;
   void dimension(const VolMagick::Dimension &dim);
 
- protected slots:
+protected slots:
   virtual void okSlot();
 
- protected:
+protected:
 #if QT_VERSION < 0x040000
   DimensionModifyBase *_ui;
 #else

@@ -1,41 +1,37 @@
-#include <algorithm>
-#include <vector>
-#include <utility>
-#include <iostream>
-#include <fstream>
-
-#include <ContourTiler/common.h>
+#include <CGAL/Boolean_set_operations_2.h>
 #include <ContourTiler/Contour.h>
-#include <ContourTiler/reader_ser.h>
-#include <ContourTiler/reader_gnuplot.h>
-#include <ContourTiler/print_utils.h>
-#include <ContourTiler/tiler_operations.h>
+#include <ContourTiler/Contour2.h>
 #include <ContourTiler/Segment_3_undirected.h>
+#include <ContourTiler/Slice2.h>
 #include <ContourTiler/augment.h>
-#include <ContourTiler/polygon_utils.h>
-#include <ContourTiler/sweep_line_visitors.h>
-#include <ContourTiler/remove_contour_intersections.h>
+#include <ContourTiler/common.h>
+#include <ContourTiler/interp.h>
 #include <ContourTiler/offset_polygon.h>
 #include <ContourTiler/polygon_difference.h>
-#include <ContourTiler/interp.h>
-#include <ContourTiler/Contour2.h>
-#include <ContourTiler/Slice2.h>
-
-#include <log4cplus/logger.h>
-#include <log4cplus/fileappender.h>
-#include <log4cplus/loglevel.h>
-#include <log4cplus/configurator.h>
-
-#include <boost/unordered_set.hpp>
-#include <boost/lexical_cast.hpp>
+#include <ContourTiler/polygon_utils.h>
+#include <ContourTiler/print_utils.h>
+#include <ContourTiler/reader_gnuplot.h>
+#include <ContourTiler/reader_ser.h>
+#include <ContourTiler/remove_contour_intersections.h>
+#include <ContourTiler/sweep_line_visitors.h>
+#include <ContourTiler/tiler_operations.h>
+#include <algorithm>
 #include <boost/foreach.hpp>
-
-#include <CGAL/Boolean_set_operations_2.h>
+#include <boost/lexical_cast.hpp>
+#include <boost/unordered_set.hpp>
+#include <fstream>
+#include <iostream>
+#include <log4cplus/configurator.h>
+#include <log4cplus/fileappender.h>
+#include <log4cplus/logger.h>
+#include <log4cplus/loglevel.h>
+#include <utility>
+#include <vector>
 
 using namespace std;
 using namespace CONTOURTILER_NAMESPACE;
 
-int main(int argc, char** argv) {
+int main(int argc, char **argv) {
   log4cplus::PropertyConfigurator::doConfigure("log4cplus.properties");
   log4cplus::Logger logger = log4cplus::Logger::getInstance("sandbox");
 
@@ -50,7 +46,8 @@ int main(int argc, char** argv) {
   in.close();
 
   map<Point_2, Point_2> old2new;
-  P = adjust_nonsimple_polygon(P, boost::lexical_cast<double>(argv[2]), old2new);
+  P = adjust_nonsimple_polygon(P, boost::lexical_cast<double>(argv[2]),
+                               old2new);
   LOG4CPLUS_INFO(logger, pp(P));
   // vector<Polygon_2> polygons;
   // split_nonsimple(P, back_inserter(polygons));

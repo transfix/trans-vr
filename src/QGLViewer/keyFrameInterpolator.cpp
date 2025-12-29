@@ -32,8 +32,8 @@ using namespace std;
 
   The frame() can be set or changed using setFrame().
 
-  interpolationTime(), interpolationSpeed() and interpolationPeriod() are set to
-  their default values. */
+  interpolationTime(), interpolationSpeed() and interpolationPeriod() are set
+  to their default values. */
 KeyFrameInterpolator::KeyFrameInterpolator(Frame *frame)
     : frame_(nullptr), period_(40), interpolationTime_(0.0),
       interpolationSpeed_(1.0), interpolationStarted_(false),
@@ -111,8 +111,8 @@ void KeyFrameInterpolator::update() {
   If \p period is positive, it is set as the new interpolationPeriod(). The
   previous interpolationPeriod() is used otherwise (default).
 
-  If interpolationTime() is larger than lastTime(), interpolationTime() is reset
-  to firstTime() before interpolation starts (and inversely for negative
+  If interpolationTime() is larger than lastTime(), interpolationTime() is
+  reset to firstTime() before interpolation starts (and inversely for negative
   interpolationSpeed()).
 
   Use setInterpolationTime() before calling this method to change the starting
@@ -163,14 +163,15 @@ void KeyFrameInterpolator::resetInterpolation() {
 /*! Appends a new keyFrame to the path, with its associated \p time (in
   seconds).
 
-  The keyFrame is given as a pointer to a Frame, which will be connected to the
-  KeyFrameInterpolator: when \p frame is modified, the KeyFrameInterpolator path
-  is updated accordingly. This allows for dynamic paths, where keyFrame can be
-  edited, even during the interpolation. See the <a
-  href="../examples/keyFrames.html">keyFrames example</a> for an illustration.
+  The keyFrame is given as a pointer to a Frame, which will be connected to
+  the KeyFrameInterpolator: when \p frame is modified, the
+  KeyFrameInterpolator path is updated accordingly. This allows for dynamic
+  paths, where keyFrame can be edited, even during the interpolation. See the
+  <a href="../examples/keyFrames.html">keyFrames example</a> for an
+  illustration.
 
-  \c nullptr \p frame pointers are silently ignored. The keyFrameTime() has to be
-  monotonously increasing over keyFrames.
+  \c nullptr \p frame pointers are silently ignored. The keyFrameTime() has to
+  be monotonously increasing over keyFrames.
 
   Use addKeyFrame(const Frame&, qreal) to add keyFrame by values. */
 void KeyFrameInterpolator::addKeyFrame(const Frame *const frame, qreal time) {
@@ -196,8 +197,8 @@ void KeyFrameInterpolator::addKeyFrame(const Frame *const frame, qreal time) {
   seconds).
 
   The path will use the current \p frame state. If you want the path to change
-  when \p frame is modified, you need to pass a \e pointer to the Frame instead
-  (see addKeyFrame(const Frame*, qreal)).
+  when \p frame is modified, you need to pass a \e pointer to the Frame
+  instead (see addKeyFrame(const Frame*, qreal)).
 
   The keyFrameTime() have to be monotonously increasing over keyFrames. */
 void KeyFrameInterpolator::addKeyFrame(const Frame &frame, qreal time) {
@@ -218,9 +219,9 @@ void KeyFrameInterpolator::addKeyFrame(const Frame &frame, qreal time) {
 
 /*! Appends a new keyFrame to the path.
 
- Same as addKeyFrame(const Frame* frame, qreal), except that the keyFrameTime()
- is set to the previous keyFrameTime() plus one second (or 0.0 if there is no
- previous keyFrame). */
+ Same as addKeyFrame(const Frame* frame, qreal), except that the
+ keyFrameTime() is set to the previous keyFrameTime() plus one second (or 0.0
+ if there is no previous keyFrame). */
 void KeyFrameInterpolator::addKeyFrame(const Frame *const frame) {
   qreal time;
   if (keyFrame_.isEmpty())
@@ -233,9 +234,9 @@ void KeyFrameInterpolator::addKeyFrame(const Frame *const frame) {
 
 /*! Appends a new keyFrame to the path.
 
- Same as addKeyFrame(const Frame& frame, qreal), except that the keyFrameTime()
- is automatically set to previous keyFrameTime() plus one second (or 0.0 if
- there is no previous keyFrame). */
+ Same as addKeyFrame(const Frame& frame, qreal), except that the
+ keyFrameTime() is automatically set to previous keyFrameTime() plus one
+ second (or 0.0 if there is no previous keyFrame). */
 void KeyFrameInterpolator::addKeyFrame(const Frame &frame) {
   qreal time;
   if (keyFrame_.isEmpty())
@@ -246,7 +247,8 @@ void KeyFrameInterpolator::addKeyFrame(const Frame &frame) {
   addKeyFrame(frame, time);
 }
 
-/*! Removes all keyFrames from the path. The numberOfKeyFrames() is set to 0. */
+/*! Removes all keyFrames from the path. The numberOfKeyFrames() is set to 0.
+ */
 void KeyFrameInterpolator::deletePath() {
   stopInterpolation();
   qDeleteAll(keyFrame_);
@@ -305,9 +307,9 @@ static void drawCamera(qreal scale) {
 
 /*! Draws the path used to interpolate the frame().
 
-  \p mask controls what is drawn: if (mask & 1) (default), the position path is
-  drawn. If (mask & 2), a camera representation is regularly drawn and if (mask
-  & 4), an oriented axis is regularly drawn. Examples:
+  \p mask controls what is drawn: if (mask & 1) (default), the position path
+  is drawn. If (mask & 2), a camera representation is regularly drawn and if
+  (mask & 4), an oriented axis is regularly drawn. Examples:
 
   \code
   drawPath();  // Simply draws the interpolation path
@@ -315,14 +317,14 @@ static void drawCamera(qreal scale) {
   drawPath(5); // Draws path and axis
   \endcode
 
-  In the case where camera or axis is drawn, \p nbFrames controls the number of
-  objects (axis or camera) drawn between two successive keyFrames. When \p
+  In the case where camera or axis is drawn, \p nbFrames controls the number
+  of objects (axis or camera) drawn between two successive keyFrames. When \p
   nbFrames=1, only the path KeyFrames are drawn. \p nbFrames=2 also draws the
   intermediate orientation, etc. The maximum value is 30. \p nbFrames should
   divide 30 so that an object is drawn for each KeyFrame. Default value is 6.
 
-  \p scale (default=1.0) controls the scaling of the camera and axis drawing. A
-  value of QGLViewer::sceneRadius() should give good results.
+  \p scale (default=1.0) controls the scaling of the camera and axis drawing.
+  A value of QGLViewer::sceneRadius() should give good results.
 
   See the <a href="../examples/keyFrames.html">keyFrames example</a> for an
   illustration.
@@ -395,7 +397,7 @@ void KeyFrameInterpolator::drawPath(int mask, int nbFrames, qreal scale) {
 
     if (mask & 1) {
       glBegin(GL_LINE_STRIP);
-      for (const auto& fr : path_)
+      for (const auto &fr : path_)
         glVertex3fv(fr.position());
       glEnd();
     }
@@ -404,7 +406,7 @@ void KeyFrameInterpolator::drawPath(int mask, int nbFrames, qreal scale) {
       if (nbFrames > nbSteps)
         nbFrames = nbSteps;
       qreal goal = 0.0;
-      for (const auto& fr : path_)
+      for (const auto &fr : path_)
         if ((count++) >= goal) {
           goal += nbSteps / static_cast<qreal>(nbFrames);
           glPushMatrix();
@@ -434,7 +436,8 @@ void KeyFrameInterpolator::updateModifiedFrameValues() {
   kf = keyFrame_.first();
   int index = 1;
   while (kf) {
-    KeyFrame *next = (index < keyFrame_.size()) ? keyFrame_.at(index) : nullptr;
+    KeyFrame *next =
+        (index < keyFrame_.size()) ? keyFrame_.at(index) : nullptr;
     index++;
     if (next)
       kf->computeTangent(prev, next);
@@ -461,13 +464,15 @@ Frame KeyFrameInterpolator::keyFrame(int index) const {
 
 /*! Returns the time corresponding to the \p index keyFrame.
 
- See also keyFrame(). \p index has to be in the range 0..numberOfKeyFrames()-1.
+ See also keyFrame(). \p index has to be in the range
+ 0..numberOfKeyFrames()-1.
  */
 qreal KeyFrameInterpolator::keyFrameTime(int index) const {
   return keyFrame_.at(index)->time();
 }
 
-/*! Returns the duration of the KeyFrameInterpolator path, expressed in seconds.
+/*! Returns the duration of the KeyFrameInterpolator path, expressed in
+ seconds.
 
  Simply corresponds to lastTime() - firstTime(). Returns 0.0 if the path has
  less than 2 keyFrames. See also keyFrameTime(). */
@@ -475,7 +480,8 @@ qreal KeyFrameInterpolator::duration() const {
   return lastTime() - firstTime();
 }
 
-/*! Returns the time corresponding to the first keyFrame, expressed in seconds.
+/*! Returns the time corresponding to the first keyFrame, expressed in
+seconds.
 
 Returns 0.0 if the path is empty. See also lastTime(), duration() and
 keyFrameTime(). */
@@ -541,7 +547,8 @@ void KeyFrameInterpolator::updateCurrentKeyFrameForTime(qreal time) {
     splineCacheIsValid_ = false;
   }
 
-  // cout << "Time = " << time << " : " << currentFrame_[0]->peekNext()->time()
+  // cout << "Time = " << time << " : " <<
+  // currentFrame_[0]->peekNext()->time()
   // << " , " << currentFrame_[1]->peekNext()->time() << " , " <<
   // currentFrame_[2]->peekNext()->time() << " , " <<
   // currentFrame_[3]->peekNext()->time() << endl;
@@ -590,13 +597,14 @@ void KeyFrameInterpolator::interpolateAtTime(qreal time) {
   // Linear interpolation - debug
   // Vec pos = alpha*(currentFrame_[2]->peekNext()->position()) +
   // (1.0-alpha)*(currentFrame_[1]->peekNext()->position());
-  Vec pos =
-      currentFrame_[1]->peekNext()->position() +
-      alpha * (currentFrame_[1]->peekNext()->tgP() + alpha * (v1 + alpha * v2));
-  Quaternion q = Quaternion::squad(
-      currentFrame_[1]->peekNext()->orientation(),
-      currentFrame_[1]->peekNext()->tgQ(), currentFrame_[2]->peekNext()->tgQ(),
-      currentFrame_[2]->peekNext()->orientation(), alpha);
+  Vec pos = currentFrame_[1]->peekNext()->position() +
+            alpha * (currentFrame_[1]->peekNext()->tgP() +
+                     alpha * (v1 + alpha * v2));
+  Quaternion q =
+      Quaternion::squad(currentFrame_[1]->peekNext()->orientation(),
+                        currentFrame_[1]->peekNext()->tgQ(),
+                        currentFrame_[2]->peekNext()->tgQ(),
+                        currentFrame_[2]->peekNext()->orientation(), alpha);
   frame()->setPositionAndOrientationWithConstraint(pos, q);
 
   Q_EMIT interpolated();
@@ -604,9 +612,9 @@ void KeyFrameInterpolator::interpolateAtTime(qreal time) {
 
 /*! Returns an XML \c QDomElement that represents the KeyFrameInterpolator.
 
- The resulting QDomElement holds the KeyFrameInterpolator parameters as well as
- the path keyFrames (if the keyFrame is defined by a pointer to a Frame, use its
- current value).
+ The resulting QDomElement holds the KeyFrameInterpolator parameters as well
+ as the path keyFrames (if the keyFrame is defined by a pointer to a Frame,
+ use its current value).
 
  \p name is the name of the QDomElement tag. \p doc is the \c QDomDocument
  factory used to create QDomElement.
@@ -623,7 +631,7 @@ QDomElement KeyFrameInterpolator::domElement(const QString &name,
                                              QDomDocument &document) const {
   QDomElement de = document.createElement(name);
   int count = 0;
-  for (auto* kf : keyFrame_) {
+  for (auto *kf : keyFrame_) {
     Frame fr(kf->position(), kf->orientation());
     QDomElement kfNode = fr.domElement("KeyFrame", document);
     kfNode.setAttribute("index", QString::number(count));
@@ -643,8 +651,9 @@ QDomElement KeyFrameInterpolator::domElement(const QString &name,
 /*! Restores the KeyFrameInterpolator state from a \c QDomElement created by
  domElement().
 
- Note that the frame() pointer is not included in the domElement(): you need to
- setFrame() after this method to attach a Frame to the KeyFrameInterpolator.
+ Note that the frame() pointer is not included in the domElement(): you need
+ to setFrame() after this method to attach a Frame to the
+ KeyFrameInterpolator.
 
  See Vec::initFromDOMElement() for a complete code example.
 
@@ -701,7 +710,8 @@ void KeyFrameInterpolator::KeyFrame::updateValuesFromPointer() {
 void KeyFrameInterpolator::KeyFrame::computeTangent(
     const KeyFrame *const prev, const KeyFrame *const next) {
   tgP_ = 0.5 * (next->position() - prev->position());
-  tgQ_ = Quaternion::squadTangent(prev->orientation(), q_, next->orientation());
+  tgQ_ =
+      Quaternion::squadTangent(prev->orientation(), q_, next->orientation());
 }
 
 void KeyFrameInterpolator::KeyFrame::flipOrientationIfNeeded(

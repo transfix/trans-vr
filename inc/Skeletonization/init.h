@@ -17,7 +17,8 @@
 
   You should have received a copy of the GNU Lesser General Public
   License along with this library; if not, write to the Free Software
-  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301
+  USA
 */
 
 #ifndef __SKELETONIZATION__INIT_H__
@@ -25,11 +26,9 @@
 
 #include <Skeletonization/datastruct.h>
 
-namespace Skeletonization
-{
-  void initialize(Triangulation &triang);
-  void compute_voronoi_vertex_and_cell_radius(Triangulation &triang);
-}
+namespace Skeletonization {
+void initialize(Triangulation &triang);
+void compute_voronoi_vertex_and_cell_radius(Triangulation &triang);
+} // namespace Skeletonization
 
 #endif // INIT_H
-

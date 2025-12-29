@@ -1,8 +1,8 @@
 /*
   Copyright 2011 The University of Texas at Austin
-  
-	Authors: Alex Rand <arand@ices.utexas.edu>
-	Advisor: Chandrajit Bajaj <bajaj@cs.utexas.edu>
+
+        Authors: Alex Rand <arand@ices.utexas.edu>
+        Advisor: Chandrajit Bajaj <bajaj@cs.utexas.edu>
 
   This file is part of Volume Rover.
 
@@ -24,39 +24,35 @@
 #ifndef __RECONSTRUCTIONDIALOG_H__
 #define __RECONSTRUCTIONDIALOG_H__
 
-//#include <qglobal.h>
+// #include <qglobal.h>
 
 #include <QDialog>
 #include <QString>
 
-namespace Ui
-{
-  class ReconstructionDialog;
+namespace Ui {
+class ReconstructionDialog;
 }
 
 #include "ui_ReconstructionDialog.h"
 
-class ReconstructionDialog : public QDialog
-{
+class ReconstructionDialog : public QDialog {
   Q_OBJECT
 
- public:
-  ReconstructionDialog(QWidget *parent=nullptr,Qt::WindowFlags flags=Qt::WindowFlags());
+public:
+  ReconstructionDialog(QWidget *parent = nullptr,
+                       Qt::WindowFlags flags = Qt::WindowFlags());
 
   virtual ~ReconstructionDialog();
 
   void RunReconstruction();
 
-  
-  public slots:
+public slots:
 
   void InitFileSlot();
   void DataFileSlot();
 
-  protected:
-
+protected:
   Ui::ReconstructionDialog *_ui;
-
 };
 
 #endif

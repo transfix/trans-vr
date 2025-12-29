@@ -18,7 +18,8 @@
 
   You should have received a copy of the GNU Lesser General Public
   License along with this library; if not, write to the Free Software
-  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301
+  USA
 */
 
 // Tuple.h: interface for the Tuple class.
@@ -32,31 +33,27 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
-namespace FastContouring
-{
+namespace FastContouring {
 
-class Tuple  
-{
+class Tuple {
 public:
-	Tuple(float x, float y, float z, float w);
-	Tuple();
-	virtual ~Tuple();
-	Tuple(const Tuple& copy);
-	Tuple& operator=(const Tuple& copy);
+  Tuple(float x, float y, float z, float w);
+  Tuple();
+  virtual ~Tuple();
+  Tuple(const Tuple &copy);
+  Tuple &operator=(const Tuple &copy);
 
+  Tuple &set(float x, float y, float z, float w);
+  Tuple &set(float *array);
+  Tuple &set(const Tuple &copy);
 
-	Tuple& set(float x, float y, float z, float w);
-	Tuple& set(float* array);
-	Tuple& set(const Tuple& copy);
-	
-	float& operator[](unsigned int i);
-	const float& operator[](unsigned int i) const;
+  float &operator[](unsigned int i);
+  const float &operator[](unsigned int i) const;
 
 protected:
-	float p[4];
-
+  float p[4];
 };
 
-}
+} // namespace FastContouring
 
 #endif // !defined(AFX_TUPLE_H__5AD4C604_B71A_4924_941A_15A0955C4E4E__INCLUDED_)

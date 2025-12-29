@@ -1,7 +1,7 @@
 /*
   Copyright 2011 The University of Texas at Austin
 
-	Advisor: Chandrajit Bajaj <bajaj@cs.utexas.edu>
+        Advisor: Chandrajit Bajaj <bajaj@cs.utexas.edu>
 
   This file is part of MolSurf.
 
@@ -19,8 +19,8 @@
   along with MolSurf; if not, write to the Free Software
   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
-#include <stdlib.h>
-#include <string.h>
+#include <Contour/queue.h>
 #include <assert.h>
 #include <iostream>
-#include <Contour/queue.h>
+#include <stdlib.h>
+#include <string.h>

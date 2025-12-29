@@ -18,26 +18,25 @@
 
   You should have received a copy of the GNU Lesser General Public
   License along with this library; if not, write to the Free Software
-  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301
+  USA
 */
 
 /** Ajay Gopinath:
  * convert a volume file from Cartesian to spherical coordinate system
  */
 
-#include <iostream>
-#include <sstream>
-#include <vector>
-#include <set>
-#include <algorithm>
-#include <stdio.h>
-#include <stdlib.h>
-
-#include <boost/cstdint.hpp>
-
 #include <VolMagick/VolMagick.h>
 #include <VolMagick/VolumeCache.h>
 #include <VolMagick/endians.h>
+#include <algorithm>
+#include <boost/cstdint.hpp>
+#include <iostream>
+#include <set>
+#include <sstream>
+#include <stdio.h>
+#include <stdlib.h>
+#include <vector>
 
 #define PI 3.14159265
 
@@ -52,27 +51,31 @@ typedef boost::uint64_t uint;
 typedef boost::uint64_t uint;
 #endif
 
-class VolMagickOpStatus : public VolMagick::VoxelOperationStatusMessenger
-{
+class VolMagickOpStatus : public VolMagick::VoxelOperationStatusMessenger {
 public:
-  void start(const VolMagick::Voxels *vox, Operation op, VolMagick::uint64 numSteps) const
-  {
+  void start(const VolMagick::Voxels *vox, Operation op,
+             VolMagick::uint64 numSteps) const {
     _numSteps = numSteps;
   }
 
-  void step(const VolMagick::Voxels *vox, Operation op, VolMagick::uint64 curStep) const
-  {
-    const char *opStrings[] = { "CalculatingMinMax", "CalculatingMin", "CalculatingMax",
-				"SubvolumeExtraction", "Fill", "Map", "Resize", "Composite",
-				"BilateralFilter", "ContrastEnhancement"};
+  void step(const VolMagick::Voxels *vox, Operation op,
+            VolMagick::uint64 curStep) const {
+    const char *opStrings[] = {"CalculatingMinMax",
+                               "CalculatingMin",
+                               "CalculatingMax",
+                               "SubvolumeExtraction",
+                               "Fill",
+                               "Map",
+                               "Resize",
+                               "Composite",
+                               "BilateralFilter",
+                               "ContrastEnhancement"};
 
-    fprintf(stderr,"%s: %5.2f %%\r",opStrings[op],(((float)curStep)/((float)((int)(_numSteps-1))))*100.0);
+    fprintf(stderr, "%s: %5.2f %%\r", opStrings[op],
+            (((float)curStep) / ((float)((int)(_numSteps - 1)))) * 100.0);
   }
 
-  void end(const VolMagick::Voxels *vox, Operation op) const
-  {
-    printf("\n");
-  }
+  void end(const VolMagick::Voxels *vox, Operation op) const { printf("\n"); }
 
 private:
   mutable VolMagick::uint64 _numSteps;
@@ -80,132 +83,121 @@ private:
 
 typedef boost::tuple<double, double, double> Color;
 
-int main(int argc, char **argv)
-{
- if(argc < 3)
-    {
-      cerr << "Usage: inputfile, outputfile \n";
+int main(int argc, char **argv) {
+  if (argc < 3) {
+    cerr << "Usage: inputfile, outputfile \n";
 
+    return 1;
+  }
 
-      return 1;
-    }
+  try {
+    VolMagick::Volume inputVol;
 
-  try
-    {
-      VolMagick::Volume inputVol;
+    VolMagick::readVolumeFile(inputVol,
+                              argv[1]); /// first argument is input volume
 
-      VolMagick::readVolumeFile(inputVol,argv[1]); ///first argument is input volume
+    VolMagick::Volume spher;
 
+    VolMagick::Dimension dim;
 
+    std::cout << "Cart x: " << inputVol.XDim() << " y: " << inputVol.YDim()
+              << " z: " << inputVol.ZDim() << "\n";
 
-        VolMagick::Volume spher;
+    dim.xdim = sqrt((inputVol.XDim() + 1.0) * (inputVol.XDim() + 1.0) / 4.0 +
+                    (inputVol.YDim() + 1.0) * (inputVol.YDim() + 1) / 4 +
+                    (inputVol.ZDim() + 1.0) * (inputVol.ZDim() + 1.0) / 4.0);
 
-        VolMagick::Dimension dim;
+    dim.ydim = 360;
 
-	std::cout<<"Cart x: "<<inputVol.XDim()<<" y: "<<inputVol.YDim()<<" z: "<<inputVol.ZDim()<<"\n";
+    dim.zdim = 180;
 
+    std::cout << "spher x: " << dim.xdim << " y: " << dim.ydim
+              << " z: " << dim.zdim << "\n";
 
-	dim.xdim =sqrt( (inputVol.XDim()+1.0)*(inputVol.XDim()+1.0)/4.0 + (inputVol.YDim()+1.0)*(inputVol.YDim()+1)/4 + (inputVol.ZDim()
-			+1.0)*(inputVol.ZDim()+1.0)/4.0 );
+    std::cout << "inputVol x:" << inputVol.XDim() << " y: " << inputVol.YDim()
+              << " z: " << inputVol.ZDim() << "\n";
 
-         dim.ydim = 360;
+    VolMagick::BoundingBox outputBB;
 
-         dim.zdim = 180;
+    outputBB.minx = 0;
 
-        std::cout<<"spher x: "<<dim.xdim <<" y: "<<dim.ydim<<" z: "<<dim.zdim<<"\n";
+    outputBB.maxx = dim.xdim - 1;
 
-        std::cout<<"inputVol x:"<<inputVol.XDim()<<" y: "<<inputVol.YDim()<<" z: "<<inputVol.ZDim()<<"\n";
+    outputBB.maxy = dim.ydim - 1;
 
-        VolMagick::BoundingBox outputBB;
+    outputBB.miny = 0;
 
-         outputBB.minx = 0;
+    outputBB.minz = 0;
 
-         outputBB.maxx = dim.xdim - 1;
+    outputBB.maxz = dim.zdim - 1;
 
-         outputBB.maxy = dim.ydim - 1;
+    VolMagick::VoxelType vox = VolMagick::Float;
 
-         outputBB.miny = 0;
+    spher.voxelType(vox);
 
-         outputBB.minz = 0;
+    spher.dimension(dim);
 
-         outputBB.maxz = dim.zdim - 1;
+    spher.boundingBox(outputBB);
 
-         VolMagick::VoxelType vox = VolMagick::Float;
+    std::cout << "enter conversion zone\n";
 
-        spher.voxelType(vox);
+    float max = -10000000;
 
-        spher.dimension(dim);
+    for (uint i = 0; i < spher.XDim(); i++)
+      for (uint j = 0; j < spher.YDim(); j++)
+        for (uint k = 0; k < spher.ZDim(); k++)
 
-        spher.boundingBox(outputBB);
+        {
 
-        std::cout<<"enter conversion zone\n";
+          int x = (int)(i * cos(j * PI / 180) * sin(k * PI / 180) +
+                        (inputVol.XDim() + 1) / 2);
 
-        float max = -10000000;
+          int y = (int)(i * sin(j * PI / 180) * sin(k * PI / 180) +
+                        (inputVol.YDim() + 1) / 2);
 
-        for(uint i = 0; i< spher.XDim(); i++)
-         for(uint j = 0; j<spher.YDim(); j++)
-          for(uint k=0; k<spher.ZDim(); k++)
+          int z = (int)(i * cos(k * PI / 180) + (inputVol.ZDim() + 1) / 2);
 
-                {
+          if (x < inputVol.XDim() && x > 0 && y < inputVol.YDim() && y > 0 &&
+              z < inputVol.ZDim() && z > 0) {
+            try {
 
-                int x = (int) (i*cos(j*PI/180)*sin(k*PI/180) + (inputVol.XDim()+1)/2);
+              spher(i, j, k,
+                    inputVol(x, y, z) * i * i *
+                        sin(k * PI /
+                            180)); // Need the r^2 sin(theta) term while
+                                   // performing integration. Volume integral
+                                   // in polar coordinates
+              if (spher(i, j, k) > max)
+                max = spher(i, j, k);
+            }
 
-                int y = (int) (i*sin(j*PI/180)*sin(k*PI/180) + (inputVol.YDim()+1)/2);
+            catch (VolMagick::Exception &e) {
+              cerr << e.what() << endl;
 
-                int z = (int) (i*cos(k*PI/180)  + (inputVol.ZDim()+1)/2);
+              std::cout << x << " " << y << " " << z << "  ...\n  ";
 
-		if(x<inputVol.XDim() && x >0 && y < inputVol.YDim() && y>0 && z< inputVol.ZDim() && z>0)
-                {
-                try
-                        {
+              std::cout << i << " " << j << " " << k << "    ";
 
-                        spher(i,j,k, inputVol(x,y,z) * i*i * sin(k*PI/180) ); // Need the r^2 sin(theta) term while performing integration. Volume integral in polar coordinates
-                        if(spher(i,j,k) > max)
-                                max = spher(i,j,k);
-                        }
+              break;
+            }
+          }
+        }
 
-                  catch(VolMagick::Exception &e)
-                    {
-                      cerr << e.what() << endl;
+    std::cout << "done cart to sphere\n";
 
-                        std::cout<<x<<" "<<y<<" "<<z<<"  ...\n  ";
+    VolMagick::createVolumeFile(argv[2], spher);
 
-                        std::cout<<i<<" "<<j<<" "<<k<<"    ";
+    VolMagick::writeVolumeFile(spher, argv[2]);
 
-                        break;
+    return 0;
 
-                    }
-                 }
+  }
 
+  catch (VolMagick::Exception &e) {
+    cerr << e.what() << endl;
+  } catch (std::exception &e) {
+    cerr << e.what() << endl;
+  }
 
-
-                }
-
-
-        std::cout<<"done cart to sphere\n";
-
-
-	
-      VolMagick::createVolumeFile(argv[2], spher);
-
-      VolMagick::writeVolumeFile(spher, argv[2]);
-
-
-
-
- return 0;
- 
-    }
-
-  catch(VolMagick::Exception &e)
-    {
-      cerr << e.what() << endl;
-    }
-  catch(std::exception &e)
-    {
-      cerr << e.what() << endl;
-    }
-  
   return 0;
-
 }

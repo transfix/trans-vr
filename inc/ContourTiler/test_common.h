@@ -1,9 +1,8 @@
 #ifndef __TEST_COMMON_H__
 #define __TEST_COMMON_H__
 
-#include <string>
-
 #include <ContourTiler/common.h>
+#include <string>
 // #include <CppUnitLite2.h>
 #include <ContourTiler/Contour.h>
 

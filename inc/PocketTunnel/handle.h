@@ -17,7 +17,8 @@
 
   You should have received a copy of the GNU Lesser General Public
   License along with this library; if not, write to the Free Software
-  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301
+  USA
 */
 
 #ifndef HANDLE_H
@@ -26,12 +27,10 @@
 #include <PocketTunnel/datastruct.h>
 #include <PocketTunnel/util.h>
 
-namespace PocketTunnel
-{
+namespace PocketTunnel {
 
-void
-detect_handle(Triangulation& triang,
-              map<int, cell_cluster>& cluster_set);
+void detect_handle(Triangulation &triang,
+                   map<int, cell_cluster> &cluster_set);
 
 };
 

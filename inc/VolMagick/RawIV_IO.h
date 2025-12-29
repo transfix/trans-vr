@@ -17,119 +17,119 @@
 
   You should have received a copy of the GNU Lesser General Public
   License along with this library; if not, write to the Free Software
-  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301
+  USA
 */
 
 #ifndef __RAWIV_H__
 #define __RAWIV_H__
 
-#include <VolMagick/VolumeFile_IO.h>
 #include <VolMagick/Exceptions.h>
+#include <VolMagick/VolumeFile_IO.h>
 
-namespace VolMagick
-{
-  VOLMAGICK_DEF_EXCEPTION(InvalidRawIVHeader);
+namespace VolMagick {
+VOLMAGICK_DEF_EXCEPTION(InvalidRawIVHeader);
 
-  // --------
-  // RawIV_IO
-  // --------
-  // Purpose: 
-  //   Provides RawIV file support.
+// --------
+// RawIV_IO
+// --------
+// Purpose:
+//   Provides RawIV file support.
+// ---- Change History ----
+// 11/13/2009 -- Joe R. -- Initially implemented.
+struct RawIV_IO : public VolumeFile_IO {
+  // ------------------
+  // RawIV_IO::RawIV_IO
+  // ------------------
+  // Purpose:
+  //   Initializes the extension list and id. If strict span is true,
+  //   RawIV_IO will reject rawiv files with incorrectly calculated spans.
+  //   Many older rawiv files still have miscalculated spans due to errors
+  //   in old programs.
   // ---- Change History ----
-  // 11/13/2009 -- Joe R. -- Initially implemented.
-  struct RawIV_IO : public VolumeFile_IO
-  {
-    // ------------------
-    // RawIV_IO::RawIV_IO
-    // ------------------
-    // Purpose:
-    //   Initializes the extension list and id. If strict span is true, 
-    //   RawIV_IO will reject rawiv files with incorrectly calculated spans.
-    //   Many older rawiv files still have miscalculated spans due to errors
-    //   in old programs.
-    // ---- Change History ----
-    // 11/13/2009 -- Joe R. -- Initial implementation.
-    RawIV_IO(bool strictSpan = false);
+  // 11/13/2009 -- Joe R. -- Initial implementation.
+  RawIV_IO(bool strictSpan = false);
 
-    // ------------
-    // RawIV_IO::id
-    // ------------
-    // Purpose:
-    //   Returns a string that identifies this VolumeFile_IO object.  This should
-    //   be unique, but is freeform.
-    // ---- Change History ----
-    // 11/13/2009 -- Joe R. -- Initial implementation.
-    virtual const std::string& id() const;
+  // ------------
+  // RawIV_IO::id
+  // ------------
+  // Purpose:
+  //   Returns a string that identifies this VolumeFile_IO object.  This
+  //   should be unique, but is freeform.
+  // ---- Change History ----
+  // 11/13/2009 -- Joe R. -- Initial implementation.
+  virtual const std::string &id() const;
 
-    // --------------------
-    // RawIV_IO::extensions
-    // --------------------
-    // Purpose:
-    //   Returns a list of extensions that this VolumeFile_IO object supports.
-    // ---- Change History ----
-    // 11/13/2009 -- Joe R. -- Initial implementation.
-    virtual const ExtensionList& extensions() const;
+  // --------------------
+  // RawIV_IO::extensions
+  // --------------------
+  // Purpose:
+  //   Returns a list of extensions that this VolumeFile_IO object supports.
+  // ---- Change History ----
+  // 11/13/2009 -- Joe R. -- Initial implementation.
+  virtual const ExtensionList &extensions() const;
 
-    // ---------------------------
-    // RawIV_IO::getVolumeFileInfo
-    // ---------------------------
-    // Purpose:
-    //   Writes to a structure containing all info that VolMagick needs
-    //   from a volume file.
-    // ---- Change History ----
-    // 11/13/2009 -- Joe R. -- Initial implementation.
-    virtual void getVolumeFileInfo(VolumeFileInfo::Data& data,
-				   const std::string& filename) const;
+  // ---------------------------
+  // RawIV_IO::getVolumeFileInfo
+  // ---------------------------
+  // Purpose:
+  //   Writes to a structure containing all info that VolMagick needs
+  //   from a volume file.
+  // ---- Change History ----
+  // 11/13/2009 -- Joe R. -- Initial implementation.
+  virtual void getVolumeFileInfo(VolumeFileInfo::Data &data,
+                                 const std::string &filename) const;
 
-    // ------------------------
-    // RawIV_IO::readVolumeFile
-    // ------------------------
-    // Purpose:
-    //   Writes to a Volume object after reading from a volume file.
-    // ---- Change History ----
-    // 11/13/2009 -- Joe R. -- Initial implementation.
-    virtual void readVolumeFile(Volume& vol,
-				const std::string& filename, 
-				unsigned int var, unsigned int time,
-				uint64 off_x, uint64 off_y, uint64 off_z,
-				const Dimension& subvoldim) const;
+  // ------------------------
+  // RawIV_IO::readVolumeFile
+  // ------------------------
+  // Purpose:
+  //   Writes to a Volume object after reading from a volume file.
+  // ---- Change History ----
+  // 11/13/2009 -- Joe R. -- Initial implementation.
+  virtual void readVolumeFile(Volume &vol, const std::string &filename,
+                              unsigned int var, unsigned int time,
+                              uint64 off_x, uint64 off_y, uint64 off_z,
+                              const Dimension &subvoldim) const;
 
-    // --------------------------
-    // RawIV_IO::createVolumeFile
-    // --------------------------
-    // Purpose:
-    //   Creates an empty volume file to be later filled in by writeVolumeFile
-    // ---- Change History ----
-    // 11/13/2009 -- Joe R. -- Initial implementation.
-    virtual void createVolumeFile(const std::string& filename,
-				  const BoundingBox& boundingBox,
-				  const Dimension& dimension,
-				  const std::vector<VoxelType>& voxelTypes,
-				  unsigned int numVariables, unsigned int numTimesteps,
-				  double min_time, double max_time) const;
+  // --------------------------
+  // RawIV_IO::createVolumeFile
+  // --------------------------
+  // Purpose:
+  //   Creates an empty volume file to be later filled in by writeVolumeFile
+  // ---- Change History ----
+  // 11/13/2009 -- Joe R. -- Initial implementation.
+  virtual void createVolumeFile(const std::string &filename,
+                                const BoundingBox &boundingBox,
+                                const Dimension &dimension,
+                                const std::vector<VoxelType> &voxelTypes,
+                                unsigned int numVariables,
+                                unsigned int numTimesteps, double min_time,
+                                double max_time) const;
 
-    // -------------------------
-    // RawIV_IO::writeVolumeFile
-    // -------------------------
-    // Purpose:
-    //   Writes the volume contained in wvol to the specified volume file. Should create
-    //   a volume file if the filename provided doesn't exist.  Else it will simply
-    //   write data to the existing file.  A common user error arises when you try to
-    //   write over an existing volume file using this function for unrelated volumes.
-    //   If what you desire is to overwrite an existing volume file, first run
-    //   createVolumeFile to replace the volume file.
-    // ---- Change History ----
-    // 11/13/2009 -- Joe R. -- Initial implementation.
-    virtual void writeVolumeFile(const Volume& wvol, 
-				 const std::string& filename,
-				 unsigned int var, unsigned int time,
-				 uint64 off_x, uint64 off_y, uint64 off_z) const;
-  protected:
-    std::string _id;
-    ExtensionList _extensions;
-    bool _strictSpan;
-  };
-}
+  // -------------------------
+  // RawIV_IO::writeVolumeFile
+  // -------------------------
+  // Purpose:
+  //   Writes the volume contained in wvol to the specified volume file.
+  //   Should create a volume file if the filename provided doesn't exist.
+  //   Else it will simply write data to the existing file.  A common user
+  //   error arises when you try to write over an existing volume file using
+  //   this function for unrelated volumes. If what you desire is to overwrite
+  //   an existing volume file, first run createVolumeFile to replace the
+  //   volume file.
+  // ---- Change History ----
+  // 11/13/2009 -- Joe R. -- Initial implementation.
+  virtual void writeVolumeFile(const Volume &wvol,
+                               const std::string &filename, unsigned int var,
+                               unsigned int time, uint64 off_x, uint64 off_y,
+                               uint64 off_z) const;
 
+protected:
+  std::string _id;
+  ExtensionList _extensions;
+  bool _strictSpan;
+};
+} // namespace VolMagick
 
 #endif

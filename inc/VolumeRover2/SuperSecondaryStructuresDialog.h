@@ -1,8 +1,8 @@
 /*
   Copyright 2011 The University of Texas at Austin
-  
-	Authors: Alex Rand <arand@ices.utexas.edu>
-	Advisor: Chandrajit Bajaj <bajaj@cs.utexas.edu>
+
+        Authors: Alex Rand <arand@ices.utexas.edu>
+        Advisor: Chandrajit Bajaj <bajaj@cs.utexas.edu>
 
   This file is part of Volume Rover.
 
@@ -24,36 +24,32 @@
 #ifndef __SUPERSECONDARYSTRUCTURESDIALOG_H__
 #define __SUPERSECONDARYSTRUCTURESDIALOG_H__
 
-//#include <qglobal.h>
+// #include <qglobal.h>
 
 #include <QDialog>
 #include <QString>
 
-namespace Ui
-{
-  class SuperSecondaryStructuresDialog;
+namespace Ui {
+class SuperSecondaryStructuresDialog;
 }
 
 #include "ui_SuperSecondaryStructuresDialog.h"
-      
-class SuperSecondaryStructuresDialog : public QDialog
-{
+
+class SuperSecondaryStructuresDialog : public QDialog {
   Q_OBJECT
 
- public:
-  SuperSecondaryStructuresDialog(QWidget *parent=nullptr,Qt::WindowFlags flags=Qt::WindowFlags());
+public:
+  SuperSecondaryStructuresDialog(QWidget *parent = nullptr,
+                                 Qt::WindowFlags flags = Qt::WindowFlags());
 
   virtual ~SuperSecondaryStructuresDialog();
 
   void RunSuperSecondaryStructures();
 
-  public slots:
+public slots:
 
-
-  protected:
-
+protected:
   Ui::SuperSecondaryStructuresDialog *_ui;
-
 };
 
 #endif

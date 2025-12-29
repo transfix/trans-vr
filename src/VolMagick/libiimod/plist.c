@@ -1,50 +1,48 @@
-#include <stdio.h>
-#include <VolMagick/libiimod/mrcc.h>
-#include <stdlib.h>
 #include <VolMagick/libiimod/b3dutil.h>
+#include <VolMagick/libiimod/mrcc.h>
+#include <stdio.h>
+#include <stdlib.h>
 
 static int plist_load(FILE *fin, IloadInfo *li, int nx, int ny, int nz);
 
 /* load piece list into LoadInfo structure. */
 /*!
  * Reads a list of piece coordinates from a text file whose name is in
- * [fname], places it in the @@mrcfiles.html#IloadInfo structure@ [li], and 
+ * [fname], places it in the @@mrcfiles.html#IloadInfo structure@ [li], and
  * processes it with @mrc_plist_proc given the image dimensions in [hdata].
  * Returns 1 or -1 for errors.
  */
-int mrc_plist_li(IloadInfo *li, MrcHeader *hdata, char *fname)
-{
+int mrc_plist_li(IloadInfo *li, MrcHeader *hdata, char *fname) {
   FILE *fin;
   int retval;
-  if (!fname) 
-    return(1);
+  if (!fname)
+    return (1);
   fin = fopen(fname, "r");
-  if (!fin){
+  if (!fin) {
     li->plist = 0;
 
-    /* DNM 11/24/03: took out errno-based report because it wouldn't link in Visual C */
+    /* DNM 11/24/03: took out errno-based report because it wouldn't link in
+     * Visual C */
     b3dError(stderr, "ERROR opening piece list file");
-    return(-1);
+    return (-1);
   }
   retval = (mrc_plist_load(li, hdata, fin));
   fclose(fin);
-  return(retval);
+  return (retval);
 }
 
 /*!
  * Reads a list of piece coordinates from a text file [fin],
- * places it in the @@mrcfiles.html#IloadInfo structure@ [li], and processes it
- * with @mrc_plist_proc given the image dimensions in [hdata].
- * Returns 1 for errors.
+ * places it in the @@mrcfiles.html#IloadInfo structure@ [li], and processes
+ * it with @mrc_plist_proc given the image dimensions in [hdata]. Returns 1
+ * for errors.
  */
-int mrc_plist_load(IloadInfo *li, MrcHeader *hdata, FILE *fin)
-{
+int mrc_plist_load(IloadInfo *li, MrcHeader *hdata, FILE *fin) {
   return (plist_load(fin, li, hdata->nx, hdata->ny, hdata->nz));
 }
 
 /* Reads piece list from a text file, places into li,processes it */
-static int plist_load(FILE *fin, IloadInfo *li, int nx, int ny, int nz)
-{
+static int plist_load(FILE *fin, IloadInfo *li, int nx, int ny, int nz) {
   int i, scanret;
   int x, y, z;
 
@@ -52,51 +50,56 @@ static int plist_load(FILE *fin, IloadInfo *li, int nx, int ny, int nz)
 
   li->pcoords = (int *)malloc(sizeof(int) * 3 * nz);
 
-  for(i=0; i < nz; i++){
+  for (i = 0; i < nz; i++) {
     scanret = fscanf(fin, "%d %d %d", &x, &y, &z);
     if (scanret == 3) {
       /*      printf("mrc_plist_load %d : %d %d %d\n", i,x,y,z); */
-      li->pcoords[(i*3)]   = x;
-      li->pcoords[(i*3)+1] = y;
-      li->pcoords[(i*3)+2] = z; 
+      li->pcoords[(i * 3)] = x;
+      li->pcoords[(i * 3) + 1] = y;
+      li->pcoords[(i * 3) + 2] = z;
     } else {
       li->plist = i;
       if (scanret != EOF)
-        b3dError(stderr, "Error reading piece list after %d lines\n"
-                 , i);
+        b3dError(stderr, "Error reading piece list after %d lines\n", i);
       break;
     }
   }
-  return(mrc_plist_proc(li, nx, ny, nz));
+  return (mrc_plist_proc(li, nx, ny, nz));
 }
 
 /*!
- * Analyzes the piece coordinates in the {pcoord} array in the 
+ * Analyzes the piece coordinates in the {pcoord} array in the
  * @@mrcfiles.html#IloadInfo structure@ [li] based on the image dimensions in
  * [nx], [ny], and [nz].  It fills in the {px}, {py}, {pz}, {opx}, {opy},
- * and {opz} elements in [li], shifts coordinates to start at zero, and 
+ * and {opz} elements in [li], shifts coordinates to start at zero, and
  * determines number of Z sections with data ({pdz}).  Returns 1 for memory
  * error.
  */
-int mrc_plist_proc(IloadInfo *li, int nx, int ny, int nz)
-{
+int mrc_plist_proc(IloadInfo *li, int nx, int ny, int nz) {
   int i;
   int pmin[3];
   int pmax[3];
   int *zlist;
 
-  pmin[0] = li->pcoords[0]; pmax[0] = pmin[0]+nx;
-  pmin[1] = li->pcoords[1]; pmax[1] = pmin[1]+ny;
-  pmin[2] = li->pcoords[2]; pmax[2] = pmin[2];
-  for(i=1; i < li->plist; i++){
-    if (pmin[0] > li->pcoords[(i*3)])   pmin[0] = li->pcoords[(i*3)];
-    if (pmin[1] > li->pcoords[(i*3)+1]) pmin[1] = li->pcoords[(i*3)+1];
-    if (pmin[2] > li->pcoords[(i*3)+2]) pmin[2] = li->pcoords[(i*3)+2];
-    if (pmax[0] < (li->pcoords[(i*3)] + nx)) 
-      pmax[0] = li->pcoords[(i*3)] + nx;
-    if (pmax[1] < (li->pcoords[(i*3)+1] + ny)) 
-      pmax[1] = li->pcoords[(i*3)+1] + ny;
-    if (pmax[2] < li->pcoords[(i*3)+2]) pmax[2] = li->pcoords[(i*3)+2];
+  pmin[0] = li->pcoords[0];
+  pmax[0] = pmin[0] + nx;
+  pmin[1] = li->pcoords[1];
+  pmax[1] = pmin[1] + ny;
+  pmin[2] = li->pcoords[2];
+  pmax[2] = pmin[2];
+  for (i = 1; i < li->plist; i++) {
+    if (pmin[0] > li->pcoords[(i * 3)])
+      pmin[0] = li->pcoords[(i * 3)];
+    if (pmin[1] > li->pcoords[(i * 3) + 1])
+      pmin[1] = li->pcoords[(i * 3) + 1];
+    if (pmin[2] > li->pcoords[(i * 3) + 2])
+      pmin[2] = li->pcoords[(i * 3) + 2];
+    if (pmax[0] < (li->pcoords[(i * 3)] + nx))
+      pmax[0] = li->pcoords[(i * 3)] + nx;
+    if (pmax[1] < (li->pcoords[(i * 3) + 1] + ny))
+      pmax[1] = li->pcoords[(i * 3) + 1] + ny;
+    if (pmax[2] < li->pcoords[(i * 3) + 2])
+      pmax[2] = li->pcoords[(i * 3) + 2];
   }
 
   li->px = pmax[0] - pmin[0];
@@ -111,10 +114,10 @@ int mrc_plist_proc(IloadInfo *li, int nx, int ny, int nz)
      the program expects */
   /* DNM 12/19/98: do this to Z as well, eliminate warning because the
      transformations should take care of it */
-  for(i = 0; i < li->plist; i++){
-    li->pcoords[(i*3)] -= pmin[0];
-    li->pcoords[(i*3) + 1] -= pmin[1];
-    li->pcoords[(i*3) + 2] -= pmin[2];
+  for (i = 0; i < li->plist; i++) {
+    li->pcoords[(i * 3)] -= pmin[0];
+    li->pcoords[(i * 3) + 1] -= pmin[1];
+    li->pcoords[(i * 3) + 2] -= pmin[2];
   }
 
   /*     if (pmin[0] || pmin[1])
@@ -122,18 +125,19 @@ int mrc_plist_proc(IloadInfo *li, int nx, int ny, int nz)
          " %d,%d to start at 0,0\n", -pmin[0], -pmin[1]); */
 
   /* find number of z sections that contain data. */
-  zlist=(int *)malloc(sizeof(int) * ((int)li->pz + 1));
+  zlist = (int *)malloc(sizeof(int) * ((int)li->pz + 1));
   if (!zlist)
     return 1;
   li->pdz = 0;
-  for(i = 0; i < li->pz; i++)
+  for (i = 0; i < li->pz; i++)
     zlist[i] = 0;
-  for(i = 0; i < li->plist; i++)
-    zlist[li->pcoords[(i*3)+2]]++;
-  for(i = 0; i < li->pz; i++)
-    if (zlist[i]) li->pdz++;
+  for (i = 0; i < li->plist; i++)
+    zlist[li->pcoords[(i * 3) + 2]]++;
+  for (i = 0; i < li->pz; i++)
+    if (zlist[i])
+      li->pdz++;
   free(zlist);
-  return(0);
+  return (0);
 }
 
 /*!
@@ -142,9 +146,8 @@ int mrc_plist_proc(IloadInfo *li, int nx, int ny, int nz)
  * and Y given by [ovx] and [ovy].  Processes the list with @mrc_plist_proc.
  * Returns 1 for memory error.
  */
-int mrc_plist_create(IloadInfo *li, int nx, int ny, int nz,
-                     int nfx, int nfy, int ovx, int ovy)
-{
+int mrc_plist_create(IloadInfo *li, int nx, int ny, int nz, int nfx, int nfy,
+                     int ovx, int ovy) {
   int i, scanret;
   int x, y, z;
 
@@ -160,11 +163,10 @@ int mrc_plist_create(IloadInfo *li, int nx, int ny, int nz,
   if (ovy >= ny)
     ovy = ny - 1;
 
-     
-  for(i=0; i < nz; i++){
-    li->pcoords[(i*3)]   = x * (nx - ovx);
-    li->pcoords[(i*3)+1] = y * (ny - ovy);
-    li->pcoords[(i*3)+2] = z; 
+  for (i = 0; i < nz; i++) {
+    li->pcoords[(i * 3)] = x * (nx - ovx);
+    li->pcoords[(i * 3) + 1] = y * (ny - ovy);
+    li->pcoords[(i * 3) + 2] = z;
     x++;
     if (x >= nfx) {
       y++;
@@ -175,7 +177,7 @@ int mrc_plist_create(IloadInfo *li, int nx, int ny, int nz,
       }
     }
   }
-  return(mrc_plist_proc(li, nx, ny, nz));
+  return (mrc_plist_proc(li, nx, ny, nz));
 }
 
 /*!
@@ -184,29 +186,27 @@ int mrc_plist_create(IloadInfo *li, int nx, int ny, int nz,
  * processes it with @mrc_plist_proc given the image dimensions in [nx], [ny],
  * and [nz].  Returns 1 for all kinds of errors.
  */
-int iiPlistLoad(char *filename, IloadInfo *li, int nx, int ny, int nz)
-{
+int iiPlistLoad(char *filename, IloadInfo *li, int nx, int ny, int nz) {
   FILE *fin;
   int retval;
-  if ((!filename)||(nz < 1)||(ny<1)||(nx<1)) 
+  if ((!filename) || (nz < 1) || (ny < 1) || (nx < 1))
     return 1;
   fin = fopen(filename, "r");
   if (!fin)
     return 1;
   retval = iiPlistLoadF(fin, li, nx, ny, nz);
-  fclose (fin);
+  fclose(fin);
   return retval;
 }
 
 /*!
  * Reads a list of piece coordinates from the text file [fin]
- * places it in the @@mrcfiles.html#IloadInfo structure@ [li], and processes it
- * with @mrc_plist_proc given the image dimensions in [nx], [ny], and [nz].
+ * places it in the @@mrcfiles.html#IloadInfo structure@ [li], and processes
+ * it with @mrc_plist_proc given the image dimensions in [nx], [ny], and [nz].
  * Returns 1 for all kinds of errors.
  */
-int iiPlistLoadF(FILE *fin, IloadInfo *li, int nx, int ny, int nz)
-{
-  if ((!fin)||(nz < 1)||(ny<1)||(nx<1)) 
+int iiPlistLoadF(FILE *fin, IloadInfo *li, int nx, int ny, int nz) {
+  if ((!fin) || (nz < 1) || (ny < 1) || (nx < 1))
     return 1;
   return (plist_load(fin, li, nx, ny, nz));
 }

@@ -1,8 +1,8 @@
 /*
   Copyright 2008 The University of Texas at Austin
-  
-	Authors: Alex Rand <arand@ices.utexas.edu>
-	Advisor: Chandrajit Bajaj <bajaj@cs.utexas.edu>
+
+        Authors: Alex Rand <arand@ices.utexas.edu>
+        Advisor: Chandrajit Bajaj <bajaj@cs.utexas.edu>
 
   This file is part of Volume Rover.
 
@@ -27,44 +27,38 @@
 #define __VOLUMEMEMORYINTERFACE_H__
 
 #include <CVC/Namespace.h>
-
-
-#include <VolumeRover2/DataWidget.h>
 #include <VolMagick/VolMagick.h>
+#include <VolumeRover2/DataWidget.h>
 
-namespace Ui
-{
-  class VolumeMemoryInterface;
+namespace Ui {
+class VolumeMemoryInterface;
 }
 
-namespace CVC_NAMESPACE
-{
-  class VolumeViewer;
+namespace CVC_NAMESPACE {
+class VolumeViewer;
 }
 
 // 12/02/2011 -- transfix -- added a viewer widget for visual data inspection
-class VolumeMemoryInterface : public CVC_NAMESPACE::DataWidget
-{
+class VolumeMemoryInterface : public CVC_NAMESPACE::DataWidget {
   Q_OBJECT
 
- public:
-  VolumeMemoryInterface(const VolMagick::Volume & vol= VolMagick::Volume(),
-                        QWidget* parent = 0, 
-                        Qt::WindowFlags flags=Qt::WindowFlags());
+public:
+  VolumeMemoryInterface(const VolMagick::Volume &vol = VolMagick::Volume(),
+                        QWidget *parent = 0,
+                        Qt::WindowFlags flags = Qt::WindowFlags());
   virtual ~VolumeMemoryInterface();
 
-  virtual void initialize(const std::string& datakey);
-  virtual void initialize(const boost::any& datum);
+  virtual void initialize(const std::string &datakey);
+  virtual void initialize(const boost::any &datum);
 
   void setInterfaceInfo(const VolMagick::Volume &vol);
 
- protected slots:
+protected slots:
   void setViewerState();
 
- signals:
+signals:
 
- protected:
-
+protected:
   Ui::VolumeMemoryInterface *_ui;
   CVC_NAMESPACE::VolumeViewer *_volumeInterfaceViewer;
 };

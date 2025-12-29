@@ -1,8 +1,8 @@
 /*
   Copyright 2011 The University of Texas at Austin
-  
-	Authors: Jose Rivera <transfix@ices.utexas.edu>
-	Advisor: Chandrajit Bajaj <bajaj@cs.utexas.edu>
+
+        Authors: Jose Rivera <transfix@ices.utexas.edu>
+        Advisor: Chandrajit Bajaj <bajaj@cs.utexas.edu>
 
   This file is part of Volume Rover.
 
@@ -23,7 +23,6 @@
 
 /* $Id: DataWidget.h 4910 2011-12-03 02:51:47Z transfix $ */
 
-
 #ifndef __DATAWIDGET_H__
 #define __DATAWIDGET_H__
 
@@ -31,21 +30,20 @@
 #include <QFrame>
 #include <boost/any.hpp>
 
-namespace CVC_NAMESPACE
-{
-  // 12/02/2011 -- transfix -- added initialize with a string argument
-  class DataWidget : public QFrame
-  {
-  public:
-    DataWidget(QWidget *parent = nullptr, Qt::WindowFlags flags=Qt::WindowFlags()) : QFrame(parent,flags) {}
-    virtual ~DataWidget() {}
+namespace CVC_NAMESPACE {
+// 12/02/2011 -- transfix -- added initialize with a string argument
+class DataWidget : public QFrame {
+public:
+  DataWidget(QWidget *parent = nullptr,
+             Qt::WindowFlags flags = Qt::WindowFlags())
+      : QFrame(parent, flags) {}
+  virtual ~DataWidget() {}
 
-    virtual void initialize(const std::string& datakey)
-    {
-      initialize(cvcapp.data(datakey));
-    }
-    virtual void initialize(const boost::any& datum) = 0;
-  };
-}
+  virtual void initialize(const std::string &datakey) {
+    initialize(cvcapp.data(datakey));
+  }
+  virtual void initialize(const boost::any &datum) = 0;
+};
+} // namespace CVC_NAMESPACE
 
 #endif

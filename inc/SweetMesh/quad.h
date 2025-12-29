@@ -21,64 +21,68 @@
 #ifndef SWEETMESH_QUAD_H
 #define SWEETMESH_QUAD_H
 
+#include <SweetMesh/vertex.h>
 #include <list>
 #include <vector>
-
-#include <SweetMesh/vertex.h>
 
 namespace sweetMesh {
 
 //===============================================================================
-//quadCorner
+// quadCorner
 //===============================================================================
 
 struct quadCorner {
-    std::list<hexVertex>::iterator	myVertexItr;
-    double				jacobian;
+  std::list<hexVertex>::iterator myVertexItr;
+  double jacobian;
 };
 //===============================================================================
-//quadFace
+// quadFace
 //===============================================================================
 
 class quadFace {
 public:
-    std::vector<quadCorner>				corners;
-    std::list<hexahedron>::iterator			nbrHex1;
-    std::list<hexahedron>::iterator			nbrHex2;
+  std::vector<quadCorner> corners;
+  std::list<hexahedron>::iterator nbrHex1;
+  std::list<hexahedron>::iterator nbrHex2;
 
-    bool						hasNonPosQuadJacobian;
-    bool						isSurfaceQuad;
-    bool						displayQuad;
+  bool hasNonPosQuadJacobian;
+  bool isSurfaceQuad;
+  bool displayQuad;
 
-    quadFace() {}
-    quadFace(std::list<hexVertex>::iterator& v0, std::list<hexVertex>::iterator& v1, std::list<hexVertex>::iterator& v2, std::list<hexVertex>::iterator& v3);
-    ~quadFace() {}
+  quadFace() {}
+  quadFace(std::list<hexVertex>::iterator &v0,
+           std::list<hexVertex>::iterator &v1,
+           std::list<hexVertex>::iterator &v2,
+           std::list<hexVertex>::iterator &v3);
+  ~quadFace() {}
 
-    bool operator==(const quadFace& op2);
+  bool operator==(const quadFace &op2);
 
-    std::list<hexVertex>::iterator getV0Itr()	{ return corners[0].myVertexItr; }
-    std::list<hexVertex>::iterator getV1Itr()	{ return corners[1].myVertexItr; }
-    std::list<hexVertex>::iterator getV2Itr()	{ return corners[2].myVertexItr; }
-    std::list<hexVertex>::iterator getV3Itr()	{ return corners[3].myVertexItr; }
-    void computeJacobians();
-    void print();
+  std::list<hexVertex>::iterator getV0Itr() { return corners[0].myVertexItr; }
+  std::list<hexVertex>::iterator getV1Itr() { return corners[1].myVertexItr; }
+  std::list<hexVertex>::iterator getV2Itr() { return corners[2].myVertexItr; }
+  std::list<hexVertex>::iterator getV3Itr() { return corners[3].myVertexItr; }
+  void computeJacobians();
+  void print();
 
-    void makeEdgeVectors(unsigned int corner, vertex& e1, vertex& e2);
+  void makeEdgeVectors(unsigned int corner, vertex &e1, vertex &e2);
 };
 
-class quadMesh{
+class quadMesh {
 public:
-  std::list<hexVertex>	vertices;
-  std::list<quadFace>	quads;
-  
+  std::list<hexVertex> vertices;
+  std::list<quadFace> quads;
+
   quadMesh() {}
   ~quadMesh() {}
-  
-  std::list<quadFace>::iterator addQuad(hexVertex& V0, hexVertex& V1, hexVertex& V2, hexVertex& V3);
+
+  std::list<quadFace>::iterator addQuad(hexVertex &V0, hexVertex &V1,
+                                        hexVertex &V2, hexVertex &V3);
+
 private:
-  std::list<hexVertex>::iterator addVertex(hexVertex& thisVertex);
+  std::list<hexVertex>::iterator addVertex(hexVertex &thisVertex);
 };
 
-}
+} // namespace sweetMesh
 
 #endif

@@ -1,8 +1,8 @@
 /*
   Copyright 2011 The University of Texas at Austin
-  
-	Authors: Alex Rand <arand@ices.utexas.edu>
-	Advisor: Chandrajit Bajaj <bajaj@cs.utexas.edu>
+
+        Authors: Alex Rand <arand@ices.utexas.edu>
+        Advisor: Chandrajit Bajaj <bajaj@cs.utexas.edu>
 
   This file is part of Volume Rover.
 
@@ -24,38 +24,34 @@
 #ifndef __ANISOTROPICDIFFUSIONDIALOG_H__
 #define __ANISOTROPICDIFFUSIONDIALOG_H__
 
-//#include <qglobal.h>
+// #include <qglobal.h>
 
 #include <QDialog>
 #include <QString>
 
-namespace Ui
-{
-  class AnisotropicDiffusionDialog;
+namespace Ui {
+class AnisotropicDiffusionDialog;
 }
 
 #include "ui_AnisotropicDiffusionDialog.h"
 
-class AnisotropicDiffusionDialog : public QDialog
-{
+class AnisotropicDiffusionDialog : public QDialog {
   Q_OBJECT
 
- public:
-  AnisotropicDiffusionDialog(QWidget *parent=nullptr,Qt::WindowFlags flags=Qt::WindowFlags());
+public:
+  AnisotropicDiffusionDialog(QWidget *parent = nullptr,
+                             Qt::WindowFlags flags = Qt::WindowFlags());
 
   virtual ~AnisotropicDiffusionDialog();
 
   void RunAnisotropicDiffusion();
 
-  
-  public slots:
+public slots:
 
   void OutputFileSlot();
 
-  protected:
-
+protected:
   Ui::AnisotropicDiffusionDialog *_ui;
-
 };
 
 #endif

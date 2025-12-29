@@ -17,28 +17,26 @@
 
   You should have received a copy of the GNU Lesser General Public
   License along with this library; if not, write to the Free Software
-  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301
+  USA
 */
 
 /* $Id: BoundingBoxClip.h 5692 2012-06-01 22:39:25Z transfix $ */
 
-#include <CVC/Namespace.h>
 #include <CVC/BoundingBox.h>
+#include <CVC/Namespace.h>
 
-namespace CVC_NAMESPACE
-{
-  //functor for clipping via a bounding box
-  class BoundingBoxClip
-  {
-  public:
-    BoundingBoxClip(const CVC::BoundingBox bbox)
-      : _bbox(bbox) {}
+namespace CVC_NAMESPACE {
+// functor for clipping via a bounding box
+class BoundingBoxClip {
+public:
+  BoundingBoxClip(const CVC::BoundingBox bbox) : _bbox(bbox) {}
 
-    void operator()();
+  void operator()();
 
-    CVC::BoundingBox boundingBox() const { return _bbox; }
+  CVC::BoundingBox boundingBox() const { return _bbox; }
 
-  private:
-    CVC::BoundingBox _bbox;
-  };
-}
+private:
+  CVC::BoundingBox _bbox;
+};
+} // namespace CVC_NAMESPACE

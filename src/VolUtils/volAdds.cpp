@@ -17,50 +17,49 @@
 
   You should have received a copy of the GNU Lesser General Public
   License along with this library; if not, write to the Free Software
-  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301
+  USA
 */
-
-#include <iostream>
-#include <sstream>
-#include <vector>
-#include <set>
-#include <algorithm>
-#include <stdio.h>
-#include <stdlib.h>
-
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <unistd.h>
-#include <errno.h>
-#include <math.h>
-
-#include <boost/tuple/tuple.hpp>
-#include <boost/tuple/tuple_comparison.hpp>
-#include <boost/tuple/tuple_io.hpp>
 
 #include <VolMagick/VolMagick.h>
 #include <VolMagick/VolumeCache.h>
 #include <VolMagick/endians.h>
-
-
+#include <algorithm>
+#include <boost/tuple/tuple.hpp>
+#include <boost/tuple/tuple_comparison.hpp>
+#include <boost/tuple/tuple_io.hpp>
+#include <errno.h>
+#include <iostream>
+#include <math.h>
+#include <set>
+#include <sstream>
+#include <stdio.h>
+#include <stdlib.h>
+#include <sys/stat.h>
+#include <sys/types.h>
+#include <unistd.h>
+#include <vector>
 
 /*using namespace std;
 
 class VolMagickOpStatus : public VolMagick::VoxelOperationStatusMessenger
 {
 public:
-  void start(const VolMagick::Voxels *vox, Operation op, VolMagick::uint64 numSteps) const
+  void start(const VolMagick::Voxels *vox, Operation op, VolMagick::uint64
+numSteps) const
   {
     _numSteps = numSteps;
   }
 
-  void step(const VolMagick::Voxels *vox, Operation op, VolMagick::uint64 curStep) const
+  void step(const VolMagick::Voxels *vox, Operation op, VolMagick::uint64
+curStep) const
   {
-    const char *opStrings[] = { "CalculatingMinMax", "CalculatingMin", "CalculatingMax",
-				"SubvolumeExtraction", "Fill", "Map", "Resize", "Composite",
-				"BilateralFilter", "ContrastEnhancement"};
+    const char *opStrings[] = { "CalculatingMinMax", "CalculatingMin",
+"CalculatingMax", "SubvolumeExtraction", "Fill", "Map", "Resize", "Composite",
+                                "BilateralFilter", "ContrastEnhancement"};
 
-    fprintf(stderr,"%s: %5.2f %%\r",opStrings[op],(((float)curStep)/((float)((int)(_numSteps-1))))*100.0);
+    fprintf(stderr,"%s: %5.2f
+%%\r",opStrings[op],(((float)curStep)/((float)((int)(_numSteps-1))))*100.0);
   }
 
   void end(const VolMagick::Voxels *vox, Operation op) const
@@ -74,98 +73,74 @@ private:
 
 typedef boost::tuple<double, double, double> Color;
 */
-int main(int argc, char **argv)
-{
-  if(argc < 3)
-    {
-      std:: cerr << 
-	"Usage: " << argv[0] << 
+int main(int argc, char **argv) {
+  if (argc < 3) {
+    std::cerr << "Usage: " << argv[0] <<
 
-	
-	" first volume, second volume,..., output volume. \n";
+        " first volume, second volume,..., output volume. \n";
 
-      return 1;
-    }
+    return 1;
+  }
 
-  try
-    {
-      VolMagick::Volume inputVol;
+  try {
+    VolMagick::Volume inputVol;
 
-  //    VolMagick::Volume inputVol2;
+    //    VolMagick::Volume inputVol2;
 
-      
-      VolMagick::Volume outputVol;
+    VolMagick::Volume outputVol;
 
-      VolMagick::readVolumeFile(inputVol,argv[1]); ///first argument is input volume
-      
-     // VolMagick::readVolumeFile(inputVol2, argv[2]); /// second argument is mask volume
-      
+    VolMagick::readVolumeFile(inputVol,
+                              argv[1]); /// first argument is input volume
 
-      VolMagick::VolumeFileInfo volinfo1;
-      volinfo1.read(argv[1]);
-      std::cout << volinfo1.filename() << ":" <<std::endl;
+    // VolMagick::readVolumeFile(inputVol2, argv[2]); /// second argument is
+    // mask volume
 
-   //   VolMagick::VolumeFileInfo volinfo2;
-   //   volinfo2.read(argv[2]);
+    VolMagick::VolumeFileInfo volinfo1;
+    volinfo1.read(argv[1]);
+    std::cout << volinfo1.filename() << ":" << std::endl;
+
+    //   VolMagick::VolumeFileInfo volinfo2;
+    //   volinfo2.read(argv[2]);
     //  std::cout << volinfo2.filename() << ":" <<std::endl;
-      
-      std::cout<<"minVol1 , maxVol1: "<<volinfo1.min()<<" "<<volinfo1.max()<<std::endl;;
 
-    //  std::cout<<"minVol2 , maxVol2: "<<volinfo2.min()<<" "<<volinfo2.max()<<std::endl;
+    std::cout << "minVol1 , maxVol1: " << volinfo1.min() << " "
+              << volinfo1.max() << std::endl;
+    ;
 
-      
-      
-      outputVol.voxelType(inputVol.voxelType());
-      outputVol.dimension(inputVol.dimension());
-      outputVol.boundingBox(inputVol.boundingBox());
-      
-      
-      std::cout<<"voxeltype "<<inputVol.voxelType()<<std::endl;
-      
+    //  std::cout<<"minVol2 , maxVol2: "<<volinfo2.min()<<"
+    //  "<<volinfo2.max()<<std::endl;
 
-	for( int kz = 0; kz<inputVol.ZDim(); kz++)
-   //std::cout<<kz<<"..";
-	    for( int jy = 0; jy<inputVol.YDim(); jy++)
-	      for( int ix = 0; ix<inputVol.XDim(); ix++)
-		   outputVol(ix, jy, kz, 0.0);
+    outputVol.voxelType(inputVol.voxelType());
+    outputVol.dimension(inputVol.dimension());
+    outputVol.boundingBox(inputVol.boundingBox());
 
-      
-     for(int t=1; t<argc-1; t++)
-	 {
-	  VolMagick::readVolumeFile(inputVol, argv[t]);
-      for( int kz = 0; kz<inputVol.ZDim(); kz++)
-	    for( int jy = 0; jy<inputVol.YDim(); jy++)
-	      for( int ix = 0; ix<inputVol.XDim(); ix++)
-		{
-		   outputVol(ix,jy,kz, (inputVol(ix,jy,kz) + outputVol(ix,jy,kz))  );
-		  
-		  
-		  
-		}
-	}	
-      
+    std::cout << "voxeltype " << inputVol.voxelType() << std::endl;
 
+    for (int kz = 0; kz < inputVol.ZDim(); kz++)
+      // std::cout<<kz<<"..";
+      for (int jy = 0; jy < inputVol.YDim(); jy++)
+        for (int ix = 0; ix < inputVol.XDim(); ix++)
+          outputVol(ix, jy, kz, 0.0);
 
-
-
-
-
-      VolMagick::createVolumeFile(outputVol, argv[argc-1]);
-
-
-
-
-
+    for (int t = 1; t < argc - 1; t++) {
+      VolMagick::readVolumeFile(inputVol, argv[t]);
+      for (int kz = 0; kz < inputVol.ZDim(); kz++)
+        for (int jy = 0; jy < inputVol.YDim(); jy++)
+          for (int ix = 0; ix < inputVol.XDim(); ix++) {
+            outputVol(ix, jy, kz,
+                      (inputVol(ix, jy, kz) + outputVol(ix, jy, kz)));
+          }
     }
 
-  catch(VolMagick::Exception &e)
-    {
-      std:: cerr << e.what() << std::endl;
-    }
-  catch(std::exception &e)
-    {
-      std::cerr << e.what() << std::endl;
-    }
+    VolMagick::createVolumeFile(outputVol, argv[argc - 1]);
+
+  }
+
+  catch (VolMagick::Exception &e) {
+    std::cerr << e.what() << std::endl;
+  } catch (std::exception &e) {
+    std::cerr << e.what() << std::endl;
+  }
 
   return 0;
 }

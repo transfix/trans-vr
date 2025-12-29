@@ -22,8 +22,8 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 
 **********************************************************************/
 
-#include <QGLViewer/constraint.h>
 #include <QGLViewer/camera.h>
+#include <QGLViewer/constraint.h>
 #include <QGLViewer/frame.h>
 #include <QGLViewer/manipulatedCameraFrame.h>
 
@@ -31,7 +31,7 @@ using namespace qglviewer;
 using namespace std;
 
 ////////////////////////////////////////////////////////////////////////////////
-//                                  Constraint                                //
+//                                  Constraint //
 ////////////////////////////////////////////////////////////////////////////////
 
 /*! Default constructor.
@@ -52,16 +52,17 @@ void AxisPlaneConstraint::setTranslationConstraint(Type type,
   setTranslationConstraintDirection(direction);
 }
 
-/*! Defines the translationConstraintDirection(). The coordinate system where \p
- * direction is expressed depends on your class implementation. */
+/*! Defines the translationConstraintDirection(). The coordinate system where
+ * \p direction is expressed depends on your class implementation. */
 void AxisPlaneConstraint::setTranslationConstraintDirection(
     const Vec &direction) {
   if ((translationConstraintType() != AxisPlaneConstraint::FREE) &&
       (translationConstraintType() != AxisPlaneConstraint::FORBIDDEN)) {
     const qreal norm = direction.norm();
     if (norm < 1E-8) {
-      qWarning("AxisPlaneConstraint::setTranslationConstraintDir: null vector "
-               "for translation constraint");
+      qWarning(
+          "AxisPlaneConstraint::setTranslationConstraintDir: null vector "
+          "for translation constraint");
       translationConstraintType_ = AxisPlaneConstraint::FREE;
     } else
       translationConstraintDir_ = direction / norm;
@@ -78,13 +79,15 @@ void AxisPlaneConstraint::setRotationConstraint(Type type,
 
 /*! Defines the rotationConstraintDirection(). The coordinate system where \p
  * direction is expressed depends on your class implementation. */
-void AxisPlaneConstraint::setRotationConstraintDirection(const Vec &direction) {
+void AxisPlaneConstraint::setRotationConstraintDirection(
+    const Vec &direction) {
   if ((rotationConstraintType() != AxisPlaneConstraint::FREE) &&
       (rotationConstraintType() != AxisPlaneConstraint::FORBIDDEN)) {
     const qreal norm = direction.norm();
     if (norm < 1E-8) {
-      qWarning("AxisPlaneConstraint::setRotationConstraintDir: null vector for "
-               "rotation constraint");
+      qWarning(
+          "AxisPlaneConstraint::setRotationConstraintDir: null vector for "
+          "rotation constraint");
       rotationConstraintType_ = AxisPlaneConstraint::FREE;
     } else
       rotationConstraintDir_ = direction / norm;
@@ -99,8 +102,8 @@ void AxisPlaneConstraint::setRotationConstraintDirection(const Vec &direction) {
  (AxisPlaneConstraint::AXIS), or will not able to rotate at all
  (AxisPlaneConstraint::FORBIDDEN).
 
- Use Frame::setOrientation() to define the orientation of the constrained Frame
- before it gets constrained.
+ Use Frame::setOrientation() to define the orientation of the constrained
+ Frame before it gets constrained.
 
  \attention An AxisPlaneConstraint::PLANE Type() is not meaningful for
  rotational constraints and will be ignored. */
@@ -115,7 +118,7 @@ void AxisPlaneConstraint::setRotationConstraintType(Type type) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-//                               LocalConstraint                              //
+//                               LocalConstraint //
 ////////////////////////////////////////////////////////////////////////////////
 
 /*! Depending on translationConstraintType(), constrain \p translation to be
@@ -163,12 +166,12 @@ void LocalConstraint::constrainRotation(Quaternion &rotation, Frame *const) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-//                               WorldConstraint                              //
+//                               WorldConstraint //
 ////////////////////////////////////////////////////////////////////////////////
 
 /*! Depending on translationConstraintType(), constrain \p translation to be
-  along an axis or limited to a plane defined in the world coordinate system by
-  translationConstraintDirection(). */
+  along an axis or limited to a plane defined in the world coordinate system
+  by translationConstraintDirection(). */
 void WorldConstraint::constrainTranslation(Vec &translation,
                                            Frame *const frame) {
   Vec proj;
@@ -224,14 +227,14 @@ void WorldConstraint::constrainRotation(Quaternion &rotation,
 //                               CameraConstraint //
 ////////////////////////////////////////////////////////////////////////////////
 
-/*! Creates a CameraConstraint, whose constrained directions are defined in the
-  \p camera coordinate system. */
+/*! Creates a CameraConstraint, whose constrained directions are defined in
+  the \p camera coordinate system. */
 CameraConstraint::CameraConstraint(const Camera *const camera)
     : AxisPlaneConstraint(), camera_(camera) {}
 
 /*! Depending on translationConstraintType(), constrain \p translation to be
-  along an axis or limited to a plane defined in the camera() coordinate system
-  by translationConstraintDirection(). */
+  along an axis or limited to a plane defined in the camera() coordinate
+  system by translationConstraintDirection(). */
 void CameraConstraint::constrainTranslation(Vec &translation,
                                             Frame *const frame) {
   Vec proj;
@@ -239,15 +242,15 @@ void CameraConstraint::constrainTranslation(Vec &translation,
   case AxisPlaneConstraint::FREE:
     break;
   case AxisPlaneConstraint::PLANE:
-    proj =
-        camera()->frame()->inverseTransformOf(translationConstraintDirection());
+    proj = camera()->frame()->inverseTransformOf(
+        translationConstraintDirection());
     if (frame->referenceFrame())
       proj = frame->referenceFrame()->transformOf(proj);
     translation.projectOnPlane(proj);
     break;
   case AxisPlaneConstraint::AXIS:
-    proj =
-        camera()->frame()->inverseTransformOf(translationConstraintDirection());
+    proj = camera()->frame()->inverseTransformOf(
+        translationConstraintDirection());
     if (frame->referenceFrame())
       proj = frame->referenceFrame()->transformOf(proj);
     translation.projectOnAxis(proj);

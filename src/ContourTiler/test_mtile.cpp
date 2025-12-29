@@ -1,9 +1,8 @@
-#include <string>
-
-#include <ContourTiler/test_common.h>
 #include <ContourTiler/mtiler_operations.h>
-#include <ContourTiler/tiler.h>
 #include <ContourTiler/reader_gnuplot.h>
+#include <ContourTiler/test_common.h>
+#include <ContourTiler/tiler.h>
+#include <string>
 
 // template <typename File_iter>
 // void mtile_test(File_iter files_begin, File_iter files_end)
@@ -55,4 +54,3 @@
 
 //   mtile_test(files.begin(), files.end());
 // }
-

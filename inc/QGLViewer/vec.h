@@ -25,10 +25,9 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 #ifndef QGLVIEWER_VEC_H
 #define QGLVIEWER_VEC_H
 
+#include <QDomElement>
 #include <iostream>
 #include <math.h>
-
-#include <QDomElement>
 
 // Included by all files as vec.h is at the end of the include hierarchy
 #include <QGLViewer/config.h> // Specific configuration options.
@@ -38,8 +37,8 @@ namespace qglviewer {
 /*! \brief The Vec class represents 3D positions and 3D vectors.
   \class Vec vec.h QGLViewer/vec.h
 
-  Vec is used as a parameter and return type by many methods of the library. It
-  provides classical algebraic computational methods and is compatible with
+  Vec is used as a parameter and return type by many methods of the library.
+  It provides classical algebraic computational methods and is compatible with
   OpenGL:
 
   \code
@@ -57,10 +56,10 @@ namespace qglviewer {
 
   <h3>Interface with other vector classes</h3>
 
-  Vec implements a universal explicit converter, based on the \c [] \c operator.
-  Everywhere a \c const \c Vec& argument is expected, you can use your own
-  vector type instead, as long as it implements this operator (see the Vec(const
-  C& c) documentation).
+  Vec implements a universal explicit converter, based on the \c [] \c
+  operator. Everywhere a \c const \c Vec& argument is expected, you can use
+  your own vector type instead, as long as it implements this operator (see
+  the Vec(const C& c) documentation).
 
   See also the Quaternion and the Frame documentations.
   \nosubgrouping */
@@ -95,8 +94,8 @@ public:
   Vec(qreal X, qreal Y, qreal Z) : x(X), y(Y), z(Z) {}
 
   /*! Universal explicit converter from any class to Vec. You can use your own
-vector class everywhere a \c const \c Vec& parameter is required, as long as it
-implements the \c operator[ ]:
+vector class everywhere a \c const \c Vec& parameter is required, as long as
+it implements the \c operator[ ]:
 
 \code
 class MyVec
@@ -109,8 +108,9 @@ MyVec v(...);
 camera()->setPosition(v);
 \endcode
 
-Note that standard vector types (STL, \c qreal[3], ...) implement this operator
-and can hence be used in place of Vec. See also operator const qreal*() .*/
+Note that standard vector types (STL, \c qreal[3], ...) implement this
+operator and can hence be used in place of Vec. See also operator const
+qreal*() .*/
   template <class C> explicit Vec(const C &c) : x(c[0]), y(c[1]), z(c[2]) {}
   // Should NOT be explicit to prevent conflicts with operator<<.
 
@@ -134,10 +134,9 @@ and can hence be used in place of Vec. See also operator const qreal*() .*/
     z = Z;
   }
 
-  // Universal equal operator which allows the use of any type in place of Vec,
-  // as long as the [] operator is implemented (v[0]=v.x, v[1]=v.y, v[2]=v.z).
-  // template <class C>
-  // Vec& operator=(const C& c)
+  // Universal equal operator which allows the use of any type in place of
+  // Vec, as long as the [] operator is implemented (v[0]=v.x, v[1]=v.y,
+  // v[2]=v.z). template <class C> Vec& operator=(const C& c)
   // {
   // x=c[0]; y=c[1]; z=c[2];
   // return *this;
@@ -146,7 +145,8 @@ and can hence be used in place of Vec. See also operator const qreal*() .*/
 
   /*! @name Accessing the value */
   //@{
-  /*! Bracket operator, with a constant return value. \p i must range in [0..2].
+  /*! Bracket operator, with a constant return value. \p i must range in
+   * [0..2].
    */
   qreal operator[](int i) const {
 #ifdef QGLVIEWER_UNION_NOT_SUPPORTED
@@ -188,7 +188,8 @@ functions: \code Vec pos, normal; glNormal3dv(normal); glVertex3dv(pos);
 #endif
   }
 
-  /*! Non const conversion operator returning the memory address of the vector.
+  /*! Non const conversion operator returning the memory address of the
+vector.
 
 Useful to pass a Vec to a method that requires and fills a \c qreal*, as
 provided by certain libraries. */
@@ -250,7 +251,8 @@ the "debug" Qt \c CONFIG flag) and may result in \c NaN values. */
     return Vec(a.x / k, a.y / k, a.z / k);
   }
 
-  /*! Returns \c true only when the two vector are not equal (see operator==()).
+  /*! Returns \c true only when the two vector are not equal (see
+   * operator==()).
    */
   friend bool operator!=(const Vec &a, const Vec &b) { return !(a == b); }
 
@@ -287,9 +289,9 @@ the "debug" Qt \c CONFIG flag) and may result in \c NaN values. */
 
   /*! Divides the vector by a scalar \p k.
 
-An absolute \p k value lower than 1E-10 will print a warning if the library was
-compiled with the "debug" Qt \c CONFIG flag. Otherwise, no test is performed for
-efficiency reasons. */
+An absolute \p k value lower than 1E-10 will print a warning if the library
+was compiled with the "debug" Qt \c CONFIG flag. Otherwise, no test is
+performed for efficiency reasons. */
   Vec &operator/=(qreal k) {
 #ifndef QT_NO_DEBUG
     if (fabs(k) < 1.0E-10)
@@ -321,7 +323,8 @@ efficiency reasons. */
 /*! @name Norm of the vector */
 //@{
 #ifndef DOXYGEN
-  /*! This method is deprecated since version 2.0. Use squaredNorm() instead. */
+  /*! This method is deprecated since version 2.0. Use squaredNorm() instead.
+   */
   qreal sqNorm() const { return x * x + y * y + z * z; }
 #endif
 
@@ -364,7 +367,7 @@ Normalizing a null vector will result in \c NaN values. */
   explicit Vec(const QDomElement &element);
   QDomElement domElement(const QString &name, QDomDocument &document) const;
   void initFromDOMElement(const QDomElement &element);
-//@}
+  //@}
 
 #ifdef DOXYGEN
   /*! @name Output stream */

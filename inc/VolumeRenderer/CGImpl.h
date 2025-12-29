@@ -1,7 +1,7 @@
 /*
   Copyright 2002-2003 The University of Texas at Austin
 
-	Authors: Anthony Thane <thanea@ices.utexas.edu>
+        Authors: Anthony Thane <thanea@ices.utexas.edu>
         Advisor: Chandrajit Bajaj <bajaj@cs.utexas.edu>
 
   This file is part of VolumeLibrary.
@@ -17,7 +17,8 @@
 
   You should have received a copy of the GNU Lesser General Public
   License along with this library; if not, write to the Free Software
-  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301
+  USA
 */
 
 // CGImpl.h: interface for the CGImpl class.
@@ -26,84 +27,91 @@
 #if !defined(AFX_CGIMPL_H__0A257041_7C0E_44A2_BF71_58D906390F88__INCLUDED_)
 #define AFX_CGIMPL_H__0A257041_7C0E_44A2_BF71_58D906390F88__INCLUDED_
 
-#include <VolumeRenderer/UnshadedBase.h>
 #include <VolumeRenderer/CG_Programs.h>
+#include <VolumeRenderer/UnshadedBase.h>
 
 namespace OpenGLVolumeRendering {
 
-     class CGImpl : public UnshadedBase, public CG_Programs
-	{
-	public:
-		CGImpl();
-		virtual ~CGImpl();
+class CGImpl : public UnshadedBase, public CG_Programs {
+public:
+  CGImpl();
+  virtual ~CGImpl();
 
-		// Initializes the renderer.  Should be called again if the renderer is
-		// moved to a different openGL context.  If this returns false, do not try
-		// to use it to do volumeRendering
-		virtual bool initRenderer();
+  // Initializes the renderer.  Should be called again if the renderer is
+  // moved to a different openGL context.  If this returns false, do not try
+  // to use it to do volumeRendering
+  virtual bool initRenderer();
 
-		// Makes the check necessary to determine if this renderer is 
-		// compatible with the hardware its running on
-		virtual bool checkCompatibility() const;
+  // Makes the check necessary to determine if this renderer is
+  // compatible with the hardware its running on
+  virtual bool checkCompatibility() const;
 
-		// Uploads colormapped data
-		virtual bool uploadColormappedData(const GLubyte* data, int width, int height, int depth);
+  // Uploads colormapped data
+  virtual bool uploadColormappedData(const GLubyte *data, int width,
+                                     int height, int depth);
 
-		// Tests to see if the given parameters would return an error
-		virtual bool testColormappedData(int width, int height, int depth);
+  // Tests to see if the given parameters would return an error
+  virtual bool testColormappedData(int width, int height, int depth);
 
-		// Uploads the transfer function for the colormapped data
-		virtual bool uploadColorMap(const GLubyte* colorMap);
+  // Uploads the transfer function for the colormapped data
+  virtual bool uploadColorMap(const GLubyte *colorMap);
 
-		// Uploads the transfer function for the colormapped data
-		virtual bool uploadColorMap(const GLfloat* colorMap);
-		
-		// Performs the actual rendering.
-		virtual bool renderVolume();
+  // Uploads the transfer function for the colormapped data
+  virtual bool uploadColorMap(const GLfloat *colorMap);
 
-		// For Shading Uploads Normal data
-		virtual bool uploadGradients(const GLubyte* data, int width, int height, int depth);
-		virtual void setLight(float *lightf);
-		virtual void setView(float *viewf);
+  // Performs the actual rendering.
+  virtual bool renderVolume();
 
-		bool isShadedRenderingAvailable(){ return true; }
-		bool enableShadedRendering() { m_ShadeFlag = true; return true; }
-		bool disableShadedRendering() { m_ShadeFlag = false; return true; }
-		
-	protected:
-		// Remembers the uploaded width height and depth
-		int m_Width, m_Height, m_Depth;
+  // For Shading Uploads Normal data
+  virtual bool uploadGradients(const GLubyte *data, int width, int height,
+                               int depth);
+  virtual void setLight(float *lightf);
+  virtual void setView(float *viewf);
 
-		// The opengl texture ID
-                GLuint m_DataTextureName;
-		GLuint m_TransferTextureName;
+  bool isShadedRenderingAvailable() { return true; }
+  bool enableShadedRendering() {
+    m_ShadeFlag = true;
+    return true;
+  }
+  bool disableShadedRendering() {
+    m_ShadeFlag = false;
+    return true;
+  }
 
-		// Holds the pointers to the extension functions
-		//MyExtensions m_Extensions;
+protected:
+  // Remembers the uploaded width height and depth
+  int m_Width, m_Height, m_Depth;
 
-		// Flag indicating if we were successfully initialized
-		bool m_Initialized;
+  // The opengl texture ID
+  GLuint m_DataTextureName;
+  GLuint m_TransferTextureName;
 
-		// Initializes the necessary extensions.
-		virtual bool initExtensions();
+  // Holds the pointers to the extension functions
+  // MyExtensions m_Extensions;
 
-		// Gets the opengl texture IDs
-		bool initTextureNames();
+  // Flag indicating if we were successfully initialized
+  bool m_Initialized;
 
-		// Render the actual triangles
-		void renderTriangles();
-		
-		// For Shading
-		void shadeRenderTriangles();
-			
-		// For Unshading - can be substituted by CG, 
-		// but keep both version for convenience. 
-		// if Video card supports CG, it always support Register Combiner 	
-		void NV_Unshade_Combiner_Setup(void);
+  // Initializes the necessary extensions.
+  virtual bool initExtensions();
 
-		bool m_GL_VERSION_1_2;
-	};
+  // Gets the opengl texture IDs
+  bool initTextureNames();
 
+  // Render the actual triangles
+  void renderTriangles();
+
+  // For Shading
+  void shadeRenderTriangles();
+
+  // For Unshading - can be substituted by CG,
+  // but keep both version for convenience.
+  // if Video card supports CG, it always support Register Combiner
+  void NV_Unshade_Combiner_Setup(void);
+
+  bool m_GL_VERSION_1_2;
 };
+
+}; // namespace OpenGLVolumeRendering
 
 #endif // !defined(AFX_CGIMPL_H__0A257041_7C0E_44A2_BF71_58D906390F88__INCLUDED_)

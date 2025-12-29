@@ -1,15 +1,13 @@
 #ifndef BRANCH_UTIL_H
 #define BRANCH_UTIL_H
 
-# include "common.h"
+#include "common.h"
 
-namespace Tiling
-{
+namespace Tiling {
 
-int process_an_untiled_region(VertType *vert_ary, short * group_ary,
-							  short poly_num);
+int process_an_untiled_region(VertType *vert_ary, short *group_ary,
+                              short poly_num);
 
 };
 
 #endif
-

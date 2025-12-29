@@ -24,16 +24,17 @@
 #include <SweetMesh/meshIO.h>
 #include <SweetMesh/volRoverDisplay.h>
 
-namespace sweetMesh{
+namespace sweetMesh {
 
-//normalizeHexahedra()==============
-//This function attempts to deform each hexahedron into a normal cube.
-//The bool moveSurfaceVertices controls permission to relocate surface vertices.
-void normalizeHexahedra(sweetMesh::hexMesh& mesh, bool moveSurfaceVertices);
+// normalizeHexahedra()==============
+// This function attempts to deform each hexahedron into a normal cube.
+// The bool moveSurfaceVertices controls permission to relocate surface
+// vertices.
+void normalizeHexahedra(sweetMesh::hexMesh &mesh, bool moveSurfaceVertices);
 
-//deleteNonPosJacHexes()============
-void deleteNonPosJacHexes(sweetMesh::hexMesh& mesh);
+// deleteNonPosJacHexes()============
+void deleteNonPosJacHexes(sweetMesh::hexMesh &mesh);
 
-}
+} // namespace sweetMesh
 
 #endif

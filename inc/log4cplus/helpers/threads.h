@@ -24,39 +24,32 @@
 #define _LOG4CPLUS_THREADS_HEADER_
 
 #include <log4cplus/config.hxx>
-#include <log4cplus/tstring.h>
 #include <log4cplus/helpers/pointer.h>
+#include <log4cplus/tstring.h>
 
-
-namespace log4cplus { namespace thread {
+namespace log4cplus {
+namespace thread {
 
 /**
  * This is used to lock a mutex.  The dtor unlocks the mutex.
  */
-class Guard
-{
+class Guard {
 public:
-    /** "locks" <code>mutex</code>. */
-    Guard(LOG4CPLUS_MUTEX_PTR_DECLARE mutex)
-        : _mutex (mutex)
-    {
-        LOG4CPLUS_MUTEX_LOCK( _mutex );
-    }
+  /** "locks" <code>mutex</code>. */
+  Guard(LOG4CPLUS_MUTEX_PTR_DECLARE mutex) : _mutex(mutex) {
+    LOG4CPLUS_MUTEX_LOCK(_mutex);
+  }
 
-    /** "unlocks" <code>mutex</code>. */
-    ~Guard()
-    {
-        LOG4CPLUS_MUTEX_UNLOCK( _mutex );
-    }
+  /** "unlocks" <code>mutex</code>. */
+  ~Guard() { LOG4CPLUS_MUTEX_UNLOCK(_mutex); }
 
 private:
-    LOG4CPLUS_MUTEX_PTR_DECLARE _mutex;
+  LOG4CPLUS_MUTEX_PTR_DECLARE _mutex;
 
-    // disable copy
-    Guard(const Guard&);
-    Guard& operator=(const Guard&);
+  // disable copy
+  Guard(const Guard &);
+  Guard &operator=(const Guard &);
 };
-
 
 #ifndef LOG4CPLUS_SINGLE_THREADED
 
@@ -64,9 +57,7 @@ LOG4CPLUS_EXPORT void blockAllSignals();
 LOG4CPLUS_EXPORT void yield();
 LOG4CPLUS_EXPORT tstring getCurrentThreadName();
 
-
 struct ThreadStart;
-
 
 /**
  * There are many cross-platform C++ Threading libraries.  The goal of
@@ -75,59 +66,51 @@ struct ThreadStart;
  * class with basic functionality.
  */
 class LOG4CPLUS_EXPORT AbstractThread
-    : public virtual log4cplus::helpers::SharedObject
-{
+    : public virtual log4cplus::helpers::SharedObject {
 public:
-    AbstractThread();
-    bool isRunning() const { return (flags & fRUNNING) != 0; }
-    LOG4CPLUS_THREAD_KEY_TYPE getThreadId() const;
-    LOG4CPLUS_THREAD_HANDLE_TYPE getThreadHandle () const;
-    virtual void start();
-    void join ();
+  AbstractThread();
+  bool isRunning() const { return (flags & fRUNNING) != 0; }
+  LOG4CPLUS_THREAD_KEY_TYPE getThreadId() const;
+  LOG4CPLUS_THREAD_HANDLE_TYPE getThreadHandle() const;
+  virtual void start();
+  void join();
 
 protected:
-    // Force objects to be constructed on the heap
-    virtual ~AbstractThread();
-    virtual void run() = 0;
+  // Force objects to be constructed on the heap
+  virtual ~AbstractThread();
+  virtual void run() = 0;
 
 private:
-    enum Flags
-    {
-        fRUNNING  = 0x01,
-        fJOINED   = 0x02
-    };
+  enum Flags { fRUNNING = 0x01, fJOINED = 0x02 };
 
-    unsigned flags;
+  unsigned flags;
 
-    // Friends.
-    friend struct ThreadStart;
+  // Friends.
+  friend struct ThreadStart;
 
-#  ifdef LOG4CPLUS_USE_PTHREADS
-    pthread_t handle;
+#ifdef LOG4CPLUS_USE_PTHREADS
+  pthread_t handle;
 
-#  elif defined(LOG4CPLUS_USE_WIN32_THREADS)
-    HANDLE handle;
-#    if defined (_WIN32_WCE)
-    DWORD thread_id;
-#    else
-    unsigned thread_id;
-#    endif
+#elif defined(LOG4CPLUS_USE_WIN32_THREADS)
+  HANDLE handle;
+#if defined(_WIN32_WCE)
+  DWORD thread_id;
+#else
+  unsigned thread_id;
+#endif
 
-#  endif
+#endif
 
-    // Disallow copying of instances of this class.
-    AbstractThread(const AbstractThread&);
-    AbstractThread& operator=(const AbstractThread&);
+  // Disallow copying of instances of this class.
+  AbstractThread(const AbstractThread &);
+  AbstractThread &operator=(const AbstractThread &);
 };
 
 typedef helpers::SharedObjectPtr<AbstractThread> AbstractThreadPtr;
 
-
 #endif // LOG4CPLUS_SINGLE_THREADED
 
-
-} } // namespace log4cplus { namespace thread {
-
+} // namespace thread
+} // namespace log4cplus
 
 #endif // _LOG4CPLUS_THREADS_HEADER_
-

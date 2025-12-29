@@ -3,8 +3,8 @@
 
 #include <string>
 
-void generateMesh(string manifestFile, float isoratio, float tolerance, float volthresh, int meshStart, int meshEnd, string outPref);
-
-
+void generateMesh(string manifestFile, float isoratio, float tolerance,
+                  float volthresh, int meshStart, int meshEnd,
+                  string outPref);
 
 #endif

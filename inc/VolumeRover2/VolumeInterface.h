@@ -1,8 +1,8 @@
 /*
   Copyright 2008 The University of Texas at Austin
-  
-	Authors: Jose Rivera <transfix@ices.utexas.edu>
-	Advisor: Chandrajit Bajaj <bajaj@cs.utexas.edu>
+
+        Authors: Jose Rivera <transfix@ices.utexas.edu>
+        Advisor: Chandrajit Bajaj <bajaj@cs.utexas.edu>
 
   This file is part of Volume Rover.
 
@@ -26,35 +26,33 @@
 #ifndef __VOLUMEINTERFACE_H__
 #define __VOLUMEINTERFACE_H__
 
-#include <VolumeRover2/DataWidget.h>
 #include <VolMagick/VolMagick.h>
+#include <VolumeRover2/DataWidget.h>
 
-namespace Ui
-{
-  class VolumeInterface;
+namespace Ui {
+class VolumeInterface;
 }
 
-class VolumeInterface : public CVC_NAMESPACE::DataWidget
-{
+class VolumeInterface : public CVC_NAMESPACE::DataWidget {
   Q_OBJECT
 
- public:
-  VolumeInterface(const VolMagick::VolumeFileInfo &vfi = VolMagick::VolumeFileInfo(),
-                  QWidget* parent = nullptr, 
-                  Qt::WindowFlags flags=Qt::WindowFlags());
+public:
+  VolumeInterface(
+      const VolMagick::VolumeFileInfo &vfi = VolMagick::VolumeFileInfo(),
+      QWidget *parent = nullptr, Qt::WindowFlags flags = Qt::WindowFlags());
   virtual ~VolumeInterface();
 
-  virtual void initialize(const boost::any& datum)
-  {
+  virtual void initialize(const boost::any &datum) {
     VolMagick::VolumeFileInfo vfi =
-      boost::any_cast<VolMagick::VolumeFileInfo>(datum);
+        boost::any_cast<VolMagick::VolumeFileInfo>(datum);
     setInterfaceInfo(vfi);
   }
 
-  void setInterfaceInfo(const VolMagick::VolumeFileInfo &vfi, bool announce = false);
+  void setInterfaceInfo(const VolMagick::VolumeFileInfo &vfi,
+                        bool announce = false);
   VolMagick::VolumeFileInfo volumeFileInfo() const { return _vfi; }
 
- protected slots:
+protected slots:
   void dimensionModifySlot();
   void boundingBoxModifySlot();
 
@@ -66,10 +64,10 @@ class VolumeInterface : public CVC_NAMESPACE::DataWidget
   void importDataSlot();
   void remapSlot();
 
- signals:
-  void volumeModified(const VolMagick::VolumeFileInfo& vfi);
+signals:
+  void volumeModified(const VolMagick::VolumeFileInfo &vfi);
 
- protected:
+protected:
   void getSelectedVarTime(int &var, int &time);
 
   VolMagick::VolumeFileInfo _vfi;

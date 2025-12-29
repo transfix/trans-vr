@@ -17,84 +17,70 @@
 
   You should have received a copy of the GNU Lesser General Public
   License along with this library; if not, write to the Free Software
-  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301
+  USA
 */
-
-#include <iostream>
-#include <sstream>
-#include <vector>
-#include <set>
-#include <algorithm>
-#include <stdio.h>
-#include <stdlib.h>
-
-#include <boost/tuple/tuple.hpp>
-#include <boost/tuple/tuple_comparison.hpp>
-#include <boost/tuple/tuple_io.hpp>
 
 #include <VolMagick/VolMagick.h>
 #include <VolMagick/VolumeCache.h>
 #include <VolMagick/endians.h>
+#include <algorithm>
+#include <boost/tuple/tuple.hpp>
+#include <boost/tuple/tuple_comparison.hpp>
+#include <boost/tuple/tuple_io.hpp>
+#include <iostream>
+#include <set>
+#include <sstream>
+#include <stdio.h>
+#include <stdlib.h>
+#include <vector>
 
+int main(int argc, char **argv) {
+  if (argc < 3) {
+    std::cerr << "Usage: " << argv[0] << "<input file> <output file>\n";
+    return 1;
+  }
 
+  try {
+    VolMagick::Volume inputVol;
 
+    VolMagick::Volume outputVol;
 
-int main(int argc, char **argv)
-{
-  if(argc < 3)
-    {
-      std:: cerr << 
-	"Usage: " << argv[0] <<  "<input file> <output file>\n";
-      return 1;
+    VolMagick::readVolumeFile(inputVol,
+                              argv[1]); /// first argument is input volume
+
+    outputVol.voxelType(inputVol.voxelType());
+    outputVol.dimension(inputVol.dimension());
+    outputVol.boundingBox(inputVol.boundingBox());
+
+    for (int kz = 0; kz < inputVol.ZDim(); kz++) {
+      std::cout << kz << "..";
+      for (int jy = 0; jy < inputVol.YDim(); jy++)
+        for (int ix = 0; ix < inputVol.XDim(); ix++) {
+
+          if (inputVol(ix, jy, kz) > 0) {
+            float val = ((float)(rand() % 10000)) / 10000.0 - 0.33;
+            while (val > -0.1 && val < 0) {
+              val = ((float)(rand() % 10000)) / 10000.0 - 0.33;
+            }
+            outputVol(ix, jy, kz, val);
+          } else {
+            outputVol(ix, jy, kz, 0.05);
+          }
+        }
     }
 
-  try
-    {
-      VolMagick::Volume inputVol;
+    VolMagick::createVolumeFile(argv[2], outputVol);
 
-      VolMagick::Volume outputVol;
+    VolMagick::writeVolumeFile(outputVol, argv[2]);
 
-      VolMagick::readVolumeFile(inputVol,argv[1]); ///first argument is input volume
-      
-      
-      outputVol.voxelType(inputVol.voxelType());
-      outputVol.dimension(inputVol.dimension());
-      outputVol.boundingBox(inputVol.boundingBox());
-      	
-      for( int kz = 0; kz<inputVol.ZDim(); kz++)
-	{
-	  std::cout<<kz<<"..";
-	    for( int jy = 0; jy<inputVol.YDim(); jy++)
-	      for( int ix = 0; ix<inputVol.XDim(); ix++)
-		{
-		  
-		  if (inputVol(ix,jy,kz) > 0) {
-		    float val = ((float)(rand()%10000))/10000.0-0.33;
-		    while (val > -0.1 && val < 0) {
-		      val = ((float)(rand()%10000))/10000.0-0.33;
-		    }
-		    outputVol(ix,jy,kz, val );
-		  } else {
-		    outputVol(ix,jy,kz, 0.05);
-		  }
-		}
-	}	
-      
+  }
 
-      VolMagick::createVolumeFile(argv[2], outputVol);
-
-      VolMagick::writeVolumeFile(outputVol, argv[2]);
-
-    }
-
-  catch(VolMagick::Exception &e)
-    {
-      std:: cerr << e.what() << std::endl;
-    }
-  catch(std::exception &e)
-    {
-      std::cerr << e.what() << std::endl;
-    }
+  catch (VolMagick::Exception &e) {
+    std::cerr << e.what() << std::endl;
+  } catch (std::exception &e) {
+    std::cerr << e.what() << std::endl;
+  }
 
   return 0;
 }

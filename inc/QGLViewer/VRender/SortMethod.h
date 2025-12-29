@@ -47,58 +47,56 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 #ifndef _SORTMETHOD_H
 #define _SORTMETHOD_H
 
-#include <vector>
 #include "Types.h"
 
-namespace vrender
-{
-	// Class which implements the sorting of the primitives. An object of
-	class VRenderParams ;
-	class SortMethod
-	{
-		public:
-			SortMethod() {}
-			virtual ~SortMethod() {}
+#include <vector>
 
-			virtual void sortPrimitives(std::vector<PtrPrimitive>&,VRenderParams&) = 0 ;
+namespace vrender {
+// Class which implements the sorting of the primitives. An object of
+class VRenderParams;
+class SortMethod {
+public:
+  SortMethod() {}
+  virtual ~SortMethod() {}
 
-			void SetZDepth(FLOAT s) { zSize = s ; }
-			FLOAT ZDepth() const { return zSize ; }
+  virtual void sortPrimitives(std::vector<PtrPrimitive> &,
+                              VRenderParams &) = 0;
 
-		protected:
-			FLOAT zSize ;
-	};
+  void SetZDepth(FLOAT s) { zSize = s; }
+  FLOAT ZDepth() const { return zSize; }
 
-	class DontSortMethod: public SortMethod
-	{
-		public:
-			DontSortMethod() {}
-			virtual ~DontSortMethod() {}
+protected:
+  FLOAT zSize;
+};
 
-			virtual void sortPrimitives(std::vector<PtrPrimitive>&,VRenderParams&) {}
-	};
+class DontSortMethod : public SortMethod {
+public:
+  DontSortMethod() {}
+  virtual ~DontSortMethod() {}
 
-	class BSPSortMethod: public SortMethod
-	{
-		public:
-			BSPSortMethod() {} ;
-			virtual ~BSPSortMethod() {}
+  virtual void sortPrimitives(std::vector<PtrPrimitive> &, VRenderParams &) {}
+};
 
-			virtual void sortPrimitives(std::vector<PtrPrimitive>&,VRenderParams&) ;
-	};
+class BSPSortMethod : public SortMethod {
+public:
+  BSPSortMethod(){};
+  virtual ~BSPSortMethod() {}
 
-	class TopologicalSortMethod: public SortMethod
-	{
-		public:
-			TopologicalSortMethod() ;
-			virtual ~TopologicalSortMethod() {}
+  virtual void sortPrimitives(std::vector<PtrPrimitive> &, VRenderParams &);
+};
 
-			virtual void sortPrimitives(std::vector<PtrPrimitive>&,VRenderParams&) ;
+class TopologicalSortMethod : public SortMethod {
+public:
+  TopologicalSortMethod();
+  virtual ~TopologicalSortMethod() {}
 
-			void setBreakCycles(bool b) { _break_cycles = b ; }
-		private:
-			bool _break_cycles ;
-	};
-}
+  virtual void sortPrimitives(std::vector<PtrPrimitive> &, VRenderParams &);
+
+  void setBreakCycles(bool b) { _break_cycles = b; }
+
+private:
+  bool _break_cycles;
+};
+} // namespace vrender
 
 #endif

@@ -17,29 +17,28 @@
 
   You should have received a copy of the GNU Lesser General Public
   License along with this library; if not, write to the Free Software
-  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301
+  USA
 */
 
-#include <iostream>
 #include <VolMagick/VolMagick.h>
+#include <iostream>
 #include <stdlib.h>
 
-int main(int argc,char *argv[])
-{
-	if(argc<2)
-	{
-		std::cout<<"Usage: volextract <input rawvfile> <output rawiv file> <variable index> <timestep index>\n";
-		return 0;
-	}
-	int varindex=atoi(argv[3]);
-	int timeindex=atoi(argv[4]);
-	VolMagick::Volume inVolume;
-	std::cout<<"Reading file: "<<argv[1]<<std::endl;
-	VolMagick::readVolumeFile(inVolume,argv[1],varindex,timeindex);
-	std::cout<<"Extracting info for varindex: "<<varindex<<" timeindex: "<<timeindex<<std::endl;
-	std::cout<<"Writing file: "<<argv[2]<<std::endl;
-	VolMagick::createVolumeFile(inVolume,argv[2]);
-	return 0;
+int main(int argc, char *argv[]) {
+  if (argc < 2) {
+    std::cout << "Usage: volextract <input rawvfile> <output rawiv file> "
+                 "<variable index> <timestep index>\n";
+    return 0;
+  }
+  int varindex = atoi(argv[3]);
+  int timeindex = atoi(argv[4]);
+  VolMagick::Volume inVolume;
+  std::cout << "Reading file: " << argv[1] << std::endl;
+  VolMagick::readVolumeFile(inVolume, argv[1], varindex, timeindex);
+  std::cout << "Extracting info for varindex: " << varindex
+            << " timeindex: " << timeindex << std::endl;
+  std::cout << "Writing file: " << argv[2] << std::endl;
+  VolMagick::createVolumeFile(inVolume, argv[2]);
+  return 0;
 }
-
-	

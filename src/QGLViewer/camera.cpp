@@ -38,8 +38,8 @@ using namespace qglviewer;
  See IODistance(), physicalDistanceToScreen(), physicalScreenWidth() and
  focusDistance() documentations for default stereo parameter values. */
 Camera::Camera()
-    : frame_(nullptr), fieldOfView_(M_PI / 4.0), modelViewMatrixIsUpToDate_(false),
-      projectionMatrixIsUpToDate_(false) {
+    : frame_(nullptr), fieldOfView_(M_PI / 4.0),
+      modelViewMatrixIsUpToDate_(false), projectionMatrixIsUpToDate_(false) {
   // #CONNECTION# Camera copy constructor
   interpolationKfi_ = new KeyFrameInterpolator;
   // Requires the interpolationKfi_
@@ -119,8 +119,8 @@ Camera::Camera(const Camera &camera) : QObject(), frame_(nullptr) {
  of \p camera.
 
  \attention The Camera screenWidth() and screenHeight() are set to those of \p
- camera. If your Camera is associated with a QGLViewer, you should update these
- value after the call to this method: \code
+ camera. If your Camera is associated with a QGLViewer, you should update
+ these value after the call to this method: \code
  *(camera()) = otherCamera;
  camera()->setScreenWidthAndHeight(width(), height());
  \endcode
@@ -159,9 +159,9 @@ Camera &Camera::operator=(const Camera &camera) {
 
 /*! Sets Camera screenWidth() and screenHeight() (expressed in pixels).
 
-You should not call this method when the Camera is associated with a QGLViewer,
-since the latter automatically updates these values when it is resized (hence
-overwritting your values).
+You should not call this method when the Camera is associated with a
+QGLViewer, since the latter automatically updates these values when it is
+resized (hence overwritting your values).
 
 Non-positive dimension are silently replaced by a 1 pixel value to ensure
 frustrum coherence.
@@ -180,9 +180,7 @@ void Camera::setScreenWidthAndHeight(int width, int height) {
 See QScreen::devicePixelRatio() for a definition.
 Automatically set by the associated QGLViewer.
 */
-void Camera::setDevicePixelRatio(qreal ratio) {
-  devicePixelRatio_ = ratio;
-}
+void Camera::setDevicePixelRatio(qreal ratio) { devicePixelRatio_ = ratio; }
 
 /*! Returns the near clipping plane distance used by the Camera projection
  matrix.
@@ -207,8 +205,8 @@ void Camera::setDevicePixelRatio(qreal ratio) {
  See also the zFar(), zClippingCoefficient() and zNearCoefficient()
  documentations.
 
- If you need a completely different zNear computation, overload the zNear() and
- zFar() methods in a new class that publicly inherits from Camera and use
+ If you need a completely different zNear computation, overload the zNear()
+ and zFar() methods in a new class that publicly inherits from Camera and use
  QGLViewer::setCamera(): \code class myCamera :: public qglviewer::Camera
  {
    virtual qreal Camera::zNear() const { return 0.001; };
@@ -220,8 +218,8 @@ void Camera::setDevicePixelRatio(qreal ratio) {
  for an application.
 
  \attention The value is always positive although the clipping plane is
- positioned at a negative z value in the Camera coordinate system. This follows
- the \c gluPerspective standard. */
+ positioned at a negative z value in the Camera coordinate system. This
+ follows the \c gluPerspective standard. */
 qreal Camera::zNear() const {
   const qreal zNearScene = zClippingCoefficient() * sceneRadius();
   qreal z = distanceToSceneCenter() - zNearScene;
@@ -254,8 +252,8 @@ qreal Camera::zFar() const {
 
 /*! Sets the vertical fieldOfView() of the Camera (in radians).
 
-Note that focusDistance() is set to sceneRadius() / tan(fieldOfView()/2) by this
-method. */
+Note that focusDistance() is set to sceneRadius() / tan(fieldOfView()/2) by
+this method. */
 void Camera::setFieldOfView(qreal fov) {
   fieldOfView_ = fov;
   setFocusDistance(sceneRadius() / tan(fov / 2.0));
@@ -285,9 +283,9 @@ void Camera::setType(Type type) {
 
 /*! Sets the Camera frame().
 
-If you want to move the Camera, use setPosition() and setOrientation() or one of
-the Camera positioning methods (lookAt(), fitSphere(), showEntireScene()...)
-instead.
+If you want to move the Camera, use setPosition() and setOrientation() or one
+of the Camera positioning methods (lookAt(), fitSphere(),
+showEntireScene()...) instead.
 
 If you want to save the Camera position(), there's no need to call this method
 either. Use addKeyFrameToPath() and playPath() instead.
@@ -338,15 +336,15 @@ qreal Camera::distanceToSceneCenter() const {
 void Camera::getOrthoWidthHeight(GLdouble &halfWidth,
                                  GLdouble &halfHeight) const {
   const qreal dist = orthoCoef_ * fabs(cameraCoordinatesOf(pivotPoint()).z);
-  //#CONNECTION# fitScreenRegion
+  // #CONNECTION# fitScreenRegion
   halfWidth = dist * ((aspectRatio() < 1.0) ? 1.0 : aspectRatio());
   halfHeight = dist * ((aspectRatio() < 1.0) ? 1.0 / aspectRatio() : 1.0);
 }
 
 /*! Computes the projection matrix associated with the Camera.
 
- If type() is Camera::PERSPECTIVE, defines a \c GL_PROJECTION matrix similar to
- what would \c gluPerspective() do using the fieldOfView(), window
+ If type() is Camera::PERSPECTIVE, defines a \c GL_PROJECTION matrix similar
+ to what would \c gluPerspective() do using the fieldOfView(), window
  aspectRatio(), zNear() and zFar() parameters.
 
  If type() is Camera::ORTHOGRAPHIC, the projection matrix is as what \c
@@ -354,8 +352,8 @@ void Camera::getOrthoWidthHeight(GLdouble &halfWidth,
  getOrthoWidthHeight().
 
  Both types use zNear() and zFar() to place clipping planes. These values are
- determined from sceneRadius() and sceneCenter() so that they best fit the scene
- size.
+ determined from sceneRadius() and sceneCenter() so that they best fit the
+ scene size.
 
  Use getProjectionMatrix() to retrieve this matrix. Overload
  loadProjectionMatrix() if you want your Camera to use an exotic projection
@@ -382,8 +380,8 @@ void Camera::computeProjectionMatrix() const {
     projectionMatrix_[11] = -1.0;
     projectionMatrix_[14] = 2.0 * ZNear * ZFar / (ZNear - ZFar);
     projectionMatrix_[15] = 0.0;
-    // same as gluPerspective( 180.0*fieldOfView()/M_PI, aspectRatio(), zNear(),
-    // zFar() );
+    // same as gluPerspective( 180.0*fieldOfView()/M_PI, aspectRatio(),
+    // zNear(), zFar() );
     break;
   }
   case Camera::ORTHOGRAPHIC: {
@@ -460,28 +458,29 @@ void Camera::computeModelViewMatrix() const {
   modelViewMatrixIsUpToDate_ = true;
 }
 
-/*! Loads the OpenGL \c GL_PROJECTION matrix with the Camera projection matrix.
+/*! Loads the OpenGL \c GL_PROJECTION matrix with the Camera projection
+ matrix.
 
  The Camera projection matrix is computed using computeProjectionMatrix().
 
  When \p reset is \c true (default), the method clears the previous projection
- matrix by calling \c glLoadIdentity before setting the matrix. Setting \p reset
- to \c false is useful for \c GL_SELECT mode, to combine the pushed matrix with
- a picking matrix. See QGLViewer::beginSelection() for details.
+ matrix by calling \c glLoadIdentity before setting the matrix. Setting \p
+ reset to \c false is useful for \c GL_SELECT mode, to combine the pushed
+ matrix with a picking matrix. See QGLViewer::beginSelection() for details.
 
  This method is used by QGLViewer::preDraw() (called before user's
  QGLViewer::draw() method) to set the \c GL_PROJECTION matrix according to the
  viewer's QGLViewer::camera() settings.
 
- Use getProjectionMatrix() to retrieve this matrix. Overload this method if you
- want your Camera to use an exotic projection matrix. See also
+ Use getProjectionMatrix() to retrieve this matrix. Overload this method if
+ you want your Camera to use an exotic projection matrix. See also
  loadModelViewMatrix().
 
  \attention \c glMatrixMode is set to \c GL_PROJECTION.
 
  \attention If you use several OpenGL contexts and bypass the Qt main refresh
- loop, you should call QOpenGLWidget::makeCurrent() before this method in order
- to activate the right OpenGL context. */
+ loop, you should call QOpenGLWidget::makeCurrent() before this method in
+ order to activate the right OpenGL context. */
 void Camera::loadProjectionMatrix(bool reset) const {
   // WARNING: makeCurrent must be called by every calling method
   glMatrixMode(GL_PROJECTION);
@@ -509,8 +508,8 @@ void Camera::loadProjectionMatrix(bool reset) const {
  \c GL_PROJECTION matrix (see loadProjectionMatrix()).
 
  When \p reset is \c true (default), the method loads (overwrites) the \c
- GL_MODELVIEW matrix. Setting \p reset to \c false simply calls \c glMultMatrixd
- (might be useful for some applications).
+ GL_MODELVIEW matrix. Setting \p reset to \c false simply calls \c
+ glMultMatrixd (might be useful for some applications).
 
  Overload this method or simply call glLoadMatrixd() at the beginning of
  QGLViewer::draw() if you want your Camera to use an exotic modelView matrix.
@@ -521,8 +520,8 @@ void Camera::loadProjectionMatrix(bool reset) const {
  \attention glMatrixMode is set to \c GL_MODELVIEW
 
  \attention If you use several OpenGL contexts and bypass the Qt main refresh
- loop, you should call QOpenGLWidget::makeCurrent() before this method in order
- to activate the right OpenGL context. */
+ loop, you should call QOpenGLWidget::makeCurrent() before this method in
+ order to activate the right OpenGL context. */
 void Camera::loadModelViewMatrix(bool reset) const {
   // WARNING: makeCurrent must be called by every calling method
   glMatrixMode(GL_MODELVIEW);
@@ -541,8 +540,8 @@ void Camera::loadModelViewMatrix(bool reset) const {
  Uses focusDistance(), IODistance(), and physicalScreenWidth() to compute
  cameras offset and asymmetric frustums.
 
- When \p leftBuffer is \c true, computes the projection matrix associated to the
- left eye (right eye otherwise). See also loadModelViewMatrixStereo().
+ When \p leftBuffer is \c true, computes the projection matrix associated to
+ the left eye (right eye otherwise). See also loadModelViewMatrixStereo().
 
  See the <a href="../examples/stereoViewer.html">stereoViewer</a> and the <a
  href="../examples/contribs.html#anaglyph">anaglyph</a> examples for an
@@ -604,8 +603,8 @@ void Camera::loadProjectionMatrixStereo(bool leftBuffer) const {
  translated along its horizontal axis by a value that depends on stereo
  parameters (see focusDistance(), IODistance(), and physicalScreenWidth()).
 
- When \p leftBuffer is \c true, computes the modelView matrix associated to the
- left eye (right eye otherwise).
+ When \p leftBuffer is \c true, computes the modelView matrix associated to
+ the left eye (right eye otherwise).
 
  loadProjectionMatrixStereo() explains how to retrieve to resulting matrix.
 
@@ -633,13 +632,13 @@ void Camera::loadModelViewMatrixStereo(bool leftBuffer) const {
 
 /*! Fills \p m with the Camera projection matrix values.
 
- Based on computeProjectionMatrix() to make sure the Camera projection matrix is
- up to date.
+ Based on computeProjectionMatrix() to make sure the Camera projection matrix
+ is up to date.
 
  This matrix only reflects the Camera's internal parameters and it may differ
  from the \c GL_PROJECTION matrix retrieved using \c
- glGetDoublev(GL_PROJECTION_MATRIX, m). It actually represents the state of the
- \c GL_PROJECTION after QGLViewer::preDraw(), at the beginning of
+ glGetDoublev(GL_PROJECTION_MATRIX, m). It actually represents the state of
+ the \c GL_PROJECTION after QGLViewer::preDraw(), at the beginning of
  QGLViewer::draw(). If you modified the \c GL_PROJECTION matrix (for instance
  using QGLViewer::startScreenCoordinatesSystem()), the two results differ.
 
@@ -669,9 +668,10 @@ void Camera::getProjectionMatrix(GLfloat m[16]) const {
  Note that this matrix may \e not be the one you would get from a \c
  glGetDoublev(GL_MODELVIEW_MATRIX, m). It actually represents the state of the
  \c GL_MODELVIEW after QGLViewer::preDraw(), at the \e beginning of
- QGLViewer::draw(). It converts from the world to the Camera coordinate system.
- As soon as you modify the \c GL_MODELVIEW in your QGLViewer::draw() method
- (using glTranslate, glRotate... or similar methods), the two matrices differ.
+ QGLViewer::draw(). It converts from the world to the Camera coordinate
+ system. As soon as you modify the \c GL_MODELVIEW in your QGLViewer::draw()
+ method (using glTranslate, glRotate... or similar methods), the two matrices
+ differ.
 
  The result is an OpenGL 4x4 matrix, which is given in \e column-major order
  (see \c glMultMatrix man page for details).
@@ -679,7 +679,8 @@ void Camera::getProjectionMatrix(GLfloat m[16]) const {
  See also getProjectionMatrix() and setFromModelViewMatrix(). */
 void Camera::getModelViewMatrix(GLdouble m[16]) const {
   // May not be needed, but easier like this.
-  // Prevents from retrieving matrix in stereo mode -> overwrites shifted value.
+  // Prevents from retrieving matrix in stereo mode -> overwrites shifted
+  // value.
   computeModelViewMatrix();
   for (unsigned short i = 0; i < 16; ++i)
     m[i] = modelViewMatrix_[i];
@@ -696,8 +697,8 @@ void Camera::getModelViewMatrix(GLfloat m[16]) const {
 
 /*! Fills \p m with the product of the ModelView and Projection matrices.
 
-  Calls getModelViewMatrix() and getProjectionMatrix() and then fills \p m with
-  the product of these two matrices. */
+  Calls getModelViewMatrix() and getProjectionMatrix() and then fills \p m
+  with the product of these two matrices. */
 void Camera::getModelViewProjectionMatrix(GLdouble m[16]) const {
   GLdouble mv[16];
   GLdouble proj[16];
@@ -762,7 +763,8 @@ void Camera::setSceneCenter(const Vec &center) {
   Returns \c true if a pointUnderPixel() was found and sceneCenter() was
   actually changed.
 
-  See also setPivotPointFromPixel(). See the pointUnderPixel() documentation. */
+  See also setPivotPointFromPixel(). See the pointUnderPixel() documentation.
+*/
 bool Camera::setSceneCenterFromPixel(const QPoint &pixel) {
   bool found;
   Vec point = pointUnderPixel(pixel, found);
@@ -793,12 +795,14 @@ Vec Camera::revolveAroundPoint() const {
 void Camera::setPivotPoint(const Vec &point) {
   const qreal prevDist = fabs(cameraCoordinatesOf(pivotPoint()).z);
 
-  // If frame's RAP is set directly, projectionMatrixIsUpToDate_ should also be
-  // set to false to ensure proper recomputation of the ORTHO projection matrix.
+  // If frame's RAP is set directly, projectionMatrixIsUpToDate_ should also
+  // be set to false to ensure proper recomputation of the ORTHO projection
+  // matrix.
   frame()->setPivotPoint(point);
 
-  // orthoCoef_ is used to compensate for changes of the pivotPoint, so that the
-  // image does not change when the pivotPoint is changed in ORTHOGRAPHIC mode.
+  // orthoCoef_ is used to compensate for changes of the pivotPoint, so that
+  // the image does not change when the pivotPoint is changed in ORTHOGRAPHIC
+  // mode.
   const qreal newDist = fabs(cameraCoordinatesOf(pivotPoint()).z);
   // Prevents division by zero when rap is set to camera position
   if ((prevDist > 1E-9) && (newDist > 1E-9))
@@ -808,8 +812,8 @@ void Camera::setPivotPoint(const Vec &point) {
 
 /*! The pivotPoint() is set to the point located under \p pixel on screen.
 
-Returns \c true if a pointUnderPixel() was found. If no point was found under \p
-pixel, the pivotPoint() is left unchanged.
+Returns \c true if a pointUnderPixel() was found. If no point was found under
+\p pixel, the pivotPoint() is left unchanged.
 
 \p pixel is expressed in Qt format (origin in the upper left corner of the
 window). See pointUnderPixel().
@@ -830,8 +834,8 @@ bool Camera::setPivotPointFromPixel(const QPoint &pixel) {
  screen.
 
  Use this method to scale objects so that they have a constant pixel size on
- screen. The following code will draw a 20 pixel line, starting at sceneCenter()
- and always directed along the screen vertical direction: \code
+ screen. The following code will draw a 20 pixel line, starting at
+ sceneCenter() and always directed along the screen vertical direction: \code
  glBegin(GL_LINES);
  glVertex3fv(sceneCenter());
  glVertex3fv(sceneCenter() + 20 * pixelGLRatio(sceneCenter()) *
@@ -856,13 +860,13 @@ qreal Camera::pixelGLRatio(const Vec &position) const {
  Camera position().
 
  The position() and orientation() of the Camera are not modified and you first
- have to orientate the Camera in order to actually see the scene (see lookAt(),
- showEntireScene() or fitSphere()).
+ have to orientate the Camera in order to actually see the scene (see
+ lookAt(), showEntireScene() or fitSphere()).
 
  This method is especially useful for \e shadow \e maps computation. Use the
- Camera positioning tools (setPosition(), lookAt()) to position a Camera at the
- light position. Then use this method to define the fieldOfView() so that the
- shadow map resolution is optimally used: \code
+ Camera positioning tools (setPosition(), lookAt()) to position a Camera at
+ the light position. Then use this method to define the fieldOfView() so that
+ the shadow map resolution is optimally used: \code
  // The light camera needs size hints in order to optimize its fieldOfView
  lightCamera->setSceneRadius(sceneRadius());
  lightCamera->setSceneCenter(sceneCenter());
@@ -988,9 +992,9 @@ void Camera::interpolateTo(const Frame &fr, qreal duration) {
 
  \attention This method assumes that a GL context is available, and that its
  content was drawn using the Camera (i.e. using its projection and modelview
- matrices). This method hence cannot be used for offscreen Camera computations.
- Use cameraCoordinatesOf() and worldCoordinatesOf() to perform similar
- operations in that case.
+ matrices). This method hence cannot be used for offscreen Camera
+ computations. Use cameraCoordinatesOf() and worldCoordinatesOf() to perform
+ similar operations in that case.
 
  \note The precision of the z-Buffer highly depends on how the zNear() and
  zFar() values are fitted to your scene. Loose boundaries will result in
@@ -998,8 +1002,9 @@ void Camera::interpolateTo(const Frame &fr, qreal duration) {
 Vec Camera::pointUnderPixel(const QPoint &pixel, bool &found) const {
   float depth;
   // Qt uses upper corner for its origin while GL uses the lower corner.
-  glReadPixels(pixel.x() * devicePixelRatio_, devicePixelRatio_ * (screenHeight() - pixel.y()) - 1,
-    1, 1, GL_DEPTH_COMPONENT, GL_FLOAT, &depth);
+  glReadPixels(pixel.x() * devicePixelRatio_,
+               devicePixelRatio_ * (screenHeight() - pixel.y()) - 1, 1, 1,
+               GL_DEPTH_COMPONENT, GL_FLOAT, &depth);
   found = static_cast<double>(depth) < 1.0;
   Vec point(pixel.x(), pixel.y(), static_cast<double>(depth));
   point = unprojectedCoordinatesOf(point);
@@ -1011,12 +1016,12 @@ Vec Camera::pointUnderPixel(const QPoint &pixel, bool &found) const {
  Simply calls fitSphere() on a sphere defined by sceneCenter() and
  sceneRadius().
 
- You will typically use this method in QGLViewer::init() after you defined a new
- sceneRadius(). */
+ You will typically use this method in QGLViewer::init() after you defined a
+ new sceneRadius(). */
 void Camera::showEntireScene() { fitSphere(sceneCenter(), sceneRadius()); }
 
-/*! Moves the Camera so that its sceneCenter() is projected on the center of the
- window. The orientation() and fieldOfView() are unchanged.
+/*! Moves the Camera so that its sceneCenter() is projected on the center of
+ the window. The orientation() and fieldOfView() are unchanged.
 
  Simply projects the current position on a line passing through sceneCenter().
  See also showEntireScene().*/
@@ -1024,8 +1029,8 @@ void Camera::centerScene() {
   frame()->projectOnLine(sceneCenter(), viewDirection());
 }
 
-/*! Sets the Camera orientation(), so that it looks at point \p target (defined
- in the world coordinate system).
+/*! Sets the Camera orientation(), so that it looks at point \p target
+ (defined in the world coordinate system).
 
  The Camera position() is not modified. Simply setViewDirection().
 
@@ -1038,8 +1043,8 @@ void Camera::lookAt(const Vec &target) {
 /*! Moves the Camera so that the sphere defined by (\p center, \p radius) is
  visible and fits in the frustum.
 
- The Camera is simply translated to center the sphere in the screen and make it
- fit the frustum. Its orientation() and its fieldOfView() are unchanged.
+ The Camera is simply translated to center the sphere in the screen and make
+ it fit the frustum. Its orientation() and its fieldOfView() are unchanged.
 
  You should therefore orientate the Camera before you call this method. See
  lookAt(), setOrientation() and setUpVector(). */
@@ -1071,13 +1076,14 @@ void Camera::fitBoundingBox(const Vec &min, const Vec &max) {
 }
 
 /*! Moves the Camera so that the rectangular screen region defined by \p
-  rectangle (pixel units, with origin in the upper left corner) fits the screen.
+  rectangle (pixel units, with origin in the upper left corner) fits the
+  screen.
 
-  The Camera is translated (its orientation() is unchanged) so that \p rectangle
-  is entirely visible. Since the pixel coordinates only define a \e frustum in
-  3D, it's the intersection of this frustum with a plane (orthogonal to the
-  viewDirection() and passing through the sceneCenter()) that is used to define
-  the 3D rectangle that is eventually fitted. */
+  The Camera is translated (its orientation() is unchanged) so that \p
+  rectangle is entirely visible. Since the pixel coordinates only define a \e
+  frustum in 3D, it's the intersection of this frustum with a plane
+  (orthogonal to the viewDirection() and passing through the sceneCenter())
+  that is used to define the 3D rectangle that is eventually fitted. */
 void Camera::fitScreenRegion(const QRect &rectangle) {
   const Vec vd = viewDirection();
   const qreal distToPlane = distanceToSceneCenter();
@@ -1098,13 +1104,14 @@ void Camera::fitScreenRegion(const QRect &rectangle) {
   case Camera::PERSPECTIVE: {
     const qreal distX =
         (pointX - newCenter).norm() / sin(horizontalFieldOfView() / 2.0);
-    const qreal distY = (pointY - newCenter).norm() / sin(fieldOfView() / 2.0);
+    const qreal distY =
+        (pointY - newCenter).norm() / sin(fieldOfView() / 2.0);
     distance = qMax(distX, distY);
     break;
   }
   case Camera::ORTHOGRAPHIC: {
     const qreal dist = ((newCenter - pivotPoint()) * vd);
-    //#CONNECTION# getOrthoWidthHeight
+    // #CONNECTION# getOrthoWidthHeight
     const qreal distX = (pointX - newCenter).norm() / orthoCoef_ /
                         ((aspectRatio() < 1.0) ? 1.0 : aspectRatio());
     const qreal distY = (pointY - newCenter).norm() / orthoCoef_ /
@@ -1122,13 +1129,13 @@ void Camera::fitScreenRegion(const QRect &rectangle) {
  world coordinate system).
 
  The Camera is rotated around an axis orthogonal to \p up and to the current
- upVector() direction. Use this method in order to define the Camera horizontal
- plane.
+ upVector() direction. Use this method in order to define the Camera
+ horizontal plane.
 
- When \p noMove is set to \c false, the orientation modification is compensated
- by a translation, so that the pivotPoint() stays projected at the same position
- on screen. This is especially useful when the Camera is used as an observer of
- the scene (default mouse binding).
+ When \p noMove is set to \c false, the orientation modification is
+ compensated by a translation, so that the pivotPoint() stays projected at the
+ same position on screen. This is especially useful when the Camera is used as
+ an observer of the scene (default mouse binding).
 
  When \p noMove is \c true (default), the Camera position() is left unchanged,
  which is an intuitive behavior when the Camera is in a walkthrough fly mode
@@ -1159,8 +1166,8 @@ void Camera::setUpVector(const Vec &up, bool noMove) {
  system: \p theta = \p phi = 0 means that the Camera is directed towards the
  world Z axis. Both angles are expressed in radians.
 
- See also setUpVector(). The position() of the Camera is unchanged, you may want
- to call showEntireScene() after this method to move the Camera.
+ See also setUpVector(). The position() of the Camera is unchanged, you may
+ want to call showEntireScene() after this method to move the Camera.
 
  This method can be useful to create Quicktime VR panoramic sequences, see the
  QGLViewer::saveSnapshot() documentation for details. */
@@ -1203,8 +1210,8 @@ void Camera::setViewDirection(const Vec &direction) {
 // Compute a 3 by 3 determinant.
 static qreal det(qreal m00, qreal m01, qreal m02, qreal m10, qreal m11,
                  qreal m12, qreal m20, qreal m21, qreal m22) {
-  return m00 * m11 * m22 + m01 * m12 * m20 + m02 * m10 * m21 - m20 * m11 * m02 -
-         m10 * m01 * m22 - m00 * m21 * m12;
+  return m00 * m11 * m22 + m01 * m12 * m20 + m02 * m10 * m21 -
+         m20 * m11 * m02 - m10 * m01 * m22 - m00 * m21 * m12;
 }
 
 // Computes the index of element [i][j] in a \c qreal matrix[3][4].
@@ -1226,8 +1233,8 @@ Vec Camera::position() const { return frame()->position(); }
 /*! Returns the normalized up vector of the Camera, defined in the world
 coordinate system.
 
-Set using setUpVector() or setOrientation(). It is orthogonal to viewDirection()
-and to rightVector().
+Set using setUpVector() or setOrientation(). It is orthogonal to
+viewDirection() and to rightVector().
 
 It corresponds to the Y axis of the associated frame() (actually returns
 frame()->inverseTransformOf(Vec(0.0, 1.0, 0.0)) ). */
@@ -1237,8 +1244,8 @@ Vec Camera::upVector() const {
 /*! Returns the normalized view direction of the Camera, defined in the world
 coordinate system.
 
-Change this value using setViewDirection(), lookAt() or setOrientation(). It is
-orthogonal to upVector() and to rightVector().
+Change this value using setViewDirection(), lookAt() or setOrientation(). It
+is orthogonal to upVector() and to rightVector().
 
 This corresponds to the negative Z axis of the frame() (
 frame()->inverseTransformOf(Vec(0.0, 0.0, -1.0)) ). */
@@ -1260,8 +1267,8 @@ Vec Camera::rightVector() const {
 
 /*! Returns the Camera orientation, defined in the world coordinate system.
 
-Actually returns \c frame()->orientation(). Use setOrientation(), setUpVector()
-or lookAt() to set the Camera orientation. */
+Actually returns \c frame()->orientation(). Use setOrientation(),
+setUpVector() or lookAt() to set the Camera orientation. */
 Quaternion Camera::orientation() const { return frame()->orientation(); }
 
 /*! Sets the Camera position() (the eye), defined in the world coordinate
@@ -1274,14 +1281,15 @@ coordinates.
 worldCoordinatesOf() performs the inverse transformation.
 
 Note that the point coordinates are simply converted in a different coordinate
-system. They are not projected on screen. Use projectedCoordinatesOf() for that.
+system. They are not projected on screen. Use projectedCoordinatesOf() for
+that.
 */
 Vec Camera::cameraCoordinatesOf(const Vec &src) const {
   return frame()->coordinatesOf(src);
 }
 
-/*! Returns the world coordinates of the point whose position \p src is defined
-in the Camera coordinate system.
+/*! Returns the world coordinates of the point whose position \p src is
+defined in the Camera coordinate system.
 
 cameraCoordinatesOf() performs the inverse transformation. */
 Vec Camera::worldCoordinatesOf(const Vec &src) const {
@@ -1302,8 +1310,8 @@ qreal Camera::flySpeed() const { return frame()->flySpeed(); }
 \attention This value is modified by setSceneRadius(). */
 void Camera::setFlySpeed(qreal speed) { frame()->setFlySpeed(speed); }
 
-/*! The point the Camera pivots around with the QGLViewer::ROTATE mouse binding.
-Defined in world coordinate system.
+/*! The point the Camera pivots around with the QGLViewer::ROTATE mouse
+binding. Defined in world coordinate system.
 
 Default value is the sceneCenter().
 
@@ -1314,8 +1322,8 @@ Vec Camera::pivotPoint() const { return frame()->pivotPoint(); }
 matrix.
 
 This enables a Camera initialisation from an other OpenGL application. \p
-modelView is a 16 GLdouble vector representing a valid OpenGL ModelView matrix,
-such as one can get using: \code GLdouble mvm[16];
+modelView is a 16 GLdouble vector representing a valid OpenGL ModelView
+matrix, such as one can get using: \code GLdouble mvm[16];
 glGetDoublev(GL_MODELVIEW_MATRIX, mvm);
 myCamera->setFromModelViewMatrix(mvm);
 \endcode
@@ -1348,30 +1356,32 @@ void Camera::setFromModelViewMatrix(const GLdouble *const modelViewMatrix) {
 
  \p matrix has to be given in the format used by vision algorithm. It has 3
  lines and 4 columns. It transforms a point from the world homogeneous
- coordinate system (4 coordinates: \c sx, \c sy, \c sz and \c s) into a point in
- the screen homogeneous coordinate system (3 coordinates: \c sx, \c sy, and \c
- s, where \c x and \c y are the pixel coordinates on the screen).
+ coordinate system (4 coordinates: \c sx, \c sy, \c sz and \c s) into a point
+ in the screen homogeneous coordinate system (3 coordinates: \c sx, \c sy, and
+ \c s, where \c x and \c y are the pixel coordinates on the screen).
 
- Its three lines correspond to the homogeneous coordinates of the normals to the
- planes x=0, y=0 and z=0, defined in the Camera coordinate system.
+ Its three lines correspond to the homogeneous coordinates of the normals to
+ the planes x=0, y=0 and z=0, defined in the Camera coordinate system.
 
  The elements of the matrix are ordered in line major order: you can call \c
  setFromProjectionMatrix(&(matrix[0][0])) if you defined your matrix as a \c
  qreal \c matrix[3][4].
 
- \attention Passing the result of getProjectionMatrix() or getModelViewMatrix()
- to this method is not possible (purposefully incompatible matrix dimensions).
- \p matrix is more likely to be the product of these two matrices, without the
- last line.
+ \attention Passing the result of getProjectionMatrix() or
+ getModelViewMatrix() to this method is not possible (purposefully
+ incompatible matrix dimensions). \p matrix is more likely to be the product
+ of these two matrices, without the last line.
 
  Use setFromModelViewMatrix() to set position() and orientation() from a \c
- GL_MODELVIEW matrix. fieldOfView() can also be retrieved from a \e perspective
- \c GL_PROJECTION matrix using 2.0 * atan(1.0/projectionMatrix[5]).
+ GL_MODELVIEW matrix. fieldOfView() can also be retrieved from a \e
+ perspective \c GL_PROJECTION matrix using 2.0 *
+ atan(1.0/projectionMatrix[5]).
 
  This code was written by Sylvain Paris. */
 void Camera::setFromProjectionMatrix(const qreal matrix[12]) {
   // The 3 lines of the matrix are the normals to the planes x=0, y=0, z=0
-  // in the camera CS. As we normalize them, we do not need the 4th coordinate.
+  // in the camera CS. As we normalize them, we do not need the 4th
+  // coordinate.
   Vec line_0(matrix[ind(0, 0)], matrix[ind(0, 1)], matrix[ind(0, 2)]);
   Vec line_1(matrix[ind(1, 0)], matrix[ind(1, 1)], matrix[ind(1, 2)]);
   Vec line_2(matrix[ind(2, 0)], matrix[ind(2, 1)], matrix[ind(2, 2)]);
@@ -1477,9 +1487,9 @@ void Camera::setFromProjectionMatrix(const GLdouble* projectionMatrix)
     setType(Camera::PERSPECTIVE);
     }
   else
-    if ((fabs(projectionMatrix[11]) < 1E-5) && (fabs(projectionMatrix[15]-1.0) <
-1E-5)) setType(Camera::ORTHOGRAPHIC); else message = "Unable to determine camera
-type in setFromProjectionMatrix - Aborting";
+    if ((fabs(projectionMatrix[11]) < 1E-5) && (fabs(projectionMatrix[15]-1.0)
+< 1E-5)) setType(Camera::ORTHOGRAPHIC); else message = "Unable to determine
+camera type in setFromProjectionMatrix - Aborting";
 
   if (!message.isEmpty())
   {
@@ -1492,10 +1502,10 @@ type in setFromProjectionMatrix - Aborting";
   case Camera::PERSPECTIVE:
     {
   setFieldOfView(2.0 * atan(1.0/projectionMatrix[5]));
-  const qreal far = projectionMatrix[14] / (2.0 * (1.0 + projectionMatrix[10]));
-  const qreal near = (projectionMatrix[10]+1.0) / (projectionMatrix[10]-1.0) *
-far; setSceneRadius((far-near)/2.0); setSceneCenter(position() + (near +
-sceneRadius())*viewDirection()); break;
+  const qreal far = projectionMatrix[14] / (2.0 * (1.0 +
+projectionMatrix[10])); const qreal near = (projectionMatrix[10]+1.0) /
+(projectionMatrix[10]-1.0) * far; setSceneRadius((far-near)/2.0);
+setSceneCenter(position() + (near + sceneRadius())*viewDirection()); break;
     }
   case Camera::ORTHOGRAPHIC:
     {
@@ -1524,8 +1534,8 @@ void Camera::getCameraCoordinatesOf(const qreal src[3], qreal res[3]) const {
     res[i] = r[i];
 }
 
-/*! Same as worldCoordinatesOf(), but with \c qreal[3] parameters (\p src and \p
- * res may be identical pointers). */
+/*! Same as worldCoordinatesOf(), but with \c qreal[3] parameters (\p src and
+ * \p res may be identical pointers). */
 void Camera::getWorldCoordinatesOf(const qreal src[3], qreal res[3]) const {
   Vec r = worldCoordinatesOf(Vec(src));
   for (int i = 0; i < 3; ++i)
@@ -1545,16 +1555,16 @@ void Camera::getViewport(GLint viewport[4]) const {
   viewport[3] = -screenHeight();
 }
 
-/*! Returns the screen projected coordinates of a point \p src defined in the \p
- frame coordinate system.
+/*! Returns the screen projected coordinates of a point \p src defined in the
+ \p frame coordinate system.
 
- When \p frame in \c nullptr (default), \p src is expressed in the world coordinate
- system.
+ When \p frame in \c nullptr (default), \p src is expressed in the world
+ coordinate system.
 
- The x and y coordinates of the returned Vec are expressed in pixel, (0,0) being
- the \e upper left corner of the window. The z coordinate ranges between 0.0
- (near plane) and 1.0 (excluded, far plane). See the \c gluProject man page for
- details.
+ The x and y coordinates of the returned Vec are expressed in pixel, (0,0)
+ being the \e upper left corner of the window. The z coordinate ranges between
+ 0.0 (near plane) and 1.0 (excluded, far plane). See the \c gluProject man
+ page for details.
 
  unprojectedCoordinatesOf() performs the inverse transformation.
 
@@ -1564,17 +1574,17 @@ void Camera::getViewport(GLint viewport[4]) const {
  This method only uses the intrinsic Camera parameters (see
  getModelViewMatrix(), getProjectionMatrix() and getViewport()) and is
  completely independent of the OpenGL \c GL_MODELVIEW, \c GL_PROJECTION and
- viewport matrices. You can hence define a virtual Camera and use this method to
- compute projections out of a classical rendering context.
+ viewport matrices. You can hence define a virtual Camera and use this method
+ to compute projections out of a classical rendering context.
 
  \attention However, if your Camera is not attached to a QGLViewer (used for
- offscreen computations for instance), make sure the Camera matrices are updated
- before calling this method. Call computeModelViewMatrix() and
+ offscreen computations for instance), make sure the Camera matrices are
+ updated before calling this method. Call computeModelViewMatrix() and
  computeProjectionMatrix() to do so.
 
- If you call this method several times with no change in the matrices, consider
- precomputing the projection times modelview matrix to save computation time if
- required (\c P x \c M in the \c gluProject man page).
+ If you call this method several times with no change in the matrices,
+ consider precomputing the projection times modelview matrix to save
+ computation time if required (\c P x \c M in the \c gluProject man page).
 
  Here is the code corresponding to what this method does (kindly submitted by
  Robert W. Kuhn) : \code Vec project(Vec point)
@@ -1603,10 +1613,11 @@ void Camera::getViewport(GLint viewport[4]) const {
   GLdouble v[4], vs[4];
   v[0]=point[0]; v[1]=point[1]; v[2]=point[2]; v[3]=1.0;
 
-  vs[0]=matrix[0 ]*v[0] + matrix[4 ]*v[1] + matrix[8 ]*v[2] + matrix[12 ]*v[3];
-  vs[1]=matrix[1 ]*v[0] + matrix[5 ]*v[1] + matrix[9 ]*v[2] + matrix[13 ]*v[3];
-  vs[2]=matrix[2 ]*v[0] + matrix[6 ]*v[1] + matrix[10]*v[2] + matrix[14 ]*v[3];
-  vs[3]=matrix[3 ]*v[0] + matrix[7 ]*v[1] + matrix[11]*v[2] + matrix[15 ]*v[3];
+  vs[0]=matrix[0 ]*v[0] + matrix[4 ]*v[1] + matrix[8 ]*v[2] + matrix[12
+ ]*v[3]; vs[1]=matrix[1 ]*v[0] + matrix[5 ]*v[1] + matrix[9 ]*v[2] + matrix[13
+ ]*v[3]; vs[2]=matrix[2 ]*v[0] + matrix[6 ]*v[1] + matrix[10]*v[2] + matrix[14
+ ]*v[3]; vs[3]=matrix[3 ]*v[0] + matrix[7 ]*v[1] + matrix[11]*v[2] + matrix[15
+ ]*v[3];
 
   vs[0] /= vs[3];
   vs[1] /= vs[3];
@@ -1642,36 +1653,37 @@ Vec Camera::projectedCoordinatesOf(const Vec &src, const Frame *frame) const {
 /*! Returns the world unprojected coordinates of a point \p src defined in the
  screen coordinate system.
 
- The \p src.x and \p src.y input values are expressed in pixels, (0,0) being the
- \e upper left corner of the window. \p src.z is a depth value ranging in [0..1[
- (respectively corresponding to the near and far planes). Note that src.z is \e
- not a linear interpolation between zNear and zFar. /code src.z = zFar() /
- (zFar() - zNear()) * (1.0 - zNear() / z); /endcode Where z is the distance from
- the point you project to the camera, along the viewDirection(). See the \c
- gluUnProject man page for details.
+ The \p src.x and \p src.y input values are expressed in pixels, (0,0) being
+ the \e upper left corner of the window. \p src.z is a depth value ranging in
+ [0..1[ (respectively corresponding to the near and far planes). Note that
+ src.z is \e not a linear interpolation between zNear and zFar. /code src.z =
+ zFar() / (zFar() - zNear()) * (1.0 - zNear() / z); /endcode Where z is the
+ distance from the point you project to the camera, along the viewDirection().
+ See the \c gluUnProject man page for details.
 
- The result is expressed in the \p frame coordinate system. When \p frame is \c
- nullptr (default), the result is expressed in the world coordinates system. The
- possible \p frame Frame::referenceFrame() are taken into account.
+ The result is expressed in the \p frame coordinate system. When \p frame is
+ \c nullptr (default), the result is expressed in the world coordinates
+ system. The possible \p frame Frame::referenceFrame() are taken into account.
 
  projectedCoordinatesOf() performs the inverse transformation.
 
  This method only uses the intrinsic Camera parameters (see
  getModelViewMatrix(), getProjectionMatrix() and getViewport()) and is
  completely independent of the OpenGL \c GL_MODELVIEW, \c GL_PROJECTION and
- viewport matrices. You can hence define a virtual Camera and use this method to
- compute un-projections out of a classical rendering context.
+ viewport matrices. You can hence define a virtual Camera and use this method
+ to compute un-projections out of a classical rendering context.
 
  \attention However, if your Camera is not attached to a QGLViewer (used for
- offscreen computations for instance), make sure the Camera matrices are updated
- before calling this method (use computeModelViewMatrix(),
+ offscreen computations for instance), make sure the Camera matrices are
+ updated before calling this method (use computeModelViewMatrix(),
  computeProjectionMatrix()). See also setScreenWidthAndHeight().
 
- This method is not computationally optimized. If you call it several times with
- no change in the matrices, you should buffer the entire inverse projection
- matrix (modelview, projection and then viewport) to speed-up the queries. See
- the \c gluUnProject man page for details. */
-Vec Camera::unprojectedCoordinatesOf(const Vec &src, const Frame *frame) const {
+ This method is not computationally optimized. If you call it several times
+ with no change in the matrices, you should buffer the entire inverse
+ projection matrix (modelview, projection and then viewport) to speed-up the
+ queries. See the \c gluUnProject man page for details. */
+Vec Camera::unprojectedCoordinatesOf(const Vec &src,
+                                     const Frame *frame) const {
   GLdouble x, y, z;
   static GLint viewport[4];
   getViewport(viewport);
@@ -1692,8 +1704,8 @@ void Camera::getProjectedCoordinatesOf(const qreal src[3], qreal res[3],
     res[i] = r[i];
 }
 
-/*! Same as unprojectedCoordinatesOf(), but with \c qreal parameters (\p src and
- * \p res can be identical pointers). */
+/*! Same as unprojectedCoordinatesOf(), but with \c qreal parameters (\p src
+ * and \p res can be identical pointers). */
 void Camera::getUnprojectedCoordinatesOf(const qreal src[3], qreal res[3],
                                          const Frame *frame) const {
   Vec r = unprojectedCoordinatesOf(Vec(src), frame);
@@ -1720,18 +1732,19 @@ KeyFrameInterpolator *Camera::keyFrameInterpolator(unsigned int i) const {
  The previous keyFrameInterpolator() is lost and should be deleted by the
  calling method if needed.
 
- The KeyFrameInterpolator::interpolated() signal of \p kfi probably needs to be
- connected to the Camera's associated QGLViewer::update() slot, so that when the
- Camera position is interpolated using \p kfi, every interpolation step updates
- the display: \code myViewer.camera()->deletePath(3);
+ The KeyFrameInterpolator::interpolated() signal of \p kfi probably needs to
+ be connected to the Camera's associated QGLViewer::update() slot, so that
+ when the Camera position is interpolated using \p kfi, every interpolation
+ step updates the display: \code myViewer.camera()->deletePath(3);
  myViewer.camera()->setKeyFrameInterpolator(3, myKeyFrameInterpolator);
  connect(myKeyFrameInterpolator, SIGNAL(interpolated()), myViewer,
  SLOT(update()); \endcode
 
  \note These connections are done automatically when a Camera is attached to a
  QGLViewer, or when a new KeyFrameInterpolator is defined using the
- QGLViewer::addKeyFrameKeyboardModifiers() and QGLViewer::pathKey() (default is
- Alt+F[1-12]). See the <a href="../keyboard.html">keyboard page</a> for details.
+ QGLViewer::addKeyFrameKeyboardModifiers() and QGLViewer::pathKey() (default
+ is Alt+F[1-12]). See the <a href="../keyboard.html">keyboard page</a> for
+ details.
  */
 void Camera::setKeyFrameInterpolator(unsigned int i,
                                      KeyFrameInterpolator *const kfi) {
@@ -1752,9 +1765,9 @@ path.
 The default keyboard shortcut for this method is Alt+F[1-12]. Set
 QGLViewer::pathKey() and QGLViewer::addKeyFrameKeyboardModifiers().
 
-If you use directly this method and the keyFrameInterpolator(i) does not exist,
-a new one is created. Its KeyFrameInterpolator::interpolated() signal should
-then be connected to the QGLViewer::update() slot (see
+If you use directly this method and the keyFrameInterpolator(i) does not
+exist, a new one is created. Its KeyFrameInterpolator::interpolated() signal
+should then be connected to the QGLViewer::update() slot (see
 setKeyFrameInterpolator()). */
 void Camera::addKeyFrameToPath(unsigned int i) {
   if (!kfi_.contains(i))
@@ -1923,8 +1936,8 @@ QDomElement Camera::domElement(const QString &name,
  The frame() pointer is not modified by this method. The frame() state is
  however modified.
 
- \attention The original keyFrameInterpolator() are deleted and should be copied
- first if they are shared. */
+ \attention The original keyFrameInterpolator() are deleted and should be
+ copied first if they are shared. */
 void Camera::initFromDOMElement(const QDomElement &element) {
   QDomElement child = element.firstChild().toElement();
 
@@ -1937,13 +1950,14 @@ void Camera::initFromDOMElement(const QDomElement &element) {
   while (!child.isNull()) {
     if (child.tagName() == "Parameters") {
       // #CONNECTION# Default values set in constructor
-      setFieldOfView(DomUtils::qrealFromDom(child, "fieldOfView", M_PI / 4.0));
+      setFieldOfView(
+          DomUtils::qrealFromDom(child, "fieldOfView", M_PI / 4.0));
       setZNearCoefficient(
           DomUtils::qrealFromDom(child, "zNearCoefficient", 0.005));
       setZClippingCoefficient(
           DomUtils::qrealFromDom(child, "zClippingCoefficient", sqrt(3.0)));
-      orthoCoef_ =
-          DomUtils::qrealFromDom(child, "orthoCoef", tan(fieldOfView() / 2.0));
+      orthoCoef_ = DomUtils::qrealFromDom(child, "orthoCoef",
+                                          tan(fieldOfView() / 2.0));
       setSceneRadius(
           DomUtils::qrealFromDom(child, "sceneRadius", sceneRadius()));
 
@@ -1988,14 +2002,14 @@ void Camera::initFromDOMElement(const QDomElement &element) {
   }
 }
 
-/*! Gives the coefficients of a 3D half-line passing through the Camera eye and
- pixel (x,y).
+/*! Gives the coefficients of a 3D half-line passing through the Camera eye
+ and pixel (x,y).
 
  The origin of the half line (eye position) is stored in \p orig, while \p dir
  contains the properly oriented and normalized direction of the half line.
 
- \p x and \p y are expressed in Qt format (origin in the upper left corner). Use
- screenHeight() - y to convert to OpenGL units.
+ \p x and \p y are expressed in Qt format (origin in the upper left corner).
+ Use screenHeight() - y to convert to OpenGL units.
 
  This method is useful for analytical intersection in a selection method.
 
@@ -2036,24 +2050,25 @@ void Camera::drawCamera(qreal, qreal, qreal) {
 
 /*! Draws a representation of the Camera in the 3D world.
 
-The near and far planes are drawn as quads, the frustum is drawn using lines and
-the camera up vector is represented by an arrow to disambiguate the drawing. See
-the <a href="../examples/standardCamera.html">standardCamera example</a> for an
-illustration.
+The near and far planes are drawn as quads, the frustum is drawn using lines
+and the camera up vector is represented by an arrow to disambiguate the
+drawing. See the <a href="../examples/standardCamera.html">standardCamera
+example</a> for an illustration.
 
-Note that the current \c glColor and \c glPolygonMode are used to draw the near
-and far planes. See the <a href="../examples/frustumCulling.html">frustumCulling
-example</a> for an example of semi-transparent plane drawing. Similarly, the
-current \c glLineWidth and \c glColor is used to draw the frustum outline.
+Note that the current \c glColor and \c glPolygonMode are used to draw the
+near and far planes. See the <a
+href="../examples/frustumCulling.html">frustumCulling example</a> for an
+example of semi-transparent plane drawing. Similarly, the current \c
+glLineWidth and \c glColor is used to draw the frustum outline.
 
-When \p drawFarPlane is \c false, only the near plane is drawn. \p scale can be
-used to scale the drawing: a value of 1.0 (default) will draw the Camera's
+When \p drawFarPlane is \c false, only the near plane is drawn. \p scale can
+be used to scale the drawing: a value of 1.0 (default) will draw the Camera's
 frustum at its actual size.
 
 This method assumes that the \c glMatrixMode is \c GL_MODELVIEW and that the
-current ModelView matrix corresponds to the world coordinate system (as it is at
-the beginning of QGLViewer::draw()). The Camera is then correctly positioned and
-orientated.
+current ModelView matrix corresponds to the world coordinate system (as it is
+at the beginning of QGLViewer::draw()). The Camera is then correctly
+positioned and orientated.
 
 \note The drawing of a QGLViewer's own QGLViewer::camera() should not be
 visible, but may create artefacts due to numerical imprecisions. */
@@ -2161,12 +2176,12 @@ right, near, far, top and bottom Camera frustum planes. Each vector holds a
 plane equation of the form: \code a*x + b*y + c*z + d = 0 \endcode where \c a,
 \c b, \c c and \c d are the 4 components of each vector, in that order.
 
-See the <a href="../examples/frustumCulling.html">frustumCulling example</a> for
-an application.
+See the <a href="../examples/frustumCulling.html">frustumCulling example</a>
+for an application.
 
-This format is compatible with the \c glClipPlane() function. One camera frustum
-plane can hence be applied in an other viewer to visualize the culling results:
-\code
+This format is compatible with the \c glClipPlane() function. One camera
+frustum plane can hence be applied in an other viewer to visualize the culling
+results: \code
  // Retrieve plane equations
  GLdouble coef[6][4];
  mainViewer->camera()->getFrustumPlanesCoefficients(coef);

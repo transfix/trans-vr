@@ -1,7 +1,7 @@
 /*
   Copyright 2002-2003 The University of Texas at Austin
 
-	Authors: Anthony Thane <thanea@ices.utexas.edu>
+        Authors: Anthony Thane <thanea@ices.utexas.edu>
         Advisor: Chandrajit Bajaj <bajaj@cs.utexas.edu>
 
   This file is part of VolumeLibrary.
@@ -17,7 +17,8 @@
 
   You should have received a copy of the GNU Lesser General Public
   License along with this library; if not, write to the Free Software
-  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301
+  USA
 */
 
 #ifndef __VOLUME_LIBRARY_CG_PROGRAMS_H__
@@ -32,7 +33,7 @@
 #define CGGlobal extern
 #endif
 
-#define MAX_CG_PROGRAM 64 
+#define MAX_CG_PROGRAM 64
 
 #define DEF_CG_RGBA 0x01
 #define DEF_CG_TRANS 0x02
@@ -46,12 +47,11 @@ CGGlobal CGprogram _fragmentProgramCgUnshaded[MAX_CG_PROGRAM];
 CGGlobal int _vertexProgramCgCounter;
 CGGlobal int _fragmentProgramCgCounter;
 
-class CG_Programs
-{
- public:
+class CG_Programs {
+public:
   ~CG_Programs();
 
- protected:
+protected:
   CG_Programs();
 
   static void handleCgError();
@@ -61,7 +61,7 @@ class CG_Programs
   bool LoadCgPrograms(int renderType);
 
   static bool _cgErrorFlag;
- 
+
   int _cgVertexProgramId;
   int _cgFragmentProgramId;
 };

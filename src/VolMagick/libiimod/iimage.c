@@ -4,28 +4,26 @@
  *    Authors:  James Kremer and David Mastronarde
  *
  *   Copyright (C) 1995-2007 by Boulder Laboratory for 3-Dimensional Electron
- *   Microscopy of Cells ("BL3DEMC") and the Regents of the University of 
+ *   Microscopy of Cells ("BL3DEMC") and the Regents of the University of
  *   Colorado.
  *
  *  $Id: iimage.c 1478 2010-03-07 22:58:12Z transfix $
  *  Log at end of file
  */
 
+#include <VolMagick/libiimod/b3dutil.h>
+#include <VolMagick/libiimod/iimage.h>
+#include <VolMagick/libiimod/ilist.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-
-#include <VolMagick/libiimod/iimage.h>
-#include <VolMagick/libiimod/ilist.h>
-#include <VolMagick/libiimod/b3dutil.h>
 
 /* The resident check list */
 static Ilist *checkList = NULL;
 
 /* Initialize check list: if it does not exist, allocate it and place TIFF and
    MRC functions on the list */
-static int initCheckList()
-{
+static int initCheckList() {
   IIFileCheckFunction func;
   if (checkList)
     return 0;
@@ -42,12 +40,11 @@ static int initCheckList()
 }
 
 /*!
- * Adds the given function to the end of the list of functions that iiOpen will
- * call to check a file.  The format of the function is
- * ^  int iiFormatCheck(ImodImageFile *inFile)
+ * Adds the given function to the end of the list of functions that iiOpen
+ * will call to check a file.  The format of the function is ^  int
+ * iiFormatCheck(ImodImageFile *inFile)
  */
-void iiAddCheckFunction(IIFileCheckFunction func)
-{
+void iiAddCheckFunction(IIFileCheckFunction func) {
   if (initCheckList())
     return;
   ilistAppend(checkList, &func);
@@ -59,8 +56,7 @@ void iiAddCheckFunction(IIFileCheckFunction func)
  * function is
  * ^  int iiFormatCheck(ImodImageFile *inFile)
  */
-void iiInsertCheckFunction(IIFileCheckFunction func, int index)
-{
+void iiInsertCheckFunction(IIFileCheckFunction func, int index) {
   if (initCheckList())
     return;
   if (index < ilistSize(checkList))
@@ -72,8 +68,7 @@ void iiInsertCheckFunction(IIFileCheckFunction func, int index)
 /*!
  * Frees the checking list to avoid memory leaks
  */
-void iiDeleteCheckList()
-{
+void iiDeleteCheckList() {
   if (!checkList)
     return;
   ilistDelete(checkList);
@@ -83,70 +78,68 @@ void iiDeleteCheckList()
 /*!
  * Creates a new image file structure and initialize it to default or
  * null values.  Returns 1 for error.
-*/ 
-ImodImageFile *iiNew()
-{
+ */
+ImodImageFile *iiNew() {
   ImodImageFile *ofile = (ImodImageFile *)malloc(sizeof(ImodImageFile));
-     
-  if (!ofile) 
+
+  if (!ofile)
     return NULL;
   memset(ofile, 0, sizeof(ImodImageFile));
   ofile->xscale = ofile->yscale = ofile->zscale = 1.0f;
-  ofile->slope  = 1.0f;
-  ofile->smax   = 255;
-  ofile->axis   = 3;
+  ofile->slope = 1.0f;
+  ofile->smax = 255;
+  ofile->axis = 3;
   ofile->mirrorFFT = 0;
   ofile->format = IIFILE_UNKNOWN;
-  ofile->fp     = NULL;
-  ofile->readSection     = NULL;
+  ofile->fp = NULL;
+  ofile->readSection = NULL;
   ofile->readSectionByte = NULL;
-  ofile->cleanUp         = NULL;
-  ofile->reopen          = NULL;
-  ofile->close           = NULL;
-  ofile->writeSection    = NULL;
-  ofile->colormap        = NULL;
+  ofile->cleanUp = NULL;
+  ofile->reopen = NULL;
+  ofile->close = NULL;
+  ofile->writeSection = NULL;
+  ofile->colormap = NULL;
 
   /* DNM 2/26/03: set upper right to -1 for later replacement */
-  ofile->llx =  0;
-  ofile->lly =  0;
-  ofile->llz =  0;
+  ofile->llx = 0;
+  ofile->lly = 0;
+  ofile->llz = 0;
   ofile->urx = -1;
   ofile->ury = -1;
   ofile->urz = -1;
-  return(ofile);
+  return (ofile);
 }
 
 /*!
  * Initializes the image file structure [i] for the given size and other
- * characteristics 
+ * characteristics
  */
-int iiInit(ImodImageFile *i, int xsize, int ysize, int zsize, 
-           int file, int format, int type)
-{
-  if (!i)     return(-1);
-  i->nx     = xsize;
-  i->ny     = ysize;
-  i->nz     = zsize;
-  i->file   = file;
+int iiInit(ImodImageFile *i, int xsize, int ysize, int zsize, int file,
+           int format, int type) {
+  if (!i)
+    return (-1);
+  i->nx = xsize;
+  i->ny = ysize;
+  i->nz = zsize;
+  i->file = file;
   i->format = format;
-  i->type   = type;
-  return(0);
+  i->type = type;
+  return (0);
 }
 
 /*!
- * Tries to open an image file with name [filename] and with the fopen mode 
+ * Tries to open an image file with name [filename] and with the fopen mode
  * [mode] (e.g. "rb"), using the file format check functions on the list.
  * If [filename] is NULL or an empty string, then it assigns stdin to the file
- * pointer.  Returns NULL for error; it and all checking routines should call 
+ * pointer.  Returns NULL for error; it and all checking routines should call
  * b3dError with their error strings.
  */
-ImodImageFile *iiOpen(const char *filename, char *mode)
-{
+ImodImageFile *iiOpen(const char *filename, char *mode) {
   ImodImageFile *ofile;
   IIFileCheckFunction *checkFunc;
   int i, err = 0;
 
-  if ((ofile = iiNew()) == NULL) 
+  if ((ofile = iiNew()) == NULL)
     return NULL;
   if (filename && filename[0])
     ofile->fp = fopen(filename, mode);
@@ -156,12 +149,12 @@ ImodImageFile *iiOpen(const char *filename, char *mode)
   if (ofile->fp == NULL || initCheckList()) {
     b3dError(stderr, "ERROR: iiOpen - Opening file %s\n", filename);
     iiDelete(ofile);
-    return(NULL);
+    return (NULL);
   }
   ofile->filename = strdup(filename);
   ofile->fmode = mode;
-    
-  /* Try to open the file with each of the check functions in turn 
+
+  /* Try to open the file with each of the check functions in turn
    * until one succeeds
    */
   ofile->format = IIFILE_UNKNOWN;
@@ -170,7 +163,8 @@ ImodImageFile *iiOpen(const char *filename, char *mode)
 
     /* If file was closed and couldn't reopen, bail out */
     if (ofile->fp == NULL) {
-      b3dError(stderr, "ERROR: iiOpen - %s could not be reopened\n", filename);
+      b3dError(stderr, "ERROR: iiOpen - %s could not be reopened\n",
+               filename);
       break;
     }
 
@@ -178,11 +172,11 @@ ImodImageFile *iiOpen(const char *filename, char *mode)
       ofile->state = IISTATE_READY;
       return ofile;
     }
-    
+
     if (err != IIERR_NOT_FORMAT)
       break;
   }
-  
+
   if (err == IIERR_NOT_FORMAT)
     b3dError(stderr, "ERROR: iiOpen - %s has unknown format.\n", filename);
   iiDelete(ofile);
@@ -190,10 +184,9 @@ ImodImageFile *iiOpen(const char *filename, char *mode)
 }
 
 /*!
- * Reopen a file that has already been opened and analyzed 
+ * Reopen a file that has already been opened and analyzed
  */
-int  iiReopen(ImodImageFile *inFile)
-{
+int iiReopen(ImodImageFile *inFile) {
   IIFileCheckFunction *checkFunc;
   int i;
 
@@ -214,7 +207,7 @@ int  iiReopen(ImodImageFile *inFile)
   if (!inFile->fp)
     return 2;
 
-  if (inFile->state == IISTATE_NOTINIT){
+  if (inFile->state == IISTATE_NOTINIT) {
     inFile->format = IIFILE_UNKNOWN;
     for (i = 0; i < ilistSize(checkList); i++) {
       checkFunc = (IIFileCheckFunction *)ilistItem(checkList, i);
@@ -233,9 +226,8 @@ int  iiReopen(ImodImageFile *inFile)
  * Uses the input values [inMin] and [inMax], or the file min and max if these
  * values are equal.  Returns 0.
  */
- /* 1/3/04: change from double to float for arguments */
-int  iiSetMM(ImodImageFile *inFile, float inMin, float inMax)
-{
+/* 1/3/04: change from double to float for arguments */
+int iiSetMM(ImodImageFile *inFile, float inMin, float inMax) {
   float range;
 
   /* DNM: only modify the existing smin, smax if incoming data is useful, and
@@ -246,13 +238,13 @@ int  iiSetMM(ImodImageFile *inFile, float inMin, float inMax)
     inFile->smax = inMax;
   }
 
-  if (inFile->smin == inFile->smax){
+  if (inFile->smin == inFile->smax) {
     inFile->smin = 0;
     inFile->smax = 255;
   }
 
   /* DNM 1/7/04: do not modify smin/smax if complex scaling, just get it
-     right for the slope and offset 
+     right for the slope and offset
      Also, use new routine */
   inMin = inFile->smin;
   inMax = inFile->smax;
@@ -270,17 +262,16 @@ int  iiSetMM(ImodImageFile *inFile, float inMin, float inMax)
   /* printf("iiSetMM %g %g -> %g %g\n",
      inMin, inMax, inFile->slope, inFile->offset); */
 
-  return(0);
+  return (0);
 }
 
 /*!
  * Closes an image file [inFile]
  */
-void iiClose(ImodImageFile *inFile)
-{
+void iiClose(ImodImageFile *inFile) {
   if (inFile->close)
     (*inFile->close)(inFile);
-  else if (inFile->fp != NULL) 
+  else if (inFile->fp != NULL)
     fclose(inFile->fp);
   inFile->fp = NULL;
   if (inFile->state != IISTATE_NOTINIT)
@@ -289,11 +280,10 @@ void iiClose(ImodImageFile *inFile)
 
 /*!
  * Deletes an image file [inFile] after closing and calling any cleanup
- * functions 
+ * functions
  */
-void iiDelete(ImodImageFile *inFile)
-{
-  if (!inFile) 
+void iiDelete(ImodImageFile *inFile) {
+  if (!inFile)
     return;
   iiClose(inFile);
   if (inFile->filename)
@@ -308,48 +298,46 @@ void iiDelete(ImodImageFile *inFile)
 }
 
 /*!
- * Reads the section [inSection] from the file [inFile] as raw data into buffer
- * [buf].  Returns -1 for undefined reading function or failure to reopen file,
- * otherwise passes along return value of the reading function.
+ * Reads the section [inSection] from the file [inFile] as raw data into
+ * buffer [buf].  Returns -1 for undefined reading function or failure to
+ * reopen file, otherwise passes along return value of the reading function.
  */
-int iiReadSection(ImodImageFile *inFile, char *buf, int inSection)
-{
-  if (!inFile->readSection) 
+int iiReadSection(ImodImageFile *inFile, char *buf, int inSection) {
+  if (!inFile->readSection)
     return -1;
-  if (!inFile->fp){
+  if (!inFile->fp) {
     if (iiReopen(inFile))
       return -1;
   }
-  return( (*inFile->readSection)(inFile, buf, inSection) );
+  return ((*inFile->readSection)(inFile, buf, inSection));
 }
 
 /*!
- * Reads the section [inSection] from the file [inFile] as scaled byte data 
- * into buffer [buf].  Returns -1 for undefined reading function or failure 
- * to reopen file, otherwise passes along return value of the reading function.
+ * Reads the section [inSection] from the file [inFile] as scaled byte data
+ * into buffer [buf].  Returns -1 for undefined reading function or failure
+ * to reopen file, otherwise passes along return value of the reading
+ * function.
  */
-int iiReadSectionByte(ImodImageFile *inFile, char *buf, int inSection)
-{
-  if (!inFile->readSectionByte) 
+int iiReadSectionByte(ImodImageFile *inFile, char *buf, int inSection) {
+  if (!inFile->readSectionByte)
     return -1;
-  if (!inFile->fp){
+  if (!inFile->fp) {
     if (iiReopen(inFile))
       return -1;
   }
-  return( (*inFile->readSectionByte)(inFile, buf, inSection) );
+  return ((*inFile->readSectionByte)(inFile, buf, inSection));
 }
 
 /*!
  * Write data in the buffer [buf] to section [inSection] of the file [inFile].
- * Returns -1 for undefined writing function; otherwise passes along return 
+ * Returns -1 for undefined writing function; otherwise passes along return
  * value of the writing function.  Note that neither iimrc nor iitiff define
  * writing functions.
  */
-int iiWriteSection(ImodImageFile *inFile, char *buf, int inSection)
-{
+int iiWriteSection(ImodImageFile *inFile, char *buf, int inSection) {
   if (!inFile->writeSection)
     return -1;
-  return( (*inFile->writeSection)(inFile, buf, inSection) );
+  return ((*inFile->writeSection)(inFile, buf, inSection));
 }
 
 /*!
@@ -357,12 +345,11 @@ int iiWriteSection(ImodImageFile *inFile, char *buf, int inSection)
  * and places them in the LoadInfo structure [li].  Returns 0 regardless of
  * whether there are piece coordinates or errors.
  */
-int iiLoadPCoord(ImodImageFile *inFile, struct LoadInfo *li, int nx, int ny, 
-                 int nz)
-{
+int iiLoadPCoord(ImodImageFile *inFile, struct LoadInfo *li, int nx, int ny,
+                 int nz) {
   if (iiMRCCheck(inFile))
     return (0);
-  return(iiMRCLoadPCoord(inFile, li, nx, ny, nz));
+  return (iiMRCLoadPCoord(inFile, li, nx, ny, nz));
 }
 
 /*

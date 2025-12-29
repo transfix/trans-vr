@@ -25,38 +25,40 @@
 #include <SweetMesh/meshTools.h>
 #include <cvcraw_geometry/cvcgeom.h>
 
+namespace sweetMesh {
 
-namespace sweetMesh{
-
-class visualMesh : public CVCGEOM_NAMESPACE::cvcgeom_t{
+class visualMesh : public CVCGEOM_NAMESPACE::cvcgeom_t {
 public:
-	visualMesh()	{}
-	visualMesh(hexMesh& mesh) { meshPtr = &mesh; init_ptrs(); }
-	~visualMesh()	{}
+  visualMesh() {}
+  visualMesh(hexMesh &mesh) {
+    meshPtr = &mesh;
+    init_ptrs();
+  }
+  ~visualMesh() {}
 
-	bool 		renderAllEdges;
-	bool 		renderAllSurfaceQuads;
+  bool renderAllEdges;
+  bool renderAllSurfaceQuads;
 
-	points_t	customPoints;		//Note: typedefs points_t,
-	boundary_t	customBoundaries;	//boundary_t, normals_t, etc.
-	normals_t	customNormals;		//are defined in the file
-	colors_t	customColors;		//cvcraw_geometry/cvcgeom.h
-	lines_t		customLines;
-	triangles_t	customTriangles;
-	quads_t		customQuads;
+  points_t customPoints;       // Note: typedefs points_t,
+  boundary_t customBoundaries; // boundary_t, normals_t, etc.
+  normals_t customNormals;     // are defined in the file
+  colors_t customColors;       // cvcraw_geometry/cvcgeom.h
+  lines_t customLines;
+  triangles_t customTriangles;
+  quads_t customQuads;
 
-	void		refresh();
-	void		clear();
+  void refresh();
+  void clear();
 
 protected:
-	hexMesh*	meshPtr;
+  hexMesh *meshPtr;
 
 private:
-	void 		refreshVertices();
-	void 		refreshLines();
-	void 		refreshQuads();
+  void refreshVertices();
+  void refreshLines();
+  void refreshQuads();
 };
 
-}
+} // namespace sweetMesh
 
 #endif

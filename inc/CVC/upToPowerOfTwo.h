@@ -17,7 +17,8 @@
 
   You should have received a copy of the GNU Lesser General Public
   License along with this library; if not, write to the Free Software
-  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301
+  USA
 */
 
 /* $Id: upToPowerOfTwo.h 4741 2011-10-21 21:22:06Z transfix $ */
@@ -27,29 +28,26 @@
 
 #include <CVC/Namespace.h>
 
-namespace CVC_NAMESPACE
-{
-  static inline unsigned int upToPowerOfTwo(unsigned int value)
-    {
-      unsigned int c = 0;
-      unsigned int v = value;
+namespace CVC_NAMESPACE {
+static inline unsigned int upToPowerOfTwo(unsigned int value) {
+  unsigned int c = 0;
+  unsigned int v = value;
 
-      // round down to nearest power of two 
-      while (v>1) {
-        v = v>>1;
-        c++;
-      }
+  // round down to nearest power of two
+  while (v > 1) {
+    v = v >> 1;
+    c++;
+  }
 
-      // if that isn't exactly the original value 
-      if ((v<<c)!=value) {
-        // return the next power of two 
-        return (v<<(c+1));
-      }
-      else {
-        // return this power of two 
-        return (v<<c);
-      }
-    }
+  // if that isn't exactly the original value
+  if ((v << c) != value) {
+    // return the next power of two
+    return (v << (c + 1));
+  } else {
+    // return this power of two
+    return (v << c);
+  }
 }
+} // namespace CVC_NAMESPACE
 
 #endif

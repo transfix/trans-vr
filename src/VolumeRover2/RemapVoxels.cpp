@@ -17,7 +17,8 @@
 
   You should have received a copy of the GNU Lesser General Public
   License along with this library; if not, write to the Free Software
-  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301
+  USA
 */
 
 /* $Id: RemapVoxels.cpp 4741 2011-10-21 21:22:06Z transfix $ */
@@ -25,10 +26,10 @@
 #include <qglobal.h>
 
 #if QT_VERSION < 0x040000
-#include <qvalidator.h>
 #include <qlineedit.h>
 #include <qmessagebox.h>
 #include <qpushbutton.h>
+#include <qvalidator.h>
 #else
 #include <QDoubleValidator>
 #include <QLineEdit>
@@ -44,22 +45,21 @@
 #include "ui_RemapVoxels.h"
 #endif
 
-RemapVoxels::RemapVoxels(QWidget* parent,
+RemapVoxels::RemapVoxels(QWidget *parent,
 #if QT_VERSION < 0x040000
-                                 const char* name, WFlags f
+                         const char *name, WFlags f
 #else
-                                 Qt::WindowFlags flags
+                         Qt::WindowFlags flags
 #endif
-                                 )
-  : QDialog(parent,
+                         )
+    : QDialog(parent,
 #if QT_VERSION < 0x040000
-            name,false,f
+              name, false, f
 #else
-            flags
+              flags
 #endif
-            ),
-    _ui(NULL)
-{
+              ),
+      _ui(NULL) {
 #if QT_VERSION < 0x040000
   _ui = new RemapVoxelsBase(this);
 #else
@@ -67,43 +67,37 @@ RemapVoxels::RemapVoxels(QWidget* parent,
   _ui->setupUi(this);
 #endif
 
-  QDoubleValidator* doublev = new QDoubleValidator(this);
+  QDoubleValidator *doublev = new QDoubleValidator(this);
   _ui->_minValue->setValidator(doublev);
   _ui->_maxValue->setValidator(doublev);
 
-  connect(_ui->_ok,SIGNAL(clicked()),SLOT(okSlot()));
+  connect(_ui->_ok, SIGNAL(clicked()), SLOT(okSlot()));
 }
 
-RemapVoxels::~RemapVoxels()
-{ delete _ui; }
+RemapVoxels::~RemapVoxels() { delete _ui; }
 
-double RemapVoxels::minValue() const
-{
+double RemapVoxels::minValue() const {
   return _ui->_minValue->text().toDouble();
 }
 
-void RemapVoxels::minValue(double val)
-{
+void RemapVoxels::minValue(double val) {
   _ui->_minValue->setText(QString("%1").arg(val));
 }
 
-double RemapVoxels::maxValue() const
-{
+double RemapVoxels::maxValue() const {
   return _ui->_maxValue->text().toDouble();
 }
 
-void RemapVoxels::maxValue(double val)
-{
+void RemapVoxels::maxValue(double val) {
   _ui->_maxValue->setText(QString("%1").arg(val));
 }
 
-void RemapVoxels::okSlot()
-{
-  if(_ui->_minValue->text().toDouble() > _ui->_maxValue->text().toDouble())
-    {
-      QMessageBox::critical( this, "Input error", "Minimum value should be <= maximum value." );
-      return;
-    }
+void RemapVoxels::okSlot() {
+  if (_ui->_minValue->text().toDouble() > _ui->_maxValue->text().toDouble()) {
+    QMessageBox::critical(this, "Input error",
+                          "Minimum value should be <= maximum value.");
+    return;
+  }
 
   accept();
 }

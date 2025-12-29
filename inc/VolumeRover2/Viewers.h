@@ -1,8 +1,8 @@
 /*
   Copyright 2011 The University of Texas at Austin
-  
-	Authors: Jose Rivera <transfix@ices.utexas.edu>
-	Advisor: Chandrajit Bajaj <bajaj@cs.utexas.edu>
+
+        Authors: Jose Rivera <transfix@ices.utexas.edu>
+        Advisor: Chandrajit Bajaj <bajaj@cs.utexas.edu>
 
   This file is part of Volume Rover.
 
@@ -27,124 +27,115 @@
 #define __CVC_VIEWERS_H__
 
 #include <CVC/Namespace.h>
-#include <VolumeRover2/VolumeViewer.h>
 #include <ColorTable2/ColorTable.h>
-
 #include <QString>
 #include <QWidget>
-
-#include <cvcraw_geometry/cvcgeom.h>
 #include <VolMagick/VolMagick.h>
-
-#include <string>
+#include <VolumeRover2/VolumeViewer.h>
+#include <cvcraw_geometry/cvcgeom.h>
 #include <map>
+#include <string>
 
 class QSlider;
 class QTimer;
-namespace Ui
-{
-  class VolumeViewerPage;
-  class VolumeViewerPageManipulators;
-}
+namespace Ui {
+class VolumeViewerPage;
+class VolumeViewerPageManipulators;
+} // namespace Ui
 
 #ifdef USING_VOLUMEGRIDROVER
 class VolumeGridRover;
 #endif
 
-namespace CVC_NAMESPACE
-{
+namespace CVC_NAMESPACE {
 
-  class Viewers : public QWidget
-  {
-    Q_OBJECT
+class Viewers : public QWidget {
+  Q_OBJECT
 
-   public:
-    Viewers(QWidget *parent = 0,
-                  Qt::WindowFlags flags = Qt::WindowFlags());
-    virtual ~Viewers();
+public:
+  Viewers(QWidget *parent = 0, Qt::WindowFlags flags = Qt::WindowFlags());
+  virtual ~Viewers();
 
-    VolumeViewer* thumbnailViewer()
-      { return _thumbnailViewer; }
-    VolumeViewer* subvolumeViewer()
-      { return _subvolumeViewer; }
+  VolumeViewer *thumbnailViewer() { return _thumbnailViewer; }
+  VolumeViewer *subvolumeViewer() { return _subvolumeViewer; }
 
-    CVCColorTable::ColorTable* colorTable()
-      { return _colorTable; }
+  CVCColorTable::ColorTable *colorTable() { return _colorTable; }
 
 #ifdef USING_VOLUMEGRIDROVER
-    void setVolumeGridRoverPtr( VolumeGridRover *ptr );
+  void setVolumeGridRoverPtr(VolumeGridRover *ptr);
 #endif
 
-    //used to easily append a property sub-key to this object's name
-    std::string getObjectName(const std::string& property = std::string()) const;
+  // used to easily append a property sub-key to this object's name
+  std::string
+  getObjectName(const std::string &property = std::string()) const;
 
-  public slots:
-    virtual void markThumbnailDirty(bool flag = true);
-    virtual void markSubVolumeDirty(bool flag = true);
+public slots:
+  virtual void markThumbnailDirty(bool flag = true);
+  virtual void markSubVolumeDirty(bool flag = true);
 
-    virtual void loadThumbnail();
-    virtual void loadSubVolume();
+  virtual void loadThumbnail();
+  virtual void loadSubVolume();
 
-  protected slots:
-    virtual void setDefaultSubVolumeViewerState();
-    virtual void setDefaultThumbnailViewerState();
-    virtual void setThumbnailQuality(int);
-    virtual void setSubVolumeQuality(int);
-    virtual void setThumbnailNearPlane(int);
-    virtual void setSubVolumeNearPlane(int);
-    virtual void setDefaultScene();
-    virtual void setDefaultOptions();
-    virtual void timeout();
-    virtual void updateColorTable();
-    virtual void saveImage(int);
+protected slots:
+  virtual void setDefaultSubVolumeViewerState();
+  virtual void setDefaultThumbnailViewerState();
+  virtual void setThumbnailQuality(int);
+  virtual void setSubVolumeQuality(int);
+  virtual void setThumbnailNearPlane(int);
+  virtual void setSubVolumeNearPlane(int);
+  virtual void setDefaultScene();
+  virtual void setDefaultOptions();
+  virtual void timeout();
+  virtual void updateColorTable();
+  virtual void saveImage(int);
 
-  protected:
-    void ensureVolumeAvailability();
-    void ensureSubVolumeAvailability();
-    void syncViewers(const std::string& key);
+protected:
+  void ensureVolumeAvailability();
+  void ensureSubVolumeAvailability();
+  void syncViewers(const std::string &key);
 
-    void customEvent(QEvent *event);
-    void propertiesChanged(const std::string&);
-    void handlePropertiesChanged(const std::string&);
-    boost::signals2::connection _propertiesConnection;
-    void dataChanged(const std::string&);
-    void handleDataChanged(const std::string&);
-    boost::signals2::connection _dataConnection;
+  void customEvent(QEvent *event);
+  void propertiesChanged(const std::string &);
+  void handlePropertiesChanged(const std::string &);
+  boost::signals2::connection _propertiesConnection;
+  void dataChanged(const std::string &);
+  void handleDataChanged(const std::string &);
+  boost::signals2::connection _dataConnection;
 
-    bool _thumbnailVolumeDirty;
-    bool _subVolumeDirty;
+  bool _thumbnailVolumeDirty;
+  bool _subVolumeDirty;
 
-    VolumeViewer *_thumbnailViewer;
-    VolumeViewer *_subvolumeViewer;
+  VolumeViewer *_thumbnailViewer;
+  VolumeViewer *_subvolumeViewer;
 
-    std::map<std::string,VolumeViewer*> _viewerMap;
+  std::map<std::string, VolumeViewer *> _viewerMap;
 
-    QSlider *_subvolumeRenderQualitySlider;
-    QSlider *_subvolumeNearClipPlaneSlider;
-    QSlider *_thumbnailRenderQualitySlider;
-    QSlider *_thumbnailNearClipPlaneSlider;
+  QSlider *_subvolumeRenderQualitySlider;
+  QSlider *_subvolumeNearClipPlaneSlider;
+  QSlider *_thumbnailRenderQualitySlider;
+  QSlider *_thumbnailNearClipPlaneSlider;
 
-    CVCColorTable::ColorTable *_colorTable;
-    CVCColorTable::ColorTable::isocontour_nodes _oldNodes;
+  CVCColorTable::ColorTable *_colorTable;
+  CVCColorTable::ColorTable::isocontour_nodes _oldNodes;
 
-    QTimer *_timer; //used to check if we need to update volumes
+  QTimer *_timer; // used to check if we need to update volumes
 
-    Ui::VolumeViewerPage *_ui;
-    Ui::VolumeViewerPageManipulators *_uiManip;
+  Ui::VolumeViewerPage *_ui;
+  Ui::VolumeViewerPageManipulators *_uiManip;
 
-    QString _oldObjectName;
+  QString _oldObjectName;
 
 #ifdef USING_VOLUMEGRIDROVER
-    VolumeGridRover *_volumeGridRoverPtr;
+  VolumeGridRover *_volumeGridRoverPtr;
 #endif
 
-    //flag for first time initialization of this object on the property map
-    bool _defaultSceneSet;
+  // flag for first time initialization of this object on the property map
+  bool _defaultSceneSet;
 
-    //flags to help sync the viewers once they have been initialized
-    bool _thumbnailPostInitFinished;
-    bool _subvolumePostInitFinished;
-  };
-}
+  // flags to help sync the viewers once they have been initialized
+  bool _thumbnailPostInitFinished;
+  bool _subvolumePostInitFinished;
+};
+} // namespace CVC_NAMESPACE
 
 #endif

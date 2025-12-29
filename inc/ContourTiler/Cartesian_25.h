@@ -3,11 +3,11 @@
 
 #include <CGAL/Cartesian.h>
 #include <CGAL/Kernel/function_objects.h>
-
 #include <ContourTiler/Point_25.h>
-#include <ContourTiler/Segment_25.h>
 #include <ContourTiler/Point_3_id.h>
+#include <ContourTiler/Segment_25.h>
 #include <ContourTiler/Segment_3_id.h>
+#include <ContourTiler/config.h>
 
 CONTOURTILER_BEGIN_NAMESPACE
 
@@ -53,7 +53,8 @@ CONTOURTILER_BEGIN_NAMESPACE
 //   result_type
 //   operator()(const Segment_2 &s1, const Segment_2 &s2) const
 //   {
-//     return xy_equal(s1.source(), s2.source()) && xy_equal(s1.target(), s2.target());
+//     return xy_equal(s1.source(), s2.source()) && xy_equal(s1.target(),
+//     s2.target());
 //   }
 
 //   result_type
@@ -65,8 +66,10 @@ CONTOURTILER_BEGIN_NAMESPACE
 //   result_type
 //   operator()(const Ray_2& r1, const Ray_2& r2) const
 //   {
-// //     return r1.source() == r2.source() && r1.direction() == r2.direction();
-//     return xy_equal(r1.source(), r2.source()) && r1.direction() == r2.direction();
+// //     return r1.source() == r2.source() && r1.direction() ==
+// r2.direction();
+//     return xy_equal(r1.source(), r2.source()) && r1.direction() ==
+//     r2.direction();
 //   }
 
 //   result_type
@@ -92,65 +95,67 @@ CONTOURTILER_BEGIN_NAMESPACE
 //   result_type
 //   operator()(const Iso_rectangle_2& i1, const Iso_rectangle_2& i2) const
 //   {
-//     return (xy_equal((i1.min)(), (i2.min)())) && xy_equal(((i1.max)(), (i2.max)()));
+//     return (xy_equal((i1.min)(), (i2.min)())) && xy_equal(((i1.max)(),
+//     (i2.max)()));
 //   }
 // };
 
 // K_ is the new kernel, and K_Base is the old kernel
-template < typename K_, typename K_Base >
-class MyCartesian_base
-  : public K_Base::template Base<K_>::Type
-{
+template <typename K_, typename K_Base>
+class MyCartesian_base : public K_Base::template Base<K_>::Type {
 public:
-  typedef typename K_Base::template Base<K_>::Type   OldK;
+  typedef typename K_Base::template Base<K_>::Type OldK;
+
 public:
-  typedef K_                                Kernel;
+  typedef K_ Kernel;
 
-  typedef Point_25_<Kernel>                         Point_2;
-  typedef Segment_25_<Kernel>               Segment_2;
-  typedef MyConstruct_point_2<Kernel, OldK>       Construct_point_2;
-  typedef const double*                     Cartesian_const_iterator_2;
-  typedef MyConstruct_coord_iterator<Kernel>        Construct_cartesian_const_iterator_2;
-//   typedef MyConstruct_bbox_2<typename OldK::Construct_bbox_2>
-  typedef MyConstruct_bbox_2<Kernel>
-                                            Construct_bbox_2;
-//   typedef Cartesian_25_Equal_2<Kernel>      Equal_2;
+  typedef Point_25_<Kernel> Point_2;
+  typedef Segment_25_<Kernel> Segment_2;
+  typedef MyConstruct_point_2<Kernel, OldK> Construct_point_2;
+  typedef const double *Cartesian_const_iterator_2;
+  typedef MyConstruct_coord_iterator<Kernel>
+      Construct_cartesian_const_iterator_2;
+  //   typedef MyConstruct_bbox_2<typename OldK::Construct_bbox_2>
+  typedef MyConstruct_bbox_2<Kernel> Construct_bbox_2;
+  //   typedef Cartesian_25_Equal_2<Kernel>      Equal_2;
 
-  typedef Point_3_id<Kernel>                         Point_3;
-  typedef Segment_3_id<Kernel>               Segment_3;
-  typedef MyConstruct_point_3_id<Kernel, OldK>       Construct_point_3;
-  typedef const double*                     Cartesian_const_iterator_3;
-  typedef MyConstruct_coord_iterator_3<Kernel>        Construct_cartesian_const_iterator_3;
-  typedef MyConstruct_bbox_3<Kernel>  Construct_bbox_3;
+  typedef Point_3_id<Kernel> Point_3;
+  typedef Segment_3_id<Kernel> Segment_3;
+  typedef MyConstruct_point_3_id<Kernel, OldK> Construct_point_3;
+  typedef const double *Cartesian_const_iterator_3;
+  typedef MyConstruct_coord_iterator_3<Kernel>
+      Construct_cartesian_const_iterator_3;
+  typedef MyConstruct_bbox_3<Kernel> Construct_bbox_3;
 
-  Construct_point_2
-  construct_point_2_object() const
-  { return Construct_point_2(); }
+  Construct_point_2 construct_point_2_object() const {
+    return Construct_point_2();
+  }
 
-  Construct_bbox_2 construct_bbox_2_object() const
-  { return Construct_bbox_2(); }
+  Construct_bbox_2 construct_bbox_2_object() const {
+    return Construct_bbox_2();
+  }
 
-//   Equal_2 equal_2_object() const
-//   { return Equal_2(); }
+  //   Equal_2 equal_2_object() const
+  //   { return Equal_2(); }
 
-  Construct_point_3
-  construct_point_3_object() const
-  { return Construct_point_3(); }
+  Construct_point_3 construct_point_3_object() const {
+    return Construct_point_3();
+  }
 
-  Construct_bbox_3 construct_bbox_3_object() const
-  { return Construct_bbox_3(); }
+  Construct_bbox_3 construct_bbox_3_object() const {
+    return Construct_bbox_3();
+  }
 
-  template < typename Kernel2 >
-  struct Base { typedef MyCartesian_base<Kernel2, K_Base>  Type; };
+  template <typename Kernel2> struct Base {
+    typedef MyCartesian_base<Kernel2, K_Base> Type;
+  };
 };
 
-
-template < typename FT_ >
+template <typename FT_>
 struct Cartesian_25
-  : public CGAL::Type_equality_wrapper<
-  MyCartesian_base<Cartesian_25<FT_>, CGAL::Cartesian<FT_> >,
-  Cartesian_25<FT_> >
-{};
+    : public CGAL::Type_equality_wrapper<
+          MyCartesian_base<Cartesian_25<FT_>, CGAL::Cartesian<FT_>>,
+          Cartesian_25<FT_>> {};
 
 CONTOURTILER_END_NAMESPACE
 

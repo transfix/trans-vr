@@ -17,7 +17,8 @@
 
   You should have received a copy of the GNU Lesser General Public
   License along with this library; if not, write to the Free Software
-  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301
+  USA
 */
 
 #ifndef __SKELETONIZATION__ROBUST_CC_H__
@@ -25,37 +26,22 @@
 
 #include <Skeletonization/datastruct.h>
 
-namespace Skeletonization
-{
-  Point nondg_voronoi_point(const Point &a,
-			    const Point &b,
-			    const Point &c,
-			    const Point &d,
-			    bool &is_correct_computation);
+namespace Skeletonization {
+Point nondg_voronoi_point(const Point &a, const Point &b, const Point &c,
+                          const Point &d, bool &is_correct_computation);
 
-  Point dg_voronoi_point(const Point &a,
-			 const Point &b,
-			 const Point &c,
-			 const Point &d,
-			 bool &is_correct_computation);
+Point dg_voronoi_point(const Point &a, const Point &b, const Point &c,
+                       const Point &d, bool &is_correct_computation);
 
+Point nondg_cc_tr_3(const Point &a, const Point &b, const Point &c,
+                    bool &is_correct_computation);
 
-  Point nondg_cc_tr_3(const Point &a,
-		      const Point &b,
-		      const Point &c,
-		      bool &is_correct_computation);
+Point cc_tr_3(const Point &a, const Point &b, const Point &c);
 
-  Point cc_tr_3(const Point &a,
-		const Point &b,
-		const Point &c);
+double sq_cr_tr_3(const Point &a, const Point &b, const Point &c);
 
-  double sq_cr_tr_3(const Point &a,
-		    const Point &b,
-		    const Point &c);
+Point circumcenter(const Facet &f);
 
-  Point circumcenter(const Facet& f);
-
-  double circumradius(const Facet& f);
-}
+double circumradius(const Facet &f);
+} // namespace Skeletonization
 #endif // ROBUST_CC_H
-

@@ -3,13 +3,9 @@
 
 #include <SuperSecondaryStructures/datastruct.h>
 
-namespace SuperSecondaryStructures
-{
+namespace SuperSecondaryStructures {
 
-void
-initialize(Triangulation &triang);
-void
-compute_voronoi_vertex_and_cell_radius(Triangulation &triang);
-}
+void initialize(Triangulation &triang);
+void compute_voronoi_vertex_and_cell_radius(Triangulation &triang);
+} // namespace SuperSecondaryStructures
 #endif // INIT_H
-

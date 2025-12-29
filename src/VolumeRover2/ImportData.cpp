@@ -17,7 +17,8 @@
 
   You should have received a copy of the GNU Lesser General Public
   License along with this library; if not, write to the Free Software
-  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301
+  USA
 */
 
 /* $Id: ImportData.cpp 4741 2011-10-21 21:22:06Z transfix $ */
@@ -25,24 +26,23 @@
 #include <qglobal.h>
 
 #if QT_VERSION < 0x040000
-#include <qvalidator.h>
+#include <qbuttongroup.h>
+#include <qfiledialog.h>
 #include <qlineedit.h>
 #include <qmessagebox.h>
-#include <qfiledialog.h>
-#include <qbuttongroup.h>
-#include <qradiobutton.h>
 #include <qpushbutton.h>
+#include <qradiobutton.h>
+#include <qvalidator.h>
 #else
+#include <QFileDialog>
 #include <QIntValidator>
 #include <QLineEdit>
 #include <QMessageBox>
-#include <QFileDialog>
-#include <QRadioButton>
 #include <QPushButton>
+#include <QRadioButton>
 #endif
 
 #include <VolMagick/VolMagick.h>
-
 #include <VolumeRover2/ImportData.h>
 
 #if QT_VERSION < 0x040000
@@ -51,22 +51,21 @@
 #include "ui_ImportData.h"
 #endif
 
-ImportData::ImportData(QWidget* parent,
+ImportData::ImportData(QWidget *parent,
 #if QT_VERSION < 0x040000
-                                 const char* name, WFlags f
+                       const char *name, WFlags f
 #else
-                                 Qt::WindowFlags flags
+                       Qt::WindowFlags flags
 #endif
-                                 )
-  : QDialog(parent,
+                       )
+    : QDialog(parent,
 #if QT_VERSION < 0x040000
-            name,false,f
+              name, false, f
 #else
-            flags
+              flags
 #endif
-            ),
-    _ui(NULL)
-{
+              ),
+      _ui(NULL) {
 #if QT_VERSION < 0x040000
   _ui = new ImportDataBase(this);
 #else
@@ -74,7 +73,7 @@ ImportData::ImportData(QWidget* parent,
   _ui->setupUi(this);
 #endif
 
-  QIntValidator* intv = new QIntValidator(this);
+  QIntValidator *intv = new QIntValidator(this);
 
   _ui->_dimensionX->setValidator(intv);
   _ui->_dimensionY->setValidator(intv);
@@ -83,67 +82,62 @@ ImportData::ImportData(QWidget* parent,
   _ui->_variable->setValidator(intv);
   _ui->_timestep->setValidator(intv);
 
-  connect(_ui->_ok,SIGNAL(clicked()),SLOT(okSlot()));
+  connect(_ui->_ok, SIGNAL(clicked()), SLOT(okSlot()));
 }
 
-ImportData::~ImportData()
-{ delete _ui; }
+ImportData::~ImportData() { delete _ui; }
 
-
-void ImportData::importFileSlot()
-{
+void ImportData::importFileSlot() {
 #if QT_VERSION < 0x040000
   _ui->_importFile->setText(QFileDialog::getOpenFileName(QString(),
                                                          "RawIV (*.rawiv);;"
-                                                         "RawV (*.rawv)"
-                                                         , this));
+                                                         "RawV (*.rawv)",
+                                                         this));
 #else
-  _ui->_importFile->setText(QFileDialog::getOpenFileName(this,
-                                                         "Copy file",
+  _ui->_importFile->setText(QFileDialog::getOpenFileName(this, "Copy file",
                                                          QString(),
                                                          "RawIV (*.rawiv);;"
                                                          "RawV (*.rawv)"));
 #endif
 }
 
-void ImportData::okSlot()
-{
-  if(_ui->_importFile->text().isEmpty())
-    {
-      QMessageBox::critical( this, "Input error", "Specify a filename to import." );
+void ImportData::okSlot() {
+  if (_ui->_importFile->text().isEmpty()) {
+    QMessageBox::critical(this, "Input error",
+                          "Specify a filename to import.");
+    return;
+  }
+
+  if (_ui->_rawDataButton->isChecked()) {
+    if (_ui->_dimensionX->text().toInt() <= 0 ||
+        _ui->_dimensionY->text().toInt() <= 0 ||
+        _ui->_dimensionZ->text().toInt() <= 0) {
+      QMessageBox::critical(this, "Input error",
+                            "Dimension should be at least 1x1x1!");
+      return;
+    }
+  } else if (_ui->_volumeDataButton->isChecked()) {
+#if QT_VERSION < 0x040000
+    VolMagick::VolumeFileInfo vfi(_ui->_importFile->text().ascii());
+#else
+    VolMagick::VolumeFileInfo vfi(
+        _ui->_importFile->text().toUtf8().constData());
+#endif
+
+    if (_ui->_variable->text().toInt() >= int(vfi.numVariables())) {
+      QMessageBox::critical(
+          this, "Input error",
+          "Variable index greater than number of variables");
       return;
     }
 
-  if(_ui->_rawDataButton->isChecked())
-    {
-      if(_ui->_dimensionX->text().toInt() <= 0 ||
-	 _ui->_dimensionY->text().toInt() <= 0 ||
-	 _ui->_dimensionZ->text().toInt() <= 0)
-	{
-	  QMessageBox::critical( this, "Input error", "Dimension should be at least 1x1x1!" );
-	  return;
-	}
+    if (_ui->_timestep->text().toInt() >= int(vfi.numTimesteps())) {
+      QMessageBox::critical(
+          this, "Input error",
+          "Timestep index greater than number of timesteps");
+      return;
     }
-  else if(_ui->_volumeDataButton->isChecked())
-    {
-#if QT_VERSION < 0x040000
-      VolMagick::VolumeFileInfo vfi(_ui->_importFile->text().ascii());
-#else
-      VolMagick::VolumeFileInfo vfi(_ui->_importFile->text().toUtf8().constData());
-#endif
-
-      if(_ui->_variable->text().toInt() >= int(vfi.numVariables()))
-	{
-	  QMessageBox::critical( this, "Input error", "Variable index greater than number of variables" );
-	  return;
-	}
-
-      if(_ui->_timestep->text().toInt() >= int(vfi.numTimesteps()))
-	{
-	  QMessageBox::critical( this, "Input error", "Timestep index greater than number of timesteps" );
-	  return;
-	}
-    }
+  }
 
   accept();
 }

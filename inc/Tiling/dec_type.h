@@ -1,8 +1,7 @@
 #ifndef DEC_TYPE_H
 #define DEC_TYPE_H
 
-namespace Tiling
-{
+namespace Tiling {
 
 /* scale.c */
 int scale_back_triangle(VertType *p);
@@ -14,6 +13,6 @@ char *mymalloc(int size);
 
 char *mycalloc(int size);
 
-};
+}; // namespace Tiling
 
 #endif

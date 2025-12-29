@@ -23,33 +23,32 @@
 #ifndef LOG4CPLUS_STREAMS_HEADER_
 #define LOG4CPLUS_STREAMS_HEADER_
 
+#include <iostream>
 #include <log4cplus/config.hxx>
 #include <log4cplus/tstring.h>
-
-#include <iostream>
 #include <sstream>
 #define LOG4CPLUS_STREAM_NAMESPACE std
 
 #ifdef UNICODE
-    namespace log4cplus {
-        typedef LOG4CPLUS_STREAM_NAMESPACE::wostream tostream;
-        typedef LOG4CPLUS_STREAM_NAMESPACE::wistream tistream;
-        typedef LOG4CPLUS_STREAM_NAMESPACE::wostringstream tostringstream;
-        static tostream &tcout = LOG4CPLUS_STREAM_NAMESPACE::wcout;
-        static tostream &tcerr = LOG4CPLUS_STREAM_NAMESPACE::wcerr;
-    }
+namespace log4cplus {
+typedef LOG4CPLUS_STREAM_NAMESPACE::wostream tostream;
+typedef LOG4CPLUS_STREAM_NAMESPACE::wistream tistream;
+typedef LOG4CPLUS_STREAM_NAMESPACE::wostringstream tostringstream;
+static tostream &tcout = LOG4CPLUS_STREAM_NAMESPACE::wcout;
+static tostream &tcerr = LOG4CPLUS_STREAM_NAMESPACE::wcerr;
+} // namespace log4cplus
 
-LOG4CPLUS_EXPORT log4cplus::tostream& operator <<(log4cplus::tostream&, const char* psz );
+LOG4CPLUS_EXPORT log4cplus::tostream &operator<<(log4cplus::tostream &,
+                                                 const char *psz);
 
 #else
-    namespace log4cplus {
-        typedef LOG4CPLUS_STREAM_NAMESPACE::ostream tostream;
-        typedef LOG4CPLUS_STREAM_NAMESPACE::istream tistream;
-        static tostream &tcout = LOG4CPLUS_STREAM_NAMESPACE::cout;
-        static tostream &tcerr = LOG4CPLUS_STREAM_NAMESPACE::cerr;
-        typedef LOG4CPLUS_STREAM_NAMESPACE::ostringstream tostringstream;
-    }
+namespace log4cplus {
+typedef LOG4CPLUS_STREAM_NAMESPACE::ostream tostream;
+typedef LOG4CPLUS_STREAM_NAMESPACE::istream tistream;
+static tostream &tcout = LOG4CPLUS_STREAM_NAMESPACE::cout;
+static tostream &tcerr = LOG4CPLUS_STREAM_NAMESPACE::cerr;
+typedef LOG4CPLUS_STREAM_NAMESPACE::ostringstream tostringstream;
+} // namespace log4cplus
 #endif // UNICODE
 
 #endif // LOG4CPLUS_STREAMS_HEADER_
-

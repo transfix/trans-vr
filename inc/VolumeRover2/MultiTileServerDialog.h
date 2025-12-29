@@ -1,8 +1,8 @@
 /*
   Copyright 2011 The University of Texas at Austin
-  
-	Authors: Deukhyun Cha <deukhyun@ices.utexas.edu>
-	Advisor: Chandrajit Bajaj <bajaj@cs.utexas.edu>
+
+        Authors: Deukhyun Cha <deukhyun@ices.utexas.edu>
+        Advisor: Chandrajit Bajaj <bajaj@cs.utexas.edu>
 
   This file is part of Volume Rover.
 
@@ -24,32 +24,31 @@
 #ifndef __MULTITILESERVERDIALOG_H__
 #define __MULTITILESERVERDIALOG_H__
 
-//#include <qglobal.h>
+// #include <qglobal.h>
 
 #include <QDialog>
 #include <QString>
 
 #define SYNC_THUMBNAIL_WITH_MULTITILESERVER
 
-namespace Ui
-{
-  class MultiTileServerDialog;
+namespace Ui {
+class MultiTileServerDialog;
 }
 
 #include "ui_MultiTileServerDialog.h"
 
-class MultiTileServerDialog : public QDialog
-{
+class MultiTileServerDialog : public QDialog {
   Q_OBJECT
 
- public:
-  MultiTileServerDialog(QWidget *parent=nullptr,Qt::WindowFlags flags=Qt::WindowFlags());
+public:
+  MultiTileServerDialog(QWidget *parent = nullptr,
+                        Qt::WindowFlags flags = Qt::WindowFlags());
 
   virtual ~MultiTileServerDialog();
 
   void setProperties();
- 
-  public slots:
+
+public slots:
 
   void updateList();
   void OutputFileSlot();
@@ -61,8 +60,7 @@ class MultiTileServerDialog : public QDialog
   void interactiveModeSlot();
   void syncCurrentSlot();
 
-  protected:
-
+protected:
   Ui::MultiTileServerDialog *_ui;
 
   bool m_hasMultiTileServerConfigFile;
@@ -70,7 +68,7 @@ class MultiTileServerDialog : public QDialog
   std::string m_MultiTileServerConfigFile;
   std::string m_VolumeFile;
   bool m_initialized;
-  
+
   bool m_hasInputVolumeFile;
   std::string m_inputVolumeFile;
 };

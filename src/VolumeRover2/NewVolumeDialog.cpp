@@ -17,7 +17,8 @@
 
   You should have received a copy of the GNU Lesser General Public
   License along with this library; if not, write to the Free Software
-  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301
+  USA
 */
 
 /* $Id: NewVolumeDialog.cpp 4741 2011-10-21 21:22:06Z transfix $ */
@@ -25,32 +26,32 @@
 #include <qglobal.h>
 
 #if QT_VERSION < 0x040000
-#include <qvalidator.h>
-#include <qlineedit.h>
-#include <qfiledialog.h>
-#include <qfileinfo.h>
-#include <qmessagebox.h>
 #include <qbuttongroup.h>
 #include <qcheckbox.h>
-#include <qtabwidget.h>
-#include <qpushbutton.h>
 #include <qcombobox.h>
+#include <qfiledialog.h>
+#include <qfileinfo.h>
+#include <qlineedit.h>
+#include <qmessagebox.h>
+#include <qpushbutton.h>
 #include <qradiobutton.h>
+#include <qtabwidget.h>
+#include <qvalidator.h>
 #else
+#include <QComboBox>
 #include <QDoubleValidator>
+#include <QFileDialog>
+#include <QFileInfo>
 #include <QIntValidator>
 #include <QLineEdit>
-#include <QFileInfo>
 #include <QMessageBox>
-#include <QFileDialog>
 #include <QPushButton>
-#include <QComboBox>
 #include <QRadioButton>
 #include <QTabWidget>
 #endif
 
-#include <VolumeRover2/NewVolumeDialog.h>
 #include <VolMagick/VolMagick.h>
+#include <VolumeRover2/NewVolumeDialog.h>
 
 #if QT_VERSION < 0x040000
 #include "newvolumedialogbase.Qt3.h"
@@ -58,22 +59,21 @@
 #include "ui_NewVolumeDialog.h"
 #endif
 
-NewVolumeDialog::NewVolumeDialog(QWidget* parent,
+NewVolumeDialog::NewVolumeDialog(QWidget *parent,
 #if QT_VERSION < 0x040000
-                                 const char* name, WFlags f
+                                 const char *name, WFlags f
 #else
                                  Qt::WindowFlags flags
 #endif
                                  )
-  : QDialog(parent,
+    : QDialog(parent,
 #if QT_VERSION < 0x040000
-            name,false,f
+              name, false, f
 #else
-            flags
+              flags
 #endif
-            ),
-    _ui(NULL)
-{
+              ),
+      _ui(NULL) {
 #if QT_VERSION < 0x040000
   _ui = new NewVolumeDialogBase(this);
 #else
@@ -81,8 +81,8 @@ NewVolumeDialog::NewVolumeDialog(QWidget* parent,
   _ui->setupUi(this);
 #endif
 
-  QIntValidator* intv = new QIntValidator(this);
-  QDoubleValidator* doublev = new QDoubleValidator(this);
+  QIntValidator *intv = new QIntValidator(this);
+  QDoubleValidator *doublev = new QDoubleValidator(this);
 
   _ui->_dimensionX->setValidator(intv);
   _ui->_dimensionY->setValidator(intv);
@@ -115,31 +115,30 @@ NewVolumeDialog::NewVolumeDialog(QWidget* parent,
 
   _ui->_extractSubVolumeMethod->setEnabled(false);
 
-  connect(_ui->_extractSubVolume,SIGNAL(toggled(bool)),SLOT(acquireVolumeInfo(bool)));
+  connect(_ui->_extractSubVolume, SIGNAL(toggled(bool)),
+          SLOT(acquireVolumeInfo(bool)));
 
-  connect(_ui->_ok,SIGNAL(clicked()),SLOT(okSlot()));
-  connect(_ui->_cancel,SIGNAL(clicked()),SLOT(reject()));
+  connect(_ui->_ok, SIGNAL(clicked()), SLOT(okSlot()));
+  connect(_ui->_cancel, SIGNAL(clicked()), SLOT(reject()));
 
-  connect(_ui->_filenameButton,SIGNAL(clicked()),SLOT(fileSlot()));
-  connect(_ui->_volumeCopyFilename,SIGNAL(clicked()),SLOT(volumeCopyFilenameSlot()));
+  connect(_ui->_filenameButton, SIGNAL(clicked()), SLOT(fileSlot()));
+  connect(_ui->_volumeCopyFilename, SIGNAL(clicked()),
+          SLOT(volumeCopyFilenameSlot()));
 }
 
 NewVolumeDialog::~NewVolumeDialog() { delete _ui; }
 
-bool NewVolumeDialog::createNewVolume() const
-{
+bool NewVolumeDialog::createNewVolume() const {
   return _ui->_newVolumeButton->isChecked();
 }
 
-VolMagick::Dimension NewVolumeDialog::dimension() const
-{
+VolMagick::Dimension NewVolumeDialog::dimension() const {
   return VolMagick::Dimension(_ui->_dimensionX->text().toInt(),
                               _ui->_dimensionY->text().toInt(),
                               _ui->_dimensionZ->text().toInt());
 }
 
-VolMagick::BoundingBox NewVolumeDialog::boundingBox() const
-{
+VolMagick::BoundingBox NewVolumeDialog::boundingBox() const {
   return VolMagick::BoundingBox(_ui->_boundingBoxMinX->text().toDouble(),
                                 _ui->_boundingBoxMinY->text().toDouble(),
                                 _ui->_boundingBoxMinZ->text().toDouble(),
@@ -148,8 +147,7 @@ VolMagick::BoundingBox NewVolumeDialog::boundingBox() const
                                 _ui->_boundingBoxMaxZ->text().toDouble());
 }
 
-VolMagick::VoxelType NewVolumeDialog::variableType() const
-{
+VolMagick::VoxelType NewVolumeDialog::variableType() const {
 #if QT_VERSION < 0x040000
   return VolMagick::VoxelType(_ui->_variableType->currentItem());
 #else
@@ -157,8 +155,7 @@ VolMagick::VoxelType NewVolumeDialog::variableType() const
 #endif
 }
 
-std::string NewVolumeDialog::variableName() const
-{
+std::string NewVolumeDialog::variableName() const {
 #if QT_VERSION < 0x040000
   return std::string((const char *)_ui->_variableName->text());
 #else
@@ -166,8 +163,7 @@ std::string NewVolumeDialog::variableName() const
 #endif
 }
 
-std::string NewVolumeDialog::filename() const
-{
+std::string NewVolumeDialog::filename() const {
 #if QT_VERSION < 0x040000
   return std::string((const char *)_ui->_filename->text());
 #else
@@ -175,8 +171,7 @@ std::string NewVolumeDialog::filename() const
 #endif
 }
 
-std::string NewVolumeDialog::volumeCopyFilename() const
-{
+std::string NewVolumeDialog::volumeCopyFilename() const {
 #if QT_VERSION < 0x040000
   return std::string((const char *)_ui->_volumeCopyFilename->text());
 #else
@@ -184,167 +179,164 @@ std::string NewVolumeDialog::volumeCopyFilename() const
 #endif
 }
 
-bool NewVolumeDialog::extractSubVolume() const
-{
+bool NewVolumeDialog::extractSubVolume() const {
   return _ui->_extractSubVolume->isChecked();
 }
 
-NewVolumeDialog::ExtractSubVolumeMethod NewVolumeDialog::extractSubVolumeMethod() const
-{
+NewVolumeDialog::ExtractSubVolumeMethod
+NewVolumeDialog::extractSubVolumeMethod() const {
 #if QT_VERSION < 0x040000
-  return ExtractSubVolumeMethod(_ui->_extractSubVolumeMethod->currentPageIndex());
+  return ExtractSubVolumeMethod(
+      _ui->_extractSubVolumeMethod->currentPageIndex());
 #else
   return ExtractSubVolumeMethod(_ui->_extractSubVolumeMethod->currentIndex());
 #endif
 }
 
-VolMagick::IndexBoundingBox NewVolumeDialog::extractIndexSubVolume() const
-{
-  return VolMagick::IndexBoundingBox(_ui->_extractSubVolumeMinIndexX->text().toInt(),
-                                     _ui->_extractSubVolumeMinIndexY->text().toInt(),
-                                     _ui->_extractSubVolumeMinIndexZ->text().toInt(),
-                                     _ui->_extractSubVolumeMaxIndexX->text().toInt(),
-                                     _ui->_extractSubVolumeMaxIndexY->text().toInt(),
-                                     _ui->_extractSubVolumeMaxIndexZ->text().toInt());
+VolMagick::IndexBoundingBox NewVolumeDialog::extractIndexSubVolume() const {
+  return VolMagick::IndexBoundingBox(
+      _ui->_extractSubVolumeMinIndexX->text().toInt(),
+      _ui->_extractSubVolumeMinIndexY->text().toInt(),
+      _ui->_extractSubVolumeMinIndexZ->text().toInt(),
+      _ui->_extractSubVolumeMaxIndexX->text().toInt(),
+      _ui->_extractSubVolumeMaxIndexY->text().toInt(),
+      _ui->_extractSubVolumeMaxIndexZ->text().toInt());
 }
 
-VolMagick::BoundingBox NewVolumeDialog::extractSubVolumeBoundingBox() const
-{
-  return VolMagick::BoundingBox(_ui->_extractSubVolumeMinX->text().toDouble(),
-                                _ui->_extractSubVolumeMinY->text().toDouble(),
-                                _ui->_extractSubVolumeMinZ->text().toDouble(),
-                                _ui->_extractSubVolumeMaxX->text().toDouble(),
-                                _ui->_extractSubVolumeMaxY->text().toDouble(),
-                                _ui->_extractSubVolumeMaxZ->text().toDouble());
+VolMagick::BoundingBox NewVolumeDialog::extractSubVolumeBoundingBox() const {
+  return VolMagick::BoundingBox(
+      _ui->_extractSubVolumeMinX->text().toDouble(),
+      _ui->_extractSubVolumeMinY->text().toDouble(),
+      _ui->_extractSubVolumeMinZ->text().toDouble(),
+      _ui->_extractSubVolumeMaxX->text().toDouble(),
+      _ui->_extractSubVolumeMaxY->text().toDouble(),
+      _ui->_extractSubVolumeMaxZ->text().toDouble());
 }
 
-VolMagick::Dimension NewVolumeDialog::extractSubVolumeDimension() const
-{
-  return VolMagick::Dimension(_ui->_extractSubVolumeBoundingBoxDimX->text().toInt(),
-                              _ui->_extractSubVolumeBoundingBoxDimY->text().toInt(),
-                              _ui->_extractSubVolumeBoundingBoxDimZ->text().toInt());
+VolMagick::Dimension NewVolumeDialog::extractSubVolumeDimension() const {
+  return VolMagick::Dimension(
+      _ui->_extractSubVolumeBoundingBoxDimX->text().toInt(),
+      _ui->_extractSubVolumeBoundingBoxDimY->text().toInt(),
+      _ui->_extractSubVolumeBoundingBoxDimZ->text().toInt());
 }
 
-void NewVolumeDialog::okSlot()
-{
-  //error checking
-  if(_ui->_newVolumeButton->isChecked())
-    {
-      if(_ui->_dimensionX->text().toInt() <= 0 ||
-	 _ui->_dimensionY->text().toInt() <= 0 ||
-	 _ui->_dimensionZ->text().toInt() <= 0)
-	{
-	  QMessageBox::critical( this, "Input error", "Dimension should be at least 1x1x1!" );
-	  return;
-	}
-      
-      if((_ui->_boundingBoxMaxX->text().toDouble() - _ui->_boundingBoxMinX->text().toDouble()) <= 0 ||
-	 (_ui->_boundingBoxMaxY->text().toDouble() - _ui->_boundingBoxMinY->text().toDouble()) <= 0 ||
-	 (_ui->_boundingBoxMaxZ->text().toDouble() - _ui->_boundingBoxMinZ->text().toDouble()) <= 0)
-	{
-	  QMessageBox::critical( this, "Input error", 
-				 "Invalid bounding box!\n"
-				 "Bounding box must have volume, and min < max");
-	  return;
-	}
-    }
-  else if(_ui->_copyVolumeButton->isChecked())
-    {
-      if(_ui->_volumeCopyFilename->text().isEmpty())
-	{
-	  QMessageBox::critical( this, "Input error", "Please specify a filename for the volume to copy" );
-	  return;
-	}
-    }
-
-  if(_ui->_filename->text().isEmpty())
-    {
-      QMessageBox::critical( this, "Input error", "Please specify a filename for this new volume" );
+void NewVolumeDialog::okSlot() {
+  // error checking
+  if (_ui->_newVolumeButton->isChecked()) {
+    if (_ui->_dimensionX->text().toInt() <= 0 ||
+        _ui->_dimensionY->text().toInt() <= 0 ||
+        _ui->_dimensionZ->text().toInt() <= 0) {
+      QMessageBox::critical(this, "Input error",
+                            "Dimension should be at least 1x1x1!");
       return;
     }
 
-  while(QFileInfo(_ui->_filename->text()).exists() || _ui->_filename->text().isEmpty())
-    {
-      if(!_ui->_filename->text().isEmpty())
-	{
-	  int retval = QMessageBox::warning(this,
-					    "Warning",
-					    "File exists! Overwrite?",
-					    QMessageBox::No,
-					    QMessageBox::Yes);
-	  if(retval == QMessageBox::No)
-	    fileSlot();
-	  else
-	    break;
-	}
-      else if(_ui->_filename->text().isEmpty())
-	{
-	  QMessageBox::critical( this, "Input error", "Please specify a filename for this new volume" );
-	  return;
-	}
+    if ((_ui->_boundingBoxMaxX->text().toDouble() -
+         _ui->_boundingBoxMinX->text().toDouble()) <= 0 ||
+        (_ui->_boundingBoxMaxY->text().toDouble() -
+         _ui->_boundingBoxMinY->text().toDouble()) <= 0 ||
+        (_ui->_boundingBoxMaxZ->text().toDouble() -
+         _ui->_boundingBoxMinZ->text().toDouble()) <= 0) {
+      QMessageBox::critical(this, "Input error",
+                            "Invalid bounding box!\n"
+                            "Bounding box must have volume, and min < max");
+      return;
     }
+  } else if (_ui->_copyVolumeButton->isChecked()) {
+    if (_ui->_volumeCopyFilename->text().isEmpty()) {
+      QMessageBox::critical(
+          this, "Input error",
+          "Please specify a filename for the volume to copy");
+      return;
+    }
+  }
+
+  if (_ui->_filename->text().isEmpty()) {
+    QMessageBox::critical(this, "Input error",
+                          "Please specify a filename for this new volume");
+    return;
+  }
+
+  while (QFileInfo(_ui->_filename->text()).exists() ||
+         _ui->_filename->text().isEmpty()) {
+    if (!_ui->_filename->text().isEmpty()) {
+      int retval =
+          QMessageBox::warning(this, "Warning", "File exists! Overwrite?",
+                               QMessageBox::No, QMessageBox::Yes);
+      if (retval == QMessageBox::No)
+        fileSlot();
+      else
+        break;
+    } else if (_ui->_filename->text().isEmpty()) {
+      QMessageBox::critical(this, "Input error",
+                            "Please specify a filename for this new volume");
+      return;
+    }
+  }
 
   accept();
 }
 
-void NewVolumeDialog::fileSlot()
-{
+void NewVolumeDialog::fileSlot() {
 #if QT_VERSION < 0x040000
   _ui->_filename->setText(QFileDialog::getSaveFileName(QString(),
                                                        "RawIV (*.rawiv);;"
-                                                       "RawV (*.rawv)"
-                                                       , this));
+                                                       "RawV (*.rawv)",
+                                                       this));
 #else
-  _ui->_filename->setText(QFileDialog::getSaveFileName(this,
-                                                       tr("New file"),
+  _ui->_filename->setText(QFileDialog::getSaveFileName(this, tr("New file"),
                                                        QString(),
                                                        "RawIV (*.rawiv);;"
                                                        "RawV (*.rawv)"));
 #endif
 }
 
-void NewVolumeDialog::volumeCopyFilenameSlot()
-{
+void NewVolumeDialog::volumeCopyFilenameSlot() {
 #if QT_VERSION < 0x040000
-  _ui->_volumeCopyFilename->setText(QFileDialog::getOpenFileName(QString(),
-                                                                 "RawIV (*.rawiv);;"
-                                                                 "RawV (*.rawv)"
-                                                                 , this));
+  _ui->_volumeCopyFilename->setText(
+      QFileDialog::getOpenFileName(QString(),
+                                   "RawIV (*.rawiv);;"
+                                   "RawV (*.rawv)",
+                                   this));
 #else
-  _ui->_volumeCopyFilename->setText(QFileDialog::getOpenFileName(this,
-                                                                 "Copy file",
-                                                                 QString(),
-                                                                 "RawIV (*.rawiv);;"
-                                                                 "RawV (*.rawv)"));
+  _ui->_volumeCopyFilename->setText(
+      QFileDialog::getOpenFileName(this, "Copy file", QString(),
+                                   "RawIV (*.rawiv);;"
+                                   "RawV (*.rawv)"));
 #endif
 }
 
-void NewVolumeDialog::acquireVolumeInfo(bool doit)
-{
-  if(doit)
-    {
-      if(_ui->_volumeCopyFilename->text().isEmpty())
-	return;
+void NewVolumeDialog::acquireVolumeInfo(bool doit) {
+  if (doit) {
+    if (_ui->_volumeCopyFilename->text().isEmpty())
+      return;
 
-#if QT_VERSION < 0x040000      
-      VolMagick::VolumeFileInfo vfi(_ui->_volumeCopyFilename->text());
+#if QT_VERSION < 0x040000
+    VolMagick::VolumeFileInfo vfi(_ui->_volumeCopyFilename->text());
 #else
-      VolMagick::VolumeFileInfo vfi((const char *)_ui->_volumeCopyFilename->text().toUtf8().constData());
+    VolMagick::VolumeFileInfo vfi(
+        (const char *)_ui->_volumeCopyFilename->text().toUtf8().constData());
 #endif
-      _ui->_extractSubVolumeMinIndexX->setText("0");
-      _ui->_extractSubVolumeMinIndexY->setText("0");
-      _ui->_extractSubVolumeMinIndexZ->setText("0");
-      _ui->_extractSubVolumeMaxIndexX->setText(QString("%1").arg(vfi.XDim()-1));
-      _ui->_extractSubVolumeMaxIndexY->setText(QString("%1").arg(vfi.YDim()-1));
-      _ui->_extractSubVolumeMaxIndexZ->setText(QString("%1").arg(vfi.ZDim()-1));
-      _ui->_extractSubVolumeMinX->setText(QString("%1").arg(vfi.XMin()));
-      _ui->_extractSubVolumeMinY->setText(QString("%1").arg(vfi.YMin()));
-      _ui->_extractSubVolumeMinZ->setText(QString("%1").arg(vfi.ZMin()));
-      _ui->_extractSubVolumeMaxX->setText(QString("%1").arg(vfi.XMax()));
-      _ui->_extractSubVolumeMaxY->setText(QString("%1").arg(vfi.YMax()));
-      _ui->_extractSubVolumeMaxZ->setText(QString("%1").arg(vfi.ZMax()));
-      _ui->_extractSubVolumeBoundingBoxDimX->setText(QString("%1").arg(vfi.XDim()));
-      _ui->_extractSubVolumeBoundingBoxDimY->setText(QString("%1").arg(vfi.YDim()));
-      _ui->_extractSubVolumeBoundingBoxDimZ->setText(QString("%1").arg(vfi.ZDim()));
-    }
+    _ui->_extractSubVolumeMinIndexX->setText("0");
+    _ui->_extractSubVolumeMinIndexY->setText("0");
+    _ui->_extractSubVolumeMinIndexZ->setText("0");
+    _ui->_extractSubVolumeMaxIndexX->setText(
+        QString("%1").arg(vfi.XDim() - 1));
+    _ui->_extractSubVolumeMaxIndexY->setText(
+        QString("%1").arg(vfi.YDim() - 1));
+    _ui->_extractSubVolumeMaxIndexZ->setText(
+        QString("%1").arg(vfi.ZDim() - 1));
+    _ui->_extractSubVolumeMinX->setText(QString("%1").arg(vfi.XMin()));
+    _ui->_extractSubVolumeMinY->setText(QString("%1").arg(vfi.YMin()));
+    _ui->_extractSubVolumeMinZ->setText(QString("%1").arg(vfi.ZMin()));
+    _ui->_extractSubVolumeMaxX->setText(QString("%1").arg(vfi.XMax()));
+    _ui->_extractSubVolumeMaxY->setText(QString("%1").arg(vfi.YMax()));
+    _ui->_extractSubVolumeMaxZ->setText(QString("%1").arg(vfi.ZMax()));
+    _ui->_extractSubVolumeBoundingBoxDimX->setText(
+        QString("%1").arg(vfi.XDim()));
+    _ui->_extractSubVolumeBoundingBoxDimY->setText(
+        QString("%1").arg(vfi.YDim()));
+    _ui->_extractSubVolumeBoundingBoxDimZ->setText(
+        QString("%1").arg(vfi.ZDim()));
+  }
 }

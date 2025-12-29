@@ -26,7 +26,7 @@
 #ifdef _WIN32
 #include <windows.h>
 
-#if ! defined (_WIN32_WCE)
+#if !defined(_WIN32_WCE)
 /* Define if you have the ftime function.  */
 #define LOG4CPLUS_HAVE_FTIME 1
 #define LOG4CPLUS_HAVE_ERRNO_H
@@ -35,13 +35,13 @@
 #define LOG4CPLUS_HAVE_TIME_H
 #define LOG4CPLUS_HAVE_STDLIB_H
 
-#if defined (_WIN32_WCE)
-#  define LOG4CPLUS_DLLMAIN_HINSTANCE HANDLE
-#  undef LOG4CPLUS_HAVE_NT_EVENT_LOG
+#if defined(_WIN32_WCE)
+#define LOG4CPLUS_DLLMAIN_HINSTANCE HANDLE
+#undef LOG4CPLUS_HAVE_NT_EVENT_LOG
 #else
-#  define LOG4CPLUS_DLLMAIN_HINSTANCE HINSTANCE
-#  define LOG4CPLUS_HAVE_NT_EVENT_LOG
-#  define LOG4CPLUS_HAVE_WIN32_CONSOLE
+#define LOG4CPLUS_DLLMAIN_HINSTANCE HINSTANCE
+#define LOG4CPLUS_HAVE_NT_EVENT_LOG
+#define LOG4CPLUS_HAVE_WIN32_CONSOLE
 #endif
 
 // Enable Win32DebugAppender
@@ -49,48 +49,48 @@
 
 // log4cplus_EXPORTS is used by the CMake build system.  DLL_EXPORT is
 // used by the autotools build system.
-#if (defined (log4cplus_EXPORTS) || defined (DLL_EXPORT)) \
-    && ! defined (LOG4CPLUS_STATIC)
-#  undef LOG4CPLUS_BUILD_DLL
-#  define LOG4CPLUS_BUILD_DLL
+#if (defined(log4cplus_EXPORTS) || defined(DLL_EXPORT)) &&                   \
+    !defined(LOG4CPLUS_STATIC)
+#undef LOG4CPLUS_BUILD_DLL
+#define LOG4CPLUS_BUILD_DLL
 #endif
 
-#if ! defined (LOG4CPLUS_BUILD_DLL)
-#  undef LOG4CPLUS_STATIC
-#  define LOG4CPLUS_STATIC
+#if !defined(LOG4CPLUS_BUILD_DLL)
+#undef LOG4CPLUS_STATIC
+#define LOG4CPLUS_STATIC
 #endif
 
-#if defined (LOG4CPLUS_STATIC) && defined (LOG4CPLUS_BUILD_DLL)
-#  error LOG4CPLUS_STATIC and LOG4CPLUS_BUILD_DLL cannot be defined both.
+#if defined(LOG4CPLUS_STATIC) && defined(LOG4CPLUS_BUILD_DLL)
+#error LOG4CPLUS_STATIC and LOG4CPLUS_BUILD_DLL cannot be defined both.
 #endif
 
-#if defined (LOG4CPLUS_BUILD_DLL)
-#  if defined (INSIDE_LOG4CPLUS)
-#    define LOG4CPLUS_EXPORT __declspec(dllexport)
-#  else
-#    define LOG4CPLUS_EXPORT __declspec(dllimport)
-#  endif
+#if defined(LOG4CPLUS_BUILD_DLL)
+#if defined(INSIDE_LOG4CPLUS)
+#define LOG4CPLUS_EXPORT __declspec(dllexport)
 #else
-#  define LOG4CPLUS_EXPORT
+#define LOG4CPLUS_EXPORT __declspec(dllimport)
+#endif
+#else
+#define LOG4CPLUS_EXPORT
 #endif
 
 #ifndef LOG4CPLUS_SINGLE_THREADED
-#  define LOG4CPLUS_USE_WIN32_THREADS
+#define LOG4CPLUS_USE_WIN32_THREADS
 #endif
 
 #if defined(_MSC_VER)
-  // Warning about: identifier was truncated to '255' characters in the debug information
-#  pragma warning( disable : 4786 )
-  // Warning about: <type1> needs to have dll-interface to be used by clients of class <type2>
-#  pragma warning( disable : 4251 )
+// Warning about: identifier was truncated to '255' characters in the debug
+// information
+#pragma warning(disable : 4786)
+// Warning about: <type1> needs to have dll-interface to be used by clients of
+// class <type2>
+#pragma warning(disable : 4251)
 
-#  if _MSC_VER >= 1400 && ! defined (_WIN32_WCE)
-#    define LOG4CPLUS_WORKING_LOCALE
-#  endif
+#if _MSC_VER >= 1400 && !defined(_WIN32_WCE)
+#define LOG4CPLUS_WORKING_LOCALE
+#endif
 
 #endif
 
-
 #endif // _WIN32
 #endif // LOG4CPLUS_CONFIG_WIN32_HEADER_
-

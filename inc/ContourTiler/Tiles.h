@@ -1,14 +1,13 @@
 #ifndef __TILES_H__
 #define __TILES_H__
 
-#include <boost/tuple/tuple.hpp>
-#include <boost/shared_ptr.hpp>
 #include <ContourTiler/common.h>
+#include <boost/shared_ptr.hpp>
+#include <boost/tuple/tuple.hpp>
 
 CONTOURTILER_BEGIN_NAMESPACE
 
-class Tiles
-{
+class Tiles {
   // _vertices is a map with key/value of Point_3/size_t
   // where size_t is the index of the point in iteration
   // order.
@@ -20,7 +19,7 @@ public:
   typedef boost::tuple<double, double, double> Color;
 
 private:
-  typedef std::map<Point_3, std::pair<size_t, Color> > Vertex_list;
+  typedef std::map<Point_3, std::pair<size_t, Color>> Vertex_list;
   typedef Vertex_list::iterator Vertex_iterator;
   typedef std::vector<Vertex_iterator> Tile_list;
   typedef Tile_list::iterator Tile_iterator;
@@ -30,14 +29,13 @@ public:
   Tiles() : _vertices(new Vertex_list()), _tiles(new Tile_list()) {}
   ~Tiles() {}
 
-//   std::list<Point_3> vertices() const;
-  std::list<std::pair<Point_3, Color> > vertices() const;
+  //   std::list<Point_3> vertices() const;
+  std::list<std::pair<Point_3, Color>> vertices() const;
 
   template <typename Output_iterator>
-  void vertices(Output_iterator verts) const
-  {
-    for (Vertex_list::const_iterator it = _vertices->begin(); it != _vertices->end(); ++it)
-    {
+  void vertices(Output_iterator verts) const {
+    for (Vertex_list::const_iterator it = _vertices->begin();
+         it != _vertices->end(); ++it) {
       *verts = std::make_pair(it->first, it->second.second);
       ++verts;
     }
@@ -45,17 +43,17 @@ public:
 
   std::list<size_t> tile_indices() const;
 
-  void insert(const Point_3& v0, const Point_3& v1, const Point_3& v2);
+  void insert(const Point_3 &v0, const Point_3 &v1, const Point_3 &v2);
 
-  void insert(const Point_3& v0, const Point_3& v1, const Point_3& v2, double r, double g, double b);
+  void insert(const Point_3 &v0, const Point_3 &v1, const Point_3 &v2,
+              double r, double g, double b);
 
-  void insert(const Tiles& tiles);
+  void insert(const Tiles &tiles);
 
   template <typename Output_iterator>
-  void as_single_array(Output_iterator tiles) const
-  {
-    for (Tile_const_iterator it = _tiles->begin(); it != _tiles->end(); ++it)
-    {
+  void as_single_array(Output_iterator tiles) const {
+    for (Tile_const_iterator it = _tiles->begin(); it != _tiles->end();
+         ++it) {
       *tiles = (*it)->first;
       ++tiles;
     }

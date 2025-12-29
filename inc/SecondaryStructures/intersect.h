@@ -17,17 +17,24 @@
 
   You should have received a copy of the GNU Lesser General Public
   License along with this library; if not, write to the Free Software
-  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301
+  USA
 */
 
 #ifndef __INTERSECT_H__
 #define __INTERSECT_H__
 
-#include <SecondaryStructures/util.h>
 #include <SecondaryStructures/datastruct_ss.h>
+#include <SecondaryStructures/util.h>
 
-bool does_intersect_ray3_seg3_in_plane(const SecondaryStructures::Ray_3& r, const SecondaryStructures::Segment& s);
-SecondaryStructures::Point intersect_ray3_seg3(const SecondaryStructures::Ray_3& r, const SecondaryStructures::Segment& s, bool& is_correct_intersection);
-bool does_intersect_convex_polygon_segment_3_in_3d(const vector<SecondaryStructures::Point>& conv_poly, const SecondaryStructures::Segment& s);
+bool does_intersect_ray3_seg3_in_plane(const SecondaryStructures::Ray_3 &r,
+                                       const SecondaryStructures::Segment &s);
+SecondaryStructures::Point
+intersect_ray3_seg3(const SecondaryStructures::Ray_3 &r,
+                    const SecondaryStructures::Segment &s,
+                    bool &is_correct_intersection);
+bool does_intersect_convex_polygon_segment_3_in_3d(
+    const vector<SecondaryStructures::Point> &conv_poly,
+    const SecondaryStructures::Segment &s);
 
 #endif

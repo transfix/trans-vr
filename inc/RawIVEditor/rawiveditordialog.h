@@ -1,8 +1,8 @@
 /*
   Copyright 2002-2003 The University of Texas at Austin
-  
-	Authors: Anthony Thane <thanea@ices.utexas.edu>
-	Advisor: Chandrajit Bajaj <bajaj@cs.utexas.edu>
+
+        Authors: Anthony Thane <thanea@ices.utexas.edu>
+        Advisor: Chandrajit Bajaj <bajaj@cs.utexas.edu>
 
   This file is part of Volume Rover.
 
@@ -21,26 +21,24 @@
   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-#include "rawiveditordialogbase.h"
 #include "qfile.h"
+#include "rawiveditordialogbase.h"
 
-
-class RawIVEditorDialog : public RawIVEditorDialogBase
-{
-	Q_OBJECT
+class RawIVEditorDialog : public RawIVEditorDialogBase {
+  Q_OBJECT
 public:
-	RawIVEditorDialog( QWidget* parent = 0, const char* name = 0, bool modal = FALSE, WFlags f = 0 );
+  RawIVEditorDialog(QWidget *parent = 0, const char *name = 0,
+                    bool modal = FALSE, WFlags f = 0);
 
-	virtual void accept();
+  virtual void accept();
 
-	bool get(float& target, QLineEdit* source);
-	bool get(unsigned int& target, QLineEdit* source);
+  bool get(float &target, QLineEdit *source);
+  bool get(unsigned int &target, QLineEdit *source);
 
-	void writeToFile(QFile& file, float val);
-	void writeToFile(QFile& file, unsigned int val);
-	
-	void userDefinedMinMaxChanged(bool change);
+  void writeToFile(QFile &file, float val);
+  void writeToFile(QFile &file, unsigned int val);
 
-	QString m_FileName;
+  void userDefinedMinMaxChanged(bool change);
+
+  QString m_FileName;
 };
-

@@ -1,8 +1,8 @@
 /*
   Copyright 2011 The University of Texas at Austin
-  
-	Authors: Alex Rand <arand@ices.utexas.edu>
-	Advisor: Chandrajit Bajaj <bajaj@cs.utexas.edu>
+
+        Authors: Alex Rand <arand@ices.utexas.edu>
+        Advisor: Chandrajit Bajaj <bajaj@cs.utexas.edu>
 
   This file is part of Volume Rover.
 
@@ -24,36 +24,32 @@
 #ifndef __CURATIONDIALOG_H__
 #define __CURATIONDIALOG_H__
 
-//#include <qglobal.h>
+// #include <qglobal.h>
 
 #include <QDialog>
 #include <QString>
 
-namespace Ui
-{
-  class CurationDialog;
+namespace Ui {
+class CurationDialog;
 }
 
 #include "ui_CurationDialog.h"
-      
-class CurationDialog : public QDialog
-{
+
+class CurationDialog : public QDialog {
   Q_OBJECT
 
- public:
-  CurationDialog(QWidget *parent=nullptr,Qt::WindowFlags flags=Qt::WindowFlags());
+public:
+  CurationDialog(QWidget *parent = nullptr,
+                 Qt::WindowFlags flags = Qt::WindowFlags());
 
   virtual ~CurationDialog();
 
   void RunCuration();
 
-  public slots:
+public slots:
 
-
-  protected:
-
+protected:
   Ui::CurationDialog *_ui;
-
 };
 
 #endif

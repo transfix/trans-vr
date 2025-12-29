@@ -7,39 +7,41 @@
 #include <CGAL/Extended_cartesian.h>
 #include <CGAL/Filtered_extended_homogeneous.h>
 #include <CGAL/Lazy_exact_nt.h>
-
 #include <ContourTiler/common.h>
 // #include "CppUnitLite2/CppUnitLite2.h"
 
 using namespace CONTOURTILER_NAMESPACE;
 using namespace std;
 
-// Note: CGAL 5.6+ provides built-in hash functions for Point_2, Point_3, Segment_2, Segment_3
-// The custom implementations below conflict with CGAL's standard ones, so they are disabled.
-// If needed for custom kernels, use a different namespace or function name.
+// Note: CGAL 5.6+ provides built-in hash functions for Point_2, Point_3,
+// Segment_2, Segment_3 The custom implementations below conflict with CGAL's
+// standard ones, so they are disabled. If needed for custom kernels, use a
+// different namespace or function name.
 
 namespace CGAL {
-//   std::size_t hash_value(const CGAL::Point_2<CGAL::Cartesian<double> >& point);
+//   std::size_t hash_value(const CGAL::Point_2<CGAL::Cartesian<double> >&
+//   point);
 
-  // Disabled - conflicts with CGAL 5.6+ built-in hash functions
-  // template <typename Kernel>
-  // std::size_t hash_value(const CGAL::Point_2<Kernel>& point);
+// Disabled - conflicts with CGAL 5.6+ built-in hash functions
+// template <typename Kernel>
+// std::size_t hash_value(const CGAL::Point_2<Kernel>& point);
 
-  // template <typename Kernel>
-  // std::size_t hash_value(const CGAL::Point_3<Kernel>& point);
+// template <typename Kernel>
+// std::size_t hash_value(const CGAL::Point_3<Kernel>& point);
 
-//   std::size_t hash_value(const CGAL::Point_3<CGAL::Cartesian<double> >& point);
-  // template <typename Kernel>
-  // std::size_t hash_value(const CGAL::Segment_3<Kernel>& segment);
+//   std::size_t hash_value(const CGAL::Point_3<CGAL::Cartesian<double> >&
+//   point);
+// template <typename Kernel>
+// std::size_t hash_value(const CGAL::Segment_3<Kernel>& segment);
 
-  // template <typename Kernel>
-  // std::size_t hash_value(const CGAL::Segment_2<Kernel>& segment);
+// template <typename Kernel>
+// std::size_t hash_value(const CGAL::Segment_2<Kernel>& segment);
 
-//   std::size_t hash_value(const CGAL::Segment_3<CGAL::Cartesian<double> >& segment);
-//   std::size_t hash_value(const CGAL::Segment_3<Cartesian_25<double> >& segment);
+//   std::size_t hash_value(const CGAL::Segment_3<CGAL::Cartesian<double> >&
+//   segment); std::size_t hash_value(const
+//   CGAL::Segment_3<Cartesian_25<double> >& segment);
 
-  
-}
+} // namespace CGAL
 
 // CONTOURTILER_BEGIN_NAMESPACE
 
@@ -49,14 +51,16 @@ namespace CGAL {
 // //   {
 // //     return boost::hash_value(contour.get());
 // //   }
-//   std::size_t operator()(const CGAL::Point_2<CGAL::Cartesian<double> >& point) const
+//   std::size_t operator()(const CGAL::Point_2<CGAL::Cartesian<double> >&
+//   point) const
 //   {
 //     std::size_t seed = 0;
 //     boost::hash_combine(seed, point.x());
 //     boost::hash_combine(seed, point.y());
 //     return seed;
 //   }
-//   std::size_t operator()(const CGAL::Point_3<CGAL::Cartesian<double> >& point) const
+//   std::size_t operator()(const CGAL::Point_3<CGAL::Cartesian<double> >&
+//   point) const
 //   {
 //     std::size_t seed = 0;
 //     boost::hash_combine(seed, point.x());
@@ -64,7 +68,8 @@ namespace CGAL {
 //     boost::hash_combine(seed, point.z());
 //     return seed;
 //   }
-//   std::size_t operator()(const CGAL::Segment_3<CGAL::Cartesian<double> >& segment) const
+//   std::size_t operator()(const CGAL::Segment_3<CGAL::Cartesian<double> >&
+//   segment) const
 //   {
 //     std::size_t seed = 0;
 //     boost::hash_combine(seed, segment.source());
@@ -72,7 +77,6 @@ namespace CGAL {
 //     return seed;
 //   }
 // };
-
 
 // CONTOURTILER_END_NAMESPACE
 

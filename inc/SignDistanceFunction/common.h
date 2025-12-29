@@ -17,32 +17,29 @@
 
   You should have received a copy of the GNU Lesser General Public
   License along with this library; if not, write to the Free Software
-  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301
+  USA
 */
 
 #ifndef CCV_SDF_COMMON_H
 #define CCV_SDF_COMMON_H
 
+#include <SignDistanceFunction/head.h>
+#include <map>
 #include <stdio.h>
 #include <stdlib.h>
-#include <map>
-
-#include <SignDistanceFunction/head.h>
 
 namespace SDFLibrary {
 
-
 bool initSDF();
 
-void readGeom(int nverts, float* verts, int ntris, int* tris);
+void readGeom(int nverts, float *verts, int ntris, int *tris);
 
 void adjustData();
 
 void compute();
 
-
-
-int isEqual (double one, double two);
+int isEqual(double one, double two);
 
 int isZero(double num);
 
@@ -55,8 +52,6 @@ int isZero(SDFLibrary::myPoint one);
 int isSame(SDFLibrary::myPoint one, SDFLibrary::myPoint two);
 
 void init_all_vars();
-
-
 
 void propagate_left(int i, int j, int k);
 
@@ -74,9 +69,6 @@ void apply_distance_transform(int vi, int vj, int vk);
 
 void insert_bound_vert(int vert);
 
-
-
-
 int index2vert(int i, int j, int k);
 
 void _vert2index(int c, int &i, int &j, int &k);
@@ -91,34 +83,35 @@ double yCoord(int i);
 
 double zCoord(int i);
 
-void object2octree(double xmin, double ymin, double zmin, double xmax, double ymax, double zmax, int &ci, int &cj, int &ck);
+void object2octree(double xmin, double ymin, double zmin, double xmax,
+                   double ymax, double zmax, int &ci, int &cj, int &ck);
 
 double getTime();
 
-	extern double MAX_DIST;
-	extern int size;
+extern double MAX_DIST;
+extern int size;
 
-	extern triangle* surface;
-	extern myVert* vertices;
-	extern myPoint* normals;
-	extern double* distances;
-	extern cell*** sdf;
-	extern voxel* values;
-	extern int total_points, total_triangles, all_verts_touched;
-	extern double minx, miny, minz, maxx, maxy, maxz;
+extern triangle *surface;
+extern myVert *vertices;
+extern myPoint *normals;
+extern double *distances;
+extern cell ***sdf;
+extern voxel *values;
+extern int total_points, total_triangles, all_verts_touched;
+extern double minx, miny, minz, maxx, maxy, maxz;
 
-	extern double TOLERANCE;
+extern double TOLERANCE;
 
-	extern int octree_depth;
-	extern int flipNormals;
+extern int octree_depth;
+extern int flipNormals;
 
-	extern bool *bverts;
-	extern int *queues;
+extern bool *bverts;
+extern int *queues;
 
-	extern double minext[3];
-	extern double maxext[3];
-	extern double span[3];
-	
-}; //namespace SDFLibrary
+extern double minext[3];
+extern double maxext[3];
+extern double span[3];
+
+}; // namespace SDFLibrary
 
 #endif

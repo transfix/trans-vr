@@ -17,7 +17,8 @@
 
   You should have received a copy of the GNU Lesser General Public
   License along with this library; if not, write to the Free Software
-  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301
+  USA
 */
 
 /* $Id: BoundingBoxModify.cpp 4741 2011-10-21 21:22:06Z transfix $ */
@@ -25,18 +26,18 @@
 #include <qglobal.h>
 
 #if QT_VERSION < 0x040000
-#include <qvalidator.h>
-#include <qlineedit.h>
-#include <qmessagebox.h>
 #include <qcheckbox.h>
 #include <qgroupbox.h>
+#include <qlineedit.h>
+#include <qmessagebox.h>
 #include <qpushbutton.h>
+#include <qvalidator.h>
 #else
+#include <QCheckBox>
 #include <QDoubleValidator>
+#include <QGroupBox>
 #include <QLineEdit>
 #include <QMessageBox>
-#include <QCheckBox>
-#include <QGroupBox>
 #include <QPushButton>
 #endif
 
@@ -48,22 +49,21 @@
 #include "ui_BoundingBoxModify.h"
 #endif
 
-BoundingBoxModify::BoundingBoxModify(QWidget* parent, 
+BoundingBoxModify::BoundingBoxModify(QWidget *parent,
 #if QT_VERSION < 0x040000
-                                     const char* name, WFlags f
+                                     const char *name, WFlags f
 #else
                                      Qt::WindowFlags flags
 #endif
                                      )
-  : QDialog(parent,
+    : QDialog(parent,
 #if QT_VERSION < 0x040000
-            name,false,f
+              name, false, f
 #else
-            flags
+              flags
 #endif
-            ),
-    _ui(NULL)
-{
+              ),
+      _ui(NULL) {
 #if QT_VERSION < 0x040000
   _ui = new BoundingBoxModifyBase(this);
 #else
@@ -74,7 +74,7 @@ BoundingBoxModify::BoundingBoxModify(QWidget* parent,
   connect(_ui->_cancel, SIGNAL(clicked()), SLOT(reject()));
   connect(_ui->_ok, SIGNAL(clicked()), SLOT(okSlot()));
 
-  QDoubleValidator* doublev = new QDoubleValidator(this);
+  QDoubleValidator *doublev = new QDoubleValidator(this);
 
   _ui->_boundingBoxMinX->setValidator(doublev);
   _ui->_boundingBoxMinY->setValidator(doublev);
@@ -87,13 +87,12 @@ BoundingBoxModify::BoundingBoxModify(QWidget* parent,
   _ui->_centerPointZ->setValidator(doublev);
 
   boundingBox(VolMagick::BoundingBox());
-  centerPoint(0.0,0.0,0.0);
+  centerPoint(0.0, 0.0, 0.0);
 }
 
 BoundingBoxModify::~BoundingBoxModify() { delete _ui; }
 
-VolMagick::BoundingBox BoundingBoxModify::boundingBox() const
-{
+VolMagick::BoundingBox BoundingBoxModify::boundingBox() const {
   return VolMagick::BoundingBox(_ui->_boundingBoxMinX->text().toDouble(),
                                 _ui->_boundingBoxMinY->text().toDouble(),
                                 _ui->_boundingBoxMinZ->text().toDouble(),
@@ -102,8 +101,7 @@ VolMagick::BoundingBox BoundingBoxModify::boundingBox() const
                                 _ui->_boundingBoxMaxZ->text().toDouble());
 }
 
-void BoundingBoxModify::boundingBox(const VolMagick::BoundingBox& bbox)
-{
+void BoundingBoxModify::boundingBox(const VolMagick::BoundingBox &bbox) {
   _ui->_boundingBoxMinX->setText(QString("%1").arg(bbox.XMin()));
   _ui->_boundingBoxMinY->setText(QString("%1").arg(bbox.YMin()));
   _ui->_boundingBoxMinZ->setText(QString("%1").arg(bbox.ZMin()));
@@ -112,44 +110,40 @@ void BoundingBoxModify::boundingBox(const VolMagick::BoundingBox& bbox)
   _ui->_boundingBoxMaxZ->setText(QString("%1").arg(bbox.ZMax()));
 }
 
-double BoundingBoxModify::centerPointX() const
-{
+double BoundingBoxModify::centerPointX() const {
   return _ui->_centerPointX->text().toDouble();
 }
 
-double BoundingBoxModify::centerPointY() const
-{
+double BoundingBoxModify::centerPointY() const {
   return _ui->_centerPointY->text().toDouble();
 }
 
-double BoundingBoxModify::centerPointZ() const
-{
+double BoundingBoxModify::centerPointZ() const {
   return _ui->_centerPointZ->text().toDouble();
 }
 
-void BoundingBoxModify::centerPoint(double x, double y, double z)
-{
+void BoundingBoxModify::centerPoint(double x, double y, double z) {
   _ui->_centerPointX->setText(QString("%1").arg(x));
   _ui->_centerPointY->setText(QString("%1").arg(y));
   _ui->_centerPointZ->setText(QString("%1").arg(z));
 }
 
-bool BoundingBoxModify::usingCenterPoint() const
-{
+bool BoundingBoxModify::usingCenterPoint() const {
   return _ui->_useCenterPoint->isChecked();
 }
 
-void BoundingBoxModify::okSlot()
-{
-  if((_ui->_boundingBoxMaxX->text().toDouble() - _ui->_boundingBoxMinX->text().toDouble()) <= 0 ||
-     (_ui->_boundingBoxMaxY->text().toDouble() - _ui->_boundingBoxMinY->text().toDouble()) <= 0 ||
-     (_ui->_boundingBoxMaxZ->text().toDouble() - _ui->_boundingBoxMinZ->text().toDouble()) <= 0)
-    {
-      QMessageBox::critical( this, "Input error", 
-			     "Invalid bounding box!\n"
-			     "Bounding box must have volume, and min < max");
-      return;
-    }
+void BoundingBoxModify::okSlot() {
+  if ((_ui->_boundingBoxMaxX->text().toDouble() -
+       _ui->_boundingBoxMinX->text().toDouble()) <= 0 ||
+      (_ui->_boundingBoxMaxY->text().toDouble() -
+       _ui->_boundingBoxMinY->text().toDouble()) <= 0 ||
+      (_ui->_boundingBoxMaxZ->text().toDouble() -
+       _ui->_boundingBoxMinZ->text().toDouble()) <= 0) {
+    QMessageBox::critical(this, "Input error",
+                          "Invalid bounding box!\n"
+                          "Bounding box must have volume, and min < max");
+    return;
+  }
 
   accept();
 }

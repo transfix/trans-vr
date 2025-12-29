@@ -3,8 +3,7 @@
 
 #include <Tiling/ct/ct.h>
 
-namespace Tiling
-{
+namespace Tiling {
 
 char *mymalloc(int size);
 
@@ -16,9 +15,9 @@ void print_slice_structure(CTSlice p);
 
 void print_volume_structure(CTVolume p);
 
-CTVolume  InitVolume(int type, char *prefix, char *suffix, int first, int last,
-					 double zunits);
+CTVolume InitVolume(int type, char *prefix, char *suffix, int first, int last,
+                    double zunits);
 
-};
+}; // namespace Tiling
 
 #endif

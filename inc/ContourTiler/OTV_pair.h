@@ -5,13 +5,11 @@
 
 CONTOURTILER_BEGIN_NAMESPACE
 
-class OTV_pair
-{
+class OTV_pair {
 public:
   OTV_pair() {}
 
-  OTV_pair(const Point_3& u, const Point_3& v)
-  {
+  OTV_pair(const Point_3 &u, const Point_3 &v) {
     _top = u;
     _bottom = v;
     if (u.z() < v.z())
@@ -20,10 +18,10 @@ public:
 
   ~OTV_pair() {}
 
-  const Point_3& top() const { return _top; }
-  Point_3& top() { return _top; }
-  const Point_3& bottom() const { return _bottom; }
-  Point_3& bottom() { return _bottom; }
+  const Point_3 &top() const { return _top; }
+  Point_3 &top() { return _top; }
+  const Point_3 &bottom() const { return _bottom; }
+  Point_3 &bottom() { return _bottom; }
 
 private:
   Point_3 _top;

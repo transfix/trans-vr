@@ -3,8 +3,7 @@
 // #include <CGAL/Vector_3.h>
 // #include <CGAL/predicates_on_points_3.h>
 
-
-// namespace CEP {  
+// namespace CEP {
 // namespace intersection {
 
 //     namespace Line_3_Line_3 {
@@ -36,7 +35,6 @@
 //             return CGAL::make_object(i_point);
 //         }
 
-
 //         template <class R>
 //         CGAL::Object
 //         coplanar_intersection( const CGAL::Point_3<R>& p,
@@ -45,7 +43,7 @@
 //                                const CGAL::Point_3<R>& s )
 //         {
 //             CGAL_exactness_precondition( CGAL::coplanar(p,q,r,s) );
-    
+
 //             CGAL::Vector_3<R> d1 = q-p;
 //             CGAL::Vector_3<R> d2 = s-r;
 
@@ -55,8 +53,7 @@
 
 //             return coplanar_nonparallel_intersection(p,q,r,s);
 //         }
-        
-        
+
 //     }
 // }
 // }

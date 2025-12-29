@@ -18,7 +18,8 @@
 
   You should have received a copy of the GNU Lesser General Public
   License along with this library; if not, write to the Free Software
-  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301
+  USA
 */
 
 // Ray.cpp: implementation of the Ray class.
@@ -32,121 +33,102 @@
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
 
-namespace FastContouring
-{
+namespace FastContouring {
 
-Ray::Ray() : m_Origin(0.0f, 0.0f, 0.0f, 1.0f), m_Dir(0.0f, 0.0f, 1.0f, 0.0f)
-{
+Ray::Ray()
+    : m_Origin(0.0f, 0.0f, 0.0f, 1.0f), m_Dir(0.0f, 0.0f, 1.0f, 0.0f) {}
+
+Ray::Ray(const Vector &origin, const Vector &dir)
+    : m_Origin(origin), m_Dir(dir) {}
+
+Ray::~Ray() {}
+
+Vector Ray::getPointOnRay(float t) const { return m_Origin + m_Dir * t; }
+
+float Ray::nearestTOnXAxis(Vector Origin) const {
+  Origin[3] = 0;
+  Ray ray(m_Origin - Origin, m_Dir);
+  //	float distance = ray.distanceToXAxis(Origin);
+  float t =
+      -(ray.m_Origin[1] * ray.m_Dir[1] + ray.m_Origin[2] * ray.m_Dir[2]) /
+      ((ray.m_Dir[1] * ray.m_Dir[1] + ray.m_Dir[2] * ray.m_Dir[2]));
+  return t;
 }
 
-Ray::Ray(const Vector& origin, const Vector& dir) : m_Origin(origin), m_Dir(dir)
-{
-	
+float Ray::nearestTOnYAxis(Vector Origin) const {
+  Origin[3] = 0;
+  Ray ray(m_Origin - Origin, m_Dir);
+  //	float distance = ray.distanceToYAxis(Origin);
+  float t =
+      -(ray.m_Origin[0] * ray.m_Dir[0] + ray.m_Origin[2] * ray.m_Dir[2]) /
+      ((ray.m_Dir[0] * ray.m_Dir[0] + ray.m_Dir[2] * ray.m_Dir[2]));
+  return t;
 }
 
-Ray::~Ray()
-{
-
+float Ray::nearestTOnZAxis(Vector Origin) const {
+  Origin[3] = 0;
+  Ray ray(m_Origin - Origin, m_Dir);
+  //	float distance = ray.distanceToZAxis(Origin);
+  float t =
+      -(ray.m_Origin[0] * ray.m_Dir[0] + ray.m_Origin[1] * ray.m_Dir[1]) /
+      ((ray.m_Dir[1] * ray.m_Dir[1] + ray.m_Dir[0] * ray.m_Dir[0]));
+  return t;
 }
 
-Vector Ray::getPointOnRay(float t) const
-{
-	return m_Origin+m_Dir*t;
+Vector Ray::nearestPointOnXAxis(Vector Origin) const {
+  Origin[3] = 0;
+  float t = nearestTOnXAxis(Origin);
+  Vector result = getPointOnRay(t);
+  // project to axis
+  result[1] = Origin[1];
+  result[2] = Origin[2];
+  // result+=Origin;
+  return result;
 }
 
-float Ray::nearestTOnXAxis(Vector Origin) const
-{
-	Origin[3] = 0;
-	Ray ray(m_Origin-Origin, m_Dir);
-	//	float distance = ray.distanceToXAxis(Origin);
-	float t = -(ray.m_Origin[1]*ray.m_Dir[1] + ray.m_Origin[2]*ray.m_Dir[2])/
-		((ray.m_Dir[1]*ray.m_Dir[1]+ray.m_Dir[2]*ray.m_Dir[2]) );
-	return t;
+Vector Ray::nearestPointOnYAxis(Vector Origin) const {
+  Origin[3] = 0;
+  float t = nearestTOnYAxis(Origin);
+  Vector result = getPointOnRay(t);
+  // project to axis
+  result[0] = Origin[0];
+  result[2] = Origin[2];
+  // result+=Origin;
+  return result;
 }
 
-float Ray::nearestTOnYAxis(Vector Origin) const
-{
-	Origin[3] = 0;
-	Ray ray(m_Origin-Origin, m_Dir);
-	//	float distance = ray.distanceToYAxis(Origin);
-	float t = -(ray.m_Origin[0]*ray.m_Dir[0] + ray.m_Origin[2]*ray.m_Dir[2])/
-		((ray.m_Dir[0]*ray.m_Dir[0]+ray.m_Dir[2]*ray.m_Dir[2]));
-	return t;
+Vector Ray::nearestPointOnZAxis(Vector Origin) const {
+  Origin[3] = 0;
+  float t = nearestTOnZAxis(Origin);
+  Vector result = getPointOnRay(t);
+  // project to axis
+  result[0] = Origin[0];
+  result[1] = Origin[1];
+  return result;
 }
 
-float Ray::nearestTOnZAxis(Vector Origin) const
-{
-	Origin[3] = 0;
-	Ray ray(m_Origin-Origin, m_Dir);
-	//	float distance = ray.distanceToZAxis(Origin);
-	float t = -(ray.m_Origin[0]*ray.m_Dir[0] + ray.m_Origin[1]*ray.m_Dir[1])/
-		((ray.m_Dir[1]*ray.m_Dir[1]+ray.m_Dir[0]*ray.m_Dir[0]));
-	return t;
+float Ray::distanceToXAxis(Vector Origin) const {
+  Origin[3] = 0;
+  Ray ray(m_Origin - Origin, m_Dir);
+  return (float)fabs(
+      (ray.m_Origin[2] * ray.m_Dir[1] - ray.m_Origin[1] * m_Dir[2]) /
+      (float)sqrt(ray.m_Dir[2] * ray.m_Dir[2] + ray.m_Dir[1] * ray.m_Dir[1]));
 }
 
-Vector Ray::nearestPointOnXAxis(Vector Origin) const
-{
-	Origin[3] = 0;
-	float t = nearestTOnXAxis(Origin);
-	Vector result = getPointOnRay(t);
-	// project to axis
-	result[1] = Origin[1];
-	result[2] = Origin[2];
-	//result+=Origin;
-	return result;
+float Ray::distanceToYAxis(Vector Origin) const {
+  Origin[3] = 0;
+  Ray ray(m_Origin - Origin, m_Dir);
+  return (float)fabs(
+      (ray.m_Origin[2] * ray.m_Dir[0] - ray.m_Origin[0] * m_Dir[2]) /
+      (float)sqrt(ray.m_Dir[2] * ray.m_Dir[2] + ray.m_Dir[0] * ray.m_Dir[0]));
 }
 
-Vector Ray::nearestPointOnYAxis(Vector Origin) const
-{
-	Origin[3] = 0;
-	float t = nearestTOnYAxis(Origin);
-	Vector result = getPointOnRay(t);
-	// project to axis
-	result[0] = Origin[0];
-	result[2] = Origin[2];
-	//result+=Origin;
-	return result;
+float Ray::distanceToZAxis(Vector Origin) const {
+  Origin[3] = 0;
+  Ray ray(m_Origin - Origin, m_Dir);
+  return (float)fabs(
+      (ray.m_Origin[0] * ray.m_Dir[1] - ray.m_Origin[1] * m_Dir[0]) /
+      (float)sqrt(ray.m_Dir[0] * ray.m_Dir[0] + ray.m_Dir[1] * ray.m_Dir[1]));
 }
 
-Vector Ray::nearestPointOnZAxis(Vector Origin) const
-{
-	Origin[3] = 0;
-	float t = nearestTOnZAxis(Origin);
-	Vector result = getPointOnRay(t);
-	// project to axis
-	result[0] = Origin[0];
-	result[1] = Origin[1];
-	return result;
-}
-
-float Ray::distanceToXAxis(Vector Origin) const
-{
-	Origin[3] = 0;
-	Ray ray(m_Origin-Origin, m_Dir);
-	return (float)fabs( 
-		( ray.m_Origin[2]*ray.m_Dir[1]-ray.m_Origin[1]*m_Dir[2] ) /
-		(float)sqrt( ray.m_Dir[2]*ray.m_Dir[2] + ray.m_Dir[1]*ray.m_Dir[1] )
-		);
-}
-
-float Ray::distanceToYAxis(Vector Origin) const
-{
-	Origin[3] = 0;
-	Ray ray(m_Origin-Origin, m_Dir);
-	return (float)fabs( 
-		( ray.m_Origin[2]*ray.m_Dir[0]-ray.m_Origin[0]*m_Dir[2] ) /
-		(float)sqrt( ray.m_Dir[2]*ray.m_Dir[2] + ray.m_Dir[0]*ray.m_Dir[0] )
-		);
-}
-
-float Ray::distanceToZAxis(Vector Origin) const
-{
-	Origin[3] = 0;
-	Ray ray(m_Origin-Origin, m_Dir);
-	return (float)fabs( 
-		( ray.m_Origin[0]*ray.m_Dir[1]-ray.m_Origin[1]*m_Dir[0] ) /
-		(float)sqrt( ray.m_Dir[0]*ray.m_Dir[0] + ray.m_Dir[1]*ray.m_Dir[1] )
-		);
-}
-
-}
+} // namespace FastContouring

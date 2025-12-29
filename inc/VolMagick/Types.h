@@ -17,7 +17,8 @@
 
   You should have received a copy of the GNU Lesser General Public
   License along with this library; if not, write to the Free Software
-  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301
+  USA
 */
 
 /* $Id: Types.h 4742 2011-10-21 22:09:44Z transfix $ */
@@ -31,25 +32,24 @@
 #define VOLMAGICK_VERSION_STRING "1.0.0"
 #endif
 
-namespace VolMagick
-{
-  typedef CVC::int64    int64;
-  typedef CVC::uint64   uint64;
-  typedef CVC::DataType VoxelType;
+namespace VolMagick {
+typedef CVC::int64 int64;
+typedef CVC::uint64 uint64;
+typedef CVC::DataType VoxelType;
 
-  static const unsigned int *VoxelTypeSizes = CVC::DataTypeSizes;
-  static const char **VoxelTypeStrings = CVC::DataTypeStrings;
+static const unsigned int *VoxelTypeSizes = CVC::DataTypeSizes;
+static const char **VoxelTypeStrings = CVC::DataTypeStrings;
 
-  //transfix - 07/24/2011
-  //For compatibility with old VoxelType enums
-  const VoxelType Undefined = CVC::Undefined;
-  const VoxelType UChar =     CVC::UChar;
-  const VoxelType UShort =    CVC::UShort;
-  const VoxelType UInt =      CVC::UInt;
-  const VoxelType Float =     CVC::Float;
-  const VoxelType Double =    CVC::Double;
-  const VoxelType UInt64 =    CVC::UInt64;
-  const VoxelType Char =      CVC::Char;
-}
+// transfix - 07/24/2011
+// For compatibility with old VoxelType enums
+const VoxelType Undefined = CVC::Undefined;
+const VoxelType UChar = CVC::UChar;
+const VoxelType UShort = CVC::UShort;
+const VoxelType UInt = CVC::UInt;
+const VoxelType Float = CVC::Float;
+const VoxelType Double = CVC::Double;
+const VoxelType UInt64 = CVC::UInt64;
+const VoxelType Char = CVC::Char;
+} // namespace VolMagick
 
 #endif

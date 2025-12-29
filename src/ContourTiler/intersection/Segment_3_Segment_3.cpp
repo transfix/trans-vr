@@ -6,8 +6,7 @@
 // #include <intersection/Segment_3_Point_3.h>
 // #include <intersection/Line_3_Line_3.h>
 
-
-// namespace CEP {  
+// namespace CEP {
 // namespace intersection {
 
 // //     using CGAL::Segment_3;
@@ -18,11 +17,10 @@
 // //     using CGAL::coplanar;
 // //     using CGAL::coplanar_orientation;
 
-
 //     template <class R>
 //     inline
 //     bool
-//     collinear_do_intersect( const CGAL::Segment_3<R>& s1, 
+//     collinear_do_intersect( const CGAL::Segment_3<R>& s1,
 //                             const CGAL::Segment_3<R>& s2 )
 //     {
 //         CGAL_exactness_precondition( collinear(s1,s2.source()) );
@@ -41,7 +39,6 @@
 //             || collinear_are_ordered_along_line
 //                ( s2.source(), s1.source(), s2.target() );
 //     }
-
 
 //     template <class R>
 //     bool
@@ -70,7 +67,8 @@
 //         // At this point, the segments are guaranteed to be
 //         // non-degenerate, coplanar, and no endpoint lies on the other
 //         // segment.  The coplanar_orientation function requires that the
-//         // first three arguments (that define the plane and its orientation)
+//         // first three arguments (that define the plane and its
+//         orientation)
 //         // are NOT collinear.  In the case that the three points are
 //         // collinear, we can rule out an intersection, because such
 //         // an intersection would contain at least one segment endpoint,
@@ -81,13 +79,12 @@
 //             return false;
 
 //         return coplanar_orientation( s1.source(), s1.target(),
-//                                      s2.source(), s2.target() ) 
+//                                      s2.source(), s2.target() )
 //                == CGAL::NEGATIVE
 //             && coplanar_orientation( s2.source(), s2.target(),
-//                                      s1.source(), s1.target() ) 
+//                                      s1.source(), s1.target() )
 //                == CGAL::NEGATIVE;
 //     }
-
 
 //     template <class R>
 //     bool
@@ -120,7 +117,8 @@
 //         // At this point, the segments are guaranteed to be
 //         // non-degenerate, coplanar, and no endpoint lies on the other
 //         // segment.  The coplanar_orientation function requires that the
-//         // first three arguments (that define the plane and its orientation)
+//         // first three arguments (that define the plane and its
+//         orientation)
 //         // are NOT collinear.  In the case that the three points are
 //         // collinear, we can rule out an intersection, because such
 //         // an intersection would contain at least two segment endpoints,
@@ -131,16 +129,15 @@
 //             return false;
 
 //         return coplanar_orientation( s1.source(), s1.target(),
-//                                      s2.source(), s2.target() ) 
+//                                      s2.source(), s2.target() )
 //                == CGAL::NEGATIVE
 //             && coplanar_orientation( s2.source(), s2.target(),
-//                                      s1.source(), s1.target() ) 
+//                                      s1.source(), s1.target() )
 //                == CGAL::NEGATIVE;
 //     }
 
-
 //     namespace Segment_3_Segment_3 {
-        
+
 //         template <class R>
 //         int classify_point( const CGAL::Segment_3<R>& S,
 //                             const Point_3<R>& p )
@@ -152,14 +149,13 @@
 
 //             if ( p == s )  return 2;
 //             if ( p == t )  return 4;
-            
+
 //             if ( collinear_are_ordered_along_line( p, s, t ) )  return 1;
 //             if ( collinear_are_ordered_along_line( s, p, t ) )  return 3;
-//             CGAL_exactness_assertion( collinear_are_ordered_along_line( s,t,p ) );
-//             return 5;
+//             CGAL_exactness_assertion( collinear_are_ordered_along_line(
+//             s,t,p ) ); return 5;
 //         }
 //     }
-
 
 //     template <class R>
 //     CGAL::Object
@@ -178,7 +174,7 @@
 //         int t1_class = Segment_3_Segment_3::classify_point( seg2, t1 );
 
 //         switch( s1_class ) {
-//         case 1: 
+//         case 1:
 //             switch( t1_class ) {
 //             case 1: return CGAL::Object();
 //             case 2: return CGAL::make_object( s2 );
@@ -186,7 +182,7 @@
 //             case 4: // fall through
 //             case 5: return CGAL::make_object( seg2 );
 //             }
-//         case 2: 
+//         case 2:
 //             switch( t1_class ) {
 //             case 1: // fall through
 //             case 2: return CGAL::make_object( s2 );
@@ -194,7 +190,7 @@
 //             case 4: return CGAL::make_object( seg1 );
 //             case 5: return CGAL::make_object( seg2 );
 //             }
-//         case 3: 
+//         case 3:
 //             switch( t1_class ) {
 //             case 1: // fall through
 //             case 2: return CGAL::make_object( CGAL::Segment_3<R>(s2,s1) );
@@ -202,7 +198,7 @@
 //             case 4: return CGAL::make_object( seg1 );
 //             case 5: return CGAL::make_object( CGAL::Segment_3<R>(s1,t2) );
 //             }
-//         case 4: 
+//         case 4:
 //             switch( t1_class ) {
 //             case 1: // fall through
 //             case 2: return CGAL::make_object( seg2 );
@@ -210,7 +206,7 @@
 //             case 4: // fall through
 //             case 5: return CGAL::make_object( t2 );
 //             }
-//         case 5: 
+//         case 5:
 //             switch( t1_class ) {
 //             case 1: // fall through
 //             case 2: return CGAL::make_object( seg2 );
@@ -223,14 +219,12 @@
 //         return CGAL::Object();
 //     }
 
-
-
 //     template <class R>
 //     CGAL::Object
 //     intersection( const CGAL::Segment_3<R>& s1,
 //                   const CGAL::Segment_3<R>& s2 )
 //     {
-//         if ( s1.is_degenerate() ) 
+//         if ( s1.is_degenerate() )
 //             return intersection( s2, s1.source() );
 //         if ( s2.is_degenerate() )
 //             return intersection( s1, s2.source() );
@@ -262,18 +256,17 @@
 //             return CGAL::Object();
 
 //         if (    coplanar_orientation( s1.source(), s1.target(),
-//                                       s2.source(), s2.target() ) 
+//                                       s2.source(), s2.target() )
 //                 != CGAL::NEGATIVE
 //              || coplanar_orientation( s2.source(), s2.target(),
-//                                       s1.source(), s1.target() ) 
+//                                       s1.source(), s1.target() )
 //                 != CGAL::NEGATIVE )
 //             return CGAL::Object();
 
-//         return 
+//         return
 //            CEP::intersection::Line_3_Line_3::coplanar_nonparallel_intersection
 //             ( s1.source(), s1.target(), s2.source(), s2.target() );
 //     }
-
 
 // }
 // }

@@ -1,8 +1,8 @@
 /*
   Copyright 2002-2003 The University of Texas at Austin
-  
-	Authors: Anthony Thane <thanea@ices.utexas.edu>
-	Advisor: Chandrajit Bajaj <bajaj@cs.utexas.edu>
+
+        Authors: Anthony Thane <thanea@ices.utexas.edu>
+        Advisor: Chandrajit Bajaj <bajaj@cs.utexas.edu>
 
   This file is part of Volume Rover.
 
@@ -27,7 +27,7 @@
 #define ROTATE 1
 #define TRANSLATE 2
 
-int BeginGraphics (int* argc, char** argv, const char* name);
+int BeginGraphics(int *argc, char **argv, const char *name);
 
 void RegisterCallbacks();
 
@@ -58,7 +58,5 @@ void Keyboard(unsigned char key, int x, int y);
 void Rotate(int dx, int dy);
 
 void Translate(int dx, int dy, int dz);
-
-
 
 #endif

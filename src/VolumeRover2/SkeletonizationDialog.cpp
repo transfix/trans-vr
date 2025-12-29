@@ -17,33 +17,32 @@
 
   You should have received a copy of the GNU Lesser General Public
   License along with this library; if not, write to the Free Software
-  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301
+  USA
 */
 
+#include "ui_SkeletonizationDialog.h"
+
 #include <CVC/App.h>
-#include <VolumeRover2/SkeletonizationDialog.h>
-
-#include <cvcraw_geometry/cvcgeom.h>
-
 #include <QFileDialog>
 #include <QMessageBox>
-
-#include "ui_SkeletonizationDialog.h"
+#include <VolumeRover2/SkeletonizationDialog.h>
+#include <cvcraw_geometry/cvcgeom.h>
 
 #ifdef USING_SKELETONIZATION
 #include <Skeletonization/Skeletonization.h>
 #endif
 
 // arand, 5-4-2011: initial implementation
-#include <iostream> 
+#include <iostream>
 using namespace std;
 
-SkeletonizationDialog::SkeletonizationDialog(QWidget *parent,Qt::WindowFlags flags) 
-  : QDialog(parent, flags) {
+SkeletonizationDialog::SkeletonizationDialog(QWidget *parent,
+                                             Qt::WindowFlags flags)
+    : QDialog(parent, flags) {
 
   _ui = new Ui::SkeletonizationDialog;
-  _ui->setupUi(this);   
-
+  _ui->setupUi(this);
 
   _ui->BigBallEdit->insert("0.0625");
   _ui->InfiniteFiniteEdit->insert("0.0872665");
@@ -54,106 +53,93 @@ SkeletonizationDialog::SkeletonizationDialog(QWidget *parent,Qt::WindowFlags fla
   _ui->ThresholdEdit->insert("0.1");
   _ui->CountEdit->insert("2");
   _ui->ThetaEdit->insert("0.392699");
-  _ui->MedialRatioEdit->insert("64");  
-  
-  std::vector<std::string> geoms = 
-    cvcapp.data<cvcraw_geometry::cvcgeom_t>();
-  for (const auto& key : geoms)
-    _ui->GeometryList->addItem(QString::fromStdString(key));  
+  _ui->MedialRatioEdit->insert("64");
 
+  std::vector<std::string> geoms = cvcapp.data<cvcraw_geometry::cvcgeom_t>();
+  for (const auto &key : geoms)
+    _ui->GeometryList->addItem(QString::fromStdString(key));
 }
 
-SkeletonizationDialog::~SkeletonizationDialog() {
-  delete _ui;
-}
+SkeletonizationDialog::~SkeletonizationDialog() { delete _ui; }
 
-class SkeletonizationThread
-{
+class SkeletonizationThread {
 public:
-  SkeletonizationThread(const std::string& geomSelected,
-			const bool robust,
-			const double bigBall,
-			const double iF,
-			const double fF,
-			const double flatness,
-			const double coconePhi,
-			const double flatPhi,
-			const bool discardThresh,
-			const double threshold,
-			const int count,
-			const double theta,
-			const double medialRatio,
-			const std::string& resultName)
-    : _geomSelected(geomSelected), _robust(robust), _bigBall(bigBall),
-      _iF(iF), _fF(fF), _flatness(flatness),_coconePhi(coconePhi),
-      _discard(discardThresh),_thresh(threshold),_count(count),
-      _theta(theta), _medialRatio(medialRatio),_resultName(resultName) {}
+  SkeletonizationThread(const std::string &geomSelected, const bool robust,
+                        const double bigBall, const double iF,
+                        const double fF, const double flatness,
+                        const double coconePhi, const double flatPhi,
+                        const bool discardThresh, const double threshold,
+                        const int count, const double theta,
+                        const double medialRatio,
+                        const std::string &resultName)
+      : _geomSelected(geomSelected), _robust(robust), _bigBall(bigBall),
+        _iF(iF), _fF(fF), _flatness(flatness), _coconePhi(coconePhi),
+        _discard(discardThresh), _thresh(threshold), _count(count),
+        _theta(theta), _medialRatio(medialRatio), _resultName(resultName) {}
 
-  void operator()()
-  {
+  void operator()() {
     CVC::ThreadFeedback feedback;
 
 #ifdef USING_SKELETONIZATION
 
-    // get the selected geometry... 
-    CVCGEOM_NAMESPACE::cvcgeom_t geom = boost::any_cast<CVCGEOM_NAMESPACE::cvcgeom_t>(cvcapp.data()[_geomSelected]);
-    
-    Skeletonization::Parameters params;    
-    Skeletonization::Simple_skel result = 
-      Skeletonization::skeletonize(boost::shared_ptr<Geometry>(new Geometry(Geometry::conv(geom))),
-					     params.b_robust(_robust).
-					     bb_ratio(_bigBall).
-					     theta_if(_iF).
-					     theta_ff(_fF).
-					     flatness_ratio(_flatness).
-					     cocone_phi(_coconePhi).
-					     flat_phi(_flatPhi).
-					     threshold(_thresh).
-					     pl_cnt(_count).
-					     discard_by_threshold(_discard).
-					     theta(_theta).
-					     medial_ratio(_medialRatio));
+    // get the selected geometry...
+    CVCGEOM_NAMESPACE::cvcgeom_t geom =
+        boost::any_cast<CVCGEOM_NAMESPACE::cvcgeom_t>(
+            cvcapp.data()[_geomSelected]);
+
+    Skeletonization::Parameters params;
+    Skeletonization::Simple_skel result = Skeletonization::skeletonize(
+        boost::shared_ptr<Geometry>(new Geometry(Geometry::conv(geom))),
+        params.b_robust(_robust)
+            .bb_ratio(_bigBall)
+            .theta_if(_iF)
+            .theta_ff(_fF)
+            .flatness_ratio(_flatness)
+            .cocone_phi(_coconePhi)
+            .flat_phi(_flatPhi)
+            .threshold(_thresh)
+            .pl_cnt(_count)
+            .discard_by_threshold(_discard)
+            .theta(_theta)
+            .medial_ratio(_medialRatio));
 
     // convert results for the viewer...
-    CVCGEOM_NAMESPACE::cvcgeom_t  final_result;
+    CVCGEOM_NAMESPACE::cvcgeom_t final_result;
 
-    for (const auto& strip : result.get<0>()) {
-      for (int i=0; i<strip.size(); i++) {
-	Skeletonization::Point p = strip[i].get<0>();
-	Skeletonization::Simple_color c = strip[i].get<1>();
-	
-	CVCGEOM_NAMESPACE::cvcgeom_t::point_t newVertex;
-	newVertex[0] = p.x();
-	newVertex[1] = p.y();
-	newVertex[2] = p.z();
+    for (const auto &strip : result.get<0>()) {
+      for (int i = 0; i < strip.size(); i++) {
+        Skeletonization::Point p = strip[i].get<0>();
+        Skeletonization::Simple_color c = strip[i].get<1>();
 
-	CVCGEOM_NAMESPACE::cvcgeom_t::color_t meshColor;
-	meshColor[0] = c.get<0>();
-	meshColor[1] = c.get<1>();
-	meshColor[2] = c.get<2>();
+        CVCGEOM_NAMESPACE::cvcgeom_t::point_t newVertex;
+        newVertex[0] = p.x();
+        newVertex[1] = p.y();
+        newVertex[2] = p.z();
 
-	final_result.points().push_back(newVertex);
-	final_result.colors().push_back(meshColor);
+        CVCGEOM_NAMESPACE::cvcgeom_t::color_t meshColor;
+        meshColor[0] = c.get<0>();
+        meshColor[1] = c.get<1>();
+        meshColor[2] = c.get<2>();
+
+        final_result.points().push_back(newVertex);
+        final_result.colors().push_back(meshColor);
       }
-
-    }         
+    }
 
     // TODO: still need to handle the polygonal regions
-    //for (const auto& polyset : result.get<1>()) {
+    // for (const auto& polyset : result.get<1>()) {
     //
-    //}    
+    //}
 
-
-    
-    if (_resultName.empty()){
+    if (_resultName.empty()) {
       _resultName = _geomSelected + "_skel";
     }
-    cvcapp.data(_resultName,final_result);
+    cvcapp.data(_resultName, final_result);
     cvcapp.listPropertyAppend("thumbnail.geometries", _geomSelected);
     cvcapp.listPropertyAppend("zoomed.geometries", _geomSelected);
     cvcapp.listPropertyAppend("thumbnail.geometries", _resultName);
     cvcapp.listPropertyAppend("zoomed.geometries", _resultName);
-    
+
     // TODO: send a success message via CVCCustomEvent
 
 #endif
@@ -177,7 +163,7 @@ private:
 };
 
 void SkeletonizationDialog::RunSkeletonization() {
-  // get parameters  
+  // get parameters
   std::string geomSelected = _ui->GeometryList->currentText().toStdString();
   bool robust = _ui->RobustCoconeCheckbox->isChecked();
   double bigBall = _ui->BigBallEdit->displayText().toDouble();
@@ -194,12 +180,11 @@ void SkeletonizationDialog::RunSkeletonization() {
   double medialRatio = _ui->MedialRatioEdit->displayText().toDouble();
 
   std::string resultName = _ui->ResultEdit->displayText().toStdString();
-  
+
   cvcapp.startThread("skeletonization_thread_" + geomSelected,
-                     SkeletonizationThread(geomSelected,robust, bigBall,
-					   infiniteFinite, finiteFinite,
-					   flatness,coconePhi,flatPhi,
-					   discardThresh,threshold,count,
-					   theta,medialRatio,
-					   resultName));
+                     SkeletonizationThread(geomSelected, robust, bigBall,
+                                           infiniteFinite, finiteFinite,
+                                           flatness, coconePhi, flatPhi,
+                                           discardThresh, threshold, count,
+                                           theta, medialRatio, resultName));
 }

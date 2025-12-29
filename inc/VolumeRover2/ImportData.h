@@ -1,8 +1,8 @@
 /*
   Copyright 2008 The University of Texas at Austin
-  
-	Authors: Jose Rivera <transfix@ices.utexas.edu>
-	Advisor: Chandrajit Bajaj <bajaj@cs.utexas.edu>
+
+        Authors: Jose Rivera <transfix@ices.utexas.edu>
+        Advisor: Chandrajit Bajaj <bajaj@cs.utexas.edu>
 
   This file is part of Volume Rover.
 
@@ -28,30 +28,28 @@
 
 #include <QDialog>
 
-namespace Ui
-{
-  class ImportData;
+namespace Ui {
+class ImportData;
 }
 
-class ImportData : public QDialog
-{
+class ImportData : public QDialog {
   Q_OBJECT
 
- public:
-  ImportData(QWidget* parent = 0,
+public:
+  ImportData(QWidget *parent = 0,
 #if QT_VERSION < 0x040000
-                  const char* name = 0, WFlags f = WType_TopLevel
+             const char *name = 0, WFlags f = WType_TopLevel
 #else
-                  Qt::WindowFlags flags={}
+             Qt::WindowFlags flags = {}
 #endif
-                  );
+  );
   virtual ~ImportData();
 
- protected slots:
+protected slots:
   virtual void importFileSlot();
   virtual void okSlot();
 
- protected:
+protected:
 #if QT_VERSION < 0x040000
   ImportDataBase *_ui;
 #else

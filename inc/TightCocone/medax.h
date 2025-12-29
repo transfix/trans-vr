@@ -17,24 +17,22 @@
 
   You should have received a copy of the GNU Lesser General Public
   License along with this library; if not, write to the Free Software
-  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301
+  USA
 */
 
 #ifndef MEDAX_H
 #define MEDAX_H
 
 #include <TightCocone/datastruct.h>
-#include <TightCocone/util.h>
-#include <TightCocone/robust_cc.h>
 #include <TightCocone/op.h>
+#include <TightCocone/robust_cc.h>
+#include <TightCocone/util.h>
 
-namespace TightCocone
-{
+namespace TightCocone {
 
-void
-compute_medial_axis(Triangulation &triang,
-		    const double theta, const double ratio,
-                    int& biggest_medax_comp_id);
+void compute_medial_axis(Triangulation &triang, const double theta,
+                         const double ratio, int &biggest_medax_comp_id);
 
 }
 

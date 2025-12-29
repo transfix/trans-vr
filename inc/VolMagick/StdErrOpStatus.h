@@ -17,7 +17,8 @@
 
   You should have received a copy of the GNU Lesser General Public
   License along with this library; if not, write to the Free Software
-  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301
+  USA
 */
 
 /* $Id */
@@ -27,18 +28,18 @@
 
 #include <VolMagick/VoxelOperationStatusMessenger.h>
 
-namespace VolMagick
-{
-  //Simple implementation of the status messenger interface for reference.  You don't need to use it.
-  class StdErrOpStatus : public VoxelOperationStatusMessenger
-  {
-  public:
-    void start(const Voxels *vox, Operation op, uint64 numSteps) const;
-    void step(const Voxels *vox, Operation op, uint64 curStep) const;
-    void end(const Voxels *vox, Operation op) const;
-  private:
-    mutable uint64 _numSteps;
-  };
-}
+namespace VolMagick {
+// Simple implementation of the status messenger interface for reference.  You
+// don't need to use it.
+class StdErrOpStatus : public VoxelOperationStatusMessenger {
+public:
+  void start(const Voxels *vox, Operation op, uint64 numSteps) const;
+  void step(const Voxels *vox, Operation op, uint64 curStep) const;
+  void end(const Voxels *vox, Operation op) const;
+
+private:
+  mutable uint64 _numSteps;
+};
+} // namespace VolMagick
 
 #endif

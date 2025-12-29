@@ -17,20 +17,22 @@
 
   You should have received a copy of the GNU Lesser General Public
   License along with this library; if not, write to the Free Software
-  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301
+  USA
 */
 
 #ifndef __U1_H__
 #define __U1_H__
 
 #include <SecondaryStructures/datastruct_ss.h>
-#include <SecondaryStructures/util.h>
-#include <SecondaryStructures/robust_cc.h>
-#include <SecondaryStructures/intersect.h>
-#include <SecondaryStructures/hfn_util.h>
-#include <SecondaryStructures/op.h>
 #include <SecondaryStructures/degen.h>
+#include <SecondaryStructures/hfn_util.h>
+#include <SecondaryStructures/intersect.h>
+#include <SecondaryStructures/op.h>
+#include <SecondaryStructures/robust_cc.h>
+#include <SecondaryStructures/util.h>
 
-void compute_u1(SecondaryStructures::Triangulation& triang, char* op_file_prefix);
+void compute_u1(SecondaryStructures::Triangulation &triang,
+                char *op_file_prefix);
 
 #endif

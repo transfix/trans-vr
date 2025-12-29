@@ -22,8 +22,8 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 
 **********************************************************************/
 
-#include <QGLViewer/quaternion.h>
 #include <QGLViewer/domUtils.h>
+#include <QGLViewer/quaternion.h>
 #include <stdlib.h> // RAND_MAX
 
 // All the methods are declared inline in Quaternion.h
@@ -86,17 +86,17 @@ Vec Quaternion::rotate(const Vec &v) const {
 
   const qreal q23 = 2.0 * q[2] * q[3];
 
-  return Vec((1.0 - q11 - q22) * v[0] + (q01 - q23) * v[1] + (q02 + q13) * v[2],
-             (q01 + q23) * v[0] + (1.0 - q22 - q00) * v[1] + (q12 - q03) * v[2],
-             (q02 - q13) * v[0] + (q12 + q03) * v[1] +
-                 (1.0 - q11 - q00) * v[2]);
+  return Vec(
+      (1.0 - q11 - q22) * v[0] + (q01 - q23) * v[1] + (q02 + q13) * v[2],
+      (q01 + q23) * v[0] + (1.0 - q22 - q00) * v[1] + (q12 - q03) * v[2],
+      (q02 - q13) * v[0] + (q12 + q03) * v[1] + (1.0 - q11 - q00) * v[2]);
 }
 
 /*! Set the Quaternion from a (supposedly correct) 3x3 rotation matrix.
 
   The matrix is expressed in European format: its three \e columns are the
-  images by the rotation of the three vectors of an orthogonal basis. Note that
-  OpenGL uses a symmetric representation for its matrices.
+  images by the rotation of the three vectors of an orthogonal basis. Note
+  that OpenGL uses a symmetric representation for its matrices.
 
   setFromRotatedBasis() sets a Quaternion from the three axis of a rotated
   frame. It actually fills the three columns of a matrix with these rotated
@@ -138,8 +138,10 @@ void Quaternion::setFromRotationMatrix(const qreal m[3][3]) {
 }
 
 #ifndef DOXYGEN
-void Quaternion::setFromRotatedBase(const Vec &X, const Vec &Y, const Vec &Z) {
-  qWarning("setFromRotatedBase is deprecated, use setFromRotatedBasis instead");
+void Quaternion::setFromRotatedBase(const Vec &X, const Vec &Y,
+                                    const Vec &Z) {
+  qWarning(
+      "setFromRotatedBase is deprecated, use setFromRotatedBasis instead");
   setFromRotatedBasis(X, Y, Z);
 }
 #endif
@@ -157,7 +159,8 @@ void Quaternion::setFromRotatedBase(const Vec &X, const Vec &Y, const Vec &Z) {
   \endcode
 
   See also setFromRotationMatrix() and Quaternion(const Vec&, const Vec&). */
-void Quaternion::setFromRotatedBasis(const Vec &X, const Vec &Y, const Vec &Z) {
+void Quaternion::setFromRotatedBasis(const Vec &X, const Vec &Y,
+                                     const Vec &Z) {
   qreal m[3][3];
   qreal normX = X.norm();
   qreal normY = Y.norm();
@@ -202,8 +205,8 @@ Vec Quaternion::axis() const {
 /*! Returns the angle (in radians) of the rotation represented by the
  Quaternion.
 
- This value is always in the range [0-pi]. Larger rotational angles are obtained
- by inverting the axis() direction.
+ This value is always in the range [0-pi]. Larger rotational angles are
+ obtained by inverting the axis() direction.
 
  See also axis() and getAxisAngle(). */
 qreal Quaternion::angle() const {
@@ -221,8 +224,8 @@ qreal Quaternion::angle() const {
  <name q0=".." q1=".." q2=".." q3=".." />
  \endcode
 
- Use initFromDOMElement() to restore the Quaternion state from the resulting \c
- QDomElement. See also the Quaternion(const QDomElement&) constructor.
+ Use initFromDOMElement() to restore the Quaternion state from the resulting
+ \c QDomElement. See also the Quaternion(const QDomElement&) constructor.
 
  See the Vec::domElement() documentation for a complete QDomDocument creation
  and saving example.
@@ -239,12 +242,13 @@ QDomElement Quaternion::domElement(const QString &name,
   return de;
 }
 
-/*! Restores the Quaternion state from a \c QDomElement created by domElement().
+/*! Restores the Quaternion state from a \c QDomElement created by
+ domElement().
 
  The \c QDomElement should contain the \c q0, \c q1 , \c q2 and \c q3
- attributes. If one of these attributes is missing or is not a number, a warning
- is displayed and these fields are respectively set to 0.0, 0.0, 0.0 and 1.0
- (identity Quaternion).
+ attributes. If one of these attributes is missing or is not a number, a
+ warning is displayed and these fields are respectively set to 0.0, 0.0, 0.0
+ and 1.0 (identity Quaternion).
 
  See also the Quaternion(const QDomElement&) constructor. */
 void Quaternion::initFromDOMElement(const QDomElement &element) {
@@ -262,12 +266,10 @@ void Quaternion::initFromDOMElement(const QDomElement &element) {
   See also domElement() and initFromDOMElement(). */
 Quaternion::Quaternion(const QDomElement &element) {
   QStringList attribute;
-  attribute << "q0"
-            << "q1"
-            << "q2"
-            << "q3";
+  attribute << "q0" << "q1" << "q2" << "q3";
   for (int i = 0; i < attribute.size(); ++i)
-    q[i] = DomUtils::qrealFromDom(element, attribute[i], ((i < 3) ? 0.0 : 1.0));
+    q[i] =
+        DomUtils::qrealFromDom(element, attribute[i], ((i < 3) ? 0.0 : 1.0));
 }
 
 /*! Returns the Quaternion associated 4x4 OpenGL rotation matrix.
@@ -345,9 +347,9 @@ void Quaternion::getMatrix(GLdouble m[16]) const {
 
   See also getInverseRotationMatrix().
 
-  \attention \p m uses the European mathematical representation of the rotation
-  matrix. Use matrix() and getMatrix() to retrieve the OpenGL transposed
-  version. */
+  \attention \p m uses the European mathematical representation of the
+  rotation matrix. Use matrix() and getMatrix() to retrieve the OpenGL
+  transposed version. */
 void Quaternion::getRotationMatrix(qreal m[3][3]) const {
   static GLdouble mat[4][4];
   getMatrix(mat);
@@ -357,8 +359,8 @@ void Quaternion::getRotationMatrix(qreal m[3][3]) const {
       m[i][j] = qreal(mat[j][i]);
 }
 
-/*! Returns the associated 4x4 OpenGL \e inverse rotation matrix. This is simply
-  the matrix() of the inverse().
+/*! Returns the associated 4x4 OpenGL \e inverse rotation matrix. This is
+  simply the matrix() of the inverse().
 
   \attention The result is only valid until the next call to inverseMatrix().
   Use it immediately (as in \c glMultMatrixd(q.inverseMatrix())) or use
@@ -391,7 +393,8 @@ void Quaternion::getInverseMatrix(GLdouble m[16]) const {
  Quaternion.
 
  \attention This is the classical mathematical rotation matrix. The OpenGL
- format uses its transposed version. See inverseMatrix() and getInverseMatrix().
+ format uses its transposed version. See inverseMatrix() and
+ getInverseMatrix().
  */
 void Quaternion::getInverseRotationMatrix(qreal m[3][3]) const {
   static GLdouble mat[4][4];
@@ -402,15 +405,16 @@ void Quaternion::getInverseRotationMatrix(qreal m[3][3]) const {
       m[i][j] = qreal(mat[j][i]);
 }
 
-/*! Returns the slerp interpolation of Quaternions \p a and \p b, at time \p t.
+/*! Returns the slerp interpolation of Quaternions \p a and \p b, at time \p
+ t.
 
  \p t should range in [0,1]. Result is \p a when \p t=0 and \p b when \p t=1.
 
- When \p allowFlip is \c true (default) the slerp interpolation will always use
- the "shortest path" between the Quaternions' orientations, by "flipping" the
- source Quaternion if needed (see negate()). */
-Quaternion Quaternion::slerp(const Quaternion &a, const Quaternion &b, qreal t,
-                             bool allowFlip) {
+ When \p allowFlip is \c true (default) the slerp interpolation will always
+ use the "shortest path" between the Quaternions' orientations, by "flipping"
+ the source Quaternion if needed (see negate()). */
+Quaternion Quaternion::slerp(const Quaternion &a, const Quaternion &b,
+                             qreal t, bool allowFlip) {
   qreal cosAngle = Quaternion::dot(a, b);
 
   qreal c1, c2;
@@ -483,7 +487,8 @@ Quaternion Quaternion::lnDif(const Quaternion &a, const Quaternion &b) {
 /*! Returns a tangent Quaternion for \p center, defined by \p before and \p
  after Quaternions.
 
- Useful for smooth spline interpolation of Quaternion with squad() and slerp().
+ Useful for smooth spline interpolation of Quaternion with squad() and
+ slerp().
  */
 Quaternion Quaternion::squadTangent(const Quaternion &before,
                                     const Quaternion &center,
@@ -516,8 +521,8 @@ other Vec \endcode
 number generator can be initialized using srand().*/
 Quaternion Quaternion::randomQuaternion() {
   // The rand() function is not very portable and may not be available on your
-  // system. Add the appropriate include or replace by an other random function
-  // in case of problem.
+  // system. Add the appropriate include or replace by an other random
+  // function in case of problem.
   qreal seed = rand() / (qreal)RAND_MAX;
   qreal r1 = sqrt(1.0 - seed);
   qreal r2 = sqrt(seed);

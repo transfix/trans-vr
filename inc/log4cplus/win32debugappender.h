@@ -24,42 +24,38 @@
 #define _LOG4CPLUS_WIN32DEBUG_APPENDER_HEADER_
 
 #include <log4cplus/config.hxx>
-#if defined (LOG4CPLUS_HAVE_WIN32_CONSOLE)
+#if defined(LOG4CPLUS_HAVE_WIN32_CONSOLE)
 
 #include <log4cplus/appender.h>
 #include <log4cplus/helpers/property.h>
 
-
 namespace log4cplus {
 
-    /**
-     * Prints log events using OutputDebugString(). 
-     */
-    class LOG4CPLUS_EXPORT Win32DebugAppender
-        : public Appender
-    {
-    public:
-      // Ctors
-        Win32DebugAppender();
-        Win32DebugAppender(const log4cplus::helpers::Properties& properties);
+/**
+ * Prints log events using OutputDebugString().
+ */
+class LOG4CPLUS_EXPORT Win32DebugAppender : public Appender {
+public:
+  // Ctors
+  Win32DebugAppender();
+  Win32DebugAppender(const log4cplus::helpers::Properties &properties);
 
-      // Dtor
-        virtual ~Win32DebugAppender();
+  // Dtor
+  virtual ~Win32DebugAppender();
 
-      // Methods
-        virtual void close();
+  // Methods
+  virtual void close();
 
-    protected:
-        virtual void append(const log4cplus::spi::InternalLoggingEvent& event);
+protected:
+  virtual void append(const log4cplus::spi::InternalLoggingEvent &event);
 
-    private:
-      // Disallow copying of instances of this class
-        Win32DebugAppender(const Win32DebugAppender&);
-        Win32DebugAppender& operator=(const Win32DebugAppender&);
-    };
+private:
+  // Disallow copying of instances of this class
+  Win32DebugAppender(const Win32DebugAppender &);
+  Win32DebugAppender &operator=(const Win32DebugAppender &);
+};
 
 } // end namespace log4cplus
 
 #endif // LOG4CPLUS_HAVE_WIN32_CONSOLE
 #endif // _LOG4CPLUS_WIN32DEBUG_APPENDER_HEADER_
-

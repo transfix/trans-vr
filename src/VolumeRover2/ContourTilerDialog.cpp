@@ -18,87 +18,83 @@
 
   You should have received a copy of the GNU Lesser General Public
   License along with this library; if not, write to the Free Software
-  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301
+  USA
 */
 
 #ifdef USING_TILING
 
-#include <CVC/App.h>
-#include <VolumeRover2/ContourTilerDialog.h>
-#include <ContourTiler/tiler.h>
-#include <ContourTiler/cl_options.h>
-
-#include <cvcraw_geometry/contours.h>
-#include <boost/lexical_cast.hpp>
-#include <boost/tokenizer.hpp>
-
-#include <QFileDialog>
-#include <QMessageBox>
-
 #include "ui_ContourTilerDialog.h"
 
-#include <iostream> 
+#include <CVC/App.h>
+#include <ContourTiler/cl_options.h>
+#include <ContourTiler/tiler.h>
+#include <QFileDialog>
+#include <QMessageBox>
+#include <VolumeRover2/ContourTilerDialog.h>
+#include <boost/lexical_cast.hpp>
+#include <boost/tokenizer.hpp>
+#include <cvcraw_geometry/contours.h>
+#include <iostream>
 using namespace std;
 
-
 //
-// 05/01/2011 -- arand -- initial implementation following anisotropic diffusion as a template
-// 10/08/2011 -- transfix -- Defaulting to zoomed_volume, and adding extensions from VolMagick
+// 05/01/2011 -- arand -- initial implementation following anisotropic
+// diffusion as a template 10/08/2011 -- transfix -- Defaulting to
+// zoomed_volume, and adding extensions from VolMagick
 
-ContourTilerDialog::ContourTilerDialog(QWidget *parent,Qt::WindowFlags flags) 
-  : QDialog(parent, flags)
-{
-  log4cplus::Logger logger = log4cplus::Logger::getInstance("VolumeRover2.ContourTilerDialog");
+ContourTilerDialog::ContourTilerDialog(QWidget *parent, Qt::WindowFlags flags)
+    : QDialog(parent, flags) {
+  log4cplus::Logger logger =
+      log4cplus::Logger::getInstance("VolumeRover2.ContourTilerDialog");
 
   int idx = -1;
 
   _ui = new Ui::ContourTilerDialog;
   _ui->setupUi(this);
-  
-  std::vector<std::string> geoms = 
-    cvcapp.data<cvcraw_geometry::contours_t>();
+
+  std::vector<std::string> geoms = cvcapp.data<cvcraw_geometry::contours_t>();
   if (geoms.empty()) {
-      QMessageBox::warning(this, tr("Contour Tiler"),
-			   tr("No contours loaded."), QMessageBox::Ok);
-      _ui->buttonBox->button(QDialogButtonBox::Ok)->setEnabled(false);
-  }
-  else {
-    for (const auto& key : geoms)
+    QMessageBox::warning(this, tr("Contour Tiler"), tr("No contours loaded."),
+                         QMessageBox::Ok);
+    _ui->buttonBox->button(QDialogButtonBox::Ok)->setEnabled(false);
+  } else {
+    for (const auto &key : geoms)
       _ui->geometryList->addItem(QString::fromStdString(key));
 
     LOG4CPLUS_TRACE(logger, "found contours: " << geoms.size());
 
     cvcraw_geometry::contours_t contours =
-      cvcapp.data<cvcraw_geometry::contours_t>(geoms[0]);
+        cvcapp.data<cvcraw_geometry::contours_t>(geoms[0]);
     LOG4CPLUS_TRACE(logger, "Got something!");
-    for (const auto& component : contours.components()) {
+    for (const auto &component : contours.components()) {
       LOG4CPLUS_TRACE(logger, "Component: " << component);
       _ui->componentList->addItem(QString::fromStdString(component));
     }
 
-    _ui->sliceBegin->setText(QString::fromStdString(boost::lexical_cast<string>(contours.z_first())));
-    _ui->sliceEnd->setText(QString::fromStdString(boost::lexical_cast<string>(contours.z_last())));
+    _ui->sliceBegin->setText(QString::fromStdString(
+        boost::lexical_cast<string>(contours.z_first())));
+    _ui->sliceEnd->setText(QString::fromStdString(
+        boost::lexical_cast<string>(contours.z_last())));
 
     _ui->additionalArgs->setText("-C 0.01 -e 1e-15 -o raw");
 
-    connect(_ui->geometryList, SIGNAL(currentIndexChanged(int)), SLOT(geometryChangedSlot(int)));
-    connect(_ui->outputDirButton,
-	    SIGNAL(clicked()),
-	    SLOT(outputDirSlot()));
+    connect(_ui->geometryList, SIGNAL(currentIndexChanged(int)),
+            SLOT(geometryChangedSlot(int)));
+    connect(_ui->outputDirButton, SIGNAL(clicked()), SLOT(outputDirSlot()));
   }
 }
 
-ContourTilerDialog::~ContourTilerDialog() {
-  delete _ui;
-}
+ContourTilerDialog::~ContourTilerDialog() { delete _ui; }
 
 void ContourTilerDialog::outputDirSlot() {
-  _ui->outputDir->setText(QFileDialog::getExistingDirectory(this,
-						    "Output Directory"));
+  _ui->outputDir->setText(
+      QFileDialog::getExistingDirectory(this, "Output Directory"));
 }
 
 void ContourTilerDialog::geometryChangedSlot(int index) {
-  log4cplus::Logger logger = log4cplus::Logger::getInstance("VolumeRover2.ContourTilerDialog.geometryChangedSlot");
+  log4cplus::Logger logger = log4cplus::Logger::getInstance(
+      "VolumeRover2.ContourTilerDialog.geometryChangedSlot");
 
   _ui->componentList->clear();
   if (index == -1) {
@@ -106,30 +102,37 @@ void ContourTilerDialog::geometryChangedSlot(int index) {
   }
 
   cvcraw_geometry::contours_t contours =
-    cvcapp.data<cvcraw_geometry::contours_t>(_ui->geometryList->itemText(index).toStdString());
+      cvcapp.data<cvcraw_geometry::contours_t>(
+          _ui->geometryList->itemText(index).toStdString());
   LOG4CPLUS_TRACE(logger, "Got something!");
-  for (const auto& component : contours.components()) {
+  for (const auto &component : contours.components()) {
     LOG4CPLUS_TRACE(logger, "Component: " << component);
     _ui->componentList->addItem(QString::fromStdString(component));
   }
 
-  _ui->sliceBegin->setText(QString::fromStdString(boost::lexical_cast<string>(contours.z_first())));
-  _ui->sliceEnd->setText(QString::fromStdString(boost::lexical_cast<string>(contours.z_last())));
+  _ui->sliceBegin->setText(QString::fromStdString(
+      boost::lexical_cast<string>(contours.z_first())));
+  _ui->sliceEnd->setText(
+      QString::fromStdString(boost::lexical_cast<string>(contours.z_last())));
 }
 
-class ContourTilerThread
-{
+class ContourTilerThread {
 public:
-  ContourTilerThread(const vector<Slice>& slices, const Tiler_options& options) : _slices(slices), _options(options) {
-    log4cplus::Logger logger = log4cplus::Logger::getInstance("VolumeRover2.ContourTilerDialog.ContourTilerThread");
+  ContourTilerThread(const vector<Slice> &slices,
+                     const Tiler_options &options)
+      : _slices(slices), _options(options) {
+    log4cplus::Logger logger = log4cplus::Logger::getInstance(
+        "VolumeRover2.ContourTilerDialog.ContourTilerThread");
     LOG4CPLUS_TRACE(logger, "Constructor");
   }
-  // ContourTilerThread(const cvcraw_geometry::contours_t& contours, const set<string>& components, int first, int last, string args)
-  //   : _contours(contours), _components(components), _first(first), _last(last), _args(args) {}
+  // ContourTilerThread(const cvcraw_geometry::contours_t& contours, const
+  // set<string>& components, int first, int last, string args)
+  //   : _contours(contours), _components(components), _first(first),
+  //   _last(last), _args(args) {}
 
-  void operator()()
-  {
-    log4cplus::Logger logger = log4cplus::Logger::getInstance("VolumeRover2.ContourTilerDialog.ContourTilerThread");
+  void operator()() {
+    log4cplus::Logger logger = log4cplus::Logger::getInstance(
+        "VolumeRover2.ContourTilerDialog.ContourTilerThread");
     LOG4CPLUS_TRACE(logger, "Execute");
 
     CVC::ThreadFeedback feedback;
@@ -145,17 +148,16 @@ public:
     //   _dataset = _volSelected+"_bilateral";
     // }
 
-
     // // read in the data if necessary
     // if(cvcapp.isData<VolMagick::VolumeFileInfo>(_volSelected))
     //   {
-    //     VolMagick::VolumeFileInfo vfi = cvcapp.data<VolMagick::VolumeFileInfo>(_volSelected);
+    //     VolMagick::VolumeFileInfo vfi =
+    //     cvcapp.data<VolMagick::VolumeFileInfo>(_volSelected);
 
     //     if (_currentIndex == 0) {
 
-
     //       if (_output.substr(_output.find_last_of(".")) != _fileType) {
-    //         _output = _output + _fileType;   
+    //         _output = _output + _fileType;
     //       }
 
     //       VolMagick::createVolumeFile(_output,
@@ -167,29 +169,30 @@ public:
     //                                   vfi.TMin(),
     //                                   vfi.TMax());
     //     }
-      
+
     //     // run anisotropic diffusion
     //     for(unsigned int var=0; var<vfi.numVariables(); var++) {
     //       for(unsigned int time=0; time<vfi.numTimesteps(); time++) {
     //         VolMagick::Volume vol;
-	  
+
     //         readVolumeFile(vol,vfi.filename(),var,time);
     //         vol.bilateralFilter(_radSig,_spatSig,_filRad);
-	  
+
     //         if (_currentIndex == 0) {
     //           writeVolumeFile(vol,_output,var,time);
     //         } else if (_currentIndex == 1) {
     //           // put the dataset in the list
-    //           cvcapp.data(_dataset,vol);		  
+    //           cvcapp.data(_dataset,vol);
     //         }
     //       }
     //     }
     //   }
     // else if(cvcapp.isData<VolMagick::Volume>(_volSelected))
     //   {
-    //     VolMagick::Volume vol = cvcapp.data<VolMagick::Volume>(_volSelected);
+    //     VolMagick::Volume vol =
+    //     cvcapp.data<VolMagick::Volume>(_volSelected);
     // 	vol.bilateralFilter(_radSig,_spatSig,_filRad);
-      
+
     //     if (_currentIndex == 0) {
     //       //if _output not set, overwrite the input volume data
     //       if(_output.empty())
@@ -200,7 +203,7 @@ public:
     //       }
     //     } else if (_currentIndex == 1) {
     // 	  cvcapp.data(_dataset,vol);
-    //     }      
+    //     }
     //   }
   }
 
@@ -215,16 +218,17 @@ private:
 
 void ContourTilerDialog::RunContourTiler() {
   // get parameters
-  log4cplus::Logger logger = log4cplus::Logger::getInstance("VolumeRover2.ContourTilerDialog.RunContourTiler");
+  log4cplus::Logger logger = log4cplus::Logger::getInstance(
+      "VolumeRover2.ContourTilerDialog.RunContourTiler");
   LOG4CPLUS_TRACE(logger, "RUN CONTOUR TILER");
 
   string dataset = _ui->geometryList->currentText().toStdString();
   cvcraw_geometry::contours_t contours =
-    cvcapp.data<cvcraw_geometry::contours_t>(dataset);
+      cvcapp.data<cvcraw_geometry::contours_t>(dataset);
 
   set<string> components;
   QList<QListWidgetItem *> selected = _ui->componentList->selectedItems();
-  for (const auto& item : selected) {
+  for (const auto &item : selected) {
     LOG4CPLUS_TRACE(logger, "Component: " << item->text().toStdString());
     components.insert(item->text().toStdString());
   }
@@ -233,34 +237,34 @@ void ContourTilerDialog::RunContourTiler() {
   int last = _ui->sliceEnd->displayText().toInt();
   string args = _ui->additionalArgs->displayText().toStdString();
 
-  const std::vector<CONTOURTILER_NAMESPACE::Slice>& all_slices = contours.slices();
+  const std::vector<CONTOURTILER_NAMESPACE::Slice> &all_slices =
+      contours.slices();
   vector<CONTOURTILER_NAMESPACE::Slice> slices;
   for (int i = first; i <= last; ++i) {
     LOG4CPLUS_TRACE(logger, "Adding slice " << i);
-    Slice s = all_slices[i-contours.z_first()];
+    Slice s = all_slices[i - contours.z_first()];
     vector<string> sc;
     s.components(back_inserter(sc));
     if (!components.empty()) {
-      for (const auto& c : sc) {
-	if (components.find(c) == components.end()) {
-	  s.erase(c);
-	}
-	else {
-	  LOG4CPLUS_TRACE(logger, "  Including component: " << c);
-	}
+      for (const auto &c : sc) {
+        if (components.find(c) == components.end()) {
+          s.erase(c);
+        } else {
+          LOG4CPLUS_TRACE(logger, "  Including component: " << c);
+        }
       }
     }
     slices.push_back(s);
   }
 
   boost::char_separator<char> sep(" \t\n\r");
-  boost::tokenizer<boost::char_separator<char> > tok(args, sep);
+  boost::tokenizer<boost::char_separator<char>> tok(args, sep);
   vector<string> arg_arr;
   arg_arr.push_back("CommandName");
   arg_arr.insert(arg_arr.end(), tok.begin(), tok.end());
   arg_arr.push_back("Filename");
   LOG4CPLUS_TRACE(logger, "Extra arguments:");
-  for (const auto& s : arg_arr) {
+  for (const auto &s : arg_arr) {
     LOG4CPLUS_TRACE(logger, "  " << s);
   }
   CONTOURTILER_NAMESPACE::cl_options clo = cl_parse(arg_arr);
@@ -280,9 +284,9 @@ void ContourTilerDialog::RunContourTiler() {
 
   // // find the volume files to work with
   // std::string volSelected = _ui->VolumeList->currentText().toStdString();
- 
+
   // std::string output = _ui->OutputFilename->displayText().toStdString();
-  // std::string dataset = _ui->DataSetName->displayText().toStdString();     
+  // std::string dataset = _ui->DataSetName->displayText().toStdString();
 
   // cvcapp.startThread("bilateral_filter_thread_" + volSelected,
   //                    ContourTilerThread(radSig, spatSig, filRad,
@@ -290,8 +294,7 @@ void ContourTilerDialog::RunContourTiler() {
   //                                               output,
   //                                               dataset,
   //                                               _ui->tabWidget->currentIndex(),
-                                                // _ui->FileTypeComboBox->currentText().toStdString()));
+  // _ui->FileTypeComboBox->currentText().toStdString()));
 }
-
 
 #endif

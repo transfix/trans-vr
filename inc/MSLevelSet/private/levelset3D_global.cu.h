@@ -11,7 +11,7 @@
 
 #include <cutil_math.h>
 
-texture<float, 3, cudaReadModeElementType> texPhi; //3D texture for phi
-texture<float, 3, cudaReadModeElementType> texVol; //3D texture for intensity
+texture<float, 3, cudaReadModeElementType> texPhi; // 3D texture for phi
+texture<float, 3, cudaReadModeElementType> texVol; // 3D texture for intensity
 
 #endif

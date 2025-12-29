@@ -17,97 +17,83 @@
 
   You should have received a copy of the GNU Lesser General Public
   License along with this library; if not, write to the Free Software
-  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301
+  USA
 */
 
 #ifndef FILE_STREE_H
 #define FILE_STREE_H
 
-
-#include <map.h>
-#include <deque.h>
-
 #include <PEDetection/FrontPlane.h>
+#include <deque.h>
+#include <map.h>
 
+#define MAX_HISTO_ELEMENTS 50
 
-#define	MAX_HISTO_ELEMENTS		50
+template <class _DataType> class cSTree_Eval {
 
+protected:
+  int Width_mi, Height_mi, Depth_mi;
+  int WtimesH_mi, WHD_mi;
 
-template <class _DataType> 
-class cSTree_Eval {
+  _DataType *Data_mT;
+  float MinData_mf, MaxData_mf;
 
-	protected:
-		int			Width_mi, Height_mi, Depth_mi;
-		int			WtimesH_mi, WHD_mi;
-		
-		_DataType	*Data_mT;
-		float		MinData_mf, MaxData_mf;
+  unsigned char *BVVolume_muc;
+  char CurrAVType_mc;
+  int TotalNumBranches_mi, NumWrongClasss_mi, NumMissing_mi;
+  int NumWrongArteries_mi, NumWrongVeins_mi;
+  int NumRepeat_Eval_mi;
+  int NumWrongBranch_Generations_mi[20];
 
+  int Range_BloodVessels_mi[2];
+  //		int				Range_Soft_mi[2];
+  int Range_Muscles_mi[2];
+  //		int				Range_Lungs_mi[2];
 
-		unsigned char	*BVVolume_muc;
-		char			CurrAVType_mc;
-		int				TotalNumBranches_mi, NumWrongClasss_mi, NumMissing_mi;
-		int				NumWrongArteries_mi, NumWrongVeins_mi;
-		int				NumRepeat_Eval_mi;
-		int				NumWrongBranch_Generations_mi[20];
+  float VoxelSize_gf;
 
-		int				Range_BloodVessels_mi[2];
-//		int				Range_Soft_mi[2];
-		int				Range_Muscles_mi[2];
-//		int				Range_Lungs_mi[2];
+  int HistoWrongA_mi[MAX_HISTO_ELEMENTS]; // Artery
+  int HistoWrongV_mi[MAX_HISTO_ELEMENTS]; // Vein
+  int HistoWrongM_mi[MAX_HISTO_ELEMENTS]; // Missing
+  int HistoWrongT_mi[MAX_HISTO_ELEMENTS]; // Total
 
-		float			VoxelSize_gf;
+  map<int, cSkeletonVoxel *> StartLoc_mmap;
+  map<float, cSkeletonVoxel *> SkeletonDeadEnds_mmap;
+  map<int, cSkeletonVoxel *> Skeleton_mmap;
 
-		int				HistoWrongA_mi[MAX_HISTO_ELEMENTS];	// Artery
-		int				HistoWrongV_mi[MAX_HISTO_ELEMENTS];	// Vein
-		int				HistoWrongM_mi[MAX_HISTO_ELEMENTS];	// Missing
-		int				HistoWrongT_mi[MAX_HISTO_ELEMENTS];	// Total
+public:
+  cSTree_Eval();
+  ~cSTree_Eval();
 
-		
-		
-		map<int, cSkeletonVoxel *>			StartLoc_mmap;
-		map<float, cSkeletonVoxel *>		SkeletonDeadEnds_mmap;
-		map<int, cSkeletonVoxel *>			Skeleton_mmap;
+public:
+  void setWHD(int W, int H, int D);
+  void setData(_DataType *Data, float Minf, float Maxf);
+  void AVSeparation_Evaluate(unsigned char *BV);
+  void LoadTreeStructure(char *SkeletonFileName_c);
+  void setMuscleRange(int M1, int M2);
+  void setBVRange(int BV1, int BV2);
 
+protected:
+  void Evaluation(int CurrLoc);
+  int RecomputingMaxR_InBV_Muscles(int Xi, int Yi, int Zi);
+  int RecomputingMaxR_InBloodVessels(int Xi, int Yi, int Zi);
+  int *getSphereIndex(int SphereRadius, int &NumVoxels_ret);
+  void ComputingPixelSpacing();
+  int ComputingTheBiggestSphereAt_DataRange(cStack<int> &VoxelLocs,
+                                            _DataType Lower_Th,
+                                            _DataType Upper_Th,
+                                            int *Center3_ret,
+                                            int &SphereR_ret);
 
-
-
-	public:
-		cSTree_Eval();
-		~cSTree_Eval();		
-
-
-	public:
-		void setWHD(int W, int H, int D);
-		void setData(_DataType *Data, float Minf, float Maxf);
-		void AVSeparation_Evaluate(unsigned char *BV);
-		void LoadTreeStructure(char *SkeletonFileName_c);
-		void setMuscleRange(int M1, int M2);
-		void setBVRange(int BV1, int BV2);
-
-	protected:
-		void Evaluation(int CurrLoc);
-		int RecomputingMaxR_InBV_Muscles(int Xi, int Yi, int Zi);
-		int RecomputingMaxR_InBloodVessels(int Xi, int Yi, int Zi);
-		int *getSphereIndex(int SphereRadius, int &NumVoxels_ret);
-		void ComputingPixelSpacing();
-		int ComputingTheBiggestSphereAt_DataRange(cStack<int> &VoxelLocs, 
-								_DataType Lower_Th, _DataType Upper_Th, 
-								int *Center3_ret, int &SphereR_ret);
-		
-	private:
-		int Index(int X, int Y, int Z);
-		int Index(int *Loc3);
-		void IndexInverse(int Loc, int &X, int &Y, int &Z);
-		void IndexInverse(int Loc, int *Center3_ret);
-	
-
+private:
+  int Index(int X, int Y, int Z);
+  int Index(int *Loc3);
+  void IndexInverse(int Loc, int &X, int &Y, int &Z);
+  void IndexInverse(int Loc, int *Center3_ret);
 };
 
-
-
 extern char TargetName_gc[512];
-
 
 extern int SphereR00_gi[];
 extern int SphereR01_gi[];
@@ -165,9 +151,4 @@ extern int NumSphereR24_gi;
 extern int NumSphereR25_gi;
 extern int NumSphereR26_gi;
 
-
-
-
-
 #endif
-

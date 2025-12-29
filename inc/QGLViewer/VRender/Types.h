@@ -48,29 +48,28 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 #define _VRENDER_TYPES_H
 
 #ifdef WIN32
-# include <windows.h>
+#include <windows.h>
 #endif
 
 #ifdef __APPLE__
-# include <OpenGL/gl.h>
+#include <OpenGL/gl.h>
 #else
-# include <GL/gl.h>
+#include <GL/gl.h>
 #endif
 
-namespace vrender
-{
-	typedef double FLOAT ;
-	typedef GLdouble GLFLOAT ;
+namespace vrender {
+typedef double FLOAT;
+typedef GLdouble GLFLOAT;
 
 #ifdef A_VOIR
-	typedef T_Vect3<double> DVector3 ;
-	typedef T_Vect2<double> Vector2 ;
+typedef T_Vect3<double> DVector3;
+typedef T_Vect2<double> Vector2;
 #endif
 
-	class Primitive ;
-	typedef Primitive *PtrPrimitive ;
+class Primitive;
+typedef Primitive *PtrPrimitive;
 
-	const float FLAT_POLYGON_EPS = 1e-5f ;
-}
+const float FLAT_POLYGON_EPS = 1e-5f;
+} // namespace vrender
 
 #endif

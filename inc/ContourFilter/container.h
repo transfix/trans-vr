@@ -4,41 +4,37 @@
 #ifndef CF_CONTAINER_H
 #define CF_CONTAINER_H 1
 
-#include <vector>
-
 #include "common.h"
 #include "object.h"
 
+#include <vector>
+
 ContourFilter_BEGIN_NAMESPACE
 
-typedef std::vector<Object>::iterator o_iterator;
+    typedef std::vector<Object>::iterator o_iterator;
 typedef std::vector<Object>::const_iterator c_o_iterator;
 
-class Container
-{
+class Container {
 private:
   std::vector<Object> o; // separate objects in input files
-  int    num_files_read; // number of input files
+  int num_files_read;    // number of input files
 private:
-  int  getMatchingObject   (char const * const) const;
-  bool parseTransform      (FILE * stream,double * const transform);
-  bool parseContour        (char const * line,
-                            const int & section,char * const name);
-  void setTransform        (char const * str,double * const transform);
-  void addContour2Object   (char * const name,const int & section);
-  void createCallingScript (char const * const outdir,char const * script);
+  int getMatchingObject(char const *const) const;
+  bool parseTransform(FILE *stream, double *const transform);
+  bool parseContour(char const *line, const int &section, char *const name);
+  void setTransform(char const *str, double *const transform);
+  void addContour2Object(char *const name, const int &section);
+  void createCallingScript(char const *const outdir, char const *script);
+
 public:
-  void processContour (Histogram & h,Histogram & si,Histogram & si_before);
-  void clearOutputScripts  (void);
-  void getContours         (void);
-  void getContours         (const char* inputDir, 
-			    const char* prefix, 
-			    int minSection, 
-			    int maxSection);
-  void getContours         (const char* baseFilename, 
-			    int minSection, 
-			    int maxSection);
-  void writeOutputContours (void);
+  void processContour(Histogram &h, Histogram &si, Histogram &si_before);
+  void clearOutputScripts(void);
+  void getContours(void);
+  void getContours(const char *inputDir, const char *prefix, int minSection,
+                   int maxSection);
+  void getContours(const char *baseFilename, int minSection, int maxSection);
+  void writeOutputContours(void);
+
 private:
   /** Create a new object.
    * \param[in] object_name Name of new object.
@@ -46,31 +42,37 @@ private:
    * \return Index of new object.
    */
 
-  int newObject (char const * object_name,const int & section)
-  {
-    assert(o.size()<o.capacity());
-    o.push_back(Object(object_name,section));
-    assert(o.size()>0);
-    return o.size()-1;
+  int newObject(char const *object_name, const int &section) {
+    assert(o.size() < o.capacity());
+    o.push_back(Object(object_name, section));
+    assert(o.size() > 0);
+    return o.size() - 1;
   }
 
   /** Initialize matrix for transforming contour data.
    * \param[out] t Matrix of transform coefficients.
    */
 
-  void initTransform (double * const t)
-  {
-    t[0]=0.0; t[1]=1.0; t[2]=0.0; t[3]=0.0; t[4]=0.0; t[5]=0.0;
-    t[6]=0.0; t[7]=0.0; t[8]=1.0; t[9]=0.0; t[10]=0.0; t[11]=0.0;
+  void initTransform(double *const t) {
+    t[0] = 0.0;
+    t[1] = 1.0;
+    t[2] = 0.0;
+    t[3] = 0.0;
+    t[4] = 0.0;
+    t[5] = 0.0;
+    t[6] = 0.0;
+    t[7] = 0.0;
+    t[8] = 1.0;
+    t[9] = 0.0;
+    t[10] = 0.0;
+    t[11] = 0.0;
   }
 
 public:
-  /** Create new instance of Container class. 
+  /** Create new instance of Container class.
    */
 
-  Container (void)
-  :o(),num_files_read(0)
-  {
+  Container(void) : o(), num_files_read(0) {
     o.reserve(Controls::instance().getNumReserve());
   }
 
@@ -78,99 +80,74 @@ public:
    * \return Number of input files read.
    */
 
-  int getNumFiles (void) const
-  {
-    return num_files_read;
-  }
+  int getNumFiles(void) const { return num_files_read; }
 
   /** Get number of different input objects found.
    * \return Number of objects.
    */
 
-  int getNumObjects (void) const
-  {
-    return o.size();
-  }
+  int getNumObjects(void) const { return o.size(); }
 
-  /** Get cumulative number of contours of all objects. 
+  /** Get cumulative number of contours of all objects.
    */
 
-  int getNumContours (void) const
-  {
+  int getNumContours(void) const {
     int sum = 0;
-    for (c_o_iterator i = o.begin();i!=o.end();i++)
-    {
+    for (c_o_iterator i = o.begin(); i != o.end(); i++) {
       sum += i->getNumContours();
     }
     return sum;
   }
 
-  /** Get cumulative number of points in all contours of all objects. 
+  /** Get cumulative number of points in all contours of all objects.
    */
 
-  int getNumRawPoints (void) const
-  {
+  int getNumRawPoints(void) const {
     int sum = 0;
-    for (c_o_iterator i = o.begin();i!=o.end();i++)
-    {
+    for (c_o_iterator i = o.begin(); i != o.end(); i++) {
       sum += i->getNumRawPoints();
     }
     return sum;
   }
 
-  /** Get iterator to last contour of object with specified name. 
+  /** Get iterator to last contour of object with specified name.
    * \param[in] object_name Object of interest.
    * \return Iterator to last contour in object.
    */
 
-  c_l_iterator getLastContourFromObject (char const * const object_name)
-  {
+  c_l_iterator getLastContourFromObject(char const *const object_name) {
     int index = getMatchingObject(object_name);
-    assert(index>=0);
-    assert(index<static_cast<int>(o.size()));
+    assert(index >= 0);
+    assert(index < static_cast<int>(o.size()));
     return o[index].getLastContour();
   }
 
-  /** Get iterator to first object. 
+  /** Get iterator to first object.
    */
 
-  o_iterator firstObjectNonConst (void)
-  {
-    return o.begin();
-  }
+  o_iterator firstObjectNonConst(void) { return o.begin(); }
 
-  /** Get iterator to one past last object. 
+  /** Get iterator to one past last object.
    */
 
-  o_iterator onePastLastObjectNonConst (void)
-  {
-    return o.end();
-  }
+  o_iterator onePastLastObjectNonConst(void) { return o.end(); }
 
-  /** Get iterator to first object. 
+  /** Get iterator to first object.
    */
 
-  c_o_iterator firstObject (void) const
-  {
-    return o.begin();
-  }
+  c_o_iterator firstObject(void) const { return o.begin(); }
 
-  /** Get iterator to one past last object. 
+  /** Get iterator to one past last object.
    */
 
-  c_o_iterator onePastLastObject (void) const
-  {
-    return o.end();
-  }
+  c_o_iterator onePastLastObject(void) const { return o.end(); }
 
   /** Remove contours with too few points in each object in container.
    */
 
-  void purgeBadContours (void)
-  {
+  void purgeBadContours(void) {
     // for each object
-    for (o_iterator i=o.begin();i!=o.end();i++)
-    {
+    for (o_iterator i = o.begin(); i != o.end(); i++) {
       i->purgeBadContours();
     }
   }
@@ -178,11 +155,9 @@ public:
   /** Remove duplicate points in each object in container.
    */
 
-  void removeDuplicates (void)
-  {
+  void removeDuplicates(void) {
     // for each object
-    for (o_iterator i=o.begin();i!=o.end();i++)
-    {
+    for (o_iterator i = o.begin(); i != o.end(); i++) {
       i->removeDuplicates();
     }
   }
@@ -194,21 +169,17 @@ public:
    *  after simulated annealing.
    */
 
-  void computeHistogram (Histogram & h,Histogram & si)
-  {
-    for (o_iterator i = o.begin();i!=o.end();i++)
-    {
-      i->computeHistogram(h,si);
+  void computeHistogram(Histogram &h, Histogram &si) {
+    for (o_iterator i = o.begin(); i != o.end(); i++) {
+      i->computeHistogram(h, si);
     }
   }
 
   /** For each object in container write input contour points to file.
    */
 
-  void printRawPoints (void) const
-  {
-    for (c_o_iterator i = o.begin();i!=o.end();i++)
-    {
+  void printRawPoints(void) const {
+    for (c_o_iterator i = o.begin(); i != o.end(); i++) {
       i->printRawPoints();
     }
   }

@@ -17,37 +17,41 @@
  *   Free Software Foundation, Inc.,                                       *
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
-#include <vector>
 #include "Mesh.h"
-#include <VolMagick/VolMagick.h>
+
 #include <HLevelSet/HLevelSet.h>
+#include <VolMagick/VolMagick.h>
 #include <boost/tuple/tuple.hpp>
 #include <iostream>
+#include <vector>
 
 using namespace std;
 using namespace HLevelSetNS;
 
-void generateHLSVolume(MMHLS::PointCloud &pointCloud, VolMagick::BoundingBox &bb, unsigned int dim[3], float edgelength, VolMagick::Volume &vol, float &isovalue)
-{
+void generateHLSVolume(MMHLS::PointCloud &pointCloud,
+                       VolMagick::BoundingBox &bb, unsigned int dim[3],
+                       float edgelength, VolMagick::Volume &vol,
+                       float &isovalue) {
   // HLS constructor uses edgelength, end, maxdim
-    HLevelSetNS::HLevelSet* hLevelSet = new HLevelSetNS::HLevelSet(edgelength,3, 400);
+  HLevelSetNS::HLevelSet *hLevelSet =
+      new HLevelSetNS::HLevelSet(edgelength, 3, 400);
 
-    vector<float> pts;
-    int n=pointCloud.vertexList.size();
-    for(int j=0;j<n;j++)
-        for(int k=0;k<3;k++)
-        pts.push_back(pointCloud.vertexList[j][k]);
+  vector<float> pts;
+  int n = pointCloud.vertexList.size();
+  for (int j = 0; j < n; j++)
+    for (int k = 0; k < 3; k++)
+      pts.push_back(pointCloud.vertexList[j][k]);
 
-//     VolMagick::Volume coeff(VolMagick::Dimension(dim[0],dim[1],dim[2]),VolMagick::Float,bb);
-    boost::tuple<bool,VolMagick::Volume> result = hLevelSet->getHigherOrderLevelSetSurface_Xu_Li_N(pts,dim,bb,/*coeff,*/isovalue);
+  //     VolMagick::Volume
+  //     coeff(VolMagick::Dimension(dim[0],dim[1],dim[2]),VolMagick::Float,bb);
+  boost::tuple<bool, VolMagick::Volume> result =
+      hLevelSet->getHigherOrderLevelSetSurface_Xu_Li_N(pts, dim, bb,
+                                                       /*coeff,*/ isovalue);
 
-    try
-    {
-        vol=result.get<1>();
-    }
-    catch(const VolMagick::Exception& e)
-    {
-        cout<<"An exception occured. "<<endl;
-    }
-    delete hLevelSet;
+  try {
+    vol = result.get<1>();
+  } catch (const VolMagick::Exception &e) {
+    cout << "An exception occured. " << endl;
+  }
+  delete hLevelSet;
 }

@@ -23,28 +23,25 @@
 #ifndef LOG4CPLUS_FSTREAMS_HEADER_
 #define LOG4CPLUS_FSTREAMS_HEADER_
 
+#include <fstream>
 #include <log4cplus/config.hxx>
 
-#include <fstream>
-
 #if defined(__DECCXX) && !defined(__USE_STD_IOSTREAM)
-#  define LOG4CPLUS_FSTREAM_NAMESPACE
+#define LOG4CPLUS_FSTREAM_NAMESPACE
 #else
-#  define LOG4CPLUS_FSTREAM_NAMESPACE std
+#define LOG4CPLUS_FSTREAM_NAMESPACE std
 #endif
 
-
 #ifdef UNICODE
-    namespace log4cplus {
-        typedef LOG4CPLUS_FSTREAM_NAMESPACE::wofstream tofstream;
-        typedef LOG4CPLUS_FSTREAM_NAMESPACE::wifstream tifstream;
-    }
+namespace log4cplus {
+typedef LOG4CPLUS_FSTREAM_NAMESPACE::wofstream tofstream;
+typedef LOG4CPLUS_FSTREAM_NAMESPACE::wifstream tifstream;
+} // namespace log4cplus
 #else
-    namespace log4cplus {
-        typedef LOG4CPLUS_FSTREAM_NAMESPACE::ofstream tofstream;
-        typedef LOG4CPLUS_FSTREAM_NAMESPACE::ifstream tifstream;
-    }
+namespace log4cplus {
+typedef LOG4CPLUS_FSTREAM_NAMESPACE::ofstream tofstream;
+typedef LOG4CPLUS_FSTREAM_NAMESPACE::ifstream tifstream;
+} // namespace log4cplus
 #endif // UNICODE
 
 #endif // LOG4CPLUS_FSTREAMS_HEADER_
-

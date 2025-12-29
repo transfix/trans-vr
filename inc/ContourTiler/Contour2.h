@@ -1,19 +1,17 @@
 #ifndef __CONTOUR2_H__
 #define __CONTOUR2_H__
 
-#include <iostream>
-#include <vector>
-#include <list>
-#include <stdexcept>
-
+#include <ContourTiler/Contour.h>
+#include <ContourTiler/Contour_info.h>
+#include <ContourTiler/common.h>
+#include <ContourTiler/polygon_utils.h>
+#include <boost/lexical_cast.hpp>
 #include <boost/shared_ptr.hpp>
 #include <boost/weak_ptr.hpp>
-#include <boost/lexical_cast.hpp>
-
-#include <ContourTiler/common.h>
-#include <ContourTiler/Contour.h>
-#include <ContourTiler/polygon_utils.h>
-#include <ContourTiler/Contour_info.h>
+#include <iostream>
+#include <list>
+#include <stdexcept>
+#include <vector>
 
 CONTOURTILER_BEGIN_NAMESPACE
 
@@ -32,7 +30,8 @@ CONTOURTILER_BEGIN_NAMESPACE
 // {
 // public:
 //   template <typename Info>
-//   Contour_exception(const std::string& error, const Info& info) : std::runtime_error(error)
+//   Contour_exception(const std::string& error, const Info& info) :
+//   std::runtime_error(error)
 //   {
 //     _slice = boost::lexical_cast<std::string>(info.slice());
 //     _object_name = info.object_name();
@@ -53,15 +52,14 @@ CONTOURTILER_BEGIN_NAMESPACE
 //--------------------------------------------------------
 // Contour class
 //--------------------------------------------------------
-class Contour2
-{
+class Contour2 {
 public:
-  typedef Contour_info<Number_type>                     Info;
-  typedef Contour2                                      Self;
-  typedef boost::shared_ptr<Self>                       Handle;
+  typedef Contour_info<Number_type> Info;
+  typedef Contour2 Self;
+  typedef boost::shared_ptr<Self> Handle;
   // typedef CGAL::Polygon_2<PolygonTraits>                Polygon;
   // typedef PolygonTraits                                 Kernel;
-  typedef Info                                          Info_type;
+  typedef Info Info_type;
   // typedef PolygonTraits::Point_2                        Point;
 
   typedef list<Polygon_with_holes_2> Container;
@@ -69,7 +67,7 @@ public:
   typedef Container::const_iterator Polygon_const_iterator;
 
 private:
-  typedef boost::weak_ptr<Self>                         Self_handle;
+  typedef boost::weak_ptr<Self> Self_handle;
 
 public:
   //--------------------------------------------------------
@@ -77,19 +75,17 @@ public:
   //--------------------------------------------------------
 
   static Handle create();
-  static Handle create(const Info& info);
-  static Handle create(const Polygon_2& polygon);
-  static Handle create(const Polygon_2& polygon, const Info& info);
+  static Handle create(const Info &info);
+  static Handle create(const Polygon_2 &polygon);
+  static Handle create(const Polygon_2 &polygon, const Info &info);
 
   template <typename Poly_iter>
-  static Handle create(Poly_iter begin, Poly_iter end)
-  {
+  static Handle create(Poly_iter begin, Poly_iter end) {
     return create(begin, end, Info());
   }
 
   template <typename Poly_iter>
-  static Handle create(Poly_iter begin, Poly_iter end, const Info& info)
-  {
+  static Handle create(Poly_iter begin, Poly_iter end, const Info &info) {
     Handle instance(new Contour2(begin, end, info));
     // Why can't I access _self from here?  Even though this function
     // is static it seems like I should still be able to...  Ah, the
@@ -100,14 +96,13 @@ public:
   }
 
   template <typename Poly_iter>
-  static Handle create_from_pwhs(Poly_iter begin, Poly_iter end)
-  {
+  static Handle create_from_pwhs(Poly_iter begin, Poly_iter end) {
     return create_from_pwhs(begin, end, Info());
   }
 
   template <typename Poly_iter>
-  static Handle create_from_pwhs(Poly_iter begin, Poly_iter end, const Info& info)
-  {
+  static Handle create_from_pwhs(Poly_iter begin, Poly_iter end,
+                                 const Info &info) {
     list<Polygon_2> empty;
     Handle instance(new Contour2(empty.begin(), empty.end(), info));
     instance->_polygons.insert(instance->_polygons.end(), begin, end);
@@ -130,13 +125,12 @@ public:
 
 private:
   template <typename Poly_iter>
-  Contour2(Poly_iter begin, Poly_iter end, const Info& info);// : _info(info)
+  Contour2(Poly_iter begin, Poly_iter end, const Info &info); // : _info(info)
   // {
   //   arrange_polygons(begin, end, back_inserter(_polygons));
   // }
 
 public:
-
   //--------------------------------------------------------
   // Accessors
   //--------------------------------------------------------
@@ -149,21 +143,18 @@ public:
 
   // Polygon_2& polygon()
   // { return _polygon; }
-  
+
   // const Polygon_2& polygon() const
   // { return _polygon; }
-  
+
   // const size_t size() const
   // { return _polygon.size(); }
 
-  Info& info()
-  { return _info; }
+  Info &info() { return _info; }
 
-  const Info& info() const
-  { return _info; }
+  const Info &info() const { return _info; }
 
-  Number_type slice() const
-  { return _info.slice(); }
+  Number_type slice() const { return _info.slice(); }
 
   void validate() const;
 
@@ -180,7 +171,7 @@ public:
   //--------------------------------------------------------
   // Convenience functions
   //--------------------------------------------------------
-  
+
   // bool is_counterclockwise_oriented()
   // { return _polygon.is_counterclockwise_oriented(); }
 
@@ -219,7 +210,8 @@ typedef Contour2::Handle Contour2_handle;
 //-------------------------------------
 
 // std::ostream& operator<<(std::ostream& out, const Contour2& contour);
-// std::ostream& operator<<(std::ostream& out, boost::shared_ptr<Contour2> contour);
+// std::ostream& operator<<(std::ostream& out, boost::shared_ptr<Contour2>
+// contour);
 
 CONTOURTILER_END_NAMESPACE
 

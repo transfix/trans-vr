@@ -17,7 +17,8 @@
 
   You should have received a copy of the GNU Lesser General Public
   License along with this library; if not, write to the Free Software
-  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301
+  USA
 */
 
 #ifndef __POINTCLASSFILE_H__
@@ -30,21 +31,24 @@
 class VolumeGridRover;
 
 /* The content handler for reading a point class file */
-/* TODO: Qt6 migration - needs rewrite to use QXmlStreamReader instead of SAX API
-class ContourFileContentHandler : public QXmlDefaultHandler
+/* TODO: Qt6 migration - needs rewrite to use QXmlStreamReader instead of SAX
+API class ContourFileContentHandler : public QXmlDefaultHandler
 {
  public:
   ContourFileContentHandler(VolumeGridRover *vgr);
   virtual void setDocumentLocator(QXmlLocator *locator);
   //virtual bool startDocument();
   virtual bool endDocument();
-  //virtual bool startPrefixMapping(const QString & prefix, const QString & uri );
+  //virtual bool startPrefixMapping(const QString & prefix, const QString &
+uri );
   //virtual bool endPrefixMapping(const QString & prefix);
-  virtual bool startElement(const QString & namespaceURI, const QString & localName, const QString & qName, const QXmlAttributes & atts);
-  virtual bool endElement(const QString & namespaceURI, const QString & localName, const QString & qName);
-  virtual bool characters (const QString & ch);
+  virtual bool startElement(const QString & namespaceURI, const QString &
+localName, const QString & qName, const QXmlAttributes & atts); virtual bool
+endElement(const QString & namespaceURI, const QString & localName, const
+QString & qName); virtual bool characters (const QString & ch);
   //virtual bool ignorableWhitespace(const QString & ch);
-  //virtual bool processingInstruction(const QString & target, const QString & data);
+  //virtual bool processingInstruction(const QString & target, const QString &
+data);
   //virtual bool skippedEntity(const QString & name);
   virtual QString errorString();
  private:

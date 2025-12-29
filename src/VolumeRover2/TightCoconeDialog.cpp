@@ -18,33 +18,31 @@
 
   You should have received a copy of the GNU Lesser General Public
   License along with this library; if not, write to the Free Software
-  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301
+  USA
 */
 
+#include "ui_TightCoconeDialog.h"
+
 #include <CVC/App.h>
-#include <VolumeRover2/TightCoconeDialog.h>
-
-#include <cvcraw_geometry/cvcgeom.h>
-
 #include <QFileDialog>
 #include <QMessageBox>
-
-#include "ui_TightCoconeDialog.h"
+#include <VolumeRover2/TightCoconeDialog.h>
+#include <cvcraw_geometry/cvcgeom.h>
 
 #ifdef USING_TIGHT_COCONE
 #include <TightCocone/tight_cocone.h>
 #endif
 
 // arand, 5-4-2011: initial implementation
-#include <iostream> 
+#include <iostream>
 using namespace std;
 
-TightCoconeDialog::TightCoconeDialog(QWidget *parent,Qt::WindowFlags flags) 
-  : QDialog(parent, flags) {
+TightCoconeDialog::TightCoconeDialog(QWidget *parent, Qt::WindowFlags flags)
+    : QDialog(parent, flags) {
 
   _ui = new Ui::TightCoconeDialog;
-  _ui->setupUi(this);   
-
+  _ui->setupUi(this);
 
   _ui->BigBallEdit->insert("0.0625");
   _ui->InfiniteFiniteEdit->insert("0.0872665");
@@ -52,59 +50,48 @@ TightCoconeDialog::TightCoconeDialog(QWidget *parent,Qt::WindowFlags flags)
   _ui->FlatnessEdit->insert("1.44");
   _ui->CoconePhiEdit->insert("0.392699");
   _ui->FlatPhiEdit->insert("1.0472");
-  
-  
-  std::vector<std::string> geoms = 
-    cvcapp.data<cvcraw_geometry::cvcgeom_t>();
-  for (const auto& key : geoms)
-    _ui->GeometryList->addItem(QString::fromStdString(key));  
 
+  std::vector<std::string> geoms = cvcapp.data<cvcraw_geometry::cvcgeom_t>();
+  for (const auto &key : geoms)
+    _ui->GeometryList->addItem(QString::fromStdString(key));
 }
 
-TightCoconeDialog::~TightCoconeDialog() {
-  delete _ui;
-}
+TightCoconeDialog::~TightCoconeDialog() { delete _ui; }
 
-class TightCoconeThread
-{
+class TightCoconeThread {
 public:
-  TightCoconeThread(const std::string& geomSelected,
-		    const bool robust,
-		    const double bigBall,
-		    const double iF,
-		    const double fF,
-		    const double flatness,
-		    const double coconePhi,
-		    const double flatPhi,
-		    const std::string& resultName)
-    : _geomSelected(geomSelected), _robust(robust), _bigBall(bigBall),
-      _iF(iF), _fF(fF), _flatness(flatness),_coconePhi(coconePhi), _flatPhi(flatPhi),
-      _resultName(resultName) {}
+  TightCoconeThread(const std::string &geomSelected, const bool robust,
+                    const double bigBall, const double iF, const double fF,
+                    const double flatness, const double coconePhi,
+                    const double flatPhi, const std::string &resultName)
+      : _geomSelected(geomSelected), _robust(robust), _bigBall(bigBall),
+        _iF(iF), _fF(fF), _flatness(flatness), _coconePhi(coconePhi),
+        _flatPhi(flatPhi), _resultName(resultName) {}
 
-  void operator()()
-  {
+  void operator()() {
     CVC::ThreadFeedback feedback;
 
 #ifdef USING_TIGHT_COCONE
 
-    // get the selected geometry... 
-    CVCGEOM_NAMESPACE::cvcgeom_t geom = boost::any_cast<CVCGEOM_NAMESPACE::cvcgeom_t>(cvcapp.data()[_geomSelected]);
-    
-    TightCocone::Parameters params;    
-    CVCGEOM_NAMESPACE::cvcgeom_t result = 
-      TightCocone::surfaceReconstruction(geom,
-					 params.b_robust(_robust).
-					 bb_ratio(_bigBall).
-					 theta_if(_iF).
-					 theta_ff(_fF).
-					 flatness_ratio(_flatness).
-					 cocone_phi(_coconePhi).
-					 flat_phi(_flatPhi));
-    
-    if (_resultName.empty()){
+    // get the selected geometry...
+    CVCGEOM_NAMESPACE::cvcgeom_t geom =
+        boost::any_cast<CVCGEOM_NAMESPACE::cvcgeom_t>(
+            cvcapp.data()[_geomSelected]);
+
+    TightCocone::Parameters params;
+    CVCGEOM_NAMESPACE::cvcgeom_t result = TightCocone::surfaceReconstruction(
+        geom, params.b_robust(_robust)
+                  .bb_ratio(_bigBall)
+                  .theta_if(_iF)
+                  .theta_ff(_fF)
+                  .flatness_ratio(_flatness)
+                  .cocone_phi(_coconePhi)
+                  .flat_phi(_flatPhi));
+
+    if (_resultName.empty()) {
       _resultName = _geomSelected + "_tight_cocone";
     }
-    cvcapp.data(_resultName,result);
+    cvcapp.data(_resultName, result);
     cvcapp.listPropertyAppend("thumbnail.geometries", _resultName);
     cvcapp.listPropertyAppend("zoomed.geometries", _resultName);
 
@@ -126,7 +113,7 @@ private:
 };
 
 void TightCoconeDialog::RunTightCocone() {
-  // get parameters  
+  // get parameters
   std::string geomSelected = _ui->GeometryList->currentText().toStdString();
   bool robust = _ui->RobustCoconeCheckbox->isChecked();
   double bigBall = _ui->BigBallEdit->displayText().toDouble();
@@ -136,10 +123,9 @@ void TightCoconeDialog::RunTightCocone() {
   double coconePhi = _ui->CoconePhiEdit->displayText().toDouble();
   double flatPhi = _ui->FlatPhiEdit->displayText().toDouble();
   std::string resultName = _ui->ResultEdit->displayText().toStdString();
-  
+
   cvcapp.startThread("tight_cocone_thread",
-                     TightCoconeThread(geomSelected,robust, bigBall,
-				       infiniteFinite, finiteFinite,
-				       flatness,coconePhi,flatPhi,
-				       resultName));
+                     TightCoconeThread(geomSelected, robust, bigBall,
+                                       infiniteFinite, finiteFinite, flatness,
+                                       coconePhi, flatPhi, resultName));
 }

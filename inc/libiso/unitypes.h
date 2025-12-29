@@ -1,7 +1,7 @@
 /*
   Copyright 2000-2002 The University of Texas at Austin
 
-	Authors: Sanghun Park <hun@ices.utexas.edu>
+        Authors: Sanghun Park <hun@ices.utexas.edu>
                  Xiaoyu Zhang <xiaoyu@ices.utexas.edu>
         Advisor: Chandrajit Bajaj <bajaj@cs.utexas.edu>
 
@@ -18,15 +18,15 @@
 
   You should have received a copy of the GNU Lesser General Public
   License along with this library; if not, write to the Free Software
-  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301
+  USA
 */
 
 #ifndef UNIX_TYPES_H
 #define UNIX_TYPES_H
 
 typedef unsigned char u_char;
-typedef unsigned int  u_int;
+typedef unsigned int u_int;
 typedef unsigned short u_short;
-
 
 #endif

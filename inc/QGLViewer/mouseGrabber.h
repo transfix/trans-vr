@@ -25,9 +25,8 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 #ifndef QGLVIEWER_MOUSE_GRABBER_H
 #define QGLVIEWER_MOUSE_GRABBER_H
 
-#include <QGLViewer/config.h>
-
 #include <QEvent>
+#include <QGLViewer/config.h>
 
 class QGLViewer;
 
@@ -38,14 +37,14 @@ class Camera;
   \class MouseGrabber mouseGrabber.h QGLViewer/mouseGrabber.h
 
   MouseGrabber are objects which react to the mouse cursor, usually when it
-  hovers over them. This abstract class only provides an interface for all these
-  objects: their actual behavior has to be defined in a derived class.
+  hovers over them. This abstract class only provides an interface for all
+  these objects: their actual behavior has to be defined in a derived class.
 
   <h3>How does it work ?</h3>
 
   All the created MouseGrabber are grouped in a MouseGrabberPool(). The
-  QGLViewers parse this pool, calling all the MouseGrabbers' checkIfGrabsMouse()
-  methods that setGrabsMouse() if desired.
+  QGLViewers parse this pool, calling all the MouseGrabbers'
+  checkIfGrabsMouse() methods that setGrabsMouse() if desired.
 
   When a MouseGrabber grabsMouse(), it becomes the QGLViewer::mouseGrabber().
   All the mouse events (mousePressEvent(), mouseReleaseEvent(),
@@ -54,28 +53,29 @@ class Camera;
   processed. This continues while grabsMouse() (updated using
   checkIfGrabsMouse()) returns \c true.
 
-  If you want to (temporarily) disable a specific MouseGrabbers, you can remove
-  it from this pool using removeFromMouseGrabberPool(). You can also disable a
-  MouseGrabber in a specific QGLViewer using
+  If you want to (temporarily) disable a specific MouseGrabbers, you can
+  remove it from this pool using removeFromMouseGrabberPool(). You can also
+  disable a MouseGrabber in a specific QGLViewer using
   QGLViewer::setMouseGrabberIsEnabled().
 
   <h3>Implementation details</h3>
 
-  In order to make MouseGrabber react to mouse events, mouse tracking has to be
-  activated in the QGLViewer which wants to use MouseGrabbers: \code init() {
-  setMouseTracking(true); } \endcode Call \c QOpenGLWidget::hasMouseTracking()
-  to get the current state of this flag.
+  In order to make MouseGrabber react to mouse events, mouse tracking has to
+  be activated in the QGLViewer which wants to use MouseGrabbers: \code init()
+  { setMouseTracking(true); } \endcode Call \c
+  QOpenGLWidget::hasMouseTracking() to get the current state of this flag.
 
   The \p camera parameter of the different mouse event methods is a pointer to
-  the QGLViewer::camera() of the QGLViewer that uses the MouseGrabber. It can be
-  used to compute 2D to 3D coordinates conversion using
+  the QGLViewer::camera() of the QGLViewer that uses the MouseGrabber. It can
+  be used to compute 2D to 3D coordinates conversion using
   Camera::projectedCoordinatesOf() and Camera::unprojectedCoordinatesOf().
 
-  Very complex behaviors can be implemented using this framework: auto-selected
-  objects (no need to press a key to use them), automatic drop-down menus, 3D
-  GUI, spinners using the wheelEvent(), and whatever your imagination creates.
-  See the <a href="../examples/mouseGrabber.html">mouseGrabber example</a> for
-  an illustration.
+  Very complex behaviors can be implemented using this framework:
+  auto-selected objects (no need to press a key to use them), automatic
+  drop-down menus, 3D GUI, spinners using the wheelEvent(), and whatever your
+  imagination creates. See the <a
+  href="../examples/mouseGrabber.html">mouseGrabber example</a> for an
+  illustration.
 
   Note that ManipulatedFrame are MouseGrabber: see the <a
   href="../examples/keyFrames.html">keyFrame example</a> for an illustration.
@@ -96,7 +96,8 @@ class Camera;
     // MovableObject is active in a region of 5 pixels around its pos.
     // May depend on the actual shape of the object. Customize as desired.
     // Once clicked (moved = true), it keeps grabbing mouse until button is
-  released. setGrabsMouse( moved || ((pos-QPoint(x,y)).manhattanLength() < 5) );
+  released. setGrabsMouse( moved || ((pos-QPoint(x,y)).manhattanLength() < 5)
+  );
   }
 
   void mousePressEvent( QMouseEvent* const e, Camera* const) { prevPos =
@@ -116,9 +117,8 @@ class Camera;
 
   void draw()
   {
-    // The object is drawn centered on its pos, with different possible aspects:
-    if (grabsMouse())
-    if (moved)
+    // The object is drawn centered on its pos, with different possible
+  aspects: if (grabsMouse()) if (moved)
     // Object being moved, maybe a transparent display
     else
     // Object ready to be moved, maybe a highlighted visual feedback
@@ -140,7 +140,8 @@ class QGLVIEWER_EXPORT MouseGrabber {
 
 public:
   MouseGrabber();
-  /*! Virtual destructor. Removes the MouseGrabber from the MouseGrabberPool().
+  /*! Virtual destructor. Removes the MouseGrabber from the
+   * MouseGrabberPool().
    */
   virtual ~MouseGrabber() { MouseGrabber::MouseGrabberPool_.removeAll(this); }
 
@@ -156,8 +157,8 @@ public:
   mouse and MouseGrabber current positions, using setGrabsMouse().
 
   grabsMouse() is usually set to \c true when the mouse cursor is close enough
-  to the MouseGrabber position. It should also be set to \c false when the mouse
-  cursor leaves this region in order to release the mouse focus.
+  to the MouseGrabber position. It should also be set to \c false when the
+  mouse cursor leaves this region in order to release the mouse focus.
 
   \p x and \p y are the mouse cursor coordinates (Qt coordinate system: (0,0)
   corresponds to the upper left corner).
@@ -178,9 +179,11 @@ public:
 
   See examples in the <a href="#_details">detailed description</a> section and
   in the <a href="../examples/mouseGrabber.html">mouseGrabber example</a>. */
-  virtual void checkIfGrabsMouse(int x, int y, const Camera *const camera) = 0;
+  virtual void checkIfGrabsMouse(int x, int y,
+                                 const Camera *const camera) = 0;
 
-  /*! Returns \c true when the MouseGrabber grabs the QGLViewer's mouse events.
+  /*! Returns \c true when the MouseGrabber grabs the QGLViewer's mouse
+  events.
 
   This flag is set with setGrabsMouse() by the checkIfGrabsMouse() method. */
   bool grabsMouse() const { return grabsMouse_; }
@@ -199,20 +202,21 @@ public:
   them grabsMouse() using checkIfGrabsMouse().
 
   You should not have to directly use this list. Use
-  removeFromMouseGrabberPool() and addInMouseGrabberPool() to modify this list.
+  removeFromMouseGrabberPool() and addInMouseGrabberPool() to modify this
+  list.
 
-  \attention This method returns a \c QPtrList<MouseGrabber> with Qt 3 and a \c
-  QList<MouseGrabber> with Qt 2. */
+  \attention This method returns a \c QPtrList<MouseGrabber> with Qt 3 and a
+  \c QList<MouseGrabber> with Qt 2. */
   static const QList<MouseGrabber *> &MouseGrabberPool() {
     return MouseGrabber::MouseGrabberPool_;
   }
 
-  /*! Returns \c true if the MouseGrabber is currently in the MouseGrabberPool()
-  list.
+  /*! Returns \c true if the MouseGrabber is currently in the
+  MouseGrabberPool() list.
 
   Default value is \c true. When set to \c false using
-  removeFromMouseGrabberPool(), the QGLViewers no longer checkIfGrabsMouse() on
-  this MouseGrabber. Use addInMouseGrabberPool() to insert it back. */
+  removeFromMouseGrabberPool(), the QGLViewers no longer checkIfGrabsMouse()
+  on this MouseGrabber. Use addInMouseGrabberPool() to insert it back. */
   bool isInMouseGrabberPool() const {
     return MouseGrabber::MouseGrabberPool_.contains(
         const_cast<MouseGrabber *>(this));
@@ -230,9 +234,10 @@ protected:
 
 
   The MouseGrabber will typically start an action or change its state when a
-  mouse button is pressed. mouseMoveEvent() (called at each mouse displacement)
-  will then update the MouseGrabber accordingly and mouseReleaseEvent() (called
-  when the mouse button is released) will terminate this action.
+  mouse button is pressed. mouseMoveEvent() (called at each mouse
+  displacement) will then update the MouseGrabber accordingly and
+  mouseReleaseEvent() (called when the mouse button is released) will
+  terminate this action.
 
   Use the \p event QMouseEvent::state() and QMouseEvent::button() to test the
   keyboard and button state and possibly change the MouseGrabber behavior
@@ -243,7 +248,8 @@ protected:
 
   See the \c QOpenGLWidget::mousePressEvent() and the \c QMouseEvent
   documentations for details. */
-  virtual void mousePressEvent(QMouseEvent *const event, Camera *const camera) {
+  virtual void mousePressEvent(QMouseEvent *const event,
+                               Camera *const camera) {
     Q_UNUSED(event);
     Q_UNUSED(camera);
   }
@@ -263,12 +269,13 @@ protected:
     Q_UNUSED(event);
     Q_UNUSED(camera);
   }
-  /*! Callback method called when the MouseGrabber grabsMouse() and the mouse is
-  moved while a button is pressed.
+  /*! Callback method called when the MouseGrabber grabsMouse() and the mouse
+  is moved while a button is pressed.
 
-  This method will typically update the state of the MouseGrabber from the mouse
-  displacement. See the mousePressEvent() documentation for details. */
-  virtual void mouseMoveEvent(QMouseEvent *const event, Camera *const camera) {
+  This method will typically update the state of the MouseGrabber from the
+  mouse displacement. See the mousePressEvent() documentation for details. */
+  virtual void mouseMoveEvent(QMouseEvent *const event,
+                              Camera *const camera) {
     Q_UNUSED(event);
     Q_UNUSED(camera);
   }

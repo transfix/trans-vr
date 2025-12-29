@@ -17,48 +17,48 @@
 
   You should have received a copy of the GNU Lesser General Public
   License along with this library; if not, write to the Free Software
-  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301
+  USA
 */
 
 #ifndef VOLUMEGRIDROVERMAINWINDOW_H
 #define VOLUMEGRIDROVERMAINWINDOW_H
 
-#include <VolMagick/VolMagick.h>
-#include <QObject>
 #include <QGridLayout>
+#include <QObject>
 #include <QWidget>
+#include <VolMagick/VolMagick.h>
 
-namespace CVC
-{
-  class ColorTable;
+namespace CVC {
+class ColorTable;
 }
 
 class VolumeGridRover;
 class QBoxLayout;
 class QToolBar;
-//class MappedVolumeFile;
+// class MappedVolumeFile;
 
-class VolumeGridRoverMainWindow : public QWidget
-{
+class VolumeGridRoverMainWindow : public QWidget {
   Q_OBJECT
 
- public:
-  VolumeGridRoverMainWindow(QWidget* parent = nullptr, Qt::WindowFlags fl = Qt::WindowFlags());
+public:
+  VolumeGridRoverMainWindow(QWidget *parent = nullptr,
+                            Qt::WindowFlags fl = Qt::WindowFlags());
   ~VolumeGridRoverMainWindow();
 
   void fileOpen();
 
- public slots:
+public slots:
   void functionChangedSlot();
 
- private:
+private:
   QToolBar *m_ColorToolbar;
   CVC::ColorTable *m_ColorTable;
 
   QGridLayout *m_VolumeGridRoverLayout;
   VolumeGridRover *m_VolumeGridRover;
   VolMagick::VolumeFileInfo m_VolumeFileInfo;
-  //MappedVolumeFile *m_MappedVolumeFile;
+  // MappedVolumeFile *m_MappedVolumeFile;
 };
 
 #endif

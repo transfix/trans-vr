@@ -2,18 +2,19 @@
  * parallelwrite.c  - Functions for direct writing in parallel to one file
  *
  * Copyright (C) 2009 by Boulder Laboratory for 3-Dimensional Electron
- * Microscopy of Cells ("BL3DEMC") and the Regents of the University of 
+ * Microscopy of Cells ("BL3DEMC") and the Regents of the University of
  * Colorado.  See dist/COPYRIGHT for full notice.
  *
  * $Id: parallelwrite.c 1478 2010-03-07 22:58:12Z transfix $
  * Log at end of file
  */
 
-#include <VolMagick/libiimod/imodconfig.h>
-#include <VolMagick/libiimod/b3dutil.h>
 #include "stdio.h"
 #include "stdlib.h"
 #include "string.h"
+
+#include <VolMagick/libiimod/b3dutil.h>
+#include <VolMagick/libiimod/imodconfig.h>
 
 #ifdef F77FUNCAP
 #define parwrtinitializefw PARWRTINITIALIZEFW
@@ -39,8 +40,8 @@ static int nx, ny, numBoundLines, numFiles, everySec;
 #define MAXLINE 1024
 
 /*!
- * Initialize parallel writing to an image file by reading in the boundary 
- * info file whose name is [filename], and storing various values in static 
+ * Initialize parallel writing to an image file by reading in the boundary
+ * info file whose name is [filename], and storing various values in static
  * variables. [filename] can be NULL or an empty string.  [nxin] and [nyin]
  * specify the dimensions of the images.  The format of the info
  * file is to start with a line with these entries: ^
@@ -53,20 +54,19 @@ static int nx, ny, numBoundLines, numFiles, everySec;
  * numFiles = number of boundary files  ^
  * For each boundary file, there are then two lines:  ^
  * Name of boundary file  ^
- * Boundary 1 section and starting line, boundary 2 section and starting line ^
- * Sections and lines are numbered from 0.  For chunks in Z, the section number
- * should be -1 for no boundary (i.e., for boundary 1 of first chunk and 
- * boundary 2 of last chunk).  A line number of -1 indicates that the boundary
- * extends to the end of the section (thus, a setup script does not need to 
- * know the size of the images in Y).  This routine will convert a line number
- * of -1 to the appropriate starting line.  ^
- * For chunks in Y, the section number is
- * ignored (and should be -1) and the line number should be -1 for no boundary.
- * Returns 1 for failure to open file, 2 for error reading file, 3 for 
- * inappropriate values in header line of file, 4 for memory allocation errors.
+ * Boundary 1 section and starting line, boundary 2 section and starting line
+ * ^ Sections and lines are numbered from 0.  For chunks in Z, the section
+ * number should be -1 for no boundary (i.e., for boundary 1 of first chunk
+ * and boundary 2 of last chunk).  A line number of -1 indicates that the
+ * boundary extends to the end of the section (thus, a setup script does not
+ * need to know the size of the images in Y).  This routine will convert a
+ * line number of -1 to the appropriate starting line.  ^ For chunks in Y, the
+ * section number is ignored (and should be -1) and the line number should be
+ * -1 for no boundary. Returns 1 for failure to open file, 2 for error reading
+ * file, 3 for inappropriate values in header line of file, 4 for memory
+ * allocation errors.
  */
-int parWrtInitialize(char *filename, int nxin, int nyin)
-{
+int parWrtInitialize(char *filename, int nxin, int nyin) {
   FILE *fp;
   int i, version;
   char line[MAXLINE];
@@ -79,7 +79,7 @@ int parWrtInitialize(char *filename, int nxin, int nyin)
   if (fgetline(fp, line, MAXLINE) <= 0)
     return 2;
   /* Format of file is: version #, type, nx, # of bound lines, # of files */
-  sscanf(line, "%d %d %d %d %d", &version, &everySec, &nx, &numBoundLines, 
+  sscanf(line, "%d %d %d %d %d", &version, &everySec, &nx, &numBoundLines,
          &numFiles);
   if (nx != nxin || numBoundLines <= 0 || numFiles <= 0)
     return 3;
@@ -94,8 +94,8 @@ int parWrtInitialize(char *filename, int nxin, int nyin)
       return 4;
     if (fgetline(fp, line, MAXLINE) == 0)
       return 2;
-    sscanf(line, "%d %d %d %d", &regions[i].section[0], 
-           &regions[i].startLine[0], &regions[i].section[1], 
+    sscanf(line, "%d %d %d %d", &regions[i].section[0],
+           &regions[i].startLine[0], &regions[i].section[1],
            &regions[i].startLine[1]);
 
     /* Replace a -1 for second start line with actual line # */
@@ -111,8 +111,7 @@ int parWrtInitialize(char *filename, int nxin, int nyin)
  * Simple Fortran wrapper for @parWrtInitialize, called by the Fortran
  * parWrtInitialize funtion.
  */
-int parwrtinitializefw(char *filename, int *nxin, int *nyin, int strlen)
-{
+int parwrtinitializefw(char *filename, int *nxin, int *nyin, int strlen) {
   int retval;
   char *tempstr = f2cString(filename, strlen);
   if (!tempstr)
@@ -128,8 +127,7 @@ int parwrtinitializefw(char *filename, int *nxin, int *nyin, int strlen)
  * with the number of boundary files. Returns 1 for parallel writing not
  * initialized.
  */
-int parWrtProperties(int *allSec, int *linesBound, int *nfiles)
-{
+int parWrtProperties(int *allSec, int *linesBound, int *nfiles) {
   if (!regions)
     return 1;
   *linesBound = numBoundLines;
@@ -141,8 +139,7 @@ int parWrtProperties(int *allSec, int *linesBound, int *nfiles)
 /*!
  * Fortran wrapper for @parWrtProperties.
  */
-int parwrtproperties(int *allSec, int *linesBound, int *nfiles)
-{
+int parwrtproperties(int *allSec, int *linesBound, int *nfiles) {
   return parWrtProperties(allSec, linesBound, nfiles);
 }
 
@@ -153,9 +150,8 @@ int parwrtproperties(int *allSec, int *linesBound, int *nfiles)
  * boundaries in arrays [sections] and [startLines].  Returns 1 if parallel
  * writing not initialized, or 2 if the region is not found.
  */
-int parWrtFindRegion(int secNum, int lineNum, int nlWrite, char **filename, 
-                     int *sections, int *startLines)
-{
+int parWrtFindRegion(int secNum, int lineNum, int nlWrite, char **filename,
+                     int *sections, int *startLines) {
   int i, pastStart, beforeEnd;
   if (!regions)
     return 1;
@@ -170,12 +166,12 @@ int parWrtFindRegion(int secNum, int lineNum, int nlWrite, char **filename,
           regions[i].startLine[1] + numBoundLines - 1 < lineNum)
         beforeEnd = 0;
     } else {
-      if (regions[i].section[0] >= 0 && 
-          (regions[i].section[0] > secNum || 
-           (regions[i].section[0] == secNum && 
+      if (regions[i].section[0] >= 0 &&
+          (regions[i].section[0] > secNum ||
+           (regions[i].section[0] == secNum &&
             regions[i].startLine[0] > lineNum + nlWrite - 1)))
         pastStart = 0;
-      if (regions[i].section[1] >= 0 && 
+      if (regions[i].section[1] >= 0 &&
           (regions[i].section[1] < secNum ||
            (regions[i].section[1] == secNum &&
             regions[i].startLine[1] + numBoundLines - 1 < lineNum)))
@@ -197,8 +193,7 @@ int parWrtFindRegion(int secNum, int lineNum, int nlWrite, char **filename,
  * Fortran wrapper for @parWrtFindRegion
  */
 int parwrtfindregion(int *secNum, int *lineNum, int *nlWrite, char *filename,
-                     int *sections, int *startLines, int strlen)
-{
+                     int *sections, int *startLines, int strlen) {
   char *fileptr;
   int retval = parWrtFindRegion(*secNum, *lineNum, *nlWrite, &fileptr,
                                 sections, startLines);
@@ -211,12 +206,11 @@ int parwrtfindregion(int *secNum, int *lineNum, int *nlWrite, char *filename,
  * Fortran-callable function to get the parameters of parallel writing region
  * number [regionNum] (numbered from 1) and return the boundary file in
  * [filename] and the sections and starting lines in arrays [sections] and
- * [startLines].  Returns 2 if writing not initialized, or 1 if the region 
+ * [startLines].  Returns 2 if writing not initialized, or 1 if the region
  * number is out of bounds.
  */
-int parwrtgetregion(int *regionNum, char *filename, int *sections, 
-                    int *startLines, int strlen)
-{
+int parwrtgetregion(int *regionNum, char *filename, int *sections,
+                    int *startLines, int strlen) {
   char *fileptr;
   int reg = *regionNum - 1;
   if (!regions)

@@ -6,24 +6,22 @@
 #define VOLUMEROVER_NAMESPACE VolumeRover
 #endif
 
-namespace VOLUMEROVER_NAMESPACE
-{
+namespace VOLUMEROVER_NAMESPACE {
 #endif
 
-  // --------------------
-  // VolumeRoverExtension
-  // --------------------
-  // Purpose:
-  //   Extensions (libraries/plugins) are initialized through
-  //   this interface.
-  class VolumeRoverExtension
-  {
-  public:
-    VolumeRoverExtension() {}
-    virtual ~VolumeRoverExtension() {}
-    virtual void init() = 0;
-  };
-  
+// --------------------
+// VolumeRoverExtension
+// --------------------
+// Purpose:
+//   Extensions (libraries/plugins) are initialized through
+//   this interface.
+class VolumeRoverExtension {
+public:
+  VolumeRoverExtension() {}
+  virtual ~VolumeRoverExtension() {}
+  virtual void init() = 0;
+};
+
 #ifdef USING_VOLUMEROVER_NAMESPACE
 }
 #endif

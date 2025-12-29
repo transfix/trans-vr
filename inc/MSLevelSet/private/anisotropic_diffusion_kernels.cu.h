@@ -9,9 +9,6 @@
 #ifndef _ANISOTROPIC_DIFFUSION_KERNELS_
 #define _ANISOTROPIC_DIFFUSION_KERNELS_
 
-__global__ void anisotropic_diffusion1()
-{
-
-}
+__global__ void anisotropic_diffusion1() {}
 
 #endif

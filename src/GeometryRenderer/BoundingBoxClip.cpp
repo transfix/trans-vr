@@ -17,44 +17,42 @@
 
   You should have received a copy of the GNU Lesser General Public
   License along with this library; if not, write to the Free Software
-  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301
+  USA
 */
 
 /* $Id: BoundingBoxClip.cpp 5692 2012-06-01 22:39:25Z transfix $ */
 
 // GLEW must be included before any OpenGL headers
 #include <GL/glew.h>
-
 #include <GeometryRenderer/BoundingBoxClip.h>
 
-namespace CVC_NAMESPACE
-{
-  void BoundingBoxClip::operator()()
-  {
-    CVC::BoundingBox bbox = boundingBox();
-    
-    double plane0[] = { 0.0, 0.0, -1.0, bbox.maxz };
-    glClipPlane(GL_CLIP_PLANE0, plane0);
-    glEnable(GL_CLIP_PLANE0);
+namespace CVC_NAMESPACE {
+void BoundingBoxClip::operator()() {
+  CVC::BoundingBox bbox = boundingBox();
 
-    double plane1[] = { 0.0, 0.0, 1.0, -bbox.minz };
-    glClipPlane(GL_CLIP_PLANE1, plane1);
-    glEnable(GL_CLIP_PLANE1);
+  double plane0[] = {0.0, 0.0, -1.0, bbox.maxz};
+  glClipPlane(GL_CLIP_PLANE0, plane0);
+  glEnable(GL_CLIP_PLANE0);
 
-    double plane2[] = { 0.0, -1.0, 0.0, bbox.maxy };
-    glClipPlane(GL_CLIP_PLANE2, plane2);
-    glEnable(GL_CLIP_PLANE2);
+  double plane1[] = {0.0, 0.0, 1.0, -bbox.minz};
+  glClipPlane(GL_CLIP_PLANE1, plane1);
+  glEnable(GL_CLIP_PLANE1);
 
-    double plane3[] = { 0.0, 1.0, 0.0, -bbox.miny };
-    glClipPlane(GL_CLIP_PLANE3, plane3);
-    glEnable(GL_CLIP_PLANE3);
+  double plane2[] = {0.0, -1.0, 0.0, bbox.maxy};
+  glClipPlane(GL_CLIP_PLANE2, plane2);
+  glEnable(GL_CLIP_PLANE2);
 
-    double plane4[] = { -1.0, 0.0, 0.0, bbox.maxx };
-    glClipPlane(GL_CLIP_PLANE4, plane4);
-    glEnable(GL_CLIP_PLANE4);
+  double plane3[] = {0.0, 1.0, 0.0, -bbox.miny};
+  glClipPlane(GL_CLIP_PLANE3, plane3);
+  glEnable(GL_CLIP_PLANE3);
 
-    double plane5[] = { 1.0, 0.0, 0.0, -bbox.minx };
-    glClipPlane(GL_CLIP_PLANE5, plane5);
-    glEnable(GL_CLIP_PLANE5);
-  }
+  double plane4[] = {-1.0, 0.0, 0.0, bbox.maxx};
+  glClipPlane(GL_CLIP_PLANE4, plane4);
+  glEnable(GL_CLIP_PLANE4);
+
+  double plane5[] = {1.0, 0.0, 0.0, -bbox.minx};
+  glClipPlane(GL_CLIP_PLANE5, plane5);
+  glEnable(GL_CLIP_PLANE5);
 }
+} // namespace CVC_NAMESPACE

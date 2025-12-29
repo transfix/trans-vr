@@ -1,7 +1,7 @@
 /*
   Copyright 2002-2003 The University of Texas at Austin
 
-	Authors: Anthony Thane <thanea@ices.utexas.edu>
+        Authors: Anthony Thane <thanea@ices.utexas.edu>
         Advisor: Chandrajit Bajaj <bajaj@cs.utexas.edu>
 
   This file is part of VolumeLibrary.
@@ -17,185 +17,191 @@
 
   You should have received a copy of the GNU Lesser General Public
   License along with this library; if not, write to the Free Software
-  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301
+  USA
 */
 
 /* $Id: RendererBase.h 5674 2012-05-29 03:19:10Z transfix $ */
 
-// OpenGLVolumeRendererBase.h: interface for the OpenGLVolumeRendererBase class.
+// OpenGLVolumeRendererBase.h: interface for the OpenGLVolumeRendererBase
+// class.
 //
 //////////////////////////////////////////////////////////////////////
 
-#if !defined(AFX_OPENGLVOLUMERENDERERBASE_H__71ABAABC_1CAE_4AE1_BC1E_7AFA7F1A65F5__INCLUDED_)
+#if !defined(                                                                \
+    AFX_OPENGLVOLUMERENDERERBASE_H__71ABAABC_1CAE_4AE1_BC1E_7AFA7F1A65F5__INCLUDED_)
 #define AFX_OPENGLVOLUMERENDERERBASE_H__71ABAABC_1CAE_4AE1_BC1E_7AFA7F1A65F5__INCLUDED_
 
-#include <boost/scoped_array.hpp>
-
 #include <GL/glew.h>
-
-#include <VolumeRenderer/Plane.h>
 #include <VolumeRenderer/Extent.h>
+#include <VolumeRenderer/Plane.h>
 #include <VolumeRenderer/PolygonArray.h>
+#include <boost/scoped_array.hpp>
 
 namespace OpenGLVolumeRendering {
 
-	/** The base class for all volume renderers. */
-	class RendererBase  
-	{
-	public:
-		RendererBase();
-		virtual ~RendererBase();
+/** The base class for all volume renderers. */
+class RendererBase {
+public:
+  RendererBase();
+  virtual ~RendererBase();
 
-		/// Initializes the renderer.  Should be called again if the renderer is
-		/// moved to a different openGL context.  If this returns false, do not try
-		/// to use it to do volumeRendering
-		virtual bool initRenderer();
+  /// Initializes the renderer.  Should be called again if the renderer is
+  /// moved to a different openGL context.  If this returns false, do not try
+  /// to use it to do volumeRendering
+  virtual bool initRenderer();
 
-		/// Makes the check necessary to determine if this renderer is 
-		/// compatible with the hardware its running on
-		virtual bool checkCompatibility() const = 0;
-		
-		/// Sets the aspect ratio of the dataset.
-		bool setAspectRatio(double ratioX, double ratioY, double ratioZ);
-		/// Specifies the portion of the uploaded texture that should be rendered.
-		/// The extenst should range from 0 to 1.
-		bool setTextureSubCube(double minX, double minY, double minZ, double maxX, double maxY, double maxZ);
-		/// Specifies that we are rendering a subportion of the full data.
-		/// Used for out of core rendering.  The extents should range from 0 to 1.
-		bool setDataSubVolume(double minX, double minY, double minZ, double maxX, double maxY, double maxZ);
-		/// Used for out of core rendering.  The dimensions of the full dataset
-		bool setHintDimensions(unsigned int hintDimX, unsigned int hintDimY, unsigned int hintDimZ);
+  /// Makes the check necessary to determine if this renderer is
+  /// compatible with the hardware its running on
+  virtual bool checkCompatibility() const = 0;
 
-		/// Quality is a number from 0 to 1.  Lower means faster.
-		bool setQuality(double quality);
-		double getQuality() const;
+  /// Sets the aspect ratio of the dataset.
+  bool setAspectRatio(double ratioX, double ratioY, double ratioZ);
+  /// Specifies the portion of the uploaded texture that should be rendered.
+  /// The extenst should range from 0 to 1.
+  bool setTextureSubCube(double minX, double minY, double minZ, double maxX,
+                         double maxY, double maxZ);
+  /// Specifies that we are rendering a subportion of the full data.
+  /// Used for out of core rendering.  The extents should range from 0 to 1.
+  bool setDataSubVolume(double minX, double minY, double minZ, double maxX,
+                        double maxY, double maxZ);
+  /// Used for out of core rendering.  The dimensions of the full dataset
+  bool setHintDimensions(unsigned int hintDimX, unsigned int hintDimY,
+                         unsigned int hintDimZ);
 
-		bool setMaxPlanes(int maxPlanes);
-		int getMaxPlanes() const;
+  /// Quality is a number from 0 to 1.  Lower means faster.
+  bool setQuality(double quality);
+  double getQuality() const;
 
-		/// nearPlane is a number from 0 to 1.  0 means no clipping takes place.
-		/// 1 means the entire volume is clipped.
-		bool setNearPlane(double nearPlane);
-		double getNearPlane();
+  bool setMaxPlanes(int maxPlanes);
+  int getMaxPlanes() const;
 
-		/// Returns the number of planes rendered in the last call to 
-		/// renderVolume.
-		int getNumberOfPlanesRendered() const;
+  /// nearPlane is a number from 0 to 1.  0 means no clipping takes place.
+  /// 1 means the entire volume is clipped.
+  bool setNearPlane(double nearPlane);
+  double getNearPlane();
 
-		/// Performs the actual rendering.
-		virtual bool renderVolume() = 0;
+  /// Returns the number of planes rendered in the last call to
+  /// renderVolume.
+  int getNumberOfPlanesRendered() const;
 
-		virtual bool uploadGradients(const GLubyte* data, int width, int height, int depth) { return false; }
-		virtual void setLight(float *lightf) {}
-		virtual void setView(float *viewf) {}
-		
-		// For Shading
-		virtual bool isShadedRenderingAvailable() { return false; }
-		virtual bool enableShadedRendering() { return false; }
-		virtual bool disableShadedRendering() { return false; }
+  /// Performs the actual rendering.
+  virtual bool renderVolume() = 0;
 
-	protected:
-		// data
+  virtual bool uploadGradients(const GLubyte *data, int width, int height,
+                               int depth) {
+    return false;
+  }
+  virtual void setLight(float *lightf) {}
+  virtual void setView(float *viewf) {}
 
-		/// stores the polygons needed to render the volume
-		PolygonArray m_PolygonArray;
+  // For Shading
+  virtual bool isShadedRenderingAvailable() { return false; }
+  virtual bool enableShadedRendering() { return false; }
+  virtual bool disableShadedRendering() { return false; }
 
-		/// the number of planes rendered in the last call to renderVolume
-		int m_NumberOfPlanesRendered;
+protected:
+  // data
 
-		/// a flag which specifies if the renderer has been initialized
-		bool m_BaseInitialized;
+  /// stores the polygons needed to render the volume
+  PolygonArray m_PolygonArray;
 
-		/// Specifies the portion of the uploaded texture that should be rendered.
-		/// The extenst should range from 0 to 1.
-		Extent m_TextureSubCubeExtent;
+  /// the number of planes rendered in the last call to renderVolume
+  int m_NumberOfPlanesRendered;
 
-		/// Specifies that we are rendering a subportion of the full data.
-		/// Used for out of core rendering.  The extents should range from 0 to 1.
-		Extent m_DataSubCubeExtent;
+  /// a flag which specifies if the renderer has been initialized
+  bool m_BaseInitialized;
 
-		/// The aspect ratio of the dataset
-		double m_RatioX, m_RatioY, m_RatioZ;
+  /// Specifies the portion of the uploaded texture that should be rendered.
+  /// The extenst should range from 0 to 1.
+  Extent m_TextureSubCubeExtent;
 
-		/// Used for out of core rendering.  The dimensions of the full dataset
-		unsigned int m_HintDimX, m_HintDimY, m_HintDimZ;
+  /// Specifies that we are rendering a subportion of the full data.
+  /// Used for out of core rendering.  The extents should range from 0 to 1.
+  Extent m_DataSubCubeExtent;
 
-		/// Quality is a number from 0 to 1.  Lower means faster.
-		double m_Quality;
+  /// The aspect ratio of the dataset
+  double m_RatioX, m_RatioY, m_RatioZ;
 
-		int m_MaxPlanes;
+  /// Used for out of core rendering.  The dimensions of the full dataset
+  unsigned int m_HintDimX, m_HintDimY, m_HintDimZ;
 
-		/// nearPlane is a number from 0 to 1.  0 means no clipping takes place.
-		/// 1 means the entire volume is clipped.
-		double m_NearPlane;
+  /// Quality is a number from 0 to 1.  Lower means faster.
+  double m_Quality;
 
-		/// Vertex array
-		  //float* m_VertexArray;
-		boost::scoped_array<float> m_VertexArray;
-		/// Texture coordinate array
-		    //float* m_TextureArray;
-		boost::scoped_array<float> m_TextureArray;
+  int m_MaxPlanes;
 
-		/// Vertex array size
-		unsigned int m_VertexArraySize;
+  /// nearPlane is a number from 0 to 1.  0 means no clipping takes place.
+  /// 1 means the entire volume is clipped.
+  double m_NearPlane;
 
-		/// Actual number of vertices in array
-		unsigned int m_NumVertices;
+  /// Vertex array
+  // float* m_VertexArray;
+  boost::scoped_array<float> m_VertexArray;
+  /// Texture coordinate array
+  // float* m_TextureArray;
+  boost::scoped_array<float> m_TextureArray;
 
-		/// Triangle array
-		  //unsigned int* m_TriangleArray;
-		boost::scoped_array<unsigned int> m_TriangleArray;
+  /// Vertex array size
+  unsigned int m_VertexArraySize;
 
-		/// Triangle array size
-		unsigned int m_TriangleArraySize;
+  /// Actual number of vertices in array
+  unsigned int m_NumVertices;
 
-		/// Actual number of triangles in array
-		unsigned int m_NumTriangles;
+  /// Triangle array
+  // unsigned int* m_TriangleArray;
+  boost::scoped_array<unsigned int> m_TriangleArray;
 
-		/// Allocates memory for the vertices and triangles
-		bool allocateMemory(unsigned int numVerts, unsigned int numTriangles);
+  /// Triangle array size
+  unsigned int m_TriangleArraySize;
 
-		/// Deallocates the memory for vertices and triangles
-		void deallocateMemory();
+  /// Actual number of triangles in array
+  unsigned int m_NumTriangles;
 
-		/// Allocate the vertex array
-		bool allocateVertexArray(unsigned int numVerts);
+  /// Allocates memory for the vertices and triangles
+  bool allocateMemory(unsigned int numVerts, unsigned int numTriangles);
 
-		/// Allocate the triangle array
-		bool allocateTriangleArray(unsigned int numTriangles);
+  /// Deallocates the memory for vertices and triangles
+  void deallocateMemory();
 
-		/// Converts the polygon array to traingle and vertex arrays
-		void convertToTriangles();
+  /// Allocate the vertex array
+  bool allocateVertexArray(unsigned int numVerts);
 
-		/// Sets the aspectRatio to a default value.
-		bool initAspectRatio();
-		/// Sets all flags to default values.
-		bool initFlags();
+  /// Allocate the triangle array
+  bool allocateTriangleArray(unsigned int numTriangles);
 
-		/// Returns a plane parallel to the view plane.
-		Plane getViewPlane();
+  /// Converts the polygon array to traingle and vertex arrays
+  void convertToTriangles();
 
-		/// Returns the distance between planes.
-		double getIntervalWidth() const;
-		/// Returns a distance that is past the entire volume.
-		double getFurthestDistance() const;
-		/// Returns a distance that is before the entire volume.
-		double getNearestDistance() const;
+  /// Sets the aspectRatio to a default value.
+  bool initAspectRatio();
+  /// Sets all flags to default values.
+  bool initFlags();
 
-		/// Computes the polygons that need to be rendered
-		virtual void computePolygons();
+  /// Returns a plane parallel to the view plane.
+  Plane getViewPlane();
 
-		// For Shading
-		bool	m_ShadeFlag;		
-		float	m_Light3f[3];
-		float	m_View3f[3];
-		
-		// The opengl texture ID
-		GLuint	m_DataTextureName;		
-		GLuint	m_diff_spec_lookup_2DT;		
-		GLuint	m_RGB_normals_3DT;
-	};
+  /// Returns the distance between planes.
+  double getIntervalWidth() const;
+  /// Returns a distance that is past the entire volume.
+  double getFurthestDistance() const;
+  /// Returns a distance that is before the entire volume.
+  double getNearestDistance() const;
 
+  /// Computes the polygons that need to be rendered
+  virtual void computePolygons();
+
+  // For Shading
+  bool m_ShadeFlag;
+  float m_Light3f[3];
+  float m_View3f[3];
+
+  // The opengl texture ID
+  GLuint m_DataTextureName;
+  GLuint m_diff_spec_lookup_2DT;
+  GLuint m_RGB_normals_3DT;
 };
+
+}; // namespace OpenGLVolumeRendering
 
 #endif // !defined(AFX_OPENGLVOLUMERENDERERBASE_H__71ABAABC_1CAE_4AE1_BC1E_7AFA7F1A65F5__INCLUDED_)

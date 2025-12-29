@@ -3,7 +3,7 @@
 
 CONTOURTILER_BEGIN_NAMESPACE
 
-void decimate(int argc, char** argv);
+void decimate(int argc, char **argv);
 
 CONTOURTILER_END_NAMESPACE
 

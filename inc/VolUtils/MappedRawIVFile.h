@@ -17,16 +17,17 @@
 
   You should have received a copy of the GNU Lesser General Public
   License along with this library; if not, write to the Free Software
-  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301
+  USA
 */
 
 /* $Id: MappedRawIVFile.h 4742 2011-10-21 22:09:44Z transfix $ */
 
 /*
   Copyright 2002-2005 The University of Texas at Austin
-  
-	Authors: Jose Rivera <transfix@ices.utexas.edu>
-	Advisor: Chandrajit Bajaj <bajaj@cs.utexas.edu>
+
+        Authors: Jose Rivera <transfix@ices.utexas.edu>
+        Advisor: Chandrajit Bajaj <bajaj@cs.utexas.edu>
 
   This file is part of Volume Rover.
 
@@ -50,18 +51,20 @@
 
 #include <VolUtils/MappedVolumeFile.h>
 
-class MappedRawIVFile : public MappedVolumeFile
-{
- public:
-  MappedRawIVFile(const char *filename, bool calc_minmax = true, bool forceLoad = false);
-  MappedRawIVFile(const char *filename, double mem_usage, bool calc_minmax = true, bool forceLoad = false);
+class MappedRawIVFile : public MappedVolumeFile {
+public:
+  MappedRawIVFile(const char *filename, bool calc_minmax = true,
+                  bool forceLoad = false);
+  MappedRawIVFile(const char *filename, double mem_usage,
+                  bool calc_minmax = true, bool forceLoad = false);
   ~MappedRawIVFile();
-  
- protected:
+
+protected:
   bool readHeader();
-  
- private:
-  bool m_ForceLoad; /* if this is true, load the file even if the header error checking fails */
+
+private:
+  bool m_ForceLoad; /* if this is true, load the file even if the header error
+                       checking fails */
 };
 
 #endif

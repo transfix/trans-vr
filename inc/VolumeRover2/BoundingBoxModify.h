@@ -1,8 +1,8 @@
 /*
   Copyright 2008 The University of Texas at Austin
-  
-	Authors: Jose Rivera <transfix@ices.utexas.edu>
-	Advisor: Chandrajit Bajaj <bajaj@cs.utexas.edu>
+
+        Authors: Jose Rivera <transfix@ices.utexas.edu>
+        Advisor: Chandrajit Bajaj <bajaj@cs.utexas.edu>
 
   This file is part of Volume Rover.
 
@@ -29,36 +29,33 @@
 #include <QDialog>
 #include <VolMagick/BoundingBox.h>
 
-namespace Ui
-{
-  class BoundingBoxModify;
+namespace Ui {
+class BoundingBoxModify;
 }
 
-class BoundingBoxModify : public QDialog
-{
+class BoundingBoxModify : public QDialog {
   Q_OBJECT
 
- public:
-  BoundingBoxModify(QWidget* parent = nullptr, 
-                    Qt::WindowFlags flags=Qt::WindowFlags());
+public:
+  BoundingBoxModify(QWidget *parent = nullptr,
+                    Qt::WindowFlags flags = Qt::WindowFlags());
   virtual ~BoundingBoxModify();
 
   VolMagick::BoundingBox boundingBox() const;
-  void boundingBox(const VolMagick::BoundingBox& bbox);
+  void boundingBox(const VolMagick::BoundingBox &bbox);
 
   double centerPointX() const;
   double centerPointY() const;
   double centerPointZ() const;
 
-  void centerPoint(double,double,double);
+  void centerPoint(double, double, double);
 
   bool usingCenterPoint() const;
 
- protected slots:
+protected slots:
   void okSlot();
 
- protected:
-
+protected:
 #if QT_VERSION < 0x040000
   BoundingBoxModifyBase *_ui;
 #else

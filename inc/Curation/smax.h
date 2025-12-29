@@ -17,7 +17,8 @@
 
   You should have received a copy of the GNU Lesser General Public
   License along with this library; if not, write to the Free Software
-  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301
+  USA
 */
 
 #ifndef SMAX_H
@@ -25,19 +26,17 @@
 
 #include <Curation/datastruct.h>
 #include <Curation/hfn_util.h>
-#include <Curation/robust_cc.h>
 #include <Curation/op.h>
+#include <Curation/robust_cc.h>
 
-namespace Curation
-{
+namespace Curation {
 
-vector<int>
-compute_smax(Triangulation& triang, const Mesh& mesh, 
-             map<int, cell_cluster> &cluster_set,
-             const double& mr);
-vector<int>
-compute_smax(Triangulation& triang, map<int, cell_cluster> &cluster_set,
-             const double& mr);
-}
+vector<int> compute_smax(Triangulation &triang, const Mesh &mesh,
+                         map<int, cell_cluster> &cluster_set,
+                         const double &mr);
+vector<int> compute_smax(Triangulation &triang,
+                         map<int, cell_cluster> &cluster_set,
+                         const double &mr);
+} // namespace Curation
 
 #endif

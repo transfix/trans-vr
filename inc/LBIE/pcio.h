@@ -16,7 +16,8 @@
 
   You should have received a copy of the GNU Lesser General Public
   License along with this library; if not, write to the Free Software
-  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301
+  USA
 */
 
 #ifndef _PC_IO_H
@@ -24,16 +25,14 @@
 
 #include <stdio.h>
 
-namespace LBIE
-{
+namespace LBIE {
 
 size_t getFloat(float *, size_t, FILE *);
 size_t getInt(int *, size_t, FILE *);
 size_t getShort(short *, size_t, FILE *);
 size_t getUnChar(unsigned char *, size_t, FILE *);
-size_t putFloat(float*,size_t,FILE*);
+size_t putFloat(float *, size_t, FILE *);
 
-}
-
+} // namespace LBIE
 
 #endif

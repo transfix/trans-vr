@@ -1,8 +1,8 @@
 /*
   Copyright 2011 The University of Texas at Austin
-  
-	Authors: Alex Rand <arand@ices.utexas.edu>
-	Advisor: Chandrajit Bajaj <bajaj@cs.utexas.edu>
+
+        Authors: Alex Rand <arand@ices.utexas.edu>
+        Advisor: Chandrajit Bajaj <bajaj@cs.utexas.edu>
 
   This file is part of Volume Rover.
 
@@ -24,36 +24,32 @@
 #ifndef __TIGHTCOCONEDIALOG_H__
 #define __TIGHTCOCONEDIALOG_H__
 
-//#include <qglobal.h>
+// #include <qglobal.h>
 
 #include <QDialog>
 #include <QString>
 
-namespace Ui
-{
-  class TightCoconeDialog;
+namespace Ui {
+class TightCoconeDialog;
 }
 
 #include "ui_TightCoconeDialog.h"
-      
-class TightCoconeDialog : public QDialog
-{
+
+class TightCoconeDialog : public QDialog {
   Q_OBJECT
 
- public:
-  TightCoconeDialog(QWidget *parent=nullptr,Qt::WindowFlags flags=Qt::WindowFlags());
+public:
+  TightCoconeDialog(QWidget *parent = nullptr,
+                    Qt::WindowFlags flags = Qt::WindowFlags());
 
   virtual ~TightCoconeDialog();
 
   void RunTightCocone();
 
-  public slots:
+public slots:
 
-
-  protected:
-
+protected:
   Ui::TightCoconeDialog *_ui;
-
 };
 
 #endif

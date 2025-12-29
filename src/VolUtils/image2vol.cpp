@@ -17,33 +17,32 @@
 
   You should have received a copy of the GNU Lesser General Public
   License along with this library; if not, write to the Free Software
-  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301
+  USA
 */
 
 /* $Id: image2vol.cpp 4742 2011-10-21 22:09:44Z transfix $ */
 
 #include <Magick++.h>
-#include <iostream>
 #include <VolMagick/VolMagick.h>
 #include <cstdio>
+#include <iostream>
 
 using namespace std;
 using namespace Magick;
 
-int main(int argc, char **argv)
-{
+int main(int argc, char **argv) {
   VolMagick::uint64 width, height, depth, i, j, k;
   Image cur;
   unsigned char *buf;
 
-  if(argc < 3)
-    {
-      cout << "Usage: " << argv[0] << " <img0> <img1> ... <output volume>" << endl;
-      return 0;
-    }
+  if (argc < 3) {
+    cout << "Usage: " << argv[0] << " <img0> <img1> ... <output volume>"
+         << endl;
+    return 0;
+  }
 
-  try
-    {
+  try {
 #if 0
       // get width and height.  All images should have the same width and height
       // or this program will explode!!!!
@@ -118,61 +117,60 @@ int main(int argc, char **argv)
       fclose(outvol);
 #endif
 
-      // get width and height.  All images should have the same width and height
-      // or this program will explode!!!!
-      cur.read(argv[1]);
-      width = cur.size().width();
-      height = cur.size().height();
+    // get width and height.  All images should have the same width and height
+    // or this program will explode!!!!
+    cur.read(argv[1]);
+    width = cur.size().width();
+    height = cur.size().height();
 
-      // get the depth
-      depth = argc-2;
-      cerr << "Volume dimensions: " << width << ", " << height << ", " << depth << endl;
+    // get the depth
+    depth = argc - 2;
+    cerr << "Volume dimensions: " << width << ", " << height << ", " << depth
+         << endl;
 
-      VolMagick::createVolumeFile(argv[argc-1],
-				  VolMagick::BoundingBox(0.0,0.0,0.0,
-							 double(width-1),double(height-1),double(depth-1)),
-				  VolMagick::Dimension(width,height,depth));
+    VolMagick::createVolumeFile(
+        argv[argc - 1],
+        VolMagick::BoundingBox(0.0, 0.0, 0.0, double(width - 1),
+                               double(height - 1), double(depth - 1)),
+        VolMagick::Dimension(width, height, depth));
 
-      VolMagick::Volume buf;
-      buf.dimension(VolMagick::Dimension(width,height,1));
+    VolMagick::Volume buf;
+    buf.dimension(VolMagick::Dimension(width, height, 1));
 
-      //now write out each image slice
-      for(k=0; k<depth; k++)
-	{
-	  cur.read(Geometry(width,height),argv[k+1]);
-	  cur.modifyImage();
-	  cur.type(GrayscaleType);
-	  /*
-	   * We only need 1 value since after grayscale conversion R = G = B
-	   */
-	  cur.write(0,0,width,height,"R",CharPixel,*buf);
+    // now write out each image slice
+    for (k = 0; k < depth; k++) {
+      cur.read(Geometry(width, height), argv[k + 1]);
+      cur.modifyImage();
+      cur.type(GrayscaleType);
+      /*
+       * We only need 1 value since after grayscale conversion R = G = B
+       */
+      cur.write(0, 0, width, height, "R", CharPixel, *buf);
 
-	  /*
-	    const PixelPacket *pixel_cache = cur.getConstPixels(0,0,width,height);
-	    for(i=0; i<width; i++)
-	    for(j=0; j<height; j++)
-	    {
-	    const PixelPacket *pixel = pixel_cache+j*width+i;
-	    if(pixel  == NULL) cout << "i: " << i << ", j: " << j << endl;
-	    ColorRGB c(*pixel);
-	    buf[j*width+i] = (unsigned char)(c.green()*255.0);
-	    }
-	  */
+      /*
+        const PixelPacket *pixel_cache = cur.getConstPixels(0,0,width,height);
+        for(i=0; i<width; i++)
+        for(j=0; j<height; j++)
+        {
+        const PixelPacket *pixel = pixel_cache+j*width+i;
+        if(pixel  == NULL) cout << "i: " << i << ", j: " << j << endl;
+        ColorRGB c(*pixel);
+        buf[j*width+i] = (unsigned char)(c.green()*255.0);
+        }
+      */
 
-	  //fwrite(buf,sizeof(unsigned char),width*height,outvol);
-	  VolMagick::writeVolumeFile(buf,argv[argc-1],0,0,
-				     0,0,k);
+      // fwrite(buf,sizeof(unsigned char),width*height,outvol);
+      VolMagick::writeVolumeFile(buf, argv[argc - 1], 0, 0, 0, 0, k);
 
-	  if(depth>1)
-	    fprintf(stderr,"%5.2f %%\r",(double(k)/double(depth-1))*100.0);
-	}
-      fprintf(stderr,"\nDone!\n");
+      if (depth > 1)
+        fprintf(stderr, "%5.2f %%\r",
+                (double(k) / double(depth - 1)) * 100.0);
     }
-  catch(std::exception &error_)
-    {
-      cout << "Caught exception: " << error_.what() << endl;
-      return 1;
-    }
+    fprintf(stderr, "\nDone!\n");
+  } catch (std::exception &error_) {
+    cout << "Caught exception: " << error_.what() << endl;
+    return 1;
+  }
 
   return 0;
 }

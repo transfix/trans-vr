@@ -17,7 +17,8 @@
 
   You should have received a copy of the GNU Lesser General Public
   License along with this library; if not, write to the Free Software
-  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301
+  USA
 */
 
 #ifndef MAPPEDRAWVFILE_H
@@ -25,18 +26,20 @@
 
 #include <VolumeGridRover/MappedVolumeFile.h>
 
-class MappedRawVFile : public MappedVolumeFile
-{
- public:
-  MappedRawVFile(const char *filename, bool calc_minmax = true, bool forceLoad = false);
-  MappedRawVFile(const char *filename, double mem_usage, bool calc_minmax = true, bool forceLoad = false);
+class MappedRawVFile : public MappedVolumeFile {
+public:
+  MappedRawVFile(const char *filename, bool calc_minmax = true,
+                 bool forceLoad = false);
+  MappedRawVFile(const char *filename, double mem_usage,
+                 bool calc_minmax = true, bool forceLoad = false);
   ~MappedRawVFile();
-  
- protected:
+
+protected:
   bool readHeader();
-  
- private:
-  bool m_ForceLoad; /* if this is true, load the file even if the header error checking fails */
+
+private:
+  bool m_ForceLoad; /* if this is true, load the file even if the header error
+                       checking fails */
 };
 
 #endif

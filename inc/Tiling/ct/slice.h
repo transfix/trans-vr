@@ -1,12 +1,11 @@
 #ifndef SLICE_H
 #define SLICE_H
 
-namespace Tiling
-{
+namespace Tiling {
 
 FILE *CTOpenFile(CTVolume, int);
 FILE *CTOpenSliceNum(char *, int, char *);
 
-};
+}; // namespace Tiling
 
 #endif

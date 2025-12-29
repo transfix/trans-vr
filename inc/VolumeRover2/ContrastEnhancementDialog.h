@@ -1,8 +1,8 @@
 /*
   Copyright 2011 The University of Texas at Austin
-  
-	Authors: Alex Rand <arand@ices.utexas.edu>
-	Advisor: Chandrajit Bajaj <bajaj@cs.utexas.edu>
+
+        Authors: Alex Rand <arand@ices.utexas.edu>
+        Advisor: Chandrajit Bajaj <bajaj@cs.utexas.edu>
 
   This file is part of Volume Rover.
 
@@ -24,38 +24,34 @@
 #ifndef __CONTRASTENHANCEMENTDIALOG_H__
 #define __CONTRASTENHANCEMENTDIALOG_H__
 
-//#include <qglobal.h>
+// #include <qglobal.h>
 
 #include <QDialog>
 #include <QString>
 
-namespace Ui
-{
-  class ContrastEnhancementDialog;
+namespace Ui {
+class ContrastEnhancementDialog;
 }
 
 #include "ui_ContrastEnhancementDialog.h"
-      
-class ContrastEnhancementDialog : public QDialog
-{
+
+class ContrastEnhancementDialog : public QDialog {
   Q_OBJECT
 
- public:
-  ContrastEnhancementDialog(QWidget *parent=nullptr,Qt::WindowFlags flags=Qt::WindowFlags());
+public:
+  ContrastEnhancementDialog(QWidget *parent = nullptr,
+                            Qt::WindowFlags flags = Qt::WindowFlags());
 
   virtual ~ContrastEnhancementDialog();
 
   void RunContrastEnhancement();
 
-  
-  public slots:
+public slots:
 
   void OutputFileSlot();
 
-  protected:
-
+protected:
   Ui::ContrastEnhancementDialog *_ui;
-
 };
 
 #endif

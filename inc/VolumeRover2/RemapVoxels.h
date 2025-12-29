@@ -1,8 +1,8 @@
 /*
   Copyright 2008 The University of Texas at Austin
-  
-	Authors: Jose Rivera <transfix@ices.utexas.edu>
-	Advisor: Chandrajit Bajaj <bajaj@cs.utexas.edu>
+
+        Authors: Jose Rivera <transfix@ices.utexas.edu>
+        Advisor: Chandrajit Bajaj <bajaj@cs.utexas.edu>
 
   This file is part of Volume Rover.
 
@@ -28,18 +28,16 @@
 
 #include <QDialog>
 
-namespace Ui
-{
-  class RemapVoxels;
+namespace Ui {
+class RemapVoxels;
 }
 
-class RemapVoxels : public QDialog
-{
+class RemapVoxels : public QDialog {
   Q_OBJECT
 
- public:
-  RemapVoxels(QWidget* parent = nullptr,
-                  Qt::WindowFlags flags=Qt::WindowFlags());
+public:
+  RemapVoxels(QWidget *parent = nullptr,
+              Qt::WindowFlags flags = Qt::WindowFlags());
   virtual ~RemapVoxels();
 
   double minValue() const;
@@ -47,10 +45,10 @@ class RemapVoxels : public QDialog
   double maxValue() const;
   void maxValue(double);
 
- protected slots:
+protected slots:
   void okSlot();
 
- protected:
+protected:
 #if QT_VERSION < 0x040000
   RemapVoxelsBase *_ui;
 #else

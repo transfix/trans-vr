@@ -1,7 +1,7 @@
 /*
   Copyright 2000-2002 The University of Texas at Austin
 
-	Authors: Sanghun Park <hun@ices.utexas.edu>
+        Authors: Sanghun Park <hun@ices.utexas.edu>
                  Xiaoyu Zhang <xiaoyu@ices.utexas.edu>
         Advisor: Chandrajit Bajaj <bajaj@cs.utexas.edu>
 
@@ -18,7 +18,8 @@
 
   You should have received a copy of the GNU Lesser General Public
   License along with this library; if not, write to the Free Software
-  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301
+  USA
 */
 
 #ifndef CCV_ISO_INTERSECT
@@ -29,20 +30,19 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
-	/**
-	*	intersect_triangle: Computes the intersection of a ray with a given triangle.
-	*						It returns the parameter at the intersection that should 
-	*						be positive. Negative return value means failure of 
-	*						intersection.
-	*/
-	float intersect_triangle(iRay ray, Triangle tri, Point point);
+/**
+ *	intersect_triangle: Computes the intersection of a ray with a given
+ *triangle. It returns the parameter at the intersection that should be
+ *positive. Negative return value means failure of intersection.
+ */
+float intersect_triangle(iRay ray, Triangle tri, Point point);
 
-	void triangle_normal(Triangle tri, Normal *p_normal);
+void triangle_normal(Triangle tri, Normal *p_normal);
 
-	/**
-	*	in_triangle: return 1 if point is inside triangle
-	*/
-	int in_triangle(Point point, Triangle tri);
+/**
+ *	in_triangle: return 1 if point is inside triangle
+ */
+int in_triangle(Point point, Triangle tri);
 
 #ifdef __cplusplus
 }

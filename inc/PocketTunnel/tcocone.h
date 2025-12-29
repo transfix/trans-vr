@@ -17,34 +17,28 @@
 
   You should have received a copy of the GNU Lesser General Public
   License along with this library; if not, write to the Free Software
-  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301
+  USA
 */
 
 #ifndef TCOCONE_H
 #define TCOCONE_H
 
 #include <PocketTunnel/datastruct.h>
-#include <PocketTunnel/util.h>
 #include <PocketTunnel/robust_cc.h>
+#include <PocketTunnel/util.h>
 
-namespace PocketTunnel
-{
+namespace PocketTunnel {
 
-void 
-compute_poles( Triangulation &triang);
+void compute_poles(Triangulation &triang);
 
-void 
-mark_flat_vertices( Triangulation &triang,
-		    double ratio, double cocone_phi, double flat_phi);
+void mark_flat_vertices(Triangulation &triang, double ratio,
+                        double cocone_phi, double flat_phi);
 
-void
-tcocone(const double DEFAULT_ANGLE,
-        const double DEFAULT_SHARP,
-	const double DEFAULT_FLAT,
-	const double DEFAULT_RATIO,
-	Triangulation &triang);
+void tcocone(const double DEFAULT_ANGLE, const double DEFAULT_SHARP,
+             const double DEFAULT_FLAT, const double DEFAULT_RATIO,
+             Triangulation &triang);
 
-};
+}; // namespace PocketTunnel
 
 #endif // TCOCONE_H
-

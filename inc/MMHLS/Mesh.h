@@ -20,23 +20,19 @@
 #ifndef __MMHLSMESH_H
 #define __MMHLSMESH_H
 
-#include <vector>
 #include <iostream>
+#include <vector>
 
 using namespace std;
 
-
-namespace MMHLS
-{
-    struct Mesh
-    {
-    vector<vector<float> > vertexList;
-    vector<vector<unsigned int> > faceList;
-    };
-
-    struct PointCloud
-    {
-    vector<vector<float> > vertexList;
-    };
+namespace MMHLS {
+struct Mesh {
+  vector<vector<float>> vertexList;
+  vector<vector<unsigned int>> faceList;
 };
+
+struct PointCloud {
+  vector<vector<float>> vertexList;
+};
+}; // namespace MMHLS
 #endif

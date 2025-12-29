@@ -17,7 +17,8 @@
 
   You should have received a copy of the GNU Lesser General Public
   License along with this library; if not, write to the Free Software
-  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301
+  USA
 */
 
 /* $Id: SceneLight.h 5746 2012-06-17 23:21:45Z transfix $ */
@@ -25,8 +26,7 @@
 #include <CVC/Namespace.h>
 #include <GL/glew.h>
 
-namespace CVC_NAMESPACE
-{
+namespace CVC_NAMESPACE {
 #if 0
   //functor for clipping via a bounding box
   class SceneLight
@@ -47,4 +47,4 @@ namespace CVC_NAMESPACE
     GLfloat ambientColor[4];
   };
 #endif
-}
+} // namespace CVC_NAMESPACE

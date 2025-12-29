@@ -1,7 +1,7 @@
 /*
   Copyright 2002-2003 The University of Texas at Austin
 
-	Authors: Anthony Thane <thanea@ices.utexas.edu>
+        Authors: Anthony Thane <thanea@ices.utexas.edu>
         Advisor: Chandrajit Bajaj <bajaj@cs.utexas.edu>
 
   This file is part of VolumeLibrary.
@@ -17,91 +17,94 @@
 
   You should have received a copy of the GNU Lesser General Public
   License along with this library; if not, write to the Free Software
-  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301
+  USA
 */
 
 // Paletted2DImpl.h: interface for the Paletted2DImpl class.
 //
 //////////////////////////////////////////////////////////////////////
 
-#if !defined(AFX_PALETTED2DIMPL_H__92BAADF9_254C_4539_9BDA_4D1D50EBBFBC__INCLUDED_)
+#if !defined(                                                                \
+    AFX_PALETTED2DIMPL_H__92BAADF9_254C_4539_9BDA_4D1D50EBBFBC__INCLUDED_)
 #define AFX_PALETTED2DIMPL_H__92BAADF9_254C_4539_9BDA_4D1D50EBBFBC__INCLUDED_
 
 #include <GL/glew.h>
-
 #include <VolumeRenderer/UnshadedBase.h>
 
 namespace OpenGLVolumeRendering {
 
-	/// A volume renderer which uses the paletted textures extension to do color
-	/// mapping. Only requires support for 2D textures
-	class Paletted2DImpl : public UnshadedBase  
-	{
-	public:
-		Paletted2DImpl();
-		virtual ~Paletted2DImpl();
+/// A volume renderer which uses the paletted textures extension to do color
+/// mapping. Only requires support for 2D textures
+class Paletted2DImpl : public UnshadedBase {
+public:
+  Paletted2DImpl();
+  virtual ~Paletted2DImpl();
 
-		// Initializes the renderer.  Should be called again if the renderer is
-		// moved to a different openGL context.  If this returns false, do not try
-		// to use it to do volumeRendering
-		virtual bool initRenderer();
+  // Initializes the renderer.  Should be called again if the renderer is
+  // moved to a different openGL context.  If this returns false, do not try
+  // to use it to do volumeRendering
+  virtual bool initRenderer();
 
-		// Makes the check necessary to determine if this renderer is 
-		// compatible with the hardware its running on
-		virtual bool checkCompatibility() const;
+  // Makes the check necessary to determine if this renderer is
+  // compatible with the hardware its running on
+  virtual bool checkCompatibility() const;
 
-		// Uploads colormapped data
-		virtual bool uploadColormappedData(const GLubyte* data, int width, int height, int depth);
+  // Uploads colormapped data
+  virtual bool uploadColormappedData(const GLubyte *data, int width,
+                                     int height, int depth);
 
-		// Tests to see if the given parameters would return an error
-		virtual bool testColormappedData(int width, int height, int depth);
+  // Tests to see if the given parameters would return an error
+  virtual bool testColormappedData(int width, int height, int depth);
 
-		// Uploads the transfer function for the colormapped data
-		virtual bool uploadColorMap(const GLubyte* colorMap);
+  // Uploads the transfer function for the colormapped data
+  virtual bool uploadColorMap(const GLubyte *colorMap);
 
-		// Performs the actual rendering.
-		virtual bool renderVolume();
+  // Performs the actual rendering.
+  virtual bool renderVolume();
 
-		virtual bool isShadedRenderingAvailable() { return false; };
+  virtual bool isShadedRenderingAvailable() { return false; };
 
-	protected:
-		// Remembers the uploaded width height and depth
-		int m_Width, m_Height, m_Depth;
+protected:
+  // Remembers the uploaded width height and depth
+  int m_Width, m_Height, m_Depth;
 
-		// The opengl texture IDs
-		unsigned int m_NumAllocated[3];
-		bool m_ColorMapDirty[3];
-		GLubyte m_ColorMap[256*4];
-		GLuint* m_DataTextureNameX;
-		GLuint* m_DataTextureNameY;
-		GLuint* m_DataTextureNameZ;
-		unsigned int m_RenderDirection;
+  // The opengl texture IDs
+  unsigned int m_NumAllocated[3];
+  bool m_ColorMapDirty[3];
+  GLubyte m_ColorMap[256 * 4];
+  GLuint *m_DataTextureNameX;
+  GLuint *m_DataTextureNameY;
+  GLuint *m_DataTextureNameZ;
+  unsigned int m_RenderDirection;
 
-		// Flag indicating if we were successfully initialized
-		bool m_Initialized;
+  // Flag indicating if we were successfully initialized
+  bool m_Initialized;
 
-		// Computes the polygons that need to be rendered
-		virtual void computePolygons();
+  // Computes the polygons that need to be rendered
+  virtual void computePolygons();
 
-		// Renders the computed polygons
-		virtual void renderPolygons();
+  // Renders the computed polygons
+  virtual void renderPolygons();
 
-		// Initializes the necessary extensions.
-		virtual bool initExtensions();
+  // Initializes the necessary extensions.
+  virtual bool initExtensions();
 
-		// Gets the opengl texture IDs
-		bool initTextureNames(unsigned int x, unsigned int y, unsigned int z);
+  // Gets the opengl texture IDs
+  bool initTextureNames(unsigned int x, unsigned int y, unsigned int z);
 
-		// Sets the currently bound texture parameters
-		void setTextureParameters();
-		
-		// Gets a single slice along the y-axis
-		void getYSlice(GLubyte* dest, const GLubyte* source, unsigned int sliceNum, unsigned int width, unsigned int height, unsigned int depth);
-		
-		// Gets a single slice along the x-axis
-		void getXSlice(GLubyte* dest, const GLubyte* source, unsigned int sliceNum, unsigned int width, unsigned int height, unsigned int depth);
-	};
+  // Sets the currently bound texture parameters
+  void setTextureParameters();
 
+  // Gets a single slice along the y-axis
+  void getYSlice(GLubyte *dest, const GLubyte *source, unsigned int sliceNum,
+                 unsigned int width, unsigned int height, unsigned int depth);
+
+  // Gets a single slice along the x-axis
+  void getXSlice(GLubyte *dest, const GLubyte *source, unsigned int sliceNum,
+                 unsigned int width, unsigned int height, unsigned int depth);
 };
+
+}; // namespace OpenGLVolumeRendering
 
 #endif // !defined(AFX_PALETTED2DIMPL_H__92BAADF9_254C_4539_9BDA_4D1D50EBBFBC__INCLUDED_)

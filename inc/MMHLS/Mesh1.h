@@ -24,18 +24,14 @@
 
 using namespace std;
 
+namespace MMHLS {
+struct Mesh {
+  vector<vector<float>> vertexList;
+  vector<vector<unsigned int>> faceList;
+};
 
-namespace MMHLS
-{
-    struct Mesh
-    {
-    vector<vector<float> > vertexList;
-    vector<vector<unsigned int> > faceList;
-    };
-
-    struct PointCloud
-    {
-    vector<vector<float> > vertexList;
-    };
-}
+struct PointCloud {
+  vector<vector<float>> vertexList;
+};
+} // namespace MMHLS
 #endif

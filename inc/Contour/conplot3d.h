@@ -1,7 +1,7 @@
 /*
   Copyright 2011 The University of Texas at Austin
 
-	Advisor: Chandrajit Bajaj <bajaj@cs.utexas.edu>
+        Advisor: Chandrajit Bajaj <bajaj@cs.utexas.edu>
 
   This file is part of MolSurf.
 
@@ -19,61 +19,49 @@
   along with MolSurf; if not, write to the Free Software
   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
-// conplot3d.h - class for preprocessing and extraction of surfaces from 3d data
+// conplot3d.h - class for preprocessing and extraction of surfaces from 3d
+// data
 
 #ifndef CONPLOT_3D_H
 #define CONPLOT_3D_H
 
-#include <Utility/utility.h>
 #include <Contour/CellQueue.h>
 #include <Contour/Conplot.h>
-#include <Contour/contour3d.h>
 #include <Contour/Dataset.h>
+#include <Contour/contour3d.h>
 #include <Contour/datasetvol.h>
 #include <Contour/edgehash.h>
 #include <Contour/range.h>
 #include <Contour/seedcells.h>
 #include <Contour/segtree.h>
+#include <Utility/utility.h>
 
-class Conplot3d : public Conplot
-{
-	public:
-		Conplot3d(Datasetvol* d);
-		~Conplot3d();
+class Conplot3d : public Conplot {
+public:
+  Conplot3d(Datasetvol *d);
+  ~Conplot3d();
 
-	protected:
-		// extract in 3d (from memory) or slice-by-slice (swap from disk)
-		u_int ExtractAll(float isovalue);
+protected:
+  // extract in 3d (from memory) or slice-by-slice (swap from disk)
+  u_int ExtractAll(float isovalue);
 
-		int InterpEdge(int, float*, u_int*, float, int);
+  int InterpEdge(int, float *, u_int *, float, int);
 
-		// track a contour from a seed cell
-		void TrackContour(float, int);
+  // track a contour from a seed cell
+  void TrackContour(float, int);
 
-		// enqueue faces for propagation of surface
-		inline void EnqueueFaces(int, int, CellQueue&);
+  // enqueue faces for propagation of surface
+  inline void EnqueueFaces(int, int, CellQueue &);
 
-		void Reset(int t)
-		{
-			con3[t].Reset();
-		}
-		int  Size(int t)
-		{
-			return(con3[t].getSize());
-		}
-		int  isDone(int t)
-		{
-			return(con3[t].isDone());
-		}
-		void Done(int t)
-		{
-			con3[t].Done();
-		}
+  void Reset(int t) { con3[t].Reset(); }
+  int Size(int t) { return (con3[t].getSize()); }
+  int isDone(int t) { return (con3[t].isDone()); }
+  void Done(int t) { con3[t].Done(); }
 
-	private:
-		Datasetvol* vol;
-		Datavol* curvol;
-		Contour3d* con3, *curcon;
+private:
+  Datasetvol *vol;
+  Datavol *curvol;
+  Contour3d *con3, *curcon;
 };
 
 #endif

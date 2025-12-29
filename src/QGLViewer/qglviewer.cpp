@@ -22,16 +22,15 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 
 **********************************************************************/
 
-#include <QGLViewer/qglviewer.h>
-#include <QGLViewer/camera.h>
-#include <QGLViewer/domUtils.h>
-#include <QGLViewer/keyFrameInterpolator.h>
-#include <QGLViewer/manipulatedCameraFrame.h>
-
 #include <QApplication>
 #include <QDateTime>
 #include <QDir>
 #include <QFileInfo>
+#include <QGLViewer/camera.h>
+#include <QGLViewer/domUtils.h>
+#include <QGLViewer/keyFrameInterpolator.h>
+#include <QGLViewer/manipulatedCameraFrame.h>
+#include <QGLViewer/qglviewer.h>
 #if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
 #include <QGLContext>
 #endif
@@ -49,7 +48,7 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 #include <QtAlgorithms>
 
 #if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
-# define MidButton MiddleButton
+#define MidButton MiddleButton
 #endif
 
 using namespace std;
@@ -62,22 +61,23 @@ QList<QGLViewer *> QGLViewer::QGLViewerPool_;
 
 libQGLViewer is a free C++ library based on Qt that enables the quick creation
 of OpenGL 3D viewers. It features a powerful camera trackball and simple
-applications simply require an implementation of the <code>draw()</code> method.
-This makes it a tool of choice for OpenGL beginners and assignments. It provides
-screenshot saving, mouse manipulated frames, stereo display, interpolated
-keyFrames, object selection, and much more. It is fully
-customizable and easy to extend to create complex applications, with a possible
-Qt GUI.
+applications simply require an implementation of the <code>draw()</code>
+method. This makes it a tool of choice for OpenGL beginners and assignments.
+It provides screenshot saving, mouse manipulated frames, stereo display,
+interpolated keyFrames, object selection, and much more. It is fully
+customizable and easy to extend to create complex applications, with a
+possible Qt GUI.
 
 libQGLViewer is <i>not</i> a 3D viewer that can be used directly to view 3D
 scenes in various formats. It is more likely to be the starting point for the
 coding of such a viewer.
 
 libQGLViewer is based on the Qt toolkit and hence compiles on any architecture
-(Unix-Linux, Mac, Windows, ...). Full reference documentation and many examples
-are provided.
+(Unix-Linux, Mac, Windows, ...). Full reference documentation and many
+examples are provided.
 
-See the project main page for details on the project and installation steps. */
+See the project main page for details on the project and installation steps.
+*/
 
 void QGLViewer::defaultConstructor() {
   // Test OpenGL context
@@ -191,8 +191,9 @@ QGLViewer::QGLViewer(QWidget *parent, const QGLWidget *shareWidget,
                      Qt::WindowFlags flags)
     : QOpenGLWidget(parent, flags) {
   Q_UNUSED(shareWidget)
-  qWarning("The constructor with a shareWidget is deprecated, use the regular "
-           "contructor instead.");
+  qWarning(
+      "The constructor with a shareWidget is deprecated, use the regular "
+      "contructor instead.");
   defaultConstructor();
 }
 
@@ -228,13 +229,14 @@ QGLViewer::QGLViewer(const QGLFormat &format, QWidget *parent,
 
 /*! Virtual destructor.
 
-The viewer is replaced by \c nullptr in the QGLViewerPool() (in order to preserve
-other viewer's indexes) and allocated memory is released. The camera() is
-deleted and should be copied before if it is shared by an other viewer. */
+The viewer is replaced by \c nullptr in the QGLViewerPool() (in order to
+preserve other viewer's indexes) and allocated memory is released. The
+camera() is deleted and should be copied before if it is shared by an other
+viewer. */
 QGLViewer::~QGLViewer() {
-  // See closeEvent comment. Destructor is called (and not closeEvent) only when
-  // the widget is embedded. Hence we saveToFile here. It is however a bad idea
-  // if virtual domElement() has been overloaded ! if (parent())
+  // See closeEvent comment. Destructor is called (and not closeEvent) only
+  // when the widget is embedded. Hence we saveToFile here. It is however a
+  // bad idea if virtual domElement() has been overloaded ! if (parent())
   // saveStateToFileForAllViewers();
 
   QGLViewer::QGLViewerPool_.replace(QGLViewer::QGLViewerPool_.indexOf(this),
@@ -267,12 +269,13 @@ static Qt::MouseButton mouseButtonFromState(unsigned int state) {
   return Qt::MouseButton(state & 0xFFFF);
 }
 
-/*! Initializes the QGLViewer OpenGL context and then calls user-defined init().
+/*! Initializes the QGLViewer OpenGL context and then calls user-defined
+init().
 
 This method is automatically called once, before the first call to paintGL().
 
-Overload init() instead of this method to modify viewer specific OpenGL state or
-to create display lists.
+Overload init() instead of this method to modify viewer specific OpenGL state
+or to create display lists.
 
 To make beginners' life easier and to simplify the examples, this method
 slightly modifies the standard OpenGL state: \code glEnable(GL_LIGHT0);
@@ -282,8 +285,8 @@ glEnable(GL_COLOR_MATERIAL);
 \endcode
 
 If you port an existing application to QGLViewer and your display changes, you
-probably want to disable these flags in init() to get back to a standard OpenGL
-state. */
+probably want to disable these flags in init() to get back to a standard
+OpenGL state. */
 void QGLViewer::initializeGL() {
   glEnable(GL_LIGHT0);
   glEnable(GL_LIGHTING);
@@ -321,7 +324,8 @@ postDraw() : display of visual hints (world axis, FPS...) */
 void QGLViewer::paintGL() {
   if (displaysInStereo()) {
     for (int view = 1; view >= 0; --view) {
-      // Clears screen, set model view matrix with shifted matrix for ith buffer
+      // Clears screen, set model view matrix with shifted matrix for ith
+      // buffer
       preDrawStereo(view);
       // Used defined method. Default is empty
       if (camera()->frame()->isManipulated())
@@ -369,17 +373,17 @@ void QGLViewer::preDraw() {
 
 /*! Called after draw() to draw viewer visual hints.
 
-Default implementation displays axis, grid, FPS... when the respective flags are
-sets.
+Default implementation displays axis, grid, FPS... when the respective flags
+are sets.
 
 See the <a href="../examples/multiSelect.html">multiSelect</a> and <a
 href="../examples/contribs.html#thumbnail">thumbnail</a> examples for an
 overloading illustration.
 
-The GLContext (color, LIGHTING, BLEND...) is \e not modified by this method, so
-that in draw(), the user can rely on the OpenGL context he defined. Respect this
-convention (by pushing/popping the different attributes) if you overload this
-method. */
+The GLContext (color, LIGHTING, BLEND...) is \e not modified by this method,
+so that in draw(), the user can rely on the OpenGL context he defined. Respect
+this convention (by pushing/popping the different attributes) if you overload
+this method. */
 void QGLViewer::postDraw() {
   // Reset model view matrix to world coordinates origin
   glMatrixMode(GL_MODELVIEW);
@@ -454,10 +458,11 @@ void QGLViewer::postDraw() {
   glPopMatrix();
 }
 
-/*! Called before draw() (instead of preDraw()) when viewer displaysInStereo().
+/*! Called before draw() (instead of preDraw()) when viewer
+displaysInStereo().
 
-Same as preDraw() except that the glDrawBuffer() is set to \c GL_BACK_LEFT or \c
-GL_BACK_RIGHT depending on \p leftBuffer, and it uses
+Same as preDraw() except that the glDrawBuffer() is set to \c GL_BACK_LEFT or
+\c GL_BACK_RIGHT depending on \p leftBuffer, and it uses
 qglviewer::Camera::loadProjectionMatrixStereo() and
 qglviewer::Camera::loadModelViewMatrixStereo() instead. */
 void QGLViewer::preDrawStereo(bool leftBuffer) {
@@ -491,14 +496,14 @@ camera manipulation. See the <a href="../examples/fastDraw.html">fastDraw
 example</a> for an illustration. */
 void QGLViewer::fastDraw() { draw(); }
 
-/*! Starts (\p edit = \c true, default) or stops (\p edit=\c false) the edition
-of the camera().
+/*! Starts (\p edit = \c true, default) or stops (\p edit=\c false) the
+edition of the camera().
 
 Current implementation is limited to paths display. Get current state using
 cameraIsEdited().
 
-\attention This method sets the qglviewer::Camera::zClippingCoefficient() to 5.0
-when \p edit is \c true, so that the Camera paths (see
+\attention This method sets the qglviewer::Camera::zClippingCoefficient()
+to 5.0 when \p edit is \c true, so that the Camera paths (see
 qglviewer::Camera::keyFrameInterpolator()) are not clipped. It restores the
 previous value when \p edit is \c false. */
 void QGLViewer::setCameraIsEdited(bool edit) {
@@ -544,12 +549,14 @@ void QGLViewer::setDefaultShortcuts() {
       tr("Saves a screenshot", "SAVE_SCREENSHOT action description");
   keyboardActionDescription_[FULL_SCREEN] =
       tr("Toggles full screen display", "FULL_SCREEN action description");
-  keyboardActionDescription_[DRAW_AXIS] = tr(
-      "Toggles the display of the world axis", "DRAW_AXIS action description");
-  keyboardActionDescription_[DRAW_GRID] =
-      tr("Toggles the display of the XY grid", "DRAW_GRID action description");
-  keyboardActionDescription_[CAMERA_MODE] = tr(
-      "Changes camera mode (observe or fly)", "CAMERA_MODE action description");
+  keyboardActionDescription_[DRAW_AXIS] =
+      tr("Toggles the display of the world axis",
+         "DRAW_AXIS action description");
+  keyboardActionDescription_[DRAW_GRID] = tr(
+      "Toggles the display of the XY grid", "DRAW_GRID action description");
+  keyboardActionDescription_[CAMERA_MODE] =
+      tr("Changes camera mode (observe or fly)",
+         "CAMERA_MODE action description");
   keyboardActionDescription_[STEREO] =
       tr("Toggles stereo display", "STEREO action description");
   keyboardActionDescription_[HELP] =
@@ -602,7 +609,7 @@ void QGLViewer::setDefaultMouseBindings() {
   const Qt::KeyboardModifiers cameraKeyboardModifiers = Qt::NoModifier;
   const Qt::KeyboardModifiers frameKeyboardModifiers = Qt::ControlModifier;
 
-  //#CONNECTION# toggleCameraMode()
+  // #CONNECTION# toggleCameraMode()
   for (int handler = 0; handler < 2; ++handler) {
     MouseHandler mh = static_cast<MouseHandler>(handler);
     Qt::KeyboardModifiers modifiers =
@@ -631,26 +638,27 @@ void QGLViewer::setDefaultMouseBindings() {
 
   setMouseBinding(frameKeyboardModifiers, Qt::LeftButton, ALIGN_FRAME, true);
   // middle double click makes no sense for manipulated frame
-  setMouseBinding(frameKeyboardModifiers, Qt::RightButton, CENTER_FRAME, true);
+  setMouseBinding(frameKeyboardModifiers, Qt::RightButton, CENTER_FRAME,
+                  true);
 
   // A c t i o n s   w i t h   k e y   m o d i f i e r s
   setMouseBinding(Qt::Key_Z, Qt::NoModifier, Qt::LeftButton, ZOOM_ON_PIXEL);
   setMouseBinding(Qt::Key_Z, Qt::NoModifier, Qt::RightButton, ZOOM_TO_FIT);
 
 #ifdef Q_OS_MAC
-  // Specific Mac bindings for touchpads. Two fingers emulate a wheelEvent which
-  // zooms. There is no right button available : make Option key + left emulate
-  // the right button. A Control+Left indeed emulates a right click (OS X system
-  // configuration), but it does no seem to support dragging. Done at the end to
-  // override previous settings.
+  // Specific Mac bindings for touchpads. Two fingers emulate a wheelEvent
+  // which zooms. There is no right button available : make Option key + left
+  // emulate the right button. A Control+Left indeed emulates a right click
+  // (OS X system configuration), but it does no seem to support dragging.
+  // Done at the end to override previous settings.
   const Qt::KeyboardModifiers macKeyboardModifiers = Qt::AltModifier;
 
   setMouseBinding(macKeyboardModifiers, Qt::LeftButton, CAMERA, TRANSLATE);
   setMouseBinding(macKeyboardModifiers, Qt::LeftButton, CENTER_SCENE, true);
-  setMouseBinding(frameKeyboardModifiers | macKeyboardModifiers, Qt::LeftButton,
-                  CENTER_FRAME, true);
-  setMouseBinding(frameKeyboardModifiers | macKeyboardModifiers, Qt::LeftButton,
-                  FRAME, TRANSLATE);
+  setMouseBinding(frameKeyboardModifiers | macKeyboardModifiers,
+                  Qt::LeftButton, CENTER_FRAME, true);
+  setMouseBinding(frameKeyboardModifiers | macKeyboardModifiers,
+                  Qt::LeftButton, FRAME, TRANSLATE);
 #endif
 }
 
@@ -664,9 +672,9 @@ It you simply want to save and restore Camera positions, use
 qglviewer::Camera::addKeyFrameToPath() and qglviewer::Camera::playPath()
 instead.
 
-This method silently ignores \c nullptr \p camera pointers. The calling method is
-responsible for deleting the previous camera pointer in order to prevent memory
-leaks if needed.
+This method silently ignores \c nullptr \p camera pointers. The calling method
+is responsible for deleting the previous camera pointer in order to prevent
+memory leaks if needed.
 
 The sceneRadius() and sceneCenter() of \p camera are set to the \e current
 QGLViewer values.
@@ -683,7 +691,8 @@ void QGLViewer::setCamera(Camera *const camera) {
   disconnect(this->camera()->frame(), SIGNAL(manipulated()), this,
              SLOT(update()));
   disconnect(this->camera()->frame(), SIGNAL(spun()), this, SLOT(update()));
-  disconnect(screen(), SIGNAL(physicalDotsPerInchChanged(qreal)), this->camera(), SLOT(setDevicePixelRatio(qreal)));
+  disconnect(screen(), SIGNAL(physicalDotsPerInchChanged(qreal)),
+             this->camera(), SLOT(setDevicePixelRatio(qreal)));
   connectAllCameraKFIInterpolatedSignals(false);
 
   camera_ = camera;
@@ -696,10 +705,12 @@ void QGLViewer::setCamera(Camera *const camera) {
   // Connect camera frame to this viewer.
   connect(camera->frame(), SIGNAL(manipulated()), SLOT(update()));
   connect(camera->frame(), SIGNAL(spun()), SLOT(update()));
-  connect(screen(), SIGNAL(physicalDotsPerInchChanged(qreal)), camera, SLOT(setDevicePixelRatio(qreal)));
+  connect(screen(), SIGNAL(physicalDotsPerInchChanged(qreal)), camera,
+          SLOT(setDevicePixelRatio(qreal)));
   connectAllCameraKFIInterpolatedSignals();
 
-  previousCameraZClippingCoefficient_ = this->camera()->zClippingCoefficient();
+  previousCameraZClippingCoefficient_ =
+      this->camera()->zClippingCoefficient();
 }
 
 void QGLViewer::connectAllCameraKFIInterpolatedSignals(bool connection) {
@@ -708,8 +719,8 @@ void QGLViewer::connectAllCameraKFIInterpolatedSignals(bool connection) {
            end = camera()->kfi_.end();
        it != end; ++it) {
     if (connection)
-      connect(camera()->keyFrameInterpolator(it.key()), SIGNAL(interpolated()),
-              SLOT(update()));
+      connect(camera()->keyFrameInterpolator(it.key()),
+              SIGNAL(interpolated()), SLOT(update()));
     else
       disconnect(camera()->keyFrameInterpolator(it.key()),
                  SIGNAL(interpolated()), this, SLOT(update()));
@@ -728,8 +739,8 @@ void QGLViewer::connectAllCameraKFIInterpolatedSignals(bool connection) {
 Called in draw(), this method is useful to debug or display your light setup.
 Light drawing depends on the type of light (point, spot, directional).
 
-The method retrieves the light setup using \c glGetLightfv. Position and define
-your lights before calling this method.
+The method retrieves the light setup using \c glGetLightfv. Position and
+define your lights before calling this method.
 
 Light is drawn using its diffuse color. Disabled lights are not displayed.
 
@@ -770,18 +781,22 @@ void QGLViewer::drawLight(GLenum light, qreal scale) const {
         glGetLightfv(light, GL_SPOT_DIRECTION, dir);
         glMultMatrixd(Quaternion(Vec(0, 0, 1), Vec(dir)).matrix());
         QGLViewer::drawArrow(length);
-        gluCylinder(quadric, 0.0, 0.7 * length * sin(static_cast<double>(cutOff) * M_PI / 180.0),
-                    0.7 * length * cos(static_cast<double>(cutOff) * M_PI / 180.0), 12, 1);
+        gluCylinder(
+            quadric, 0.0,
+            0.7 * length * sin(static_cast<double>(cutOff) * M_PI / 180.0),
+            0.7 * length * cos(static_cast<double>(cutOff) * M_PI / 180.0),
+            12, 1);
       } else
         gluSphere(quadric, 0.2 * length, 10, 10);
     } else {
       // Directional light.
-      Vec dir(static_cast<double>(pos[0]), static_cast<double>(pos[1]), static_cast<double>(pos[2]));
+      Vec dir(static_cast<double>(pos[0]), static_cast<double>(pos[1]),
+              static_cast<double>(pos[2]));
       dir.normalize();
-      Frame fr =
-          Frame(camera()->cameraCoordinatesOf(
-                    4.0 * length * camera()->frame()->inverseTransformOf(dir)),
-                Quaternion(Vec(0, 0, -1), dir));
+      Frame fr = Frame(
+          camera()->cameraCoordinatesOf(
+              4.0 * length * camera()->frame()->inverseTransformOf(dir)),
+          Quaternion(Vec(0, 0, -1), dir));
       glMultMatrixd(fr.matrix());
       drawArrow(length);
     }
@@ -824,16 +839,16 @@ You should disable \c GL_LIGHTING and \c GL_DEPTH_TEST before this method so
 that colors are properly rendered.
 
 This method can be used in conjunction with the
-qglviewer::Camera::projectedCoordinatesOf() method to display a text attached to
-an object. In your draw() method use: \code qglviewer::Vec screenPos =
+qglviewer::Camera::projectedCoordinatesOf() method to display a text attached
+to an object. In your draw() method use: \code qglviewer::Vec screenPos =
 camera()->projectedCoordinatesOf(myFrame.position());
 drawText((int)screenPos[0], (int)screenPos[1], "My Object");
 \endcode
 See the <a href="../examples/screenCoordSystem.html">screenCoordSystem
 example</a> for an illustration.
 
-Text is displayed only when textIsEnabled() (default). This mechanism allows the
-user to conveniently remove all the displayed text with a single keyboard
+Text is displayed only when textIsEnabled() (default). This mechanism allows
+the user to conveniently remove all the displayed text with a single keyboard
 shortcut.
 
 See also displayMessage() to drawText() for only a short amount of time.
@@ -845,7 +860,8 @@ facing the camera).
 The \c GL_MODELVIEW and \c GL_PROJECTION matrices are not modified by this
 method.
 */
-void QGLViewer::drawText(int x, int y, const QString &text, const QFont &fnt) {
+void QGLViewer::drawText(int x, int y, const QString &text,
+                         const QFont &fnt) {
   if (!textIsEnabled())
     return;
 
@@ -869,8 +885,8 @@ This method should not be called in draw(). If you want to display a text in
 each draw(), use drawText() instead.
 
 If this method is called when a message is already displayed, the new message
-replaces the old one. Use setTextIsEnabled() (default shortcut is '?') to enable
-or disable text (and hence messages) display. */
+replaces the old one. Use setTextIsEnabled() (default shortcut is '?') to
+enable or disable text (and hence messages) display. */
 void QGLViewer::displayMessage(const QString &message, int delay) {
   message_ = message;
   displayMessage_ = true;
@@ -889,18 +905,19 @@ void QGLViewer::hideMessage() {
 /*! Displays the averaged currentFPS() frame rate in the upper left corner of
 the widget.
 
-update() should be called in a loop in order to have a meaningful value (this is
-the case when you continuously move the camera using the mouse or when
+update() should be called in a loop in order to have a meaningful value (this
+is the case when you continuously move the camera using the mouse or when
 animationIsStarted()). setAnimationPeriod(0) to make this loop as fast as
 possible in order to reach and measure the maximum available frame rate.
 
-When FPSIsDisplayed() is \c true (default is \c false), this method is called by
-postDraw() to display the currentFPS(). Use QApplication::setFont() to define
-the font (see drawText()). */
+When FPSIsDisplayed() is \c true (default is \c false), this method is called
+by postDraw() to display the currentFPS(). Use QApplication::setFont() to
+define the font (see drawText()). */
 void QGLViewer::displayFPS() {
-  drawText(10, int(1.5 * ((QApplication::font().pixelSize() > 0)
-                              ? QApplication::font().pixelSize()
-                              : QApplication::font().pointSize())),
+  drawText(10,
+           int(1.5 * ((QApplication::font().pixelSize() > 0)
+                          ? QApplication::font().pixelSize()
+                          : QApplication::font().pointSize())),
            fpsString_);
 }
 
@@ -911,15 +928,16 @@ Once called, the \p x and \p y coordinates passed to \c glVertex are expressed
 in pixels screen coordinates. The origin (0,0) is in the upper left corner of
 the widget by default. This follows the Qt standards, so that you can directly
 use the \c pos() provided by for instance \c QMouseEvent. Set \p upward to \c
-true to place the origin in the \e lower left corner, thus following the OpenGL
-and mathematical standards. It is always possible to switch between the two
-representations using \c newY = height() - \c y.
+true to place the origin in the \e lower left corner, thus following the
+OpenGL and mathematical standards. It is always possible to switch between the
+two representations using \c newY = height() - \c y.
 
 You need to call stopScreenCoordinatesSystem() at the end of the drawing block
 to restore the previous camera matrix.
 
 In practice, this method should be used in draw(). It sets an appropriate
-orthographic projection matrix and then sets \c glMatrixMode to \c GL_MODELVIEW.
+orthographic projection matrix and then sets \c glMatrixMode to \c
+GL_MODELVIEW.
 
 See the <a href="../examples/screenCoordSystem.html">screenCoordSystem</a>, <a
 href="../examples/multiSelect.html">multiSelect</a> and <a
@@ -939,8 +957,8 @@ In this mode, you should use z values that are in the [0.0, 1.0[ range (0.0
 corresponding to the near clipping plane and 1.0 being just beyond the far
 clipping plane). This interval matches the values that can be read from the
 z-buffer. Note that if you use the convenient \c glVertex2i() to provide
-coordinates, the implicit 0.0 z coordinate will make your drawings appear \e on
-\e top of the rest of the scene. */
+coordinates, the implicit 0.0 z coordinate will make your drawings appear \e
+on \e top of the rest of the scene. */
 void QGLViewer::startScreenCoordinatesSystem(bool upward) const {
   glMatrixMode(GL_PROJECTION);
   glPushMatrix();
@@ -1005,11 +1023,11 @@ Saves the viewer state using saveStateToFile() and then calls
 QOpenGLWidget::closeEvent(). */
 void QGLViewer::closeEvent(QCloseEvent *e) {
   // When the user clicks on the window close (x) button:
-  // - If the viewer is a top level window, closeEvent is called and then saves
-  // to file. - Otherwise, nothing happen s:( When the user press the
+  // - If the viewer is a top level window, closeEvent is called and then
+  // saves to file. - Otherwise, nothing happen s:( When the user press the
   // EXIT_VIEWER keyboard shortcut: - If the viewer is a top level window,
-  // saveStateToFile() is also called - Otherwise, closeEvent is NOT called and
-  // keyPressEvent does the job.
+  // saveStateToFile() is also called - Otherwise, closeEvent is NOT called
+  // and keyPressEvent does the job.
 
   /* After tests:
   E : Embedded widget
@@ -1041,11 +1059,11 @@ void QGLViewer::closeEvent(QCloseEvent *e) {
 
 /*! Simple wrapper method: calls \c select(event->pos()).
 
-Emits \c pointSelected(e) which is useful only if you rely on the Qt signal-slot
-mechanism and you did not overload QGLViewer. If you choose to derive your own
-viewer class, simply overload select() (or probably simply drawWithNames(), see
-the <a href="../examples/select.html">select example</a>) to implement your
-selection mechanism.
+Emits \c pointSelected(e) which is useful only if you rely on the Qt
+signal-slot mechanism and you did not overload QGLViewer. If you choose to
+derive your own viewer class, simply overload select() (or probably simply
+drawWithNames(), see the <a href="../examples/select.html">select example</a>)
+to implement your selection mechanism.
 
 This method is called when you use the QGLViewer::SELECT mouse binding(s)
 (default is Shift + left button). Use setMouseBinding() to change this. */
@@ -1075,9 +1093,9 @@ documentation for more details):
 matrices. A rectangular frustum (of size defined by selectRegionWidth() and
 selectRegionHeight()) centered on \p point is created.
 
-\arg drawWithNames() is empty and should be overloaded. It draws each selectable
-object of the scene, enclosed by calls to \c glPushName() / \c glPopName() to
-tag the object with an integer id.
+\arg drawWithNames() is empty and should be overloaded. It draws each
+selectable object of the scene, enclosed by calls to \c glPushName() / \c
+glPopName() to tag the object with an integer id.
 
 \arg endSelection() then restores \c GL_RENDER mode and analyzes the
 selectBuffer() to set in selectedName() the id of the object that was drawn in
@@ -1088,7 +1106,8 @@ set to -1.
 \arg postSelection() is empty and can be overloaded for possible
 signal/display/interface update.
 
-See the \c glSelectBuffer() man page for details on this \c GL_SELECT mechanism.
+See the \c glSelectBuffer() man page for details on this \c GL_SELECT
+mechanism.
 
 This default implementation is quite limited: only the closer object is
 selected, and only one level of names can be pushed. However, this reveals
@@ -1096,17 +1115,19 @@ sufficient in many cases and you usually only have to overload drawWithNames()
 to implement a simple object selection process. See the <a
 href="../examples/select.html">select example</a> for an illustration.
 
-If you need a more complex selection process (such as a point, edge or triangle
-selection, which is easier with a 2 or 3 levels selectBuffer() heap, and which
-requires a finer depth sorting to privilege point over edge and edges over
-triangles), overload the endSelection() method. Use setSelectRegionWidth(),
-setSelectRegionHeight() and setSelectBufferSize() to tune the select buffer
-configuration. See the <a href="../examples/multiSelect.html">multiSelect
-example</a> for an illustration.
+If you need a more complex selection process (such as a point, edge or
+triangle selection, which is easier with a 2 or 3 levels selectBuffer() heap,
+and which requires a finer depth sorting to privilege point over edge and
+edges over triangles), overload the endSelection() method. Use
+setSelectRegionWidth(), setSelectRegionHeight() and setSelectBufferSize() to
+tune the select buffer configuration. See the <a
+href="../examples/multiSelect.html">multiSelect example</a> for an
+illustration.
 
-\p point is the center pixel (origin in the upper left corner) of the selection
-region. Use qglviewer::Camera::convertClickToLine() to transform these
-coordinates in a 3D ray if you want to perform an analytical intersection.
+\p point is the center pixel (origin in the upper left corner) of the
+selection region. Use qglviewer::Camera::convertClickToLine() to transform
+these coordinates in a 3D ray if you want to perform an analytical
+intersection.
 
 \attention \c GL_SELECT mode seems to report wrong results when used in
 conjunction with backface culling. If you encounter problems try to \c
@@ -1121,18 +1142,18 @@ void QGLViewer::select(const QPoint &point) {
 /*! This method should prepare the selection. It is called by select() before
 drawWithNames().
 
-The default implementation uses the \c GL_SELECT mode to perform a selection. It
-uses selectBuffer() and selectBufferSize() to define a \c glSelectBuffer(). The
-\c GL_PROJECTION is then set using \c gluPickMatrix(), with a window selection
-size defined by selectRegionWidth() and selectRegionHeight(). Finally, the \c
-GL_MODELVIEW matrix is set to the world coordinate system using
-qglviewer::Camera::loadModelViewMatrix(). See the gluPickMatrix() documentation
-for details.
+The default implementation uses the \c GL_SELECT mode to perform a selection.
+It uses selectBuffer() and selectBufferSize() to define a \c glSelectBuffer().
+The \c GL_PROJECTION is then set using \c gluPickMatrix(), with a window
+selection size defined by selectRegionWidth() and selectRegionHeight().
+Finally, the \c GL_MODELVIEW matrix is set to the world coordinate system
+using qglviewer::Camera::loadModelViewMatrix(). See the gluPickMatrix()
+documentation for details.
 
-You should not need to redefine this method (if you use the \c GL_SELECT mode to
-perform your selection), since this code is fairly classical and can be tuned.
-You are more likely to overload endSelection() if you want to use a more complex
-select buffer structure. */
+You should not need to redefine this method (if you use the \c GL_SELECT mode
+to perform your selection), since this code is fairly classical and can be
+tuned. You are more likely to overload endSelection() if you want to use a
+more complex select buffer structure. */
 void QGLViewer::beginSelection(const QPoint &point) {
   // Make OpenGL context current (may be needed with several viewers ?)
   makeCurrent();
@@ -1147,8 +1168,8 @@ void QGLViewer::beginSelection(const QPoint &point) {
   glLoadIdentity();
   static GLint viewport[4];
   camera()->getViewport(viewport);
-  gluPickMatrix(point.x(), point.y(), selectRegionWidth(), selectRegionHeight(),
-                viewport);
+  gluPickMatrix(point.x(), point.y(), selectRegionWidth(),
+                selectRegionHeight(), viewport);
 
   // loadProjectionMatrix() first resets the GL_PROJECTION matrix with a
   // glLoadIdentity(). The false parameter prevents this and hence multiplies
@@ -1165,19 +1186,17 @@ object is actually selected.
 The default implementation relies on \c GL_SELECT mode (see beginSelection()).
 It assumes that names were pushed and popped in drawWithNames(), and analyzes
 the selectBuffer() to find the name that corresponds to the closer (z min)
-object. It then setSelectedName() to this value, or to -1 if the selectBuffer()
-is empty (no object drawn in selection region). Use selectedName() (probably in
-the postSelection() method) to retrieve this value and update your data
-structure accordingly.
+object. It then setSelectedName() to this value, or to -1 if the
+selectBuffer() is empty (no object drawn in selection region). Use
+selectedName() (probably in the postSelection() method) to retrieve this value
+and update your data structure accordingly.
 
 This default implementation, although sufficient for many cases is however
 limited and you may have to overload this method. This will be the case if
-drawWithNames() uses several push levels in the name heap. A more precise depth
-selection, for instance privileging points over edges and triangles to avoid z
-precision problems, will also require an overloading. A typical implementation
-will look like:
-\code
-glFlush();
+drawWithNames() uses several push levels in the name heap. A more precise
+depth selection, for instance privileging points over edges and triangles to
+avoid z precision problems, will also require an overloading. A typical
+implementation will look like: \code glFlush();
 
 // Get the number of objects that were seen through the pick matrix frustum.
 // Resets GL_RENDER mode.
@@ -1258,12 +1277,13 @@ static QString mouseButtonsString(Qt::MouseButtons b) {
   return result;
 }
 
-void QGLViewer::performClickAction(ClickAction ca, const QMouseEvent *const e) {
+void QGLViewer::performClickAction(ClickAction ca,
+                                   const QMouseEvent *const e) {
   // Note: action that need it should call update().
   switch (ca) {
   // # CONNECTION setMouseBinding prevents adding NO_CLICK_ACTION in
-  // clickBinding_ This case should hence not be possible. Prevents unused case
-  // warning.
+  // clickBinding_ This case should hence not be possible. Prevents unused
+  // case warning.
   case NO_CLICK_ACTION:
     break;
   case ZOOM_ON_PIXEL:
@@ -1315,27 +1335,30 @@ void QGLViewer::performClickAction(ClickAction ca, const QMouseEvent *const e) {
 /*! Overloading of the \c QWidget method.
 
 When the user clicks on the mouse:
-\arg if a mouseGrabber() is defined, qglviewer::MouseGrabber::mousePressEvent()
-is called, \arg otherwise, the camera() or the manipulatedFrame() interprets the
-mouse displacements, depending on mouse bindings.
+\arg if a mouseGrabber() is defined,
+qglviewer::MouseGrabber::mousePressEvent() is called, \arg otherwise, the
+camera() or the manipulatedFrame() interprets the mouse displacements,
+depending on mouse bindings.
 
 Mouse bindings customization can be achieved using setMouseBinding() and
-setWheelBinding(). See the <a href="../mouse.html">mouse page</a> for a complete
-description of mouse bindings.
+setWheelBinding(). See the <a href="../mouse.html">mouse page</a> for a
+complete description of mouse bindings.
 
 See the mouseMoveEvent() documentation for an example of more complex mouse
 behavior customization using overloading.
 
-\note When the mouseGrabber() is a manipulatedFrame(), the modifier keys are not
-taken into account. This allows for a direct manipulation of the
-manipulatedFrame() when the mouse hovers, which is probably what is expected. */
+\note When the mouseGrabber() is a manipulatedFrame(), the modifier keys are
+not taken into account. This allows for a direct manipulation of the
+manipulatedFrame() when the mouse hovers, which is probably what is expected.
+*/
 void QGLViewer::mousePressEvent(QMouseEvent *e) {
-  //#CONNECTION# mouseDoubleClickEvent has the same structure
-  //#CONNECTION# mouseString() concatenates bindings description in inverse
-  // order.
-  ClickBindingPrivate cbp(e->modifiers(), e->button(), false,
-                          static_cast<Qt::MouseButtons>((e->buttons() & ~(e->button()))),
-                          currentlyPressedKey_);
+  // #CONNECTION# mouseDoubleClickEvent has the same structure
+  // #CONNECTION# mouseString() concatenates bindings description in inverse
+  //  order.
+  ClickBindingPrivate cbp(
+      e->modifiers(), e->button(), false,
+      static_cast<Qt::MouseButtons>((e->buttons() & ~(e->button()))),
+      currentlyPressedKey_);
 
   if (clickBinding_.contains(cbp)) {
     performClickAction(clickBinding_[cbp], e);
@@ -1345,7 +1368,8 @@ void QGLViewer::mousePressEvent(QMouseEvent *e) {
                it = mouseBinding_.begin(),
                end = mouseBinding_.end();
            it != end; ++it)
-        if ((it.value().handler == FRAME) && (it.key().button == e->button())) {
+        if ((it.value().handler == FRAME) &&
+            (it.key().button == e->button())) {
           ManipulatedFrame *mf =
               dynamic_cast<ManipulatedFrame *>(mouseGrabber());
           if (mouseGrabberIsAManipulatedCameraFrame_) {
@@ -1362,7 +1386,7 @@ void QGLViewer::mousePressEvent(QMouseEvent *e) {
       mouseGrabber()->mousePressEvent(e, camera());
     update();
   } else {
-    //#CONNECTION# wheelEvent has the same structure
+    // #CONNECTION# wheelEvent has the same structure
     const MouseBindingPrivate mbp(e->modifiers(), e->button(),
                                   currentlyPressedKey_);
 
@@ -1378,7 +1402,8 @@ void QGLViewer::mousePressEvent(QMouseEvent *e) {
           if (manipulatedFrameIsACamera_) {
             manipulatedFrame()->ManipulatedFrame::startAction(
                 map.action, map.withConstraint);
-            manipulatedFrame()->ManipulatedFrame::mousePressEvent(e, camera());
+            manipulatedFrame()->ManipulatedFrame::mousePressEvent(e,
+                                                                  camera());
           } else {
             manipulatedFrame()->startAction(map.action, map.withConstraint);
             manipulatedFrame()->mousePressEvent(e, camera());
@@ -1441,32 +1466,32 @@ void QGLViewer::mouseMoveEvent(QMouseEvent *e) {
   }
 
   if (!mouseGrabber()) {
-    //#CONNECTION# mouseReleaseEvent has the same structure
+    // #CONNECTION# mouseReleaseEvent has the same structure
     if (camera()->frame()->isManipulated()) {
       camera()->frame()->mouseMoveEvent(e, camera());
-      // #CONNECTION# manipulatedCameraFrame::mouseMoveEvent specific if at the
-      // beginning
+      // #CONNECTION# manipulatedCameraFrame::mouseMoveEvent specific if at
+      // the beginning
       if (camera()->frame()->action_ == ZOOM_ON_REGION)
         update();
     } else // !
-        if ((manipulatedFrame()) && (manipulatedFrame()->isManipulated()))
-      if (manipulatedFrameIsACamera_)
-        manipulatedFrame()->ManipulatedFrame::mouseMoveEvent(e, camera());
-      else
-        manipulatedFrame()->mouseMoveEvent(e, camera());
-    else if (hasMouseTracking()) {
-      for (auto* mg : MouseGrabber::MouseGrabberPool()) {
-        mg->checkIfGrabsMouse(e->x(), e->y(), camera());
-        if (mg->grabsMouse()) {
-          setMouseGrabber(mg);
-          // Check that MouseGrabber is not disabled
-          if (mouseGrabber() == mg) {
-            update();
-            break;
+      if ((manipulatedFrame()) && (manipulatedFrame()->isManipulated()))
+        if (manipulatedFrameIsACamera_)
+          manipulatedFrame()->ManipulatedFrame::mouseMoveEvent(e, camera());
+        else
+          manipulatedFrame()->mouseMoveEvent(e, camera());
+      else if (hasMouseTracking()) {
+        for (auto *mg : MouseGrabber::MouseGrabberPool()) {
+          mg->checkIfGrabsMouse(e->x(), e->y(), camera());
+          if (mg->grabsMouse()) {
+            setMouseGrabber(mg);
+            // Check that MouseGrabber is not disabled
+            if (mouseGrabber() == mg) {
+              update();
+              break;
+            }
           }
         }
       }
-    }
   }
 }
 
@@ -1489,16 +1514,17 @@ void QGLViewer::mouseReleaseEvent(QMouseEvent *e) {
       setMouseGrabber(nullptr);
     // update();
   } else
-      //#CONNECTION# mouseMoveEvent has the same structure
-      if (camera()->frame()->isManipulated()) {
-    camera()->frame()->mouseReleaseEvent(e, camera());
-  } else if ((manipulatedFrame()) && (manipulatedFrame()->isManipulated())) {
-    if (manipulatedFrameIsACamera_)
-      manipulatedFrame()->ManipulatedFrame::mouseReleaseEvent(e, camera());
-    else
-      manipulatedFrame()->mouseReleaseEvent(e, camera());
-  } else
-    e->ignore();
+    // #CONNECTION# mouseMoveEvent has the same structure
+    if (camera()->frame()->isManipulated()) {
+      camera()->frame()->mouseReleaseEvent(e, camera());
+    } else if ((manipulatedFrame()) &&
+               (manipulatedFrame()->isManipulated())) {
+      if (manipulatedFrameIsACamera_)
+        manipulatedFrame()->ManipulatedFrame::mouseReleaseEvent(e, camera());
+      else
+        manipulatedFrame()->mouseReleaseEvent(e, camera());
+    } else
+      e->ignore();
 
   // Not absolutely needed (see above commented code for the optimal version),
   // but may reveal useful for specific applications.
@@ -1507,8 +1533,8 @@ void QGLViewer::mouseReleaseEvent(QMouseEvent *e) {
 
 /*! Overloading of the \c QWidget method.
 
-If defined, the wheel event is sent to the mouseGrabber(). It is otherwise sent
-according to wheel bindings (see setWheelBinding()). */
+If defined, the wheel event is sent to the mouseGrabber(). It is otherwise
+sent according to wheel bindings (see setWheelBinding()). */
 void QGLViewer::wheelEvent(QWheelEvent *e) {
   if (mouseGrabber()) {
     if (mouseGrabberIsAManipulatedFrame_) {
@@ -1533,7 +1559,7 @@ void QGLViewer::wheelEvent(QWheelEvent *e) {
       mouseGrabber()->wheelEvent(e, camera());
     update();
   } else {
-    //#CONNECTION# mousePressEvent has the same structure
+    // #CONNECTION# mousePressEvent has the same structure
     WheelBindingPrivate wbp(e->modifiers(), currentlyPressedKey_);
 
     if (wheelBinding_.contains(wbp)) {
@@ -1566,10 +1592,11 @@ void QGLViewer::wheelEvent(QWheelEvent *e) {
 The behavior of the mouse double click depends on the mouse binding. See
 setMouseBinding() and the <a href="../mouse.html">mouse page</a>. */
 void QGLViewer::mouseDoubleClickEvent(QMouseEvent *e) {
-  //#CONNECTION# mousePressEvent has the same structure
-  ClickBindingPrivate cbp(e->modifiers(), e->button(), true,
-                          static_cast<Qt::MouseButtons>(e->buttons() & ~(e->button())),
-                          currentlyPressedKey_);
+  // #CONNECTION# mousePressEvent has the same structure
+  ClickBindingPrivate cbp(
+      e->modifiers(), e->button(), true,
+      static_cast<Qt::MouseButtons>(e->buttons() & ~(e->button())),
+      currentlyPressedKey_);
   if (clickBinding_.contains(cbp))
     performClickAction(clickBinding_[cbp], e);
   else if (mouseGrabber())
@@ -1597,9 +1624,9 @@ void QGLViewer::setStereoDisplay(bool stereo) {
 
     update();
   } else if (stereo)
-    QMessageBox::warning(this,
-                         tr("Stereo not supported", "Message box window title"),
-                         tr("Stereo is not supported on this display."));
+    QMessageBox::warning(
+        this, tr("Stereo not supported", "Message box window title"),
+        tr("Stereo is not supported on this display."));
   else
     stereo_ = false;
 }
@@ -1607,7 +1634,8 @@ void QGLViewer::setStereoDisplay(bool stereo) {
 /*! Sets the isFullScreen() state.
 
 If the QGLViewer is embedded in an other QWidget (see
-QWidget::topLevelWidget()), this widget is displayed in full screen instead. */
+QWidget::topLevelWidget()), this widget is displayed in full screen instead.
+*/
 void QGLViewer::setFullScreen(bool fullScreen) {
   if (fullScreen_ == fullScreen)
     return;
@@ -1629,7 +1657,8 @@ void QGLViewer::setFullScreen(bool fullScreen) {
 /*! Directly defines the mouseGrabber().
 
 You should not call this method directly as it bypasses the
-qglviewer::MouseGrabber::checkIfGrabsMouse() test performed by mouseMoveEvent().
+qglviewer::MouseGrabber::checkIfGrabsMouse() test performed by
+mouseMoveEvent().
 
 If the MouseGrabber is disabled (see mouseGrabberIsEnabled()), this method
 silently does nothing. */
@@ -1683,7 +1712,8 @@ QString QGLViewer::mouseActionString(QGLViewer::MouseAction ma) {
     return QGLViewer::tr("Horizontally/Vertically translates",
                          "SCREEN_TRANSLATE mouse action");
   case QGLViewer::ZOOM_ON_REGION:
-    return QGLViewer::tr("Zooms on region for", "ZOOM_ON_REGION mouse action");
+    return QGLViewer::tr("Zooms on region for",
+                         "ZOOM_ON_REGION mouse action");
   }
   return QString();
 }
@@ -1739,15 +1769,17 @@ QString QGLViewer::formatClickActionPrivate(ClickBindingPrivate cbp) {
 #endif
   }
 
-  return tr("%1%2%3%4%5%6", "Modifier / button or wheel / double click / with "
-                            "/ button / pressed")
+  return tr("%1%2%3%4%5%6",
+            "Modifier / button or wheel / double click / with "
+            "/ button / pressed")
       .arg(keyModifierString)
       .arg(mouseButtonsString(cbp.button) +
            (cbp.button == Qt::NoButton ? tr("Wheel", "Mouse wheel") : ""))
       .arg(cbp.doubleClick ? tr(" double click", "Suffix after mouse button")
                            : "")
-      .arg(buttonsBefore ? tr(" with ", "As in : Left button with Ctrl pressed")
-                         : "")
+      .arg(buttonsBefore
+               ? tr(" with ", "As in : Left button with Ctrl pressed")
+               : "")
       .arg(buttonsBefore ? mouseButtonsString(cbp.buttonsBefore) : "")
       .arg(buttonsBefore
                ? tr(" pressed", "As in : Left button with Ctrl pressed")
@@ -1777,12 +1809,13 @@ void QGLViewer::setMouseBindingDescription(unsigned int state,
 }
 #endif
 
-/*! Defines a custom mouse binding description, displayed in the help() window's
- Mouse tab.
+/*! Defines a custom mouse binding description, displayed in the help()
+ window's Mouse tab.
 
  Same as calling setMouseBindingDescription(Qt::Key, Qt::KeyboardModifiers,
  Qt::MouseButton, QString, bool, Qt::MouseButtons), with a key value of
- Qt::Key(0) (i.e. binding description when no regular key needs to be pressed).
+ Qt::Key(0) (i.e. binding description when no regular key needs to be
+ pressed).
  */
 void QGLViewer::setMouseBindingDescription(Qt::KeyboardModifiers modifiers,
                                            Qt::MouseButton button,
@@ -1793,19 +1826,19 @@ void QGLViewer::setMouseBindingDescription(Qt::KeyboardModifiers modifiers,
                              doubleClick, buttonsBefore);
 }
 
-/*! Defines a custom mouse binding description, displayed in the help() window's
-Mouse tab.
+/*! Defines a custom mouse binding description, displayed in the help()
+window's Mouse tab.
 
-\p modifiers is a combination of Qt::KeyboardModifiers (\c Qt::ControlModifier,
-\c Qt::AltModifier, \c Qt::ShiftModifier, \c Qt::MetaModifier). Possibly
-combined using the \c "|" operator.
+\p modifiers is a combination of Qt::KeyboardModifiers (\c
+Qt::ControlModifier, \c Qt::AltModifier, \c Qt::ShiftModifier, \c
+Qt::MetaModifier). Possibly combined using the \c "|" operator.
 
 \p button is one of the Qt::MouseButtons (\c Qt::LeftButton, \c Qt::MidButton,
 \c Qt::RightButton...).
 
-\p doubleClick indicates whether or not the user has to double click this button
-to perform the described action. \p buttonsBefore lists the buttons that need to
-be pressed before the double click.
+\p doubleClick indicates whether or not the user has to double click this
+button to perform the described action. \p buttonsBefore lists the buttons
+that need to be pressed before the double click.
 
 Set an empty \p description to \e remove a mouse binding description.
 
@@ -1815,8 +1848,8 @@ screen plane. setMouseBindingDescription(Qt::Key_R, Qt::NoModifier,
 Qt::LeftButton, "Rotates camera in screen plane");
 
 // A left button double click toggles full screen
-setMouseBindingDescription(Qt::NoModifier, Qt::LeftButton, "Toggles full screen
-mode", true);
+setMouseBindingDescription(Qt::NoModifier, Qt::LeftButton, "Toggles full
+screen mode", true);
 
 // Removes the description of Ctrl+Right button
 setMouseBindingDescription(Qt::ControlModifier, Qt::RightButton, "");
@@ -1827,8 +1860,8 @@ Overload mouseMoveEvent() and friends to implement your custom mouse behavior
 href="../examples/keyboardAndMouse.html">keyboardAndMouse example</a> for an
 illustration.
 
-Use setMouseBinding() and setWheelBinding() to change the standard mouse action
-bindings. */
+Use setMouseBinding() and setWheelBinding() to change the standard mouse
+action bindings. */
 void QGLViewer::setMouseBindingDescription(
     Qt::Key key, Qt::KeyboardModifiers modifiers, Qt::MouseButton button,
     QString description, bool doubleClick, Qt::MouseButtons buttonsBefore) {
@@ -1867,8 +1900,8 @@ href="../mouse.html">mouse page</a> for details on mouse bindings.
 
 See also helpString() and keyboardString(). */
 QString QGLViewer::mouseString() const {
-  QString text(
-      "<font color=\"black\"><center><table border=\"0\" cellspacing=\"0\" cellpadding=\"4\">\n");
+  QString text("<font color=\"black\"><center><table border=\"0\" "
+               "cellspacing=\"0\" cellpadding=\"4\">\n");
   const QString trtd("<tr><td>");
   const QString tdtr("</td></tr>\n");
   const QString tdtd("</td><td>");
@@ -1903,8 +1936,9 @@ QString QGLViewer::mouseString() const {
   // Optional separator line
   if (!mouseBinding.isEmpty()) {
     mouseBinding.clear();
-    text += QString("<tr bgcolor=\"#aaaacc\"><td colspan=2>%1</td></tr>\n")
-                .arg(tr("Standard mouse bindings", "In help window mouse tab"));
+    text +=
+        QString("<tr bgcolor=\"#aaaacc\"><td colspan=2>%1</td></tr>\n")
+            .arg(tr("Standard mouse bindings", "In help window mouse tab"));
   }
 
   // Then concatenates the descriptions of wheelBinding_, mouseBinding_ and
@@ -1992,9 +2026,9 @@ setKeyDescription(Qt::CTRL | Qt::Key_L, "Loads a new scene");
 setKeyDescription(Qt::CTRL | Qt::Key_C, "");
 \endcode
 
-See the <a href="../examples/keyboardAndMouse.html">keyboardAndMouse example</a>
-for illustration and the <a href="../keyboard.html">keyboard page</a> for
-details. */
+See the <a href="../examples/keyboardAndMouse.html">keyboardAndMouse
+example</a> for illustration and the <a href="../keyboard.html">keyboard
+page</a> for details. */
 void QGLViewer::setKeyDescription(unsigned int key, QString description) {
   if (description.isEmpty())
     keyDescription_.remove(key);
@@ -2065,8 +2099,8 @@ QString QGLViewer::cameraPathKeysString() const {
   return res;
 }
 
-/*! Returns a QString that describes the application keyboard shortcut bindings,
-and that will be displayed in the help() window \c Keyboard tab.
+/*! Returns a QString that describes the application keyboard shortcut
+bindings, and that will be displayed in the help() window \c Keyboard tab.
 
 Default value is a table that describes the custom shortcuts defined using
 setKeyDescription() as well as the \e standard QGLViewer::KeyboardAction
@@ -2075,12 +2109,12 @@ href="../keyboard.html">keyboard page</a> for details on key customization.
 
 See also helpString() and mouseString(). */
 QString QGLViewer::keyboardString() const {
-  QString text(
-      "<font color=\"black\"><center><table border=\"0\" cellspacing=\"0\" cellpadding=\"4\">\n");
+  QString text("<font color=\"black\"><center><table border=\"0\" "
+               "cellspacing=\"0\" cellpadding=\"4\">\n");
   text += QString("<tr bgcolor=\"#aaaacc\"><th align=\"center\">%1</th><th "
                   "align=\"center\">%2</th></tr>\n")
-              .arg(QGLViewer::tr("Key(s)",
-                                 "Keys column header in help window mouse tab"))
+              .arg(QGLViewer::tr(
+                  "Key(s)", "Keys column header in help window mouse tab"))
               .arg(QGLViewer::tr(
                   "Description",
                   "Description column header in help window mouse tab"));
@@ -2088,8 +2122,9 @@ QString QGLViewer::keyboardString() const {
   QMap<unsigned int, QString> keyDescription;
 
   // 1 - User defined key descriptions
-  for (QMap<unsigned int, QString>::ConstIterator kd = keyDescription_.begin(),
-                                                  kdend = keyDescription_.end();
+  for (QMap<unsigned int, QString>::ConstIterator
+           kd = keyDescription_.begin(),
+           kdend = keyDescription_.end();
        kd != kdend; ++kd)
     keyDescription[kd.key()] = kd.value();
 
@@ -2113,13 +2148,14 @@ QString QGLViewer::keyboardString() const {
            end = keyboardBinding_.end();
        it != end; ++it)
     if ((it.value() != 0) &&
-        ((!cameraIsInRotateMode()) ||
-         ((it.key() != INCREASE_FLYSPEED) && (it.key() != DECREASE_FLYSPEED))))
+        ((!cameraIsInRotateMode()) || ((it.key() != INCREASE_FLYSPEED) &&
+                                       (it.key() != DECREASE_FLYSPEED))))
       keyDescription[it.value()] = keyboardActionDescription_[it.key()];
 
   // Add to text in sorted order
-  for (QMap<unsigned int, QString>::ConstIterator kb2 = keyDescription.begin(),
-                                                  endb2 = keyDescription.end();
+  for (QMap<unsigned int, QString>::ConstIterator
+           kb2 = keyDescription.begin(),
+           endb2 = keyDescription.end();
        kb2 != endb2; ++kb2)
     text += tableLine(keyString(kb2.key()), kb2.value());
 
@@ -2142,7 +2178,8 @@ QString QGLViewer::keyboardString() const {
         QGLViewer::tr("Adds a key frame to path (or defines a position)"));
     text += tableLine(
         keyString(addKeyFrameKeyboardModifiers()) + "<i>" +
-            QGLViewer::tr("Fx", "Generic function key (F1..F12)") + "</i>+<i>" +
+            QGLViewer::tr("Fx", "Generic function key (F1..F12)") +
+            "</i>+<i>" +
             QGLViewer::tr("Fx", "Generic function key (F1..F12)") + "</i>",
         QGLViewer::tr("Deletes path (or saved position)"));
   }
@@ -2157,11 +2194,12 @@ void QGLViewer::aboutQGLViewer() {
   helpWidget()->setCurrentIndex(3);
 }
 
-/*! Opens a modal help window that includes four tabs, respectively filled with
-helpString(), keyboardString(), mouseString() and about libQGLViewer.
+/*! Opens a modal help window that includes four tabs, respectively filled
+with helpString(), keyboardString(), mouseString() and about libQGLViewer.
 
-Rich html-like text can be used (see the QStyleSheet documentation). This method
-is called when the user presses the QGLViewer::HELP key (default is 'H').
+Rich html-like text can be used (see the QStyleSheet documentation). This
+method is called when the user presses the QGLViewer::HELP key (default is
+'H').
 
 You can use helpWidget() to access to the help widget (to add/remove tabs,
 change layout...).
@@ -2213,16 +2251,17 @@ void QGLViewer::help() {
       text = mouseString();
       break;
     case 3:
-      text = QString("<center><br><img src=\"mydata://qglviewer-icon.xpm\">") +
-             tr("<h1>libQGLViewer</h1>"
-                "<h3>Version %1</h3><br>"
-                "A versatile 3D viewer based on OpenGL and Qt<br>"
-                "Copyright 2002-%2 Gilles Debunne<br>"
-                "<code>%3</code>")
-                 .arg(QGLViewerVersionString())
-                 .arg("2023")
-                 .arg("http://www.libqglviewer.com") +
-             QString("</center>");
+      text =
+          QString("<center><br><img src=\"mydata://qglviewer-icon.xpm\">") +
+          tr("<h1>libQGLViewer</h1>"
+             "<h3>Version %1</h3><br>"
+             "A versatile 3D viewer based on OpenGL and Qt<br>"
+             "Copyright 2002-%2 Gilles Debunne<br>"
+             "<code>%3</code>")
+              .arg(QGLViewerVersionString())
+              .arg("2023")
+              .arg("http://www.libqglviewer.com") +
+          QString("</center>");
       break;
     default:
       break;
@@ -2244,10 +2283,10 @@ void QGLViewer::help() {
 
 /*! Overloading of the \c QWidget method.
 
-Default keyboard shortcuts are defined using setShortcut(). Overload this method
-to implement a specific keyboard binding. Call the original method if you do not
-catch the event to preserve the viewer default key bindings: \code void
-Viewer::keyPressEvent(QKeyEvent *e)
+Default keyboard shortcuts are defined using setShortcut(). Overload this
+method to implement a specific keyboard binding. Call the original method if
+you do not catch the event to preserve the viewer default key bindings: \code
+void Viewer::keyPressEvent(QKeyEvent *e)
 {
   // Defines the Alt+R shortcut.
   if ((e->key() == Qt::Key_R) && (e->modifiers() == Qt::AltModifier))
@@ -2278,8 +2317,9 @@ void QGLViewer::keyPressEvent(QKeyEvent *e) {
 
   const Qt::KeyboardModifiers modifiers = e->modifiers();
 
-  QMap<KeyboardAction, unsigned int>::ConstIterator it = keyboardBinding_.begin(),
-                                                   end = keyboardBinding_.end();
+  QMap<KeyboardAction, unsigned int>::ConstIterator
+      it = keyboardBinding_.begin(),
+      end = keyboardBinding_.end();
   const unsigned int target = key | modifiers;
   while ((it != end) && (it.value() != target))
     ++it;
@@ -2326,8 +2366,8 @@ void QGLViewer::keyPressEvent(QKeyEvent *e) {
         bool nullBefore = (camera()->keyFrameInterpolator(index) == nullptr);
         camera()->addKeyFrameToPath(index);
         if (nullBefore)
-          connect(camera()->keyFrameInterpolator(index), SIGNAL(interpolated()),
-                  SLOT(update()));
+          connect(camera()->keyFrameInterpolator(index),
+                  SIGNAL(interpolated()), SLOT(update()));
         int nbKF = camera()->keyFrameInterpolator(index)->numberOfKeyFrames();
         if (nbKF > 1)
           displayMessage(tr("Path %1, position %2 added", "Feedback message")
@@ -2467,19 +2507,20 @@ void QGLViewer::setShortcut(KeyboardAction action, unsigned int key) {
 QGLViewer::KeyboardAction.
 
 Result is an \c unsigned \c int defined using Qt enumerated values, as in \c
-Qt::Key_Q or \c Qt::CTRL | Qt::Key_X. Use Qt::MODIFIER_MASK to separate the key
-from the state keys. Returns \c 0 if the KeyboardAction is disabled (not
+Qt::Key_Q or \c Qt::CTRL | Qt::Key_X. Use Qt::MODIFIER_MASK to separate the
+key from the state keys. Returns \c 0 if the KeyboardAction is disabled (not
 binded). Set using setShortcut().
 
 If you want to define keyboard shortcuts for custom actions (say, open a scene
 file), overload keyPressEvent() and then setKeyDescription().
 
-These shortcuts and their descriptions are automatically included in the help()
-window \c Keyboard tab.
+These shortcuts and their descriptions are automatically included in the
+help() window \c Keyboard tab.
 
 See the <a href="../keyboard.html">keyboard page</a> for details and default
-values and the <a href="../examples/keyboardAndMouse.html">keyboardAndMouse</a>
-example for a practical illustration. */
+values and the <a
+href="../examples/keyboardAndMouse.html">keyboardAndMouse</a> example for a
+practical illustration. */
 unsigned int QGLViewer::shortcut(KeyboardAction action) const {
   if (keyboardBinding_.contains(action))
     return keyboardBinding_[action];
@@ -2546,7 +2587,8 @@ void QGLViewer::setPathKey(int key, unsigned int index) {
 }
 
 /*! Sets the playPathKeyboardModifiers() value. */
-void QGLViewer::setPlayPathKeyboardModifiers(Qt::KeyboardModifiers modifiers) {
+void QGLViewer::setPlayPathKeyboardModifiers(
+    Qt::KeyboardModifiers modifiers) {
   playPathKeyboardModifiers_ = modifiers;
 }
 
@@ -2556,8 +2598,8 @@ void QGLViewer::setAddKeyFrameKeyboardModifiers(
   addKeyFrameKeyboardModifiers_ = modifiers;
 }
 
-/*! Returns the keyboard modifiers that must be pressed with a pathKey() to add
-the current camera position to a KeyFrame path.
+/*! Returns the keyboard modifiers that must be pressed with a pathKey() to
+add the current camera position to a KeyFrame path.
 
 It can be \c Qt::NoModifier, \c Qt::ControlModifier, \c Qt::ShiftModifier, \c
 Qt::AltModifier, \c Qt::MetaModifier or a combination of these (using the
@@ -2571,8 +2613,8 @@ Qt::KeyboardModifiers QGLViewer::addKeyFrameKeyboardModifiers() const {
   return addKeyFrameKeyboardModifiers_;
 }
 
-/*! Returns the keyboard modifiers that must be pressed with a pathKey() to play
-a camera KeyFrame path.
+/*! Returns the keyboard modifiers that must be pressed with a pathKey() to
+play a camera KeyFrame path.
 
 It can be \c Qt::NoModifier, \c Qt::ControlModifier, \c Qt::ShiftModifier, \c
 Qt::AltModifier, \c Qt::MetaModifier or a combination of these (using the
@@ -2588,7 +2630,8 @@ Qt::KeyboardModifiers QGLViewer::playPathKeyboardModifiers() const {
 #ifndef DOXYGEN
 // Deprecated methods
 Qt::KeyboardModifiers QGLViewer::addKeyFrameStateKey() const {
-  qWarning("addKeyFrameStateKey has been renamed addKeyFrameKeyboardModifiers");
+  qWarning(
+      "addKeyFrameStateKey has been renamed addKeyFrameKeyboardModifiers");
   return addKeyFrameKeyboardModifiers();
 }
 
@@ -2604,7 +2647,8 @@ void QGLViewer::setAddKeyFrameStateKey(unsigned int buttonState) {
 }
 
 void QGLViewer::setPlayPathStateKey(unsigned int buttonState) {
-  qWarning("setPlayPathStateKey has been renamed setPlayPathKeyboardModifiers");
+  qWarning(
+      "setPlayPathStateKey has been renamed setPlayPathKeyboardModifiers");
   setPlayPathKeyboardModifiers(keyboardModifiersFromState(buttonState));
 }
 
@@ -2620,8 +2664,9 @@ Qt::KeyboardModifiers QGLViewer::playKeyFramePathStateKey() const {
 }
 
 void QGLViewer::setKeyFrameKey(unsigned int index, int key) {
-  qWarning("setKeyFrameKey is deprecated, use setPathKey instead, with swapped "
-           "parameters.");
+  qWarning(
+      "setKeyFrameKey is deprecated, use setPathKey instead, with swapped "
+      "parameters.");
   setPathKey(key, index);
 }
 
@@ -2633,7 +2678,7 @@ void QGLViewer::setPlayKeyFramePathStateKey(unsigned int buttonState) {
 #endif
 
 ////////////////////////////////////////////////////////////////////////////////
-//              M o u s e   b e h a v i o r   s t a t e   k e y s             //
+//              M o u s e   b e h a v i o r   s t a t e   k e y s //
 ////////////////////////////////////////////////////////////////////////////////
 #ifndef DOXYGEN
 /*! This method has been deprecated since version 2.5.0
@@ -2641,8 +2686,8 @@ void QGLViewer::setPlayKeyFramePathStateKey(unsigned int buttonState) {
 Associates keyboard modifiers to MouseHandler \p handler.
 
 The \p modifiers parameter is \c Qt::AltModifier, \c Qt::ShiftModifier, \c
-Qt::ControlModifier, \c Qt::MetaModifier or a combination of these using the '|'
-bitwise operator.
+Qt::ControlModifier, \c Qt::MetaModifier or a combination of these using the
+'|' bitwise operator.
 
 \e All the \p handler's associated bindings will then need the specified \p
 modifiers key(s) to be activated.
@@ -2661,8 +2706,8 @@ actions binded to different modifiers, these settings will be lost. You should
 hence consider using setMouseBinding() for finer tuning.
 
 The default binding associates \c Qt::ControlModifier to all the
-QGLViewer::FRAME actions and \c Qt::NoModifier to all QGLViewer::CAMERA actions.
-See <a href="../mouse.html">mouse page</a> for details.
+QGLViewer::FRAME actions and \c Qt::NoModifier to all QGLViewer::CAMERA
+actions. See <a href="../mouse.html">mouse page</a> for details.
 
 \attention This method calls setMouseBinding(), which ensures that only one
 action is binded to a given modifiers. If you want to \e swap the
@@ -2678,8 +2723,9 @@ setHandlerKeyboardModifiers(QGLViewer::FRAME, Qt::NoModifier);
 \endcode */
 void QGLViewer::setHandlerKeyboardModifiers(MouseHandler handler,
                                             Qt::KeyboardModifiers modifiers) {
-  qWarning("setHandlerKeyboardModifiers is deprecated, call setMouseBinding() "
-           "instead");
+  qWarning(
+      "setHandlerKeyboardModifiers is deprecated, call setMouseBinding() "
+      "instead");
 
   QMap<MouseBindingPrivate, MouseActionPrivate> newMouseBinding;
   QMap<WheelBindingPrivate, MouseActionPrivate> newWheelBinding;
@@ -2721,8 +2767,9 @@ void QGLViewer::setHandlerKeyboardModifiers(MouseHandler handler,
          ((cb.value() == CENTER_SCENE) || (cb.value() == ALIGN_CAMERA))) ||
         ((handler == FRAME) &&
          ((cb.value() == CENTER_FRAME) || (cb.value() == ALIGN_FRAME)))) {
-      ClickBindingPrivate cbp(modifiers, cb.key().button, cb.key().doubleClick,
-                              cb.key().buttonsBefore, cb.key().key);
+      ClickBindingPrivate cbp(modifiers, cb.key().button,
+                              cb.key().doubleClick, cb.key().buttonsBefore,
+                              cb.key().key);
       newClickBinding_[cbp] = cb.value();
     } else
       newClickBinding_[cb.key()] = cb.value();
@@ -2735,13 +2782,15 @@ void QGLViewer::setHandlerKeyboardModifiers(MouseHandler handler,
 void QGLViewer::setHandlerStateKey(MouseHandler handler,
                                    unsigned int buttonState) {
   qWarning("setHandlerStateKey has been renamed setHandlerKeyboardModifiers");
-  setHandlerKeyboardModifiers(handler, keyboardModifiersFromState(buttonState));
+  setHandlerKeyboardModifiers(handler,
+                              keyboardModifiersFromState(buttonState));
 }
 
 void QGLViewer::setMouseStateKey(MouseHandler handler,
                                  unsigned int buttonState) {
   qWarning("setMouseStateKey has been renamed setHandlerKeyboardModifiers.");
-  setHandlerKeyboardModifiers(handler, keyboardModifiersFromState(buttonState));
+  setHandlerKeyboardModifiers(handler,
+                              keyboardModifiersFromState(buttonState));
 }
 
 /*! This method is deprecated since version 2.5.0
@@ -2751,10 +2800,12 @@ void QGLViewer::setMouseStateKey(MouseHandler handler,
 */
 void QGLViewer::setMouseBinding(unsigned int state, MouseHandler handler,
                                 MouseAction action, bool withConstraint) {
-  qWarning("setMouseBinding(int state, MouseHandler...) is deprecated. Use the "
-           "modifier/button equivalent");
+  qWarning(
+      "setMouseBinding(int state, MouseHandler...) is deprecated. Use the "
+      "modifier/button equivalent");
   setMouseBinding(keyboardModifiersFromState(state),
-                  mouseButtonFromState(state), handler, action, withConstraint);
+                  mouseButtonFromState(state), handler, action,
+                  withConstraint);
 }
 #endif
 
@@ -2771,22 +2822,22 @@ void QGLViewer::setMouseBinding(Qt::KeyboardModifiers modifiers,
                   withConstraint);
 }
 
-/*! Associates a MouseAction to any mouse \p button, while keyboard \p modifiers
-and \p key are pressed. The receiver of the mouse events is a MouseHandler
-(QGLViewer::CAMERA or QGLViewer::FRAME).
+/*! Associates a MouseAction to any mouse \p button, while keyboard \p
+modifiers and \p key are pressed. The receiver of the mouse events is a
+MouseHandler (QGLViewer::CAMERA or QGLViewer::FRAME).
 
 The parameters should read: when the mouse \p button is pressed, while the
-keyboard \p modifiers and \p key are down, activate \p action on \p handler. Use
-Qt::NoModifier to indicate that no modifier key is needed, and a \p key value of
-0 if no regular key has to be pressed (or simply use
+keyboard \p modifiers and \p key are down, activate \p action on \p handler.
+Use Qt::NoModifier to indicate that no modifier key is needed, and a \p key
+value of 0 if no regular key has to be pressed (or simply use
 setMouseBinding(Qt::KeyboardModifiers, Qt::MouseButton, MouseHandler,
 MouseAction, bool)).
 
 Use the '|' operator to combine modifiers:
 \code
 // The R key combined with the Left mouse button rotates the camera in the
-screen plane. setMouseBinding(Qt::Key_R, Qt::NoModifier, Qt::LeftButton, CAMERA,
-SCREEN_ROTATE);
+screen plane. setMouseBinding(Qt::Key_R, Qt::NoModifier, Qt::LeftButton,
+CAMERA, SCREEN_ROTATE);
 
 // Alt + Shift and Left button rotates the manipulatedFrame().
 setMouseBinding(Qt::AltModifier | Qt::ShiftModifier, Qt::LeftButton, FRAME,
@@ -2796,15 +2847,15 @@ If \p withConstraint is \c true (default), the possible
 qglviewer::Frame::constraint() of the associated Frame will be enforced during
 motion.
 
-The list of all possible MouseAction, some binding examples and default bindings
-are provided in the <a href="../mouse.html">mouse page</a>.
+The list of all possible MouseAction, some binding examples and default
+bindings are provided in the <a href="../mouse.html">mouse page</a>.
 
-See the <a href="../examples/keyboardAndMouse.html">keyboardAndMouse</a> example
-for an illustration.
+See the <a href="../examples/keyboardAndMouse.html">keyboardAndMouse</a>
+example for an illustration.
 
 If no mouse button is specified, the binding is ignored. If an action was
-previously associated with this keyboard and button combination, it is silently
-overwritten (call mouseAction() before to check).
+previously associated with this keyboard and button combination, it is
+silently overwritten (call mouseAction() before to check).
 
 To remove a specific mouse binding, use \p NO_MOUSE_ACTION as the \p action.
 
@@ -2851,8 +2902,9 @@ void QGLViewer::setMouseBinding(Qt::Key key, Qt::KeyboardModifiers modifiers,
 void QGLViewer::setMouseBinding(unsigned int state, ClickAction action,
                                 bool doubleClick,
                                 Qt::MouseButtons buttonsBefore) {
-  qWarning("setMouseBinding(int state, ClickAction...) is deprecated. Use the "
-           "modifier/button equivalent");
+  qWarning(
+      "setMouseBinding(int state, ClickAction...) is deprecated. Use the "
+      "modifier/button equivalent");
   setMouseBinding(keyboardModifiersFromState(state),
                   mouseButtonFromState(state), action, doubleClick,
                   buttonsBefore);
@@ -2878,8 +2930,8 @@ combination.
 
 The parameters should read: when \p button is pressed, while the \p modifiers
 and \p key keys are down, and possibly as a \p doubleClick, then perform \p
-action. Use Qt::NoModifier to indicate that no modifier key is needed, and a \p
-key value of 0 if no regular key has to be pressed (or simply use
+action. Use Qt::NoModifier to indicate that no modifier key is needed, and a
+\p key value of 0 if no regular key has to be pressed (or simply use
 setMouseBinding(Qt::KeyboardModifiers, Qt::MouseButton, ClickAction, bool,
 Qt::MouseButtons)).
 
@@ -2887,17 +2939,17 @@ If \p buttonsBefore is specified (valid only when \p doubleClick is \c true),
 then this (or these) other mouse button(s) has (have) to be pressed \e before
 the double click occurs in order to execute \p action.
 
-The list of all possible ClickAction, some binding examples and default bindings
-are listed in the <a href="../mouse.html">mouse page</a>. See also the
-setMouseBinding() documentation.
+The list of all possible ClickAction, some binding examples and default
+bindings are listed in the <a href="../mouse.html">mouse page</a>. See also
+the setMouseBinding() documentation.
 
-See the <a href="../examples/keyboardAndMouse.html">keyboardAndMouse example</a>
-for an illustration.
+See the <a href="../examples/keyboardAndMouse.html">keyboardAndMouse
+example</a> for an illustration.
 
 The binding is ignored if Qt::NoButton is specified as \p buttons.
 
-See also setMouseBinding(Qt::KeyboardModifiers, Qt::MouseButtons, MouseHandler,
-MouseAction, bool), setWheelBinding() and clearMouseBindings().
+See also setMouseBinding(Qt::KeyboardModifiers, Qt::MouseButtons,
+MouseHandler, MouseAction, bool), setWheelBinding() and clearMouseBindings().
 */
 void QGLViewer::setMouseBinding(Qt::Key key, Qt::KeyboardModifiers modifiers,
                                 Qt::MouseButton button, ClickAction action,
@@ -2954,8 +3006,8 @@ qglviewer::Camera::flySpeed(). */
 void QGLViewer::setWheelBinding(Qt::Key key, Qt::KeyboardModifiers modifiers,
                                 MouseHandler handler, MouseAction action,
                                 bool withConstraint) {
-  //#CONNECTION# ManipulatedFrame::wheelEvent and
-  // ManipulatedCameraFrame::wheelEvent switches
+  // #CONNECTION# ManipulatedFrame::wheelEvent and
+  //  ManipulatedCameraFrame::wheelEvent switches
   if ((action != ZOOM) && (action != MOVE_FORWARD) &&
       (action != MOVE_BACKWARD) && (action != NO_MOUSE_ACTION)) {
     qWarning("Cannot bind %s to wheel",
@@ -2983,8 +3035,8 @@ void QGLViewer::setWheelBinding(Qt::Key key, Qt::KeyboardModifiers modifiers,
 
 /*! Clears all the default mouse bindings.
 
-After this call, you will have to use setMouseBinding() and setWheelBinding() to
-restore the mouse bindings you are interested in.
+After this call, you will have to use setMouseBinding() and setWheelBinding()
+to restore the mouse bindings you are interested in.
 */
 void QGLViewer::clearMouseBindings() {
   mouseBinding_.clear();
@@ -2994,8 +3046,8 @@ void QGLViewer::clearMouseBindings() {
 
 /*! Clears all the default keyboard shortcuts.
 
-After this call, you will have to use setShortcut() to define your own keyboard
-shortcuts.
+After this call, you will have to use setShortcut() to define your own
+keyboard shortcuts.
 */
 void QGLViewer::clearShortcuts() {
   keyboardBinding_.clear();
@@ -3007,8 +3059,9 @@ void QGLViewer::clearShortcuts() {
  Use mouseAction(Qt::Key, Qt::KeyboardModifiers, Qt::MouseButtons) instead.
 */
 QGLViewer::MouseAction QGLViewer::mouseAction(unsigned int state) const {
-  qWarning("mouseAction(int state,...) is deprecated. Use the modifier/button "
-           "equivalent");
+  qWarning(
+      "mouseAction(int state,...) is deprecated. Use the modifier/button "
+      "equivalent");
   return mouseAction(Qt::Key(0), keyboardModifiersFromState(state),
                      mouseButtonFromState(state));
 }
@@ -3026,8 +3079,8 @@ QGLViewer::MouseAction ma = mouseAction(0, Qt::AltModifier, Qt::LeftButton);
 if (ma != QGLViewer::NO_MOUSE_ACTION) ...
 \endcode
 
-Use mouseHandler() to know which object (QGLViewer::CAMERA or QGLViewer::FRAME)
-will execute this action. */
+Use mouseHandler() to know which object (QGLViewer::CAMERA or
+QGLViewer::FRAME) will execute this action. */
 QGLViewer::MouseAction QGLViewer::mouseAction(Qt::Key key,
                                               Qt::KeyboardModifiers modifiers,
                                               Qt::MouseButton button) const {
@@ -3043,14 +3096,15 @@ QGLViewer::MouseAction QGLViewer::mouseAction(Qt::Key key,
  Use mouseHanler(Qt::Key, Qt::KeyboardModifiers, Qt::MouseButtons) instead.
 */
 int QGLViewer::mouseHandler(unsigned int state) const {
-  qWarning("mouseHandler(int state,...) is deprecated. Use the modifier/button "
-           "equivalent");
+  qWarning(
+      "mouseHandler(int state,...) is deprecated. Use the modifier/button "
+      "equivalent");
   return mouseHandler(Qt::Key(0), keyboardModifiersFromState(state),
                       mouseButtonFromState(state));
 }
 
-/*! Returns the MouseHandler which will be activated when the mouse \p button is
-pressed, while the \p modifiers and \p key are pressed.
+/*! Returns the MouseHandler which will be activated when the mouse \p button
+is pressed, while the \p modifiers and \p key are pressed.
 
 If no action is associated with this combination, returns \c -1. Use 0 for \p
 key and Qt::NoModifier for \p modifiers to represent the lack of a key press.
@@ -3087,7 +3141,8 @@ int QGLViewer::mouseButtonState(MouseHandler handler, MouseAction action,
        it != end; ++it)
     if ((it.value().handler == handler) && (it.value().action == action) &&
         (it.value().withConstraint == withConstraint))
-      return static_cast<int>(it.key().modifiers) | static_cast<int>(it.key().button);
+      return static_cast<int>(it.key().modifiers) |
+             static_cast<int>(it.key().button);
 
   return Qt::NoButton;
 }
@@ -3101,11 +3156,12 @@ parameters. If the MouseAction \p action is not bound, \p key is set to the
 illegal -1 value. If several keyboard states trigger the MouseAction, one of
 them is returned.
 
-See also setMouseBinding(), getClickActionBinding() and getMouseActionBinding().
+See also setMouseBinding(), getClickActionBinding() and
+getMouseActionBinding().
 */
-void QGLViewer::getWheelActionBinding(MouseHandler handler, MouseAction action,
-                                      bool withConstraint, Qt::Key &key,
-                                      Qt::KeyboardModifiers &modifiers) const {
+void QGLViewer::getWheelActionBinding(
+    MouseHandler handler, MouseAction action, bool withConstraint,
+    Qt::Key &key, Qt::KeyboardModifiers &modifiers) const {
   for (QMap<WheelBindingPrivate, MouseActionPrivate>::ConstIterator
            it = wheelBinding_.begin(),
            end = wheelBinding_.end();
@@ -3124,15 +3180,17 @@ void QGLViewer::getWheelActionBinding(MouseHandler handler, MouseAction action,
 /*! Returns the mouse and keyboard state that triggers \p action on \p handler
 \p withConstraint.
 
-If such a binding exists, results are stored in the \p key, \p modifiers and \p
-button parameters. If the MouseAction \p action is not bound, \p button is set
-to \c Qt::NoButton. If several mouse and keyboard states trigger the
+If such a binding exists, results are stored in the \p key, \p modifiers and
+\p button parameters. If the MouseAction \p action is not bound, \p button is
+set to \c Qt::NoButton. If several mouse and keyboard states trigger the
 MouseAction, one of them is returned.
 
-See also setMouseBinding(), getClickActionBinding() and getWheelActionBinding().
+See also setMouseBinding(), getClickActionBinding() and
+getWheelActionBinding().
 */
-void QGLViewer::getMouseActionBinding(MouseHandler handler, MouseAction action,
-                                      bool withConstraint, Qt::Key &key,
+void QGLViewer::getMouseActionBinding(MouseHandler handler,
+                                      MouseAction action, bool withConstraint,
+                                      Qt::Key &key,
                                       Qt::KeyboardModifiers &modifiers,
                                       Qt::MouseButton &button) const {
   for (QMap<MouseBindingPrivate, MouseActionPrivate>::ConstIterator
@@ -3173,8 +3231,8 @@ QGLViewer::wheelAction(Qt::Key key, Qt::KeyboardModifiers modifiers) const {
 /*! Returns the MouseHandler (if any) that receives wheel events when the \p
   modifiers and \p key keyboard keys are pressed.
 
-  Returns -1 if no no such binding has been defined using setWheelBinding(). See
-  also wheelAction().
+  Returns -1 if no no such binding has been defined using setWheelBinding().
+  See also wheelAction().
 */
 int QGLViewer::wheelHandler(Qt::Key key,
                             Qt::KeyboardModifiers modifiers) const {
@@ -3185,10 +3243,11 @@ int QGLViewer::wheelHandler(Qt::Key key,
     return -1;
 }
 
-/*! Same as mouseAction(), but for the ClickAction set using setMouseBinding().
+/*! Same as mouseAction(), but for the ClickAction set using
+setMouseBinding().
 
-Returns NO_CLICK_ACTION if no click action is associated with this keyboard and
-mouse buttons combination. */
+Returns NO_CLICK_ACTION if no click action is associated with this keyboard
+and mouse buttons combination. */
 QGLViewer::ClickAction
 QGLViewer::clickAction(Qt::Key key, Qt::KeyboardModifiers modifiers,
                        Qt::MouseButton button, bool doubleClick,
@@ -3206,8 +3265,9 @@ QGLViewer::clickAction(Qt::Key key, Qt::KeyboardModifiers modifiers,
   Use wheelAction(Qt::Key key, Qt::KeyboardModifiers modifiers) instead. */
 QGLViewer::MouseAction
 QGLViewer::wheelAction(Qt::KeyboardModifiers modifiers) const {
-  qWarning("wheelAction() is deprecated. Use the new wheelAction() method with "
-           "a key parameter instead");
+  qWarning(
+      "wheelAction() is deprecated. Use the new wheelAction() method with "
+      "a key parameter instead");
   return wheelAction(Qt::Key(0), modifiers);
 }
 
@@ -3247,8 +3307,9 @@ unsigned int QGLViewer::wheelButtonState(MouseHandler handler,
 QGLViewer::ClickAction
 QGLViewer::clickAction(unsigned int state, bool doubleClick,
                        Qt::MouseButtons buttonsBefore) const {
-  qWarning("clickAction(int state,...) is deprecated. Use the modifier/button "
-           "equivalent");
+  qWarning(
+      "clickAction(int state,...) is deprecated. Use the modifier/button "
+      "equivalent");
   return clickAction(Qt::Key(0), keyboardModifiersFromState(state),
                      mouseButtonFromState(state), doubleClick, buttonsBefore);
 }
@@ -3279,7 +3340,8 @@ button, \p doubleClick and \p buttonsBefore parameters. If the ClickAction \p
 action is not bound, \p button is set to \c Qt::NoButton. If several mouse
 buttons trigger in the ClickAction, one of them is returned.
 
-See also setMouseBinding(), getMouseActionBinding() and getWheelActionBinding().
+See also setMouseBinding(), getMouseActionBinding() and
+getWheelActionBinding().
 */
 void QGLViewer::getClickActionBinding(ClickAction action, Qt::Key &key,
                                       Qt::KeyboardModifiers &modifiers,
@@ -3308,9 +3370,10 @@ void QGLViewer::getClickActionBinding(ClickAction action, Qt::Key &key,
 
 /*! This function should be used in conjunction with toggleCameraMode(). It
 returns \c true when at least one mouse button is binded to the \c ROTATE
-mouseAction. This is crude way of determining which "mode" the camera is in. */
+mouseAction. This is crude way of determining which "mode" the camera is in.
+*/
 bool QGLViewer::cameraIsInRotateMode() const {
-  //#CONNECTION# used in toggleCameraMode() and keyboardString()
+  // #CONNECTION# used in toggleCameraMode() and keyboardString()
   Qt::Key key;
   Qt::KeyboardModifiers modifiers;
   Qt::MouseButton button;
@@ -3346,7 +3409,7 @@ void QGLViewer::toggleCameraMode() {
                           modifiers, button);
   }
 
-  //#CONNECTION# setDefaultMouseBindings()
+  // #CONNECTION# setDefaultMouseBindings()
   if (rotateMode) {
     camera()->frame()->updateSceneUpVector();
     camera()->frame()->stopSpinning();
@@ -3380,7 +3443,7 @@ void QGLViewer::toggleCameraMode() {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-//              M a n i p u l a t e d   f r a m e s                           //
+//              M a n i p u l a t e d   f r a m e s //
 ////////////////////////////////////////////////////////////////////////////////
 
 /*! Sets the viewer's manipulatedFrame().
@@ -3393,8 +3456,8 @@ possible and will result in a classical camera manipulation. See the <a
 href="../examples/luxo.html">luxo example</a> for an illustration.
 
 Note that a qglviewer::ManipulatedCameraFrame can be set as the
-manipulatedFrame(): it is possible to manipulate the camera of a first viewer in
-a second viewer. */
+manipulatedFrame(): it is possible to manipulate the camera of a first viewer
+in a second viewer. */
 void QGLViewer::setManipulatedFrame(ManipulatedFrame *frame) {
   if (manipulatedFrame()) {
     manipulatedFrame()->stopSpinning();
@@ -3408,9 +3471,9 @@ void QGLViewer::setManipulatedFrame(ManipulatedFrame *frame) {
 
   manipulatedFrame_ = frame;
 
-  manipulatedFrameIsACamera_ =
-      ((manipulatedFrame() != camera()->frame()) &&
-       (dynamic_cast<ManipulatedCameraFrame *>(manipulatedFrame()) != nullptr));
+  manipulatedFrameIsACamera_ = ((manipulatedFrame() != camera()->frame()) &&
+                                (dynamic_cast<ManipulatedCameraFrame *>(
+                                     manipulatedFrame()) != nullptr));
 
   if (manipulatedFrame()) {
     // Prevent multiple connections, that would result in useless display
@@ -3424,12 +3487,12 @@ void QGLViewer::setManipulatedFrame(ManipulatedFrame *frame) {
 
 #ifndef DOXYGEN
 ////////////////////////////////////////////////////////////////////////////////
-//                          V i s u a l   H i n t s                           //
+//                          V i s u a l   H i n t s //
 ////////////////////////////////////////////////////////////////////////////////
 /*! Draws viewer related visual hints.
 
-Displays the new qglviewer::Camera::pivotPoint() when it is changed. See the <a
-href="../mouse.html">mouse page</a> for details. Also draws a line between
+Displays the new qglviewer::Camera::pivotPoint() when it is changed. See the
+<a href="../mouse.html">mouse page</a> for details. Also draws a line between
 qglviewer::Camera::pivotPoint() and mouse cursor when the camera is rotated
 around the camera Z axis.
 
@@ -3513,8 +3576,8 @@ void QGLViewer::drawVisualHints() {
   }
 }
 
-/*! Defines the mask that will be used to drawVisualHints(). The only available
-mask is currently 1, corresponding to the display of the
+/*! Defines the mask that will be used to drawVisualHints(). The only
+available mask is currently 1, corresponding to the display of the
 qglviewer::Camera::pivotPoint(). resetVisualHints() is automatically called
 after \p delay milliseconds (default is 2 seconds). */
 void QGLViewer::setVisualHintsMask(int mask, int delay) {
@@ -3528,16 +3591,16 @@ void QGLViewer::resetVisualHints() { visualHint_ = 0; }
 #endif
 
 ////////////////////////////////////////////////////////////////////////////////
-//       A x i s   a n d   G r i d   d i s p l a y   l i s t s                //
+//       A x i s   a n d   G r i d   d i s p l a y   l i s t s //
 ////////////////////////////////////////////////////////////////////////////////
 
 /*! Draws a 3D arrow along the positive Z axis.
 
-\p length, \p radius and \p nbSubdivisions define its geometry. If \p radius is
-negative (default), it is set to 0.05 * \p length.
+\p length, \p radius and \p nbSubdivisions define its geometry. If \p radius
+is negative (default), it is set to 0.05 * \p length.
 
-Use drawArrow(const Vec& from, const Vec& to, qreal radius, int nbSubdivisions)
-or change the \c ModelView matrix to place the arrow in 3D.
+Use drawArrow(const Vec& from, const Vec& to, qreal radius, int
+nbSubdivisions) or change the \c ModelView matrix to place the arrow in 3D.
 
 Uses current color and does not modify the OpenGL state. */
 void QGLViewer::drawArrow(qreal length, qreal radius, int nbSubdivisions) {
@@ -3587,8 +3650,9 @@ The current color and line width are used to draw the X, Y and Z characters at
 the extremities of the three arrows. The OpenGL state is not modified by this
 method.
 
-axisIsDrawn() uses this method to draw a representation of the world coordinate
-system. See also QGLViewer::drawArrow() and QGLViewer::drawGrid(). */
+axisIsDrawn() uses this method to draw a representation of the world
+coordinate system. See also QGLViewer::drawArrow() and QGLViewer::drawGrid().
+*/
 void QGLViewer::drawAxis(qreal length) {
   const qreal charWidth = length / 40.0;
   const qreal charHeight = length / 30.0;
@@ -3688,13 +3752,14 @@ void QGLViewer::drawGrid(qreal size, int nbSubdivisions) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-//       S t a t i c    m e t h o d s   :  Q G L V i e w e r   P o o l        //
+//       S t a t i c    m e t h o d s   :  Q G L V i e w e r   P o o l //
 ////////////////////////////////////////////////////////////////////////////////
 
-/*! saveStateToFile() is called on all the QGLViewers using the QGLViewerPool().
+/*! saveStateToFile() is called on all the QGLViewers using the
+ * QGLViewerPool().
  */
 void QGLViewer::saveStateToFileForAllViewers() {
-  for (auto* viewer : QGLViewer::QGLViewerPool()) {
+  for (auto *viewer : QGLViewer::QGLViewerPool()) {
     if (viewer)
       viewer->saveStateToFile();
   }
@@ -3706,19 +3771,19 @@ void QGLViewer::saveStateToFileForAllViewers() {
 
 /*! Returns the state file name. Default value is \c .qglviewer.xml.
 
-This is the name of the XML file where saveStateToFile() saves the viewer state
-(camera state, widget geometry, display flags... see domElement()) on exit. Use
-restoreStateFromFile() to restore this state later (usually in your init()
-method).
+This is the name of the XML file where saveStateToFile() saves the viewer
+state (camera state, widget geometry, display flags... see domElement()) on
+exit. Use restoreStateFromFile() to restore this state later (usually in your
+init() method).
 
 Setting this value to \c QString::null will disable the automatic state file
 saving that normally occurs on exit.
 
 If more than one viewer are created by the application, this function will
-return a numbered file name (as in ".qglviewer1.xml", ".qglviewer2.xml"... using
-QGLViewer::QGLViewerIndex()) for extra viewers. Each viewer will then read back
-its own information in restoreStateFromFile(), provided that the viewers are
-created in the same order, which is usually the case. */
+return a numbered file name (as in ".qglviewer1.xml", ".qglviewer2.xml"...
+using QGLViewer::QGLViewerIndex()) for extra viewers. Each viewer will then
+read back its own information in restoreStateFromFile(), provided that the
+viewers are created in the same order, which is usually the case. */
 QString QGLViewer::stateFileName() const {
   QString name = stateFileName_;
 
@@ -3763,9 +3828,9 @@ void QGLViewer::saveStateToFile() {
   if (!QFileInfo(dirName).exists()) {
     QDir dir;
     if (!(dir.mkdir(dirName))) {
-      QMessageBox::warning(this,
-                           tr("Save to file error", "Message box window title"),
-                           tr("Unable to create directory %1").arg(dirName));
+      QMessageBox::warning(
+          this, tr("Save to file error", "Message box window title"),
+          tr("Unable to create directory %1").arg(dirName));
       return;
     }
   }
@@ -3791,9 +3856,9 @@ initFromDOMElement().
 States are saved using saveStateToFile(), which is automatically called on
 viewer exit.
 
-Returns \c true when the restoration is successful. Possible problems are an non
-existing or unreadable stateFileName() file, an empty stateFileName() or an XML
-syntax error.
+Returns \c true when the restoration is successful. Possible problems are an
+non existing or unreadable stateFileName() file, an empty stateFileName() or
+an XML syntax error.
 
 A manipulatedFrame() should be defined \e before calling this method, so that
 its state can be restored. Initialization code put \e after this function will
@@ -3853,9 +3918,9 @@ restore the QGLViewer state from the resulting \c QDomElement.
 \p name is the name of the QDomElement tag. \p doc is the \c QDomDocument
 factory used to create QDomElement.
 
-The created QDomElement contains state values (axisIsDrawn(), FPSIsDisplayed(),
-isFullScreen()...), viewer geometry, as well as camera() (see
-qglviewer::Camera::domElement()) and manipulatedFrame() (if defined, see
+The created QDomElement contains state values (axisIsDrawn(),
+FPSIsDisplayed(), isFullScreen()...), viewer geometry, as well as camera()
+(see qglviewer::Camera::domElement()) and manipulatedFrame() (if defined, see
 qglviewer::ManipulatedFrame::domElement()) states.
 
 Overload this method to add your own attributes to the state file:
@@ -3932,14 +3997,15 @@ QDomElement QGLViewer::domElement(const QString &name,
   return de;
 }
 
-/*! Restores the QGLViewer state from a \c QDomElement created by domElement().
+/*! Restores the QGLViewer state from a \c QDomElement created by
+domElement().
 
 Used by restoreStateFromFile() to restore the QGLViewer state from a file.
 
 Overload this method to retrieve custom attributes from the QGLViewer state
-file. This code corresponds to the one given in the domElement() documentation:
-\code
-void Viewer::initFromDOMElement(const QDomElement& element)
+file. This code corresponds to the one given in the domElement()
+documentation: \code void Viewer::initFromDOMElement(const QDomElement&
+element)
 {
 // Restore standard state
 QGLViewer::initFromDOMElement(element);
@@ -3952,8 +4018,9 @@ if (child.tagName() == "Light")
 if (child.hasAttribute("state"))
 setLightOn(child.attribute("state").toLower() == "on");
 
-// Assumes there is only one child. Otherwise you need to parse child's children
-recursively. QDomElement lf = child.firstChild().toElement(); if (!lf.isNull()
+// Assumes there is only one child. Otherwise you need to parse child's
+children recursively. QDomElement lf = child.firstChild().toElement(); if
+(!lf.isNull()
 && lf.tagName() == "LightFrame")
 lightManipulatedFrame()->initFromDomElement(lf);
 }
@@ -3982,7 +4049,8 @@ void QGLViewer::initFromDOMElement(const QDomElement &element) {
   while (!child.isNull()) {
     if (child.tagName() == "State") {
       // #CONNECTION# default values from defaultConstructor()
-      // setMouseTracking(DomUtils::boolFromDom(child, "mouseTracking", false));
+      // setMouseTracking(DomUtils::boolFromDom(child, "mouseTracking",
+      // false));
       setStereoDisplay(DomUtils::boolFromDom(child, "stereo", false));
       // if ((child.attribute("cameraMode", "revolve") == "fly") &&
       // (cameraIsInRevolveMode())) 	toggleCameraMode();
@@ -4001,10 +4069,13 @@ void QGLViewer::initFromDOMElement(const QDomElement &element) {
       // #CONNECTION# default values from defaultConstructor()
       setAxisIsDrawn(DomUtils::boolFromDom(child, "axisIsDrawn", false));
       setGridIsDrawn(DomUtils::boolFromDom(child, "gridIsDrawn", false));
-      setFPSIsDisplayed(DomUtils::boolFromDom(child, "FPSIsDisplayed", false));
+      setFPSIsDisplayed(
+          DomUtils::boolFromDom(child, "FPSIsDisplayed", false));
       // See comment below.
-      tmpCameraIsEdited = DomUtils::boolFromDom(child, "cameraIsEdited", false);
-      // setTextIsEnabled(DomUtils::boolFromDom(child, "textIsEnabled", true));
+      tmpCameraIsEdited =
+          DomUtils::boolFromDom(child, "cameraIsEdited", false);
+      // setTextIsEnabled(DomUtils::boolFromDom(child, "textIsEnabled",
+      // true));
     }
 
     if (child.tagName() == "Geometry") {
@@ -4038,10 +4109,10 @@ void QGLViewer::initFromDOMElement(const QDomElement &element) {
     child = child.nextSibling().toElement();
   }
 
-  // The Camera always stores its "real" zClippingCoef in domElement(). If it is
-  // edited, its "real" coef must be saved and the coef set to 5.0, as is done
-  // in setCameraIsEdited(). BUT : Camera and Display are read in an arbitrary
-  // order. We must initialize Camera's "real" coef BEFORE calling
+  // The Camera always stores its "real" zClippingCoef in domElement(). If it
+  // is edited, its "real" coef must be saved and the coef set to 5.0, as is
+  // done in setCameraIsEdited(). BUT : Camera and Display are read in an
+  // arbitrary order. We must initialize Camera's "real" coef BEFORE calling
   // setCameraIsEdited. Hence this temp cameraIsEdited and delayed call
   cameraIsEdited_ = tmpCameraIsEdited;
   if (cameraIsEdited_) {
@@ -4076,26 +4147,27 @@ bool QGLViewer::restoreFromFile(const QString &fileName) {
 
 /*! Makes a copy of the current buffer into a texture.
 
-Creates a texture (when needed) and uses glCopyTexSubImage2D() to directly copy
-the buffer in it.
+Creates a texture (when needed) and uses glCopyTexSubImage2D() to directly
+copy the buffer in it.
 
-Use \p internalFormat and \p format to define the texture format and hence which
-and how components of the buffer are copied into the texture. See the
+Use \p internalFormat and \p format to define the texture format and hence
+which and how components of the buffer are copied into the texture. See the
 glTexImage2D() documentation for details.
 
 When \p format is c GL_NONE (default), its value is set to \p internalFormat,
 which fits most cases. Typical \p internalFormat (and \p format) values are \c
-GL_DEPTH_COMPONENT and \c GL_RGBA. Use \c GL_LUMINANCE as the \p internalFormat
-and \c GL_RED, \c GL_GREEN or \c GL_BLUE as \p format to capture a single color
-component as a luminance (grey scaled) value. Note that \c GL_STENCIL is not
-supported as a format.
+GL_DEPTH_COMPONENT and \c GL_RGBA. Use \c GL_LUMINANCE as the \p
+internalFormat and \c GL_RED, \c GL_GREEN or \c GL_BLUE as \p format to
+capture a single color component as a luminance (grey scaled) value. Note that
+\c GL_STENCIL is not supported as a format.
 
 The texture has dimensions which are powers of two. It is as small as possible
-while always being larger or equal to the current size of the widget. The buffer
-image hence does not entirely fill the texture: it is stuck to the lower left
-corner (corresponding to the (0,0) texture coordinates). Use bufferTextureMaxU()
-and bufferTextureMaxV() to get the upper right corner maximum u and v texture
-coordinates. Use bufferTextureId() to retrieve the id of the created texture.
+while always being larger or equal to the current size of the widget. The
+buffer image hence does not entirely fill the texture: it is stuck to the
+lower left corner (corresponding to the (0,0) texture coordinates). Use
+bufferTextureMaxU() and bufferTextureMaxV() to get the upper right corner
+maximum u and v texture coordinates. Use bufferTextureId() to retrieve the id
+of the created texture.
 
 Here is how to display a grey-level image of the z-buffer:
 \code
@@ -4111,10 +4183,10 @@ startScreenCoordinatesSystem(true);
 
 glBegin(GL_QUADS);
 glTexCoord2f(0.0, 0.0);                                 glVertex2i(0, 0);
-glTexCoord2f(bufferTextureMaxU(), 0.0);                 glVertex2i(width(), 0);
-glTexCoord2f(bufferTextureMaxU(), bufferTextureMaxV()); glVertex2i(width(),
-height()); glTexCoord2f(0.0, bufferTextureMaxV());                 glVertex2i(0,
-height()); glEnd();
+glTexCoord2f(bufferTextureMaxU(), 0.0);                 glVertex2i(width(),
+0); glTexCoord2f(bufferTextureMaxU(), bufferTextureMaxV());
+glVertex2i(width(), height()); glTexCoord2f(0.0, bufferTextureMaxV());
+glVertex2i(0, height()); glEnd();
 
 stopScreenCoordinatesSystem();
 
@@ -4128,8 +4200,8 @@ transformations during copy.
 Call makeCurrent() before this method to make the OpenGL context active if
 needed.
 
-\note The \c GL_DEPTH_COMPONENT format may not be supported by all hardware. It
-may sometimes be emulated in software, resulting in poor performances.
+\note The \c GL_DEPTH_COMPONENT format may not be supported by all hardware.
+It may sometimes be emulated in software, resulting in poor performances.
 
 \note The bufferTextureId() texture is binded at the end of this method. */
 void QGLViewer::copyBufferToTexture(GLint internalFormat, GLenum format) {

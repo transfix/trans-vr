@@ -1,8 +1,8 @@
 /*
   Copyright 2011 The University of Texas at Austin
-  
-	Authors: Alex Rand <arand@ices.utexas.edu>
-	Advisor: Chandrajit Bajaj <bajaj@cs.utexas.edu>
+
+        Authors: Alex Rand <arand@ices.utexas.edu>
+        Advisor: Chandrajit Bajaj <bajaj@cs.utexas.edu>
 
   This file is part of Volume Rover.
 
@@ -24,38 +24,34 @@
 #ifndef __BILATERALFILTERDIALOG_H__
 #define __BILATERALFILTERDIALOG_H__
 
-//#include <qglobal.h>
+// #include <qglobal.h>
 
 #include <QDialog>
 #include <QString>
 
-namespace Ui
-{
-  class BilateralFilterDialog;
+namespace Ui {
+class BilateralFilterDialog;
 }
 
 #include "ui_BilateralFilterDialog.h"
 
-class BilateralFilterDialog : public QDialog
-{
+class BilateralFilterDialog : public QDialog {
   Q_OBJECT
 
- public:
-  BilateralFilterDialog(QWidget *parent=nullptr,Qt::WindowFlags flags=Qt::WindowFlags());
+public:
+  BilateralFilterDialog(QWidget *parent = nullptr,
+                        Qt::WindowFlags flags = Qt::WindowFlags());
 
   virtual ~BilateralFilterDialog();
 
   void RunBilateralFilter();
 
-  
-  public slots:
+public slots:
 
   void OutputFileSlot();
 
-  protected:
-
+protected:
   Ui::BilateralFilterDialog *_ui;
-
 };
 
 #endif

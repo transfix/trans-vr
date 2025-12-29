@@ -17,7 +17,8 @@
 
   You should have received a copy of the GNU Lesser General Public
   License along with this library; if not, write to the Free Software
-  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301
+  USA
 */
 
 // -- Samrat --
@@ -27,113 +28,105 @@
 
 #include <TightCocone/datastruct.h>
 #include <TightCocone/init.h>
-#include <TightCocone/rcocone.h>
-#include <TightCocone/tcocone.h>
 #include <TightCocone/medax.h>
-#include <TightCocone/util.h>
-#include <TightCocone/robust_cc.h>
 #include <TightCocone/op.h>
+#include <TightCocone/rcocone.h>
+#include <TightCocone/robust_cc.h>
+#include <TightCocone/segment.h>
+#include <TightCocone/tcocone.h>
+#include <TightCocone/tight_cocone.h>
+#include <TightCocone/util.h>
+#include <VolMagick/VolMagick.h>
+#include <boost/scoped_array.hpp>
 #include <iostream>
 
-#include <TightCocone/segment.h>
+namespace TightCocone {
+void segment(float, float);
+void Diffuse();
+void read_data(const VolMagick::Volume &vol);
+void write_data(char *out_seg);
+void GVF_Compute();
 
-#include <TightCocone/tight_cocone.h>
+int XDIM;
+int YDIM;
+int ZDIM;
 
-#include <VolMagick/VolMagick.h>
+Data_3DS *dataset;
+VECTOR *velocity;
+unsigned char *bin_img;
+float *ImgGrad;
 
-#include <boost/scoped_array.hpp>
+vector<double> bounding_box;
 
-namespace TightCocone 
-{
-  void segment(float, float);
-  void Diffuse();
-  void read_data(const VolMagick::Volume& vol);
-  void write_data(char *out_seg);
-  void GVF_Compute();
+// -----------------------------------------------------------------------
+// Constants
+// -----------------------------------------------------------------------
 
-  int XDIM;
-  int YDIM;
-  int ZDIM;
+// -- bounding box ---
+const double BB_SCALE = 1.0;
 
-  Data_3DS* dataset;
-  VECTOR* velocity;
-  unsigned char *bin_img;
-  float *ImgGrad;
+// -----------------------------------------------------------------------
+// main
+// ----
+// Parses the command line and initites the computation.
+// -----------------------------------------------------------------------
 
-  vector<double> bounding_box;
+CVCGEOM_NAMESPACE::cvcgeom_t
+surfaceReconstruction(const VolMagick::Volume &vol) {
 
-  // -----------------------------------------------------------------------
-  // Constants
-  // -----------------------------------------------------------------------
+  string shape_filename;
+  string output_file_prefix;
 
-  // -- bounding box ---
-  const double BB_SCALE = 1.0;
+  // robust cocone parameters.
+  bool b_robust = false;
+  double bb_ratio = DEFAULT_BIGBALL_RATIO;
+  double theta_ff = M_PI / 180.0 * DEFAULT_THETA_FF_d;
+  double theta_if = M_PI / 180.0 * DEFAULT_THETA_IF_d;
 
-  // -----------------------------------------------------------------------
-  // main
-  // ----
-  // Parses the command line and initites the computation.
-  // -----------------------------------------------------------------------
+  // for flatness marking (in cocone)
+  double flatness_ratio = DEFAULT_RATIO;
+  double cocone_phi = DEFAULT_ANGLE;
+  double flat_phi = DEFAULT_FLAT;
 
-  CVCGEOM_NAMESPACE::cvcgeom_t  surfaceReconstruction(const VolMagick::Volume& vol)
-  {
+  // For medial axis
+  double theta = DEFAULT_MED_THETA;
+  double medial_ratio = DEFAULT_MED_RATIO;
+  int biggest_medax_comp_id = 0;
 
+  // Check commandline options.
+  bool help = false;
 
-	string shape_filename;
-    string output_file_prefix;
+  // zeyuns
+  float tlow = 0;
+  float thigh = 1;
 
-    // robust cocone parameters.
-    bool b_robust = false;
-    double bb_ratio = DEFAULT_BIGBALL_RATIO;
-    double theta_ff = M_PI/180.0*DEFAULT_THETA_FF_d;
-    double theta_if = M_PI/180.0*DEFAULT_THETA_IF_d;
+  dataset = (Data_3DS *)malloc(sizeof(Data_3DS));
 
-    // for flatness marking (in cocone)
-    double flatness_ratio = DEFAULT_RATIO;
-    double cocone_phi = DEFAULT_ANGLE;
-    double flat_phi = DEFAULT_FLAT;
-  
-    //For medial axis
-    double theta = DEFAULT_MED_THETA;
-    double medial_ratio = DEFAULT_MED_RATIO;
-    int biggest_medax_comp_id = 0;
+  printf("Loading dataset...\n");
+  read_data(vol);
+  printf("Dataset loaded\n");
 
-    // Check commandline options.
-    bool help = false;
-  
-    //zeyuns
-    float tlow = 0;
-    float thigh = 1;
-  
+  velocity = (VECTOR *)malloc(sizeof(VECTOR) * XDIM * YDIM * ZDIM);
 
-    dataset=(Data_3DS*)malloc(sizeof(Data_3DS));
-  
-    printf("Loading dataset...\n");
-    read_data(vol);
-    printf("Dataset loaded\n");
+  printf("XIDM: %d", XDIM);
 
-    velocity = (VECTOR*)malloc(sizeof(VECTOR)*XDIM*YDIM*ZDIM);
-  
-    printf("XIDM: %d", XDIM);
+  printf("Begin GVF computation....\n");
+  GVF_Compute();
 
-    printf("Begin GVF computation....\n");
-    GVF_Compute();
-  
-    bin_img = (unsigned char*)malloc(sizeof(unsigned char)*XDIM*YDIM*ZDIM);
-  
-    printf("Begin Segmentation....\n");
-    segment(tlow, thigh);
-    printf("end segmentation .. \n");
-  
-  
-    // for(int i=0; i<51; i++)
-    // printf(".. %d", bin_img[i]);
+  bin_img =
+      (unsigned char *)malloc(sizeof(unsigned char) * XDIM * YDIM * ZDIM);
 
-    printf("\n end zeyuns \n");
-  
+  printf("Begin Segmentation....\n");
+  segment(tlow, thigh);
+  printf("end segmentation .. \n");
 
-    //  unsigned char* bin_img = new unsigned char[
-    // CCVSeg(argc, argv)
+  // for(int i=0; i<51; i++)
+  // printf(".. %d", bin_img[i]);
+
+  printf("\n end zeyuns \n");
+
+  //  unsigned char* bin_img = new unsigned char[
+  // CCVSeg(argc, argv)
 
 #if 0
     if(argc == 1)
@@ -230,13 +223,12 @@ namespace TightCocone
       exit( 1);
     }
     cerr << endl << "Shape name : " << shape_filename << endl << endl;
-#endif  
+#endif
 
-
-    CGAL::Timer timer;
-    timer.start();
-    int cnt =0;
-    Triangulation triang;
+  CGAL::Timer timer;
+  timer.start();
+  int cnt = 0;
+  Triangulation triang;
 
 #if 0
     if (b_robust)
@@ -329,130 +321,129 @@ namespace TightCocone
     cerr << "DT 2 ";
 #endif
 
-    // Maintain the min-max span of the pointset in 3 directions.
-    double x_min = DBL_MAX, x_max = -DBL_MAX,
-      y_min = DBL_MAX, y_max = -DBL_MAX,
-      z_min = DBL_MAX, z_max = -DBL_MAX;
+  // Maintain the min-max span of the pointset in 3 directions.
+  double x_min = DBL_MAX, x_max = -DBL_MAX, y_min = DBL_MAX, y_max = -DBL_MAX,
+         z_min = DBL_MAX, z_max = -DBL_MAX;
 
-    //istream_iterator<double> r_input(robust_fin);
-    //istream_iterator<double> r_beyond;
-    int total_pt_cnt = 0;
-    /*
-      while ( r_input != r_beyond) {
-      double x = *r_input; 
-      ++r_input;
-      if ( r_input == r_beyond) {
-      cerr << "Error: inconsistent triangulation file." << endl;
-      exit( 1);
+  // istream_iterator<double> r_input(robust_fin);
+  // istream_iterator<double> r_beyond;
+  int total_pt_cnt = 0;
+  /*
+    while ( r_input != r_beyond) {
+    double x = *r_input;
+    ++r_input;
+    if ( r_input == r_beyond) {
+    cerr << "Error: inconsistent triangulation file." << endl;
+    exit( 1);
+    }
+    double y = *r_input;
+    ++r_input;
+    if ( r_input == r_beyond) {
+    cerr << "Error: inconsistent triangulation file." << endl;
+    exit( 1);
+    }
+    double z = *r_input;
+    ++r_input;
+    cnt++;
+    total_pt_cnt ++;
+    if(cnt >= 1000){
+    cerr<<"." << flush;
+    cnt = 0;
+    }
+
+    //      printf("%f %f %f", x, y, z);
+    // cout<<"Point: "<<Point(x,y,z);
+    printf("\n");
+    Vertex_handle new_vh = triang.insert( Point(x,y,z) );
+
+    // check x-span
+    if(CGAL::to_double(new_vh->point().x()) < x_min)
+    x_min = CGAL::to_double(new_vh->point().x());
+    if(CGAL::to_double(new_vh->point().x()) > x_max)
+    x_max = CGAL::to_double(new_vh->point().x());
+    // check y-span
+    if(CGAL::to_double(new_vh->point().y()) < y_min)
+    y_min = CGAL::to_double(new_vh->point().y());
+    if(CGAL::to_double(new_vh->point().y()) > y_max)
+    y_max = CGAL::to_double(new_vh->point().y());
+    // check z-span
+    if(CGAL::to_double(new_vh->point().z()) < z_min)
+    z_min = CGAL::to_double(new_vh->point().z());
+    if(CGAL::to_double(new_vh->point().z()) > z_max)
+    z_max = CGAL::to_double(new_vh->point().z());
+    }
+  */
+
+  for (int k = 0; k < ZDIM; k++) {
+    for (int j = 0; j < YDIM; j++)
+      for (int i = 0; i < XDIM; i++) {
+
+        if (bin_img[IndexVect(i, j, k)] == 0) {
+
+          Vertex_handle new_vh =
+              triang.insert(Point(float(i) * vol.XSpan() + vol.XMin(),
+                                  float(j) * vol.YSpan() + vol.YMin(),
+                                  float(k) * vol.ZSpan() + vol.ZMin()));
+
+          total_pt_cnt++;
+
+          // check x-span
+          if (CGAL::to_double(new_vh->point().x()) < x_min)
+            x_min = CGAL::to_double(new_vh->point().x());
+          if (CGAL::to_double(new_vh->point().x()) > x_max)
+            x_max = CGAL::to_double(new_vh->point().x());
+          // check y-span
+          if (CGAL::to_double(new_vh->point().y()) < y_min)
+            y_min = CGAL::to_double(new_vh->point().y());
+          if (CGAL::to_double(new_vh->point().y()) > y_max)
+            y_max = CGAL::to_double(new_vh->point().y());
+          // check z-span
+          if (CGAL::to_double(new_vh->point().z()) < z_min)
+            z_min = CGAL::to_double(new_vh->point().z());
+          if (CGAL::to_double(new_vh->point().z()) > z_max)
+            z_max = CGAL::to_double(new_vh->point().z());
+        }
       }
-      double y = *r_input; 
-      ++r_input;
-      if ( r_input == r_beyond) {
-      cerr << "Error: inconsistent triangulation file." << endl;
-      exit( 1);
-      }
-      double z = *r_input; 
-      ++r_input;
-      cnt++;
-      total_pt_cnt ++;
-      if(cnt >= 1000){
-      cerr<<"." << flush;
-      cnt = 0;
-      }      
 
-      //      printf("%f %f %f", x, y, z);
-      // cout<<"Point: "<<Point(x,y,z);
-      printf("\n");
-      Vertex_handle new_vh = triang.insert( Point(x,y,z) );
-       
-      // check x-span
-      if(CGAL::to_double(new_vh->point().x()) < x_min) 
-      x_min = CGAL::to_double(new_vh->point().x());
-      if(CGAL::to_double(new_vh->point().x()) > x_max) 
-      x_max = CGAL::to_double(new_vh->point().x());
-      // check y-span
-      if(CGAL::to_double(new_vh->point().y()) < y_min) 
-      y_min = CGAL::to_double(new_vh->point().y());
-      if(CGAL::to_double(new_vh->point().y()) > y_max) 
-      y_max = CGAL::to_double(new_vh->point().y());
-      // check z-span
-      if(CGAL::to_double(new_vh->point().z()) < z_min) 
-      z_min = CGAL::to_double(new_vh->point().z());
-      if(CGAL::to_double(new_vh->point().z()) > z_max) 
-      z_max = CGAL::to_double(new_vh->point().z());
-      }
-    */
+    fprintf(stderr, "%5.2f %%\r",
+            (((float)k) / ((float)((int)(ZDIM - 1)))) * 100.0);
+  }
+  fprintf(stderr, "\n");
 
-   
-    for (int k=0; k<ZDIM; k++)
-      {
-	for (int j=0; j<YDIM; j++)
-	  for (int i=0; i<XDIM; i++) {
-	   
-	    if (bin_img[IndexVect(i,j,k)] == 0){
-	  
-	      Vertex_handle new_vh = triang.insert(Point(float(i)*vol.XSpan()+vol.XMin(),
-							 float(j)*vol.YSpan()+vol.YMin(),
-							 float(k)*vol.ZSpan()+vol.ZMin()));
-	     
-	      total_pt_cnt++;
-	     
-	      // check x-span
-	      if(CGAL::to_double(new_vh->point().x()) < x_min) 
-		x_min = CGAL::to_double(new_vh->point().x());
-	      if(CGAL::to_double(new_vh->point().x()) > x_max) 
-		x_max = CGAL::to_double(new_vh->point().x());
-	      // check y-span
-	      if(CGAL::to_double(new_vh->point().y()) < y_min) 
-		y_min = CGAL::to_double(new_vh->point().y());
-	      if(CGAL::to_double(new_vh->point().y()) > y_max) 
-		y_max = CGAL::to_double(new_vh->point().y());
-	      // check z-span
-	      if(CGAL::to_double(new_vh->point().z()) < z_min) 
-		z_min = CGAL::to_double(new_vh->point().z());
-	      if(CGAL::to_double(new_vh->point().z()) > z_max) 
-		z_max = CGAL::to_double(new_vh->point().z());
-	    }
-	  }
+  cerr << " done." << endl;
+  cerr << "Total point count: " << total_pt_cnt << endl;
+  cerr << "Del Time : " << timer.time() << endl << endl;
+  timer.reset();
+  // robust_fin.close();
+  //  Bounding box of the point set.
+  bounding_box.push_back(x_min - BB_SCALE * (x_max - x_min));
+  bounding_box.push_back(x_max + BB_SCALE * (x_max - x_min));
 
-	fprintf(stderr,"%5.2f %%\r",(((float)k)/((float)((int)(ZDIM-1))))*100.0);
-      }
-    fprintf(stderr,"\n");
+  bounding_box.push_back(y_min - BB_SCALE * (y_max - y_min));
+  bounding_box.push_back(y_max + BB_SCALE * (y_max - y_min));
 
-    cerr << " done." << endl;
-    cerr << "Total point count: " << total_pt_cnt << endl;
-    cerr << "Del Time : " << timer.time() << endl << endl; 
-    timer.reset();
-    //robust_fin.close();
-    // Bounding box of the point set.
-    bounding_box.push_back(x_min - BB_SCALE*(x_max-x_min));
-    bounding_box.push_back(x_max + BB_SCALE*(x_max-x_min));
+  bounding_box.push_back(z_min - BB_SCALE * (z_max - z_min));
+  bounding_box.push_back(z_max + BB_SCALE * (z_max - z_min));
 
-    bounding_box.push_back(y_min - BB_SCALE*(y_max-y_min));
-    bounding_box.push_back(y_max + BB_SCALE*(y_max-y_min));
+  // --- Init ----
+  cerr << "Init 2 ";
+  initialize(triang);
+  cerr << ".";
+  // compute voronoi vertex
+  compute_voronoi_vertex_and_cell_radius(triang);
+  cerr << ". done." << endl;
+  cerr << "Time : " << timer.time() << endl << endl;
+  timer.reset();
 
-    bounding_box.push_back(z_min - BB_SCALE*(z_max-z_min));
-    bounding_box.push_back(z_max + BB_SCALE*(z_max-z_min));
+  // ---- Reconstruction -----
+  cerr << "TC ";
+  tcocone(cocone_phi, DEFAULT_SHARP, flat_phi, flatness_ratio, triang);
+  cerr << " done." << endl;
+  cerr << "Time : " << timer.time() << endl << endl;
+  timer.reset();
+  // write_wt(triang, output_file_prefix.c_str());
 
-    // --- Init ----
-    cerr << "Init 2 ";
-    initialize(triang);
-    cerr << ".";
-    // compute voronoi vertex
-    compute_voronoi_vertex_and_cell_radius(triang);
-    cerr << ". done." << endl;
-    cerr << "Time : " << timer.time() << endl << endl; 
-    timer.reset();
-  
-    // ---- Reconstruction -----
-    cerr << "TC ";
-    tcocone(cocone_phi, DEFAULT_SHARP, flat_phi, flatness_ratio, triang);
-    cerr << " done." << endl;
-    cerr << "Time : " << timer.time() << endl << endl;
-    timer.reset();
-    //write_wt(triang, output_file_prefix.c_str());
-  
-    CVCGEOM_NAMESPACE::cvcgeom_t result = wt_to_geometry(triang);
+  CVCGEOM_NAMESPACE::cvcgeom_t result = wt_to_geometry(triang);
 
 #if 0
     // Medial Axis
@@ -501,233 +492,225 @@ namespace TightCocone
       }
 #endif
 
-    return result;
-  }
+  return result;
+}
 
+CVCGEOM_NAMESPACE::cvcgeom_t
+generateBoundaryPointCloud(const VolMagick::Volume &vol, float tlow,
+                           float thigh) {
+  // temp comment
 
-  CVCGEOM_NAMESPACE::cvcgeom_t  generateBoundaryPointCloud(const VolMagick::Volume& vol, float tlow, float thigh)
-  {
-  //temp comment
+  // dataset=(Data_3DS*)malloc(sizeof(Data_3DS));
+  Data_3DS dataset_local;
+  dataset = &dataset_local; // this is safe because dataset will not be used
+                            // outside of this function call
 
-    //dataset=(Data_3DS*)malloc(sizeof(Data_3DS));
-    Data_3DS dataset_local;
-    dataset = &dataset_local; //this is safe because dataset will not be used outside of this function call
+  fprintf(stderr, "Loading dataset...\n");
+  read_data(vol);
+  fprintf(stderr, "Dataset loaded\n");
 
-    fprintf(stderr,"Loading dataset...\n");
-    read_data(vol);
-    fprintf(stderr,"Dataset loaded\n");
+  // velocity = (VECTOR*)malloc(sizeof(VECTOR)*XDIM*YDIM*ZDIM);
+  boost::scoped_array<VECTOR> velocity_local(new VECTOR[XDIM * YDIM * ZDIM]);
+  velocity = velocity_local.get();
 
-    //velocity = (VECTOR*)malloc(sizeof(VECTOR)*XDIM*YDIM*ZDIM);
-    boost::scoped_array<VECTOR> velocity_local(new VECTOR[XDIM*YDIM*ZDIM]);
-    velocity = velocity_local.get();
-  
-    fprintf(stderr,"XDIM: %d\n", XDIM);
-    fprintf(stderr,"YDIM: %d\n", YDIM);
-    fprintf(stderr,"ZDIM: %d\n", ZDIM);
+  fprintf(stderr, "XDIM: %d\n", XDIM);
+  fprintf(stderr, "YDIM: %d\n", YDIM);
+  fprintf(stderr, "ZDIM: %d\n", ZDIM);
 
-    fprintf(stderr,"Begin GVF computation....\n");
-    GVF_Compute();
-  
-    //bin_img = (unsigned char*)malloc(sizeof(unsigned char)*XDIM*YDIM*ZDIM);
-    boost::scoped_array<unsigned char> bin_img_local(new unsigned char[XDIM*YDIM*ZDIM]);
-    bin_img = bin_img_local.get();
-  
-    fprintf(stderr,"Begin Segmentation....\n");
-    segment(tlow, thigh);
-    fprintf(stderr,"end segmentation .. \n");
+  fprintf(stderr, "Begin GVF computation....\n");
+  GVF_Compute();
 
-    std::vector<int> boundary_indices;
+  // bin_img = (unsigned char*)malloc(sizeof(unsigned char)*XDIM*YDIM*ZDIM);
+  boost::scoped_array<unsigned char> bin_img_local(
+      new unsigned char[XDIM * YDIM * ZDIM]);
+  bin_img = bin_img_local.get();
 
-    for (int k=0; k<ZDIM; k++)
-      for (int j=0; j<YDIM; j++)
-	for (int i=0; i<XDIM; i++)
-	  {
-	    if (bin_img[IndexVect(i,j,k)] == 0)
-	      {
-		boundary_indices.push_back(i);
-		boundary_indices.push_back(j);
-		boundary_indices.push_back(k);
-	      }
-	  }
-    
-   CVCGEOM_NAMESPACE::cvcgeom_t result;
-//    result->AllocatePoints(boundary_indices.size()/3);
-    for(unsigned int i = 0; i < boundary_indices.size()/3; i++)
-      {
-	    CVCGEOM_NAMESPACE::cvcgeom_t::point_t newVertex;
+  fprintf(stderr, "Begin Segmentation....\n");
+  segment(tlow, thigh);
+  fprintf(stderr, "end segmentation .. \n");
 
-	newVertex[0] = boundary_indices[i*3+0]*vol.XSpan()+vol.XMin();
-	newVertex[1] = boundary_indices[i*3+1]*vol.YSpan()+vol.YMin();
-	newVertex[2] = boundary_indices[i*3+2]*vol.ZSpan()+vol.ZMin();
-		result.points().push_back(newVertex);
+  std::vector<int> boundary_indices;
+
+  for (int k = 0; k < ZDIM; k++)
+    for (int j = 0; j < YDIM; j++)
+      for (int i = 0; i < XDIM; i++) {
+        if (bin_img[IndexVect(i, j, k)] == 0) {
+          boundary_indices.push_back(i);
+          boundary_indices.push_back(j);
+          boundary_indices.push_back(k);
+        }
       }
 
-    return result;  
+  CVCGEOM_NAMESPACE::cvcgeom_t result;
+  //    result->AllocatePoints(boundary_indices.size()/3);
+  for (unsigned int i = 0; i < boundary_indices.size() / 3; i++) {
+    CVCGEOM_NAMESPACE::cvcgeom_t::point_t newVertex;
+
+    newVertex[0] = boundary_indices[i * 3 + 0] * vol.XSpan() + vol.XMin();
+    newVertex[1] = boundary_indices[i * 3 + 1] * vol.YSpan() + vol.YMin();
+    newVertex[2] = boundary_indices[i * 3 + 2] * vol.ZSpan() + vol.ZMin();
+    result.points().push_back(newVertex);
   }
 
-  CVCGEOM_NAMESPACE::cvcgeom_t surfaceReconstruction(const CVCGEOM_NAMESPACE::cvcgeom_t& pointCloud,
-				const Parameters& params)
-  {
-    //string shape_filename;
-    //string output_file_prefix;
+  return result;
+}
 
-    // robust cocone parameters.
-    bool b_robust = params.b_robust();//false;
-    double bb_ratio = params.bb_ratio();//DEFAULT_BIGBALL_RATIO;
-    double theta_ff = params.theta_ff();//M_PI/180.0*DEFAULT_THETA_FF_d;
-    double theta_if = params.theta_if();//M_PI/180.0*DEFAULT_THETA_IF_d;
+CVCGEOM_NAMESPACE::cvcgeom_t
+surfaceReconstruction(const CVCGEOM_NAMESPACE::cvcgeom_t &pointCloud,
+                      const Parameters &params) {
+  // string shape_filename;
+  // string output_file_prefix;
 
-    // for flatness marking (in cocone)
-    double flatness_ratio = params.flatness_ratio();//DEFAULT_RATIO;
-    double cocone_phi = params.cocone_phi();//DEFAULT_ANGLE;
-    double flat_phi = params.flat_phi();//DEFAULT_FLAT;
- 
-    //For medial axis
-    //double theta = DEFAULT_MED_THETA;
-    //double medial_ratio = DEFAULT_MED_RATIO;
-    //int biggest_medax_comp_id = 0;
+  // robust cocone parameters.
+  bool b_robust = params.b_robust();   // false;
+  double bb_ratio = params.bb_ratio(); // DEFAULT_BIGBALL_RATIO;
+  double theta_ff = params.theta_ff(); // M_PI/180.0*DEFAULT_THETA_FF_d;
+  double theta_if = params.theta_if(); // M_PI/180.0*DEFAULT_THETA_IF_d;
 
-    CGAL::Timer timer;
-    timer.start();
-    int cnt =0;
-    Triangulation triang;
+  // for flatness marking (in cocone)
+  double flatness_ratio = params.flatness_ratio(); // DEFAULT_RATIO;
+  double cocone_phi = params.cocone_phi();         // DEFAULT_ANGLE;
+  double flat_phi = params.flat_phi();             // DEFAULT_FLAT;
 
-    std::vector<Point> robust_points;
+  // For medial axis
+  // double theta = DEFAULT_MED_THETA;
+  // double medial_ratio = DEFAULT_MED_RATIO;
+  // int biggest_medax_comp_id = 0;
 
-    cerr<<"Delaunay Triangulation ";
+  CGAL::Timer timer;
+  timer.start();
+  int cnt = 0;
+  Triangulation triang;
 
+  std::vector<Point> robust_points;
 
+  cerr << "Delaunay Triangulation ";
 
-    // Maintain the min-max span of the pointset in 3 directions.
-    double x_min = DBL_MAX, x_max = -DBL_MAX,
-      y_min = DBL_MAX, y_max = -DBL_MAX,
-      z_min = DBL_MAX, z_max = -DBL_MAX;
+  // Maintain the min-max span of the pointset in 3 directions.
+  double x_min = DBL_MAX, x_max = -DBL_MAX, y_min = DBL_MAX, y_max = -DBL_MAX,
+         z_min = DBL_MAX, z_max = -DBL_MAX;
 
-	int numvert = pointCloud.points().size();
-  	for(int i=0; i<numvert; i++)
-	  {
-	    Triangulation::Point p = Point(pointCloud.points()[i][0],
-					   pointCloud.points()[i][1],
-					   pointCloud.points()[i][2]);
-	    triang.insert(p);
+  int numvert = pointCloud.points().size();
+  for (int i = 0; i < numvert; i++) {
+    Triangulation::Point p =
+        Point(pointCloud.points()[i][0], pointCloud.points()[i][1],
+              pointCloud.points()[i][2]);
+    triang.insert(p);
 
-	    if(CGAL::to_double(p.x()) < x_min) 
-	      x_min = CGAL::to_double(p.x());
-	    if(CGAL::to_double(p.x()) > x_max) 
-	      x_max = CGAL::to_double(p.x());
-	    // check y-span
-	    if(CGAL::to_double(p.y()) < y_min) 
-	      y_min = CGAL::to_double(p.y());
-	    if(CGAL::to_double(p.y()) > y_max) 
-	      y_max = CGAL::to_double(p.y());
-	    // check z-span
-	    if(CGAL::to_double(p.z()) < z_min) 
-	      z_min = CGAL::to_double(p.z());
-	    if(CGAL::to_double(p.z()) > z_max) 
-	      z_max = CGAL::to_double(p.z());
+    if (CGAL::to_double(p.x()) < x_min)
+      x_min = CGAL::to_double(p.x());
+    if (CGAL::to_double(p.x()) > x_max)
+      x_max = CGAL::to_double(p.x());
+    // check y-span
+    if (CGAL::to_double(p.y()) < y_min)
+      y_min = CGAL::to_double(p.y());
+    if (CGAL::to_double(p.y()) > y_max)
+      y_max = CGAL::to_double(p.y());
+    // check z-span
+    if (CGAL::to_double(p.z()) < z_min)
+      z_min = CGAL::to_double(p.z());
+    if (CGAL::to_double(p.z()) > z_max)
+      z_max = CGAL::to_double(p.z());
 
-		if(i%1000==0)
-		cerr<<"."<<flush;
-	  }
-    cerr <<"done" << endl;
-	cerr << "Time: " <<  timer.time()  << endl;
-	timer.reset();
+    if (i % 1000 == 0)
+      cerr << "." << flush;
+  }
+  cerr << "done" << endl;
+  cerr << "Time: " << timer.time() << endl;
+  timer.reset();
 
+  // #if 0
+  if (b_robust) {
 
-    //#if 0
-    if (b_robust)
-      {
-   
-	// Initialization
-	cerr << "Init 1 ";
-	initialize(triang);
-	cerr << ".";
-	// Computation of voronoi vertex and cell radius.
-	compute_voronoi_vertex_and_cell_radius(triang);
-	cerr << ". done." << endl;
-	cerr << "Time : " << timer.time() << endl << endl; 
-	timer.reset();
-   
-	cerr << "Robust Cocone ";
-	robust_points = robust_cocone(bb_ratio, theta_ff, theta_if, triang);
-	cerr << " done." << endl;
-	cerr << "Time : " << timer.time() << endl << endl; 
-	timer.reset();
-
-    }
- 
-   
-    int total_pt_cnt = 0;
-
-    if(robust_points.size() > 0) //if we used robust cocone, use those points instead of the original points
-      {
-	     cerr << "DT 2 ";
-
-	     triang.clear();
- 		for(std::vector<Point>::iterator i = robust_points.begin();
-	    	i != robust_points.end(); i++)
-	    {
-	    Vertex_handle new_vh = triang.insert( *i );
-	    total_pt_cnt++;
-
-	    // check x-span
-	    if(CGAL::to_double(new_vh->point().x()) < x_min) 
-	      x_min = CGAL::to_double(new_vh->point().x());
-	    if(CGAL::to_double(new_vh->point().x()) > x_max) 
-	      x_max = CGAL::to_double(new_vh->point().x());
-	    // check y-span
-	    if(CGAL::to_double(new_vh->point().y()) < y_min) 
-	      y_min = CGAL::to_double(new_vh->point().y());
-	    if(CGAL::to_double(new_vh->point().y()) > y_max) 
-	      y_max = CGAL::to_double(new_vh->point().y());
-	    // check z-span
-	    if(CGAL::to_double(new_vh->point().z()) < z_min) 
-	      z_min = CGAL::to_double(new_vh->point().z());
-	    if(CGAL::to_double(new_vh->point().z()) > z_max) 
-	      z_max = CGAL::to_double(new_vh->point().z());
-
-	    if(std::distance(robust_points.begin(),i) % (pointCloud.points().size()-1)/100)
-	      fprintf(stderr,"%5.2f %%\r",
-		      float(std::distance(robust_points.begin(),i))/(float(robust_points.size()-1)*100.0));
-	  }
-	fprintf(stderr,"\n");
-
-	cerr << " done." << endl;
-    cerr << "Total point count: " << total_pt_cnt << endl;
-    cerr << "Del Time : " << timer.time() << endl << endl; 
-    timer.reset();
-
-      }
- 
-    //robust_fin.close();
-    // Bounding box of the point set.
-    bounding_box.push_back(x_min - BB_SCALE*(x_max-x_min));
-    bounding_box.push_back(x_max + BB_SCALE*(x_max-x_min));
-
-    bounding_box.push_back(y_min - BB_SCALE*(y_max-y_min));
-    bounding_box.push_back(y_max + BB_SCALE*(y_max-y_min));
-
-    bounding_box.push_back(z_min - BB_SCALE*(z_max-z_min));
-    bounding_box.push_back(z_max + BB_SCALE*(z_max-z_min));
-
-    // --- Init ----
-    cerr << "Init 2 ";
+    // Initialization
+    cerr << "Init 1 ";
     initialize(triang);
     cerr << ".";
-    // compute voronoi vertex
+    // Computation of voronoi vertex and cell radius.
     compute_voronoi_vertex_and_cell_radius(triang);
     cerr << ". done." << endl;
-    cerr << "Time : " << timer.time() << endl << endl; 
+    cerr << "Time : " << timer.time() << endl << endl;
     timer.reset();
-  
-    // ---- Reconstruction -----
-    cerr << "TC ";
-    tcocone(cocone_phi, DEFAULT_SHARP, flat_phi, flatness_ratio, triang);
+
+    cerr << "Robust Cocone ";
+    robust_points = robust_cocone(bb_ratio, theta_ff, theta_if, triang);
     cerr << " done." << endl;
     cerr << "Time : " << timer.time() << endl << endl;
     timer.reset();
- //   write_wt(triang, "temp.off");
-
-	return wt_to_geometry(triang);
   }
-};
+
+  int total_pt_cnt = 0;
+
+  if (robust_points.size() > 0) // if we used robust cocone, use those points
+                                // instead of the original points
+  {
+    cerr << "DT 2 ";
+
+    triang.clear();
+    for (std::vector<Point>::iterator i = robust_points.begin();
+         i != robust_points.end(); i++) {
+      Vertex_handle new_vh = triang.insert(*i);
+      total_pt_cnt++;
+
+      // check x-span
+      if (CGAL::to_double(new_vh->point().x()) < x_min)
+        x_min = CGAL::to_double(new_vh->point().x());
+      if (CGAL::to_double(new_vh->point().x()) > x_max)
+        x_max = CGAL::to_double(new_vh->point().x());
+      // check y-span
+      if (CGAL::to_double(new_vh->point().y()) < y_min)
+        y_min = CGAL::to_double(new_vh->point().y());
+      if (CGAL::to_double(new_vh->point().y()) > y_max)
+        y_max = CGAL::to_double(new_vh->point().y());
+      // check z-span
+      if (CGAL::to_double(new_vh->point().z()) < z_min)
+        z_min = CGAL::to_double(new_vh->point().z());
+      if (CGAL::to_double(new_vh->point().z()) > z_max)
+        z_max = CGAL::to_double(new_vh->point().z());
+
+      if (std::distance(robust_points.begin(), i) %
+          (pointCloud.points().size() - 1) / 100)
+        fprintf(stderr, "%5.2f %%\r",
+                float(std::distance(robust_points.begin(), i)) /
+                    (float(robust_points.size() - 1) * 100.0));
+    }
+    fprintf(stderr, "\n");
+
+    cerr << " done." << endl;
+    cerr << "Total point count: " << total_pt_cnt << endl;
+    cerr << "Del Time : " << timer.time() << endl << endl;
+    timer.reset();
+  }
+
+  // robust_fin.close();
+  //  Bounding box of the point set.
+  bounding_box.push_back(x_min - BB_SCALE * (x_max - x_min));
+  bounding_box.push_back(x_max + BB_SCALE * (x_max - x_min));
+
+  bounding_box.push_back(y_min - BB_SCALE * (y_max - y_min));
+  bounding_box.push_back(y_max + BB_SCALE * (y_max - y_min));
+
+  bounding_box.push_back(z_min - BB_SCALE * (z_max - z_min));
+  bounding_box.push_back(z_max + BB_SCALE * (z_max - z_min));
+
+  // --- Init ----
+  cerr << "Init 2 ";
+  initialize(triang);
+  cerr << ".";
+  // compute voronoi vertex
+  compute_voronoi_vertex_and_cell_radius(triang);
+  cerr << ". done." << endl;
+  cerr << "Time : " << timer.time() << endl << endl;
+  timer.reset();
+
+  // ---- Reconstruction -----
+  cerr << "TC ";
+  tcocone(cocone_phi, DEFAULT_SHARP, flat_phi, flatness_ratio, triang);
+  cerr << " done." << endl;
+  cerr << "Time : " << timer.time() << endl << endl;
+  timer.reset();
+  //   write_wt(triang, "temp.off");
+
+  return wt_to_geometry(triang);
+}
+}; // namespace TightCocone

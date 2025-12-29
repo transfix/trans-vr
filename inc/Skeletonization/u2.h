@@ -17,28 +17,27 @@
 
   You should have received a copy of the GNU Lesser General Public
   License along with this library; if not, write to the Free Software
-  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301
+  USA
 */
 
 #ifndef __SKELETONIZATION__U2_H__
 #define __SKELETONIZATION__U2_H__
 
 #include <Skeletonization/datastruct.h>
-#include <Skeletonization/util.h>
-#include <Skeletonization/robust_cc.h>
-#include <Skeletonization/intersect.h>
-#include <Skeletonization/hfn_util.h>
-#include <Skeletonization/op.h>
-#include <Skeletonization/graph.h>
 #include <Skeletonization/degen.h>
+#include <Skeletonization/graph.h>
+#include <Skeletonization/hfn_util.h>
+#include <Skeletonization/intersect.h>
+#include <Skeletonization/op.h>
+#include <Skeletonization/robust_cc.h>
+#include <Skeletonization/util.h>
 
-namespace Skeletonization
-{
+namespace Skeletonization {
 
-void
-compute_u2(Triangulation &triang, 
-             Graph &graph,
-	   char *prefix = ""); //this last argument is now unused, but a PITA to remove so lets just do this...
+void compute_u2(Triangulation &triang, Graph &graph,
+                char *prefix = ""); // this last argument is now unused, but a
+                                    // PITA to remove so lets just do this...
 
 }
 #endif // U2_H

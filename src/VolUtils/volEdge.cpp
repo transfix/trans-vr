@@ -17,52 +17,55 @@
 
   You should have received a copy of the GNU Lesser General Public
   License along with this library; if not, write to the Free Software
-  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301
+  USA
 */
 
 /* AJAY GOPINATH: implementing the canny edge detector in 3D
  * Laplacian of Gaussian operator will be used.
-*/
+ */
 
-
-#include <iostream>
-#include <sstream>
-#include <vector>
-#include <set>
 #include <algorithm>
+#include <iostream>
+#include <set>
+#include <sstream>
 #include <stdio.h>
 #include <stdlib.h>
+#include <vector>
 
 #define _USE_MATH_DEFINES
-#include <cmath>
-
 #include <VolMagick/VolMagick.h>
 #include <VolMagick/VolumeCache.h>
 #include <VolMagick/endians.h>
+#include <cmath>
 
 using namespace std;
 
-class VolMagickOpStatus : public VolMagick::VoxelOperationStatusMessenger
-{
+class VolMagickOpStatus : public VolMagick::VoxelOperationStatusMessenger {
 public:
-  void start(const VolMagick::Voxels *vox, Operation op, VolMagick::uint64 numSteps) const
-  {
+  void start(const VolMagick::Voxels *vox, Operation op,
+             VolMagick::uint64 numSteps) const {
     _numSteps = numSteps;
   }
 
-  void step(const VolMagick::Voxels *vox, Operation op, VolMagick::uint64 curStep) const
-  {
-    const char *opStrings[] = { "CalculatingMinMax", "CalculatingMin", "CalculatingMax",
-				"SubvolumeExtraction", "Fill", "Map", "Resize", "Composite",
-				"BilateralFilter", "ContrastEnhancement"};
+  void step(const VolMagick::Voxels *vox, Operation op,
+            VolMagick::uint64 curStep) const {
+    const char *opStrings[] = {"CalculatingMinMax",
+                               "CalculatingMin",
+                               "CalculatingMax",
+                               "SubvolumeExtraction",
+                               "Fill",
+                               "Map",
+                               "Resize",
+                               "Composite",
+                               "BilateralFilter",
+                               "ContrastEnhancement"};
 
-    fprintf(stderr,"%s: %5.2f %%\r",opStrings[op],(((float)curStep)/((float)((int)(_numSteps-1))))*100.0);
+    fprintf(stderr, "%s: %5.2f %%\r", opStrings[op],
+            (((float)curStep) / ((float)((int)(_numSteps - 1)))) * 100.0);
   }
 
-  void end(const VolMagick::Voxels *vox, Operation op) const
-  {
-    printf("\n");
-  }
+  void end(const VolMagick::Voxels *vox, Operation op) const { printf("\n"); }
 
 private:
   mutable VolMagick::uint64 _numSteps;
@@ -70,139 +73,108 @@ private:
 
 typedef boost::tuple<double, double, double> Color;
 
-int main(int argc, char **argv)
-{
-    typedef VolMagick::uint64 uint;
+int main(int argc, char **argv) {
+  typedef VolMagick::uint64 uint;
 
-  if(argc < 4)
+  if (argc < 4) {
+    cerr << "Usage: inputfile, outputfile, sigma \n";
+
+    return 1;
+  }
+
+  try {
+    VolMagick::Volume inputVol;
+
+    VolMagick::Volume outputVol;
+
+    VolMagick::Volume volLoG;
+
+    VolMagick::readVolumeFile(inputVol,
+                              argv[1]); /// first argument is input volume
+
+    outputVol.voxelType(inputVol.voxelType());
+    outputVol.dimension(inputVol.dimension());
+    outputVol.boundingBox(inputVol.boundingBox());
+
+    volLoG.voxelType(inputVol.voxelType());
+    volLoG.dimension(inputVol.dimension());
+    volLoG.boundingBox(inputVol.boundingBox());
+
+    float sigma = atof(argv[3]);
+
+    //  Creating the LoG kernel operator
+
+    double LoG[27];
+
+    int count = 0;
+
+    //     for(int i = -2; i<3; i++)
+    //	 for(int j = -2; j<3; j++)
+    //		for(int k = -2; k<3; k++)
+
     {
-      cerr << "Usage: inputfile, outputfile, sigma \n";
+      int i = -2;
+      int j = -2;
+      float term1 = 1 / (pow(2 * M_PI, 1.5) * pow(sigma, 5));
 
+      int k = -2;
 
-      return 1;
+      double term2 = (i * i + j * j + k * k) / (sigma * sigma) - 3;
+
+      double term3 = exp((-i * i - j * j - k * k) / (2 * sigma * sigma));
+
+      LoG[count] = term1 * term2 * term3;
+
+      std::cout << term1 << " " << term2 << " " << term3 << "\n";
+
+      std::cout << LoG[count] << " ";
+
+      count++;
     }
 
-  try
-    {
-      VolMagick::Volume inputVol;
+    // Convolving LoG operator with input volume
 
+    for (uint x = 0; x < volLoG.XDim(); x++)
+      for (uint y = 0; y < volLoG.YDim(); y++)
+        for (uint z = 0; z < volLoG.ZDim(); z++)
 
+        {
 
-      VolMagick::Volume outputVol;   
+          float val = 0;
 
+          uint count = 0;
 
-      VolMagick::Volume volLoG;
+          for (int i = -2; i < 3; i++)
+            for (int j = -2; j < 3; j++)
+              for (int k = -2; k < 3; k++) {
 
+                if ((x + i) > 0 && (x + i) < inputVol.XDim() && (y + j) > 0 &&
+                    (y + j) < inputVol.YDim() && (z + k) > 0 &&
+                    (z + k) < inputVol.ZDim())
 
-      VolMagick::readVolumeFile(inputVol,argv[1]); ///first argument is input volume
+                  val = val + inputVol(x + i, y + j, z + k) * LoG[count];
 
+                count++;
+              }
 
-      outputVol.voxelType(inputVol.voxelType());
-      outputVol.dimension(inputVol.dimension());
-      outputVol.boundingBox(inputVol.boundingBox());
+          volLoG(x, y, z, val);
+        }
 
-      volLoG.voxelType(inputVol.voxelType());
-      volLoG.dimension(inputVol.dimension());
-      volLoG.boundingBox(inputVol.boundingBox());
+    /// Non-maximum supression
 
-  
-     
-     float sigma = atof(argv[3]);
+    VolMagick::createVolumeFile("./volLoG.rawiv", volLoG);
 
+    VolMagick::writeVolumeFile(volLoG, "./volLoG.rawiv");
 
- //  Creating the LoG kernel operator
+    return 0;
 
-	double LoG[27]; 
-	
-	int count = 0;
+  }
 
-//     for(int i = -2; i<3; i++)
-//	 for(int j = -2; j<3; j++)
-//		for(int k = -2; k<3; k++)
+  catch (VolMagick::Exception &e) {
+    cerr << e.what() << endl;
+  } catch (std::exception &e) {
+    cerr << e.what() << endl;
+  }
 
-	{
-		int i = -2;
-		int j = -2;
-        float term1 = 1/(pow(2*M_PI, 1.5) * pow(sigma, 5));
-
-		int k = -2;
-
-
-		double term2 = (i*i + j*j + k*k)/(sigma*sigma) - 3;
-
-		double term3 = exp( (-i*i-j*j-k*k)/(2*sigma*sigma) );
-
-		LoG[count] = term1*term2*term3;
-
-
-		std::cout<<term1<<" "<<term2<<" "<<term3<<"\n";
-
-		std::cout<<LoG[count]<<" ";
-	
-		count++;	
-
-
-	}
-
-
- // Convolving LoG operator with input volume
-
-	for(uint x=0; x<volLoG.XDim(); x++)
-	 for(uint y=0; y<volLoG.YDim(); y++)
-	  for(uint z=0; z<volLoG.ZDim(); z++)
-
-	{
-
-	float val = 0;
-
-	uint count = 0;
-
-		 for(int i = -2; i<3; i++)
-                   for(int j = -2; j<3; j++)
-	       	    for(int k = -2; k<3; k++)
-			{
-
-			if( (x+i)>0 && (x+i)<inputVol.XDim() && (y+j)>0 && (y+j)<inputVol.YDim() && (z+k)>0 &&(z+k)<inputVol.ZDim() )
-	
-				val = val + inputVol(x+i, y+j, z+k)*LoG[count];
-	
-			count++;
-			
-
-			}
-
-
-	volLoG(x,y,z, val);
-	
-	
-	
-	}
-
-
-
-/// Non-maximum supression
-
-	
-
-      VolMagick::createVolumeFile("./volLoG.rawiv", volLoG);
-
-      VolMagick::writeVolumeFile(volLoG, "./volLoG.rawiv");
-
-
-
- return 0;
- 
-    }
-
-  catch(VolMagick::Exception &e)
-    {
-      cerr << e.what() << endl;
-    }
-  catch(std::exception &e)
-    {
-      cerr << e.what() << endl;
-    }
-  
   return 0;
-
 }

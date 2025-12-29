@@ -1,14 +1,12 @@
-#include <list>
-#include <vector>
-#include <string>
-
-#include <ContourTiler/test_common.h>
 #include <ContourTiler/reader_gnuplot.h>
+#include <ContourTiler/test_common.h>
+#include <list>
+#include <string>
+#include <vector>
 
-TEST (reader_gnuplot1)
-{
+TEST(reader_gnuplot1) {
   list<Polygon_2> polygons;
-  read_polygons_gnuplot2(data_dir+"/test1.dat", back_inserter(polygons), 1);
+  read_polygons_gnuplot2(data_dir + "/test1.dat", back_inserter(polygons), 1);
   CHECK_EQUAL(polygons.size(), 1);
 
   Polygon_2 polygon = *polygons.begin();
@@ -19,10 +17,9 @@ TEST (reader_gnuplot1)
   CHECK_EQUAL(Point_2(0, 10), polygon[3]);
 }
 
-TEST (reader_gnuplot2)
-{
+TEST(reader_gnuplot2) {
   vector<Polygon_2> polygons;
-  read_polygons_gnuplot2(data_dir+"/test2.dat", back_inserter(polygons), 1);
+  read_polygons_gnuplot2(data_dir + "/test2.dat", back_inserter(polygons), 1);
   CHECK_EQUAL(4, polygons.size());
 
   CHECK_EQUAL(4, polygons[0].size());

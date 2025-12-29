@@ -17,47 +17,42 @@
 
   You should have received a copy of the GNU Lesser General Public
   License along with this library; if not, write to the Free Software
-  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301
+  USA
 */
 
 /* $Id: main.cpp 4742 2011-10-21 22:09:44Z transfix $ */
 
+#include <VolMagick/HDF5_IO.h>
+#include <VolMagick/VolMagick.h>
+#include <errno.h>
+#include <fstream>
 #include <iostream>
-#include <vector>
+#include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
-
-#include <sys/types.h>
 #include <sys/stat.h>
+#include <sys/types.h>
 #include <unistd.h>
-#include <errno.h>
-#include <math.h>
-
-#include <VolMagick/VolMagick.h>
-#include <VolMagick/HDF5_IO.h>
-
-#include <fstream>
+#include <vector>
 
 using namespace std;
 
-int main(int argc, char **argv)
-{
-  if(argc < 2)
-    {
-      cerr << "Usage: " << argv[0] << " <volume file>" << endl;
-      return 1;
-    }
+int main(int argc, char **argv) {
+  if (argc < 2) {
+    cerr << "Usage: " << argv[0] << " <volume file>" << endl;
+    return 1;
+  }
 
-  try
-    {
+  try {
 #if 0
       VolMagick::VolumeCache volcache;
 #endif
 
-      VolMagick::VolumeFileInfo volinfo;
+    VolMagick::VolumeFileInfo volinfo;
 
-      VolMagick::StdErrOpStatus status;
-      VolMagick::setDefaultMessenger(&status);
+    VolMagick::StdErrOpStatus status;
+    VolMagick::setDefaultMessenger(&status);
 
 #if 0
       VolMagick::Volume sphereVol;
@@ -106,15 +101,15 @@ int main(int argc, char **argv)
       cout << "Volume name: " << volinfo.name() << endl << endl;
 #endif
 
-      /*
-      vol.dimension(VolMagick::Dimension(128,128,128));
-      vol.voxelType(VolMagick::Float);
-      for(unsigned int i=0; i<128; i++)
-	for(unsigned int j=0; j<128; j++)
-	  for(unsigned int k=0; k<128; k++)
-	    vol(i,j,k,double(i)/128.0);
-      */
-     
+    /*
+    vol.dimension(VolMagick::Dimension(128,128,128));
+    vol.voxelType(VolMagick::Float);
+    for(unsigned int i=0; i<128; i++)
+      for(unsigned int j=0; j<128; j++)
+        for(unsigned int k=0; k<128; k++)
+          vol(i,j,k,double(i)/128.0);
+    */
+
 #if 0 
       if(argc > 2)
 	{
@@ -170,7 +165,7 @@ int main(int argc, char **argv)
 	}
 #endif
 
-      //vector test
+    // vector test
 #if 0
       std::vector<VolMagick::Volume> vols(4);
       {
@@ -200,52 +195,46 @@ int main(int argc, char **argv)
 	VolMagick::writeVolumeFile(vols,"test.rawv");
       }
 #endif
-      //cout << "std::streamoff size: " << sizeof(std::streamoff) << endl;
+    // cout << "std::streamoff size: " << sizeof(std::streamoff) << endl;
 
-      //ifstream test("flkajlff");
+    // ifstream test("flkajlff");
 
-      //hdf5 test
-      VolMagick::Volume sphereVol;
-      
-      sphereVol.dimension(VolMagick::Dimension(128,128,128));//256,256,256));
-      sphereVol.voxelType(VolMagick::UChar);
+    // hdf5 test
+    VolMagick::Volume sphereVol;
 
-      double center_x = sphereVol.XDim()/2.0;
-      double center_y = sphereVol.YDim()/2.0;      
-      double center_z = sphereVol.ZDim()/2.0;
-      double distance;
+    sphereVol.dimension(VolMagick::Dimension(128, 128, 128)); // 256,256,256));
+    sphereVol.voxelType(VolMagick::UChar);
 
-      for(unsigned int k=0; k<sphereVol.ZDim(); k++)
-	for(unsigned int j=0; j<sphereVol.YDim(); j++)
-	  for(unsigned int i=0; i<sphereVol.XDim(); i++)
-	    {
-	      distance = sqrt(double((i-center_x)*(i-center_x)+
-				     (j-center_y)*(j-center_y)+
-				     (k-center_z)*(k-center_z)));
-	      //sphereVol(i,j,k, distance);
-		
-	      if((distance > 15.0) && (distance < 20.0))
-		sphereVol(i,j,k, 20);//20.0+10*(distance-15.0)/(20.0-15.0));
-	      if((distance >= 20.0) && (distance < 25.0))
-		sphereVol(i,j,k, 30);//50.0+10*(distance-50.0)/(55.0-50.0));
-	    }
+    double center_x = sphereVol.XDim() / 2.0;
+    double center_y = sphereVol.YDim() / 2.0;
+    double center_z = sphereVol.ZDim() / 2.0;
+    double distance;
 
-      VolMagick::createVolumeFile(argv[1],
-				  sphereVol.boundingBox(),
-				  sphereVol.dimension(),
-				  std::vector<VolMagick::VoxelType>(1, VolMagick::UChar),
-				  1,1,0.0,0.0);
-      volinfo.read(argv[1]);
-      VolMagick::writeVolumeFile(sphereVol, argv[1]);
-    }
-  catch(VolMagick::Exception &e)
-    {
-      cerr << e.what() << endl;
-    }
-  catch(std::exception &e)
-    {
-      cerr << e.what() << endl;
-    }
+    for (unsigned int k = 0; k < sphereVol.ZDim(); k++)
+      for (unsigned int j = 0; j < sphereVol.YDim(); j++)
+        for (unsigned int i = 0; i < sphereVol.XDim(); i++) {
+          distance = sqrt(double((i - center_x) * (i - center_x) +
+                                 (j - center_y) * (j - center_y) +
+                                 (k - center_z) * (k - center_z)));
+          // sphereVol(i,j,k, distance);
+
+          if ((distance > 15.0) && (distance < 20.0))
+            sphereVol(i, j, k, 20); // 20.0+10*(distance-15.0)/(20.0-15.0));
+          if ((distance >= 20.0) && (distance < 25.0))
+            sphereVol(i, j, k, 30); // 50.0+10*(distance-50.0)/(55.0-50.0));
+        }
+
+    VolMagick::createVolumeFile(
+        argv[1], sphereVol.boundingBox(), sphereVol.dimension(),
+        std::vector<VolMagick::VoxelType>(1, VolMagick::UChar), 1, 1, 0.0,
+        0.0);
+    volinfo.read(argv[1]);
+    VolMagick::writeVolumeFile(sphereVol, argv[1]);
+  } catch (VolMagick::Exception &e) {
+    cerr << e.what() << endl;
+  } catch (std::exception &e) {
+    cerr << e.what() << endl;
+  }
 
   return 0;
 }

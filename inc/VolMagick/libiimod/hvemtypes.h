@@ -19,7 +19,6 @@
 
 */
 
-
 #include <sys/types.h>
 
 /* Read the definitions of the b3d... data types of defined bit size */
@@ -39,8 +38,8 @@
 
 #include <limits.h>
 
-#ifndef FLT_MAX 
-#define FLT_MAX         3.40282347E+38F
+#ifndef FLT_MAX
+#define FLT_MAX 3.40282347E+38F
 #endif
 
 #ifndef SEEK_SET

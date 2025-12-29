@@ -17,7 +17,8 @@
 
   You should have received a copy of the GNU Lesser General Public
   License along with this library; if not, write to the Free Software
-  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301
+  USA
 */
 
 /* $Id: bspline_opt.h 4741 2011-10-21 21:22:06Z transfix $ */
@@ -31,18 +32,17 @@ class QLineEdit;
 class QCheckBox;
 class QButtonGroup;
 
-class bspline_opt : public QDialog
-{
+class bspline_opt : public QDialog {
   Q_OBJECT
 
- public:
+public:
   bspline_opt(QWidget *parent = 0, const char *name = 0, bool modal = false);
   ~bspline_opt();
 
- public slots:
+public slots:
   void toggleControlPointOutputTypeFunctionality(int id);
 
- public:
+public:
   QLineEdit *degree;
   QCheckBox *curslice;
   QButtonGroup *control_type;

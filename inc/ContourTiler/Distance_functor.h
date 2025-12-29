@@ -8,18 +8,15 @@ CONTOURTILER_BEGIN_NAMESPACE
 //------------------------------------------------------------------------------
 // Distance_functor class
 //------------------------------------------------------------------------------
-template <typename Point>
-class Distance_functor
-{
+template <typename Point> class Distance_functor {
 public:
-  Distance_functor()
-  {}
+  Distance_functor() {}
 
-  Distance_functor(const Point& s)
-  { _source = s; }
+  Distance_functor(const Point &s) { _source = s; }
 
-  bool operator()( const Point& a, const Point& b ) const
-  { return CGAL::has_larger_distance_to_point(_source, b, a); }
+  bool operator()(const Point &a, const Point &b) const {
+    return CGAL::has_larger_distance_to_point(_source, b, a);
+  }
 
 private:
   Point _source;
@@ -31,8 +28,7 @@ private:
 /// Utility function to create a distance functor based on a point.
 //------------------------------------------------------------------------------
 template <typename Point>
-Distance_functor<Point> dist_functor(const Point& point)
-{
+Distance_functor<Point> dist_functor(const Point &point) {
   return Distance_functor<Point>(point);
 }
 

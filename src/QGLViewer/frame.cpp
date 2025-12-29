@@ -22,8 +22,8 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 
 **********************************************************************/
 
-#include <QGLViewer/frame.h>
 #include <QGLViewer/domUtils.h>
+#include <QGLViewer/frame.h>
 #include <math.h>
 
 using namespace qglviewer;
@@ -31,8 +31,8 @@ using namespace std;
 
 /*! Creates a default Frame.
 
-  Its position() is (0,0,0) and it has an identity orientation() Quaternion. The
-  referenceFrame() and the constraint() are \c nullptr. */
+  Its position() is (0,0,0) and it has an identity orientation() Quaternion.
+  The referenceFrame() and the constraint() are \c nullptr. */
 Frame::Frame() : constraint_(nullptr), referenceFrame_(nullptr) {}
 
 /*! Creates a Frame with a position() and an orientation().
@@ -40,10 +40,11 @@ Frame::Frame() : constraint_(nullptr), referenceFrame_(nullptr) {}
  See the Vec and Quaternion documentations for convenient constructors and
  methods.
 
- The Frame is defined in the world coordinate system (its referenceFrame() is \c
- nullptr). It has a \c nullptr associated constraint(). */
+ The Frame is defined in the world coordinate system (its referenceFrame() is
+ \c nullptr). It has a \c nullptr associated constraint(). */
 Frame::Frame(const Vec &position, const Quaternion &orientation)
-    : t_(position), q_(orientation), constraint_(nullptr), referenceFrame_(nullptr) {}
+    : t_(position), q_(orientation), constraint_(nullptr),
+      referenceFrame_(nullptr) {}
 
 /*! Equal operator.
 
@@ -51,8 +52,8 @@ Frame::Frame(const Vec &position, const Quaternion &orientation)
 
   \attention Signal and slot connections are not copied. */
 Frame &Frame::operator=(const Frame &frame) {
-  // Automatic compiler generated version would not emit the modified() signals
-  // as is done in setTranslationAndRotation.
+  // Automatic compiler generated version would not emit the modified()
+  // signals as is done in setTranslationAndRotation.
   setTranslationAndRotation(frame.translation(), frame.rotation());
   setConstraint(frame.constraint());
   setReferenceFrame(frame.referenceFrame());
@@ -61,21 +62,19 @@ Frame &Frame::operator=(const Frame &frame) {
 
 /*! Copy constructor.
 
-  The translation() and rotation() as well as constraint() and referenceFrame()
-  pointers are copied. */
+  The translation() and rotation() as well as constraint() and
+  referenceFrame() pointers are copied. */
 Frame::Frame(const Frame &frame) : QObject() { (*this) = frame; }
 
-/////////////////////////////// MATRICES //////////////////////////////////////
+/////////////////////////////// MATRICES
+/////////////////////////////////////////
 
 /*! Returns the 4x4 OpenGL transformation matrix represented by the Frame.
 
   This method should be used in conjunction with \c glMultMatrixd() to modify
-  the OpenGL modelview matrix from a Frame hierarchy. With this Frame hierarchy:
-  \code
-  Frame* body     = new Frame();
-  Frame* leftArm  = new Frame();
-  Frame* rightArm = new Frame();
-  leftArm->setReferenceFrame(body);
+  the OpenGL modelview matrix from a Frame hierarchy. With this Frame
+  hierarchy: \code Frame* body     = new Frame(); Frame* leftArm  = new
+  Frame(); Frame* rightArm = new Frame(); leftArm->setReferenceFrame(body);
   rightArm->setReferenceFrame(body);
   \endcode
 
@@ -104,8 +103,8 @@ Frame::Frame(const Frame &frame) : QObject() { (*this) = frame; }
   represent the frame hierarchy: \c leftArm and \c rightArm are both correctly
   drawn with respect to the \c body coordinate system.
 
-  This matrix only represents the local Frame transformation (i.e. with respect
-  to the referenceFrame()). Use worldMatrix() to get the full Frame
+  This matrix only represents the local Frame transformation (i.e. with
+  respect to the referenceFrame()). Use worldMatrix() to get the full Frame
   transformation matrix (i.e. from the world to the Frame coordinate system).
   These two match when the referenceFrame() is \c nullptr.
 
@@ -134,7 +133,8 @@ void Frame::getMatrix(GLdouble m[4][4]) const {
   m[3][2] = t_[2];
 }
 
-/*! \c GLdouble[16] version of matrix(). See also getWorldMatrix() and matrix().
+/*! \c GLdouble[16] version of matrix(). See also getWorldMatrix() and
+ * matrix().
  */
 void Frame::getMatrix(GLdouble m[16]) const {
   q_.getMatrix(m);
@@ -144,7 +144,8 @@ void Frame::getMatrix(GLdouble m[16]) const {
   m[14] = t_[2];
 }
 
-/*! Returns a Frame representing the inverse of the Frame space transformation.
+/*! Returns a Frame representing the inverse of the Frame space
+  transformation.
 
   The rotation() of the new Frame is the Quaternion::inverse() of the original
   rotation. Its translation() is the negated inverse rotated image of the
@@ -156,8 +157,8 @@ void Frame::getMatrix(GLdouble m[16]) const {
   Only the local Frame transformation (i.e. defined with respect to the
   referenceFrame()) is inverted. Use worldInverse() for a global inverse.
 
-  The resulting Frame has the same referenceFrame() as the Frame and a \c nullptr
-  constraint().
+  The resulting Frame has the same referenceFrame() as the Frame and a \c
+  nullptr constraint().
 
   \note The scaling factor of the 4x4 matrix is 1.0. */
 Frame Frame::inverse() const {
@@ -181,8 +182,8 @@ Frame Frame::inverse() const {
 
   This matrix represents the global Frame transformation: the entire
   referenceFrame() hierarchy is taken into account to define the Frame
-  transformation from the world coordinate system. Use matrix() to get the local
-  Frame transformation matrix (i.e. defined with respect to the
+  transformation from the world coordinate system. Use matrix() to get the
+  local Frame transformation matrix (i.e. defined with respect to the
   referenceFrame()). These two match when the referenceFrame() is \c nullptr.
 
   The OpenGL format of the result is the transpose of the actual mathematical
@@ -190,8 +191,8 @@ Frame Frame::inverse() const {
   last \e column).
 
   \attention The result is only valid until the next call to matrix(),
-  getMatrix(), worldMatrix() or getWorldMatrix(). Use it immediately (as above)
-  or use getWorldMatrix() instead.
+  getMatrix(), worldMatrix() or getWorldMatrix(). Use it immediately (as
+  above) or use getWorldMatrix() instead.
 
   \note The scaling factor of the 4x4 matrix is 1.0. */
 const GLdouble *Frame::worldMatrix() const {
@@ -258,15 +259,15 @@ void Frame::setFromMatrix(const GLdouble m[4][4]) {
  \endcode
 
  Using this conversion, you can benefit from the powerful Frame transformation
- methods to translate points and vectors to and from the Frame coordinate system
- to any other Frame coordinate system (including the world coordinate system).
- See coordinatesOf() and transformOf().
+ methods to translate points and vectors to and from the Frame coordinate
+ system to any other Frame coordinate system (including the world coordinate
+ system). See coordinatesOf() and transformOf().
 
  Emits the modified() signal. See also matrix(), getMatrix() and
  Quaternion::setFromRotationMatrix().
 
- \attention A Frame does not contain a scale factor. The possible scaling in \p
- m will not be converted into the Frame by this method. */
+ \attention A Frame does not contain a scale factor. The possible scaling in
+ \p m will not be converted into the Frame by this method. */
 void Frame::setFromMatrix(const GLdouble m[16]) {
   GLdouble mat[4][4];
   for (int i = 0; i < 4; ++i)
@@ -313,8 +314,8 @@ void Frame::getRotation(qreal &q0, qreal &q1, qreal &q2, qreal &q3) const {
 
   The translation actually applied to the Frame may differ from \p t since it
   can be filtered by the constraint(). Use translate(Vec&) or
-  setTranslationWithConstraint() to retrieve the filtered translation value. Use
-  setTranslation() to directly translate the Frame without taking the
+  setTranslationWithConstraint() to retrieve the filtered translation value.
+  Use setTranslation() to directly translate the Frame without taking the
   constraint() into account.
 
   See also rotate(const Quaternion&). Emits the modified() signal. */
@@ -348,7 +349,8 @@ void Frame::translate(qreal &x, qreal &y, qreal &z) {
   z = t[2];
 }
 
-/*! Rotates the Frame by \p q (defined in the Frame coordinate system): R = R*q.
+/*! Rotates the Frame by \p q (defined in the Frame coordinate system): R =
+  R*q.
 
   The rotation actually applied to the Frame may differ from \p q since it can
   be filtered by the constraint(). Use rotate(Quaternion&) or
@@ -392,8 +394,8 @@ void Frame::rotate(qreal q0, qreal q1, qreal q2, qreal q3) {
 
 /*! Makes the Frame rotate() by \p rotation around \p point.
 
-  \p point is defined in the world coordinate system, while the \p rotation axis
-  is defined in the Frame coordinate system.
+  \p point is defined in the world coordinate system, while the \p rotation
+  axis is defined in the Frame coordinate system.
 
   If the Frame has a constraint(), \p rotation is first constrained using
   Constraint::constrainRotation(). The translation which results from the
@@ -407,10 +409,11 @@ void Frame::rotateAroundPoint(Quaternion &rotation, const Vec &point) {
     constraint()->constrainRotation(rotation, this);
   q_ *= rotation;
   q_.normalize(); // Prevents numerical drift
-  Vec trans = point +
-              Quaternion(inverseTransformOf(rotation.axis()), rotation.angle())
-                  .rotate(position() - point) -
-              t_;
+  Vec trans =
+      point +
+      Quaternion(inverseTransformOf(rotation.axis()), rotation.angle())
+          .rotate(position() - point) -
+      t_;
   if (constraint())
     constraint()->constrainTranslation(trans, this);
   t_ += trans;
@@ -432,8 +435,8 @@ void Frame::rotateAroundPoint(const Quaternion &rotation, const Vec &point) {
 Emits the modified() signal.
 
 Use setTranslation() to define the \e local frame translation (with respect to
-the referenceFrame()). The potential constraint() of the Frame is not taken into
-account, use setPositionWithConstraint() instead. */
+the referenceFrame()). The potential constraint() of the Frame is not taken
+into account, use setPositionWithConstraint() instead. */
 void Frame::setPosition(const Vec &position) {
   if (referenceFrame())
     setTranslation(referenceFrame()->coordinatesOf(position));
@@ -483,8 +486,8 @@ void Frame::getPosition(qreal &x, qreal &y, qreal &z) const {
   z = p.z;
 }
 
-/*! Sets the orientation() of the Frame, defined in the world coordinate system.
-Emits the modified() signal.
+/*! Sets the orientation() of the Frame, defined in the world coordinate
+system. Emits the modified() signal.
 
 Use setRotation() to define the \e local frame rotation (with respect to the
 referenceFrame()). The potential constraint() of the Frame is not taken into
@@ -633,21 +636,22 @@ void Frame::setPositionAndOrientationWithConstraint(Vec &position,
 
 /*! Sets the referenceFrame() of the Frame.
 
-The Frame translation() and rotation() are then defined in the referenceFrame()
-coordinate system. Use position() and orientation() to express these in the
-world coordinate system.
+The Frame translation() and rotation() are then defined in the
+referenceFrame() coordinate system. Use position() and orientation() to
+express these in the world coordinate system.
 
 Emits the modified() signal if \p refFrame differs from the current
 referenceFrame().
 
-Using this method, you can create a hierarchy of Frames. This hierarchy needs to
-be a tree, which root is the world coordinate system (i.e. a \c nullptr
-referenceFrame()). A warning is printed and no action is performed if setting \p
-refFrame as the referenceFrame() would create a loop in the Frame hierarchy (see
-settingAsReferenceFrameWillCreateALoop()). */
+Using this method, you can create a hierarchy of Frames. This hierarchy needs
+to be a tree, which root is the world coordinate system (i.e. a \c nullptr
+referenceFrame()). A warning is printed and no action is performed if setting
+\p refFrame as the referenceFrame() would create a loop in the Frame hierarchy
+(see settingAsReferenceFrameWillCreateALoop()). */
 void Frame::setReferenceFrame(const Frame *const refFrame) {
   if (settingAsReferenceFrameWillCreateALoop(refFrame))
-    qWarning("Frame::setReferenceFrame would create a loop in Frame hierarchy");
+    qWarning(
+        "Frame::setReferenceFrame would create a loop in Frame hierarchy");
   else {
     bool identical = (referenceFrame_ == refFrame);
     referenceFrame_ = refFrame;
@@ -674,8 +678,8 @@ bool Frame::settingAsReferenceFrameWillCreateALoop(const Frame *const frame) {
 /*! Returns the Frame coordinates of a point \p src defined in the world
  coordinate system (converts from world to Frame).
 
- inverseCoordinatesOf() performs the inverse convertion. transformOf() converts
- 3D vectors instead of 3D coordinates.
+ inverseCoordinatesOf() performs the inverse convertion. transformOf()
+ converts 3D vectors instead of 3D coordinates.
 
  See the <a href="../examples/frameTransform.html">frameTransform example</a>
  for an illustration. */
@@ -702,7 +706,8 @@ Vec Frame::inverseCoordinatesOf(const Vec &src) const {
 }
 
 /*! Returns the Frame coordinates of a point \p src defined in the
-  referenceFrame() coordinate system (converts from referenceFrame() to Frame).
+  referenceFrame() coordinate system (converts from referenceFrame() to
+  Frame).
 
   localInverseCoordinatesOf() performs the inverse convertion. See also
   localTransformOf(). */
@@ -745,8 +750,8 @@ Vec Frame::coordinatesOfIn(const Vec &src, const Frame *const in) const {
   }
 
   if (fr != in)
-    // in was not found in the branch of this, res is now expressed in the world
-    // coordinate system. Simply convert to in coordinate system.
+    // in was not found in the branch of this, res is now expressed in the
+    // world coordinate system. Simply convert to in coordinate system.
     res = in->coordinatesOf(res);
 
   return res;
@@ -806,8 +811,8 @@ void Frame::getCoordinatesOfFrom(const qreal src[3], qreal res[3],
  coordinate system (converts vectors from world to Frame).
 
  inverseTransformOf() performs the inverse transformation. coordinatesOf()
- converts 3D coordinates instead of 3D vectors (here only the rotational part of
- the transformation is taken into account).
+ converts 3D coordinates instead of 3D vectors (here only the rotational part
+ of the transformation is taken into account).
 
  See the <a href="../examples/frameTransform.html">frameTransform example</a>
  for an illustration. */
@@ -821,8 +826,8 @@ Vec Frame::transformOf(const Vec &src) const {
 /*! Returns the world transform of the vector whose coordinates in the Frame
   coordinate system is \p src (converts vectors from Frame to world).
 
-  transformOf() performs the inverse transformation. Use inverseCoordinatesOf()
-  to transform 3D coordinates instead of 3D vectors. */
+  transformOf() performs the inverse transformation. Use
+  inverseCoordinatesOf() to transform 3D coordinates instead of 3D vectors. */
 Vec Frame::inverseTransformOf(const Vec &src) const {
   const Frame *fr = this;
   Vec res = src;
@@ -834,8 +839,8 @@ Vec Frame::inverseTransformOf(const Vec &src) const {
 }
 
 /*! Returns the Frame transform of a vector \p src defined in the
-  referenceFrame() coordinate system (converts vectors from referenceFrame() to
-  Frame).
+  referenceFrame() coordinate system (converts vectors from referenceFrame()
+  to Frame).
 
   localInverseTransformOf() performs the inverse transformation. See also
   localCoordinatesOf(). */
@@ -878,8 +883,8 @@ Vec Frame::transformOfIn(const Vec &src, const Frame *const in) const {
   }
 
   if (fr != in)
-    // in was not found in the branch of this, res is now expressed in the world
-    // coordinate system. Simply convert to in coordinate system.
+    // in was not found in the branch of this, res is now expressed in the
+    // world coordinate system. Simply convert to in coordinate system.
     res = in->transformOf(res);
 
   return res;
@@ -909,7 +914,8 @@ void Frame::getLocalTransformOf(const qreal src[3], qreal res[3]) const {
 }
 
 /*! Same as localInverseTransformOf(), but with \c qreal parameters. */
-void Frame::getLocalInverseTransformOf(const qreal src[3], qreal res[3]) const {
+void Frame::getLocalInverseTransformOf(const qreal src[3],
+                                       qreal res[3]) const {
   Vec r = localInverseTransformOf(Vec(src));
   for (int i = 0; i < 3; ++i)
     res[i] = r[i];
@@ -956,7 +962,8 @@ void Frame::getTransformOfFrom(const qreal src[3], qreal res[3],
  QDomElement. */
 QDomElement Frame::domElement(const QString &name,
                               QDomDocument &document) const {
-  // TODO: use translation and rotation instead when referenceFrame is coded...
+  // TODO: use translation and rotation instead when referenceFrame is
+  // coded...
   QDomElement e = document.createElement(name);
   e.appendChild(position().domElement("position", document));
   e.appendChild(orientation().domElement("orientation", document));
@@ -972,7 +979,8 @@ QDomElement Frame::domElement(const QString &name,
  \attention The constraint() and referenceFrame() are not restored by this
  method and are left unchanged. */
 void Frame::initFromDOMElement(const QDomElement &element) {
-  // TODO: use translation and rotation instead when referenceFrame is coded...
+  // TODO: use translation and rotation instead when referenceFrame is
+  // coded...
 
   // Reset default values. Attention: destroys constraint.
   // *this = Frame();
@@ -998,13 +1006,13 @@ If one of the X, Y and Z axis of the Frame is almost parallel to any of the X,
 Y, or Z axis of \p frame, the Frame is rotated so that these two axis actually
 become parallel.
 
-If, after this first rotation, two other axis are also almost parallel, a second
-alignment is performed. The two frames then have identical orientations, up to
-90 degrees rotations.
+If, after this first rotation, two other axis are also almost parallel, a
+second alignment is performed. The two frames then have identical
+orientations, up to 90 degrees rotations.
 
 \p threshold measures how close two axis must be to be considered parallel. It
-is compared with the absolute values of the dot product of the normalized axis.
-As a result, useful range is sqrt(2)/2 (systematic alignment) to 1 (no
+is compared with the absolute values of the dot product of the normalized
+axis. As a result, useful range is sqrt(2)/2 (systematic alignment) to 1 (no
 alignment).
 
 When \p move is set to \c true, the Frame position() is also affected by the
@@ -1012,11 +1020,11 @@ alignment. The new Frame's position() is such that the \p frame position
 (computed with coordinatesOf(), in the Frame coordinates system) does not
 change.
 
-\p frame may be \c nullptr and then represents the world coordinate system (same
-convention than for the referenceFrame()).
+\p frame may be \c nullptr and then represents the world coordinate system
+(same convention than for the referenceFrame()).
 
-The rotation (and translation when \p move is \c true) applied to the Frame are
-filtered by the possible constraint(). */
+The rotation (and translation when \p move is \c true) applied to the Frame
+are filtered by the possible constraint(). */
 void Frame::alignWithFrame(const Frame *const frame, bool move,
                            qreal threshold) {
   Vec directions[2][3];
@@ -1091,11 +1099,12 @@ origin and \p direction (defined in the world coordinate system).
 Simply uses an orthogonal projection. \p direction does not need to be
 normalized. */
 void Frame::projectOnLine(const Vec &origin, const Vec &direction) {
-  // If you are trying to find a bug here, because of memory problems, you waste
-  // your time. This is a bug in the gcc 3.3 compiler. Compile the library in
-  // debug mode and test. Uncommenting this line also seems to solve the
-  // problem. Horrible. cout << "position = " << position() << endl; If you
-  // found a problem or are using a different compiler, please let me know.
+  // If you are trying to find a bug here, because of memory problems, you
+  // waste your time. This is a bug in the gcc 3.3 compiler. Compile the
+  // library in debug mode and test. Uncommenting this line also seems to
+  // solve the problem. Horrible. cout << "position = " << position() << endl;
+  // If you found a problem or are using a different compiler, please let me
+  // know.
   const Vec shift = origin - position();
   Vec proj = shift;
   proj.projectOnAxis(direction);

@@ -17,21 +17,20 @@
 
   You should have received a copy of the GNU Lesser General Public
   License along with this library; if not, write to the Free Software
-  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301
+  USA
 */
 
 #ifndef __RCOCONE_H__
 #define __RCOCONE_H__
 
 #include <SecondaryStructures/datastruct_ss.h>
-#include <SecondaryStructures/util.h>
 #include <SecondaryStructures/robust_cc.h>
+#include <SecondaryStructures/util.h>
 
-void robust_cocone(const double bb_ratio,
-				   const double theta_ff,
-				   const double theta_if,
-				   SecondaryStructures::Triangulation& triang,
-				   const char* outfile_prefix);
-
+void robust_cocone(const double bb_ratio, const double theta_ff,
+                   const double theta_if,
+                   SecondaryStructures::Triangulation &triang,
+                   const char *outfile_prefix);
 
 #endif

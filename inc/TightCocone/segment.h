@@ -17,7 +17,8 @@
 
   You should have received a copy of the GNU Lesser General Public
   License along with this library; if not, write to the Free Software
-  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301
+  USA
 */
 
 /**************************************
@@ -30,62 +31,60 @@
 
 #include <boost/shared_array.hpp>
 
-namespace TightCocone
-{
-  typedef struct {
-    //float *data;
-    //float *tdata;
-    boost::shared_array<float> data;
-    boost::shared_array<float> tdata;
-  } Data_3DS;
+namespace TightCocone {
+typedef struct {
+  // float *data;
+  // float *tdata;
+  boost::shared_array<float> data;
+  boost::shared_array<float> tdata;
+} Data_3DS;
 
-  typedef struct {
-    int *x;
-    int *y;
-    int *z;
-    float *t;
-    int size;
-  }MinHeapS;
+typedef struct {
+  int *x;
+  int *y;
+  int *z;
+  float *t;
+  int size;
+} MinHeapS;
 
-  typedef struct {
-    float x;
-    float y;
-    float z;
-  }VECTOR;
+typedef struct {
+  float x;
+  float y;
+  float z;
+} VECTOR;
 
-#define max(x, y) ((x>y) ? (x):(y))
-#define min(x, y) ((x<y) ? (x):(y))
+// Note: min/max macros removed from header to avoid conflicts with std::min/max
+// Use std::min/std::max in C++ code, or define locally in .cpp files if needed
 
-  //#define IndexVect(i,j,k) ((k)*XDIM*YDIM + (j)*XDIM + (i))
+// #define IndexVect(i,j,k) ((k)*XDIM*YDIM + (j)*XDIM + (i))
 
-  extern int XDIM;
-  extern int YDIM;
-  extern int ZDIM;
+extern int XDIM;
+extern int YDIM;
+extern int ZDIM;
 
-  /*
-    int XDIM;
-    int YDIM;
-    int ZDIM;
-  */
-#define TRUE          1
-#define FALSE         0
-#define MAX_TIME      99999999
-#define PIE           3.1415926932
-#define WINDOW        2
+/*
+  int XDIM;
+  int YDIM;
+  int ZDIM;
+*/
+#define TRUE 1
+#define FALSE 0
+#define MAX_TIME 99999999
+#define PIE 3.1415926932
+#define WINDOW 2
 
-  extern Data_3DS *dataset;
-  extern VECTOR* velocity;
-  extern unsigned char *bin_img;
-  extern float *ImgGrad;
+extern Data_3DS *dataset;
+extern VECTOR *velocity;
+extern unsigned char *bin_img;
+extern float *ImgGrad;
 
-
-  inline int IndexVect(int i,int j,int k){
-    return ((k)*XDIM*YDIM+ (j)*XDIM + (i));
-  }
-
+inline int IndexVect(int i, int j, int k) {
+  return ((k)*XDIM * YDIM + (j)*XDIM + (i));
 }
 
-//aj addition
+} // namespace TightCocone
+
+// aj addition
 //
 /*
   void segment(float, float);

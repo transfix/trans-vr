@@ -17,51 +17,45 @@
 
   You should have received a copy of the GNU Lesser General Public
   License along with this library; if not, write to the Free Software
-  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301
+  USA
 */
-
-#include <stdio.h>
 
 #include <PEDetection/CompileOptions.h>
 #include <PEDetection/Octree.h>
+#include <stdio.h>
 
-
-cOctreeCell::cOctreeCell()
-{
-	int		i;
-	Parent_m = NULL;
-	for (i=0; i<8; i++) Children_m[i] = NULL;
-	for (i=0; i<3; i++) {
-		StartCoord_mi[i] = -1;
-		EndCoord_mi[i] = -1;
-	}
-	for (i=0; i<NUM_CLASSES; i++) Class_mi[i] = -1;
-	CellID_mi = -1;
+cOctreeCell::cOctreeCell() {
+  int i;
+  Parent_m = NULL;
+  for (i = 0; i < 8; i++)
+    Children_m[i] = NULL;
+  for (i = 0; i < 3; i++) {
+    StartCoord_mi[i] = -1;
+    EndCoord_mi[i] = -1;
+  }
+  for (i = 0; i < NUM_CLASSES; i++)
+    Class_mi[i] = -1;
+  CellID_mi = -1;
 }
-
 
 // destructor
-cOctreeCell::~cOctreeCell()
-{
-	int		i;
-	for (i=0; i<8; i++) {
-		delete Children_m[i];
-		Children_m[i] = NULL; 
-	}
+cOctreeCell::~cOctreeCell() {
+  int i;
+  for (i = 0; i < 8; i++) {
+    delete Children_m[i];
+    Children_m[i] = NULL;
+  }
 }
 
-
-void cOctreeCell::setStartCoord(int X, int Y, int Z)
-{
-	StartCoord_mi[0] = X;
-	StartCoord_mi[1] = Y;
-	StartCoord_mi[2] = Z;
+void cOctreeCell::setStartCoord(int X, int Y, int Z) {
+  StartCoord_mi[0] = X;
+  StartCoord_mi[1] = Y;
+  StartCoord_mi[2] = Z;
 }
 
-
-void cOctreeCell::setEndCoord(int X, int Y, int Z)
-{
-	EndCoord_mi[0] = X;
-	EndCoord_mi[1] = Y;
-	EndCoord_mi[2] = Z;
+void cOctreeCell::setEndCoord(int X, int Y, int Z) {
+  EndCoord_mi[0] = X;
+  EndCoord_mi[1] = Y;
+  EndCoord_mi[2] = Z;
 }

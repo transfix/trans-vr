@@ -1,8 +1,8 @@
 /*
   Copyright 2012 The University of Texas at Austin
-  
-	Authors: Jose Rivera <transfix@ices.utexas.edu>
-	Advisor: Chandrajit Bajaj <bajaj@cs.utexas.edu>
+
+        Authors: Jose Rivera <transfix@ices.utexas.edu>
+        Advisor: Chandrajit Bajaj <bajaj@cs.utexas.edu>
 
   This file is part of Volume Rover.
 
@@ -27,151 +27,153 @@
 #define __VOLUMEVIEWER2_H__
 
 #include <CVC/App.h>
-#include <CVC/State.h>
 #include <CVC/BoundingBox.h>
-#include <VolumeRenderer/VolumeRenderer.h>
+#include <CVC/State.h>
+#include <GeometryRenderer/GeometryRenderer.h>
 #include <QGLViewer/qglviewer.h>
+#include <VolumeRenderer/VolumeRenderer.h>
 #include <string>
 
-#include <GeometryRenderer/GeometryRenderer.h>
-
-namespace CVC_NAMESPACE
-{
-  // ------------------
-  // CVC::VolumeViewer2
-  // ------------------
-  // Purpose: 
-  //  Updated version of VolumeViewer that uses cvcstate.
-  // ---- Change History ----
-  // 03/30/2012 -- Joe R. -- Started.
-  // 06/15/2012 -- Joe R. -- Using StateObject<>
-  class VolumeViewer2 : public QGLViewer, public StateObject<VolumeViewer2>
-  {
+namespace CVC_NAMESPACE {
+// ------------------
+// CVC::VolumeViewer2
+// ------------------
+// Purpose:
+//  Updated version of VolumeViewer that uses cvcstate.
+// ---- Change History ----
+// 03/30/2012 -- Joe R. -- Started.
+// 06/15/2012 -- Joe R. -- Using StateObject<>
+class VolumeViewer2 : public QGLViewer, public StateObject<VolumeViewer2> {
   Q_OBJECT
 
-  public:
+public:
+  enum VolumeRenderingType { ColorMapped, RGBA };
 
-    enum VolumeRenderingType { ColorMapped, RGBA };
+  explicit VolumeViewer2(QWidget *parent = nullptr,
+                         Qt::WindowFlags flags = Qt::WindowFlags())
+      : QGLViewer(parent, flags) {
+    defaultConstructor();
+  }
 
-    explicit VolumeViewer2(QWidget* parent=nullptr, 
-                          Qt::WindowFlags flags=Qt::WindowFlags())
-      : QGLViewer(parent, flags)
-    { defaultConstructor(); }
+  ~VolumeViewer2();
 
-    ~VolumeViewer2();
+  bool glUpdated() const;
+  bool hasBeenInitialized() const;
 
-    bool glUpdated() const;
-    bool hasBeenInitialized() const;
+  // void setDefaultVolumes();
+  virtual void setDefaultColorTable();
+  virtual void setDefaultScene();
+  virtual void normalizeScene(bool forceShowAll = false);
 
-    //void setDefaultVolumes();
-    virtual void setDefaultColorTable();
-    virtual void setDefaultScene();
-    virtual void normalizeScene(bool forceShowAll = false);
+  // get/set vector of volumes
+  // get/set color table
+  // get/set subvolume selector
+  // get/set vector of geometries
 
-    //get/set vector of volumes
-    //get/set color table
-    //get/set subvolume selector
-    //get/set vector of geometries
+  // main volume rendering bounding box
 
-    //main volume rendering bounding box
+  // volume rendering type
 
-    //volume rendering type
+  // has been initialized flag
+  // using VBO flag
+  // draw bounding box flag
+  // draw subvolume selector flag
+  // draw corner axis flag
+  // draw geometry flag
+  // draw volumes flag
+  // clip geometry to bounding box flag
+  // shaded rendering flag
 
-    //has been initialized flag
-    //using VBO flag
-    //draw bounding box flag
-    //draw subvolume selector flag
-    //draw corner axis flag
-    //draw geometry flag
-    //draw volumes flag
-    //clip geometry to bounding box flag
-    //shaded rendering flag
-    
-    //draw geometry normals flag (consider doing this per-geometry)
+  // draw geometry normals flag (consider doing this per-geometry)
 
-    //render quality (double)
-    //near plane (double)
+  // render quality (double)
+  // near plane (double)
 
-    BoundingBox globalBoundingBox() const;
+  BoundingBox globalBoundingBox() const;
 
-  public slots:
-    void reset(); //resets the viewer to its default state
+public slots:
+  void reset(); // resets the viewer to its default state
 
-    //Use this instead of updateGL() if you want to trigger a redraw
-    //but do not need it immediately.  This is safe to call from other
-    //threads as well.
-    void scheduleUpdateGL();
+  // Use this instead of updateGL() if you want to trigger a redraw
+  // but do not need it immediately.  This is safe to call from other
+  // threads as well.
+  void scheduleUpdateGL();
 
-    void resetROI(); //resets the ROI to the default based on the global bbox
+  void resetROI(); // resets the ROI to the default based on the global bbox
 
-  signals:
-    void postInit(); //emitted after init() was called
+signals:
+  void postInit(); // emitted after init() was called
 
-  protected:
-    virtual void init();
-    virtual void draw();
-    virtual void drawWithNames();
-    virtual void postDraw();
-    virtual void doDrawCornerAxis();
-    virtual void renderStates(const std::string& s);
-    virtual void renderStatesWithNames(const std::string& s);
-    virtual void calculateGlobalBoundingBox() const;
-    virtual void endSelection(const QPoint&);
-    virtual void postSelection(const QPoint& point);
-    virtual void setClipPlanes();
+protected:
+  virtual void init();
+  virtual void draw();
+  virtual void drawWithNames();
+  virtual void postDraw();
+  virtual void doDrawCornerAxis();
+  virtual void renderStates(const std::string &s);
+  virtual void renderStatesWithNames(const std::string &s);
+  virtual void calculateGlobalBoundingBox() const;
+  virtual void endSelection(const QPoint &);
+  virtual void postSelection(const QPoint &point);
+  virtual void setClipPlanes();
 
-    static void combineBoundingBox(BoundingBox& bbox, const std::string& s);
-    
-    enum HandleName
-      {
-	MaxXHead = 1, MaxXShaft,
-	MinXHead, MinXShaft,
-	MaxYHead, MaxYShaft,
-	MinYHead, MinYShaft,
-	MaxZHead, MaxZShaft,
-	MinZHead, MinZShaft,
-      };
-    void doDrawBoundingBox(const std::string& s);
-    void doDrawBoundingBox(const BoundingBox& bbox);
-    void doDrawSubVolumeSelector(const std::string& s, bool withNames = false);
-    void drawHandle(const qglviewer::Vec& from, const qglviewer::Vec& to, 
-		    float radius = -1.0, int nbSubdivisions = 12, 
-		    int headName = 0, int shaftName = 0);
-    void drawHandle(const qglviewer::Vec& from, const qglviewer::Vec& to,
-		    float r = 1.0f, float g = 1.0f, float b = 1.0f,
-		    int headName = 0, int shaftName = 0,
-		    float pointSize = 2.0f, float lineWidth = 2.0f);
+  static void combineBoundingBox(BoundingBox &bbox, const std::string &s);
 
-    virtual void customEvent(QEvent *event);
-
-    // Mouse events functions
-    virtual void mousePressEvent(QMouseEvent *e);
-    virtual void mouseMoveEvent(QMouseEvent *e);
-    virtual void mouseReleaseEvent(QMouseEvent *e);
-    virtual void wheelEvent(QWheelEvent* e);
-
-    //responding to state changes
-    virtual void handleStateChanged(const std::string&);
-
-    //responding to thread changes
-    void threadsChanged(const std::string&);
-    void handleThreadsChanged(const std::string&);
-    boost::signals2::connection _threadsConnection;
-
-    virtual void uploadColorTable();
-    virtual void uploadVolume(const std::string& s);
-    virtual void updateVBO();
-
-    void copyCameraToState();
-
-    VolumeRenderer _renderer; //the volume renderer
-    GeometryRenderer _geometryRenderer;
-
-    boost::mutex _handleStateChangedMutex;
-
-  private:
-    void defaultConstructor();
+  enum HandleName {
+    MaxXHead = 1,
+    MaxXShaft,
+    MinXHead,
+    MinXShaft,
+    MaxYHead,
+    MaxYShaft,
+    MinYHead,
+    MinYShaft,
+    MaxZHead,
+    MaxZShaft,
+    MinZHead,
+    MinZShaft,
   };
-}
+  void doDrawBoundingBox(const std::string &s);
+  void doDrawBoundingBox(const BoundingBox &bbox);
+  void doDrawSubVolumeSelector(const std::string &s, bool withNames = false);
+  void drawHandle(const qglviewer::Vec &from, const qglviewer::Vec &to,
+                  float radius = -1.0, int nbSubdivisions = 12,
+                  int headName = 0, int shaftName = 0);
+  void drawHandle(const qglviewer::Vec &from, const qglviewer::Vec &to,
+                  float r = 1.0f, float g = 1.0f, float b = 1.0f,
+                  int headName = 0, int shaftName = 0, float pointSize = 2.0f,
+                  float lineWidth = 2.0f);
+
+  virtual void customEvent(QEvent *event);
+
+  // Mouse events functions
+  virtual void mousePressEvent(QMouseEvent *e);
+  virtual void mouseMoveEvent(QMouseEvent *e);
+  virtual void mouseReleaseEvent(QMouseEvent *e);
+  virtual void wheelEvent(QWheelEvent *e);
+
+  // responding to state changes
+  virtual void handleStateChanged(const std::string &);
+
+  // responding to thread changes
+  void threadsChanged(const std::string &);
+  void handleThreadsChanged(const std::string &);
+  boost::signals2::connection _threadsConnection;
+
+  virtual void uploadColorTable();
+  virtual void uploadVolume(const std::string &s);
+  virtual void updateVBO();
+
+  void copyCameraToState();
+
+  VolumeRenderer _renderer; // the volume renderer
+  GeometryRenderer _geometryRenderer;
+
+  boost::mutex _handleStateChangedMutex;
+
+private:
+  void defaultConstructor();
+};
+} // namespace CVC_NAMESPACE
 
 #endif
