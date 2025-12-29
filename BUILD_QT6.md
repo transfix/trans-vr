@@ -109,8 +109,8 @@ sudo apt-get install nvidia-cuda-toolkit
 ### 1. Clone the Repository
 
 ```bash
-git clone https://github.com/transfix/trans-vr.git
-cd trans-vr
+git clone https://github.com/transfix/volrover.git
+cd volrover
 ```
 
 ### 2. Configure Build with CMake
@@ -400,7 +400,7 @@ sudo apt-get install qt6-qpa-plugins
 
 ## Getting Help
 
-- Check existing issues: https://github.com/transfix/trans-vr/issues
+- Check existing issues: https://github.com/transfix/volrover/issues
 - Review Qt6 migration plan: `QT6_MIGRATION_PLAN.md`
 - Qt6 documentation: https://doc.qt.io/qt-6/
 
