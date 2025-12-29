@@ -26,22 +26,12 @@
 #ifndef __NEWVOLUMEDIALOG_H__
 #define __NEWVOLUMEDIALOG_H__
 
-#include <qglobal.h>
-
-#if QT_VERSION < 0x040000
-#include <qdialog.h>
-#else
 #include <QDialog>
-#endif
 
-#if QT_VERSION < 0x040000
-class NewVolumeDialogBase;
-#else
 namespace Ui
 {
   class NewVolumeDialog;
 }
-#endif
 
 #include <VolMagick/BoundingBox.h>
 #include <VolMagick/Dimension.h>
@@ -57,7 +47,7 @@ class NewVolumeDialog : public QDialog
 #if QT_VERSION < 0x040000
                   const char* name = 0, WFlags f = WType_TopLevel
 #else
-                  Qt::WFlags flags=0
+                  Qt::WindowFlags flags={}
 #endif
                   );
   virtual ~NewVolumeDialog();

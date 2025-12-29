@@ -38,7 +38,7 @@ namespace VolMagick
   */
   struct dimcmp
   {
-    bool operator()(const VolumeFileInfo& vfi1, const VolumeFileInfo& vfi2)
+    bool operator()(const VolumeFileInfo& vfi1, const VolumeFileInfo& vfi2) const
     {
       return vfi1.dimension().size() < vfi2.dimension().size();
     }

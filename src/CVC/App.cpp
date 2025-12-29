@@ -134,8 +134,7 @@ namespace CVC_NAMESPACE
 
     //Wait for all the threads to finish
     ThreadMap map = cvcapp.threads();
-    BOOST_FOREACH(ThreadMap::value_type val, map)
-      {
+    for (const auto& val : map) {
         try
           {
             using namespace boost;
@@ -203,10 +202,10 @@ namespace CVC_NAMESPACE
       _data = map;
       //erase empty data
       std::list<std::string> emptyProps;
-      BOOST_FOREACH(DataMap::value_type val, _data)
+      for (const auto& val : _data)
         if(val.first.empty() || val.second.empty()) 
 	  emptyProps.push_back(val.first);
-      BOOST_FOREACH(std::string key, emptyProps)
+      for (const auto& key : emptyProps)
         _data.erase(key);
     
     }
@@ -266,7 +265,7 @@ namespace CVC_NAMESPACE
     if(separators.empty()) separators=",";
     vector<string> keys;
     split(keys, keylist, is_any_of(separators));
-    BOOST_FOREACH(string& key, keys) trim(key);
+    for (auto& key : keys) trim(key);
     return keys;
   }
 
@@ -279,7 +278,7 @@ namespace CVC_NAMESPACE
     if(separators.empty()) separators=",";
     separators.resize(1); //just use the first char
     vector<string> localKeys = keys;
-    BOOST_FOREACH(string& key, localKeys) trim(key);
+    for (auto& key : localKeys) trim(key);
     string listkey = join(localKeys,separators);
     return listkey;
   }
@@ -316,7 +315,7 @@ namespace CVC_NAMESPACE
   {
     boost::this_thread::interruption_point();
     boost::mutex::scoped_lock lock(_dataReadersMutex);
-    BOOST_FOREACH(DataReader dl, _dataReaders)
+    for (const auto& dl : _dataReaders)
       if(dl(path)) return true;
     return false;
   }
@@ -361,10 +360,10 @@ namespace CVC_NAMESPACE
       _properties = map;
       //erase empty properties
       std::list<std::string> emptyProps;
-      BOOST_FOREACH(PropertyMap::value_type val, _properties)
+      for (const auto& val : _properties)
         if(val.first.empty() || val.second.empty()) 
 	  emptyProps.push_back(val.first);
-      BOOST_FOREACH(std::string key, emptyProps)
+      for (const auto& key : emptyProps)
         _properties.erase(key);
     }
     propertiesChanged("all");
@@ -375,7 +374,7 @@ namespace CVC_NAMESPACE
     boost::this_thread::interruption_point();
     {
       boost::mutex::scoped_lock lock(_propertiesMutex);
-      BOOST_FOREACH(PropertyMap::value_type val, map)
+      for (const auto& val : map)
         if(!val.first.empty() && !val.second.empty())
           _properties[val.first] = val.second;
     }
@@ -410,7 +409,7 @@ namespace CVC_NAMESPACE
     string separators = properties("system.list_separators");
     if(separators.empty()) separators=",";
     split(vals, valstring, is_any_of(separators));
-    BOOST_FOREACH(string& val, vals) trim(val);
+    for (auto& val : vals) trim(val);
     if(uniqueElements)
       {
         set<string> vals_set;
@@ -466,7 +465,7 @@ namespace CVC_NAMESPACE
 
     std::vector<std::string> filesToRead;
 
-    BOOST_FOREACH(const ptree::value_type &v, pt)
+    for (const auto& v : pt)
       {
         std::string childkey = v.first;
         std::string fullkey = 
@@ -498,7 +497,7 @@ namespace CVC_NAMESPACE
     using boost::property_tree::ptree;
     ptree pt;
     PropertyMap localmap = properties();
-    BOOST_FOREACH(const PropertyMap::value_type &v, localmap)
+    for (const auto& v : localmap)
       pt.put(v.first, v.second);
 #ifndef CVC_APP_XML_PROPERTY_MAP
     write_info(path, pt);
@@ -745,7 +744,7 @@ namespace CVC_NAMESPACE
 
 // 	vector<string> key_idents;
 // 	split(key_idents,output_locs,is_any_of(","));
-// 	BOOST_FOREACH(string loc, key_idents)
+// 	for (const auto& loc : key_idents)
 // 	  {
 // 	    trim(loc);
 
@@ -763,7 +762,7 @@ namespace CVC_NAMESPACE
 // 	    //check if loc is an std::string on the datamap
 // 	    bool isDataKey = false;
 // 	    std::vector<std::string> dataKeys = data<std::string>();
-// 	    BOOST_FOREACH(std::string key, dataKeys)
+// 	    for (const auto& key : dataKeys)
 // 	      if(loc == key) //if so, append buf to the log string
 // 		{
 // 		  data(key, data<std::string>(key) + output_string);
@@ -792,12 +791,11 @@ namespace CVC_NAMESPACE
     _threadKeys.clear();
 
     set<boost::thread::id> infoIds;
-    BOOST_FOREACH(ThreadInfoMap::value_type val, _threadInfo)
+    for (const auto& val : _threadInfo)
       infoIds.insert(val.first);
 
     set<boost::thread::id> currentIds;
-    BOOST_FOREACH(ThreadMap::value_type val, _threads)
-      {
+    for (const auto& val : _threads) {
         ThreadPtr ptr = val.second;
         if(ptr)
           {
@@ -817,7 +815,7 @@ namespace CVC_NAMESPACE
                    currentIds.begin(), currentIds.end(),
                    inserter(infoIdsToRemove,infoIdsToRemove.begin()));
 
-    BOOST_FOREACH(boost::thread::id tid, infoIdsToRemove)
+    for (const auto& tid : infoIdsToRemove)
       _threadInfo.erase(tid);
   }
 

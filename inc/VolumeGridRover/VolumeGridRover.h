@@ -27,20 +27,19 @@
 
 #include <QList>
 #include <QListView>
-
-#include <qwmatrix.h>
-#include <qpainter.h>
-#include <qframe.h>
-#include <qpixmap.h>
-#include <qslider.h>
-#include <qlineedit.h>
-//#include <qptrlist.h>
-#include <qcombobox.h>
-#include <qspinbox.h>
-#include <qthread.h>
-#include <qrect.h>
-#include <qtabwidget.h>
-#include <qimage.h>
+#include <QTransform>
+#include <QPainter>
+#include <QFrame>
+#include <QPixmap>
+#include <QSlider>
+#include <QLineEdit>
+#include <QComboBox>
+#include <QSpinBox>
+#include <QThread>
+#include <QRect>
+#include <QTabWidget>
+#include <QImage>
+#include <GL/glew.h>
 #include <QGLViewer/qglviewer.h>
 #include <QGLViewer/camera.h>
 
@@ -150,7 +149,8 @@ class SliceCanvas : public QGLViewer
     public:
   enum SliceAxis { XY, XZ, ZY };
   SliceCanvas(SliceAxis a, QWidget * parent = 0, const char * name = 0);
-  SliceCanvas(SliceAxis a, const QGLFormat& format, QWidget * parent = 0, const char * name = 0);
+  // TODO: Qt6 migration - QGLFormat removed, use QSurfaceFormat if needed
+  // SliceCanvas(SliceAxis a, const QGLFormat& format, QWidget * parent = 0, const char * name = 0);
   ~SliceCanvas();
 
   void setVolume(const VolMagick::VolumeFileInfo& vfi);
@@ -310,6 +310,7 @@ class SliceCanvas : public QGLViewer
   bool m_SliceDirty;
   bool m_MouseZoomStarted;
   bool m_UpdateSliceOnRelease;
+  bool m_CameraInitialized;
 };
 
 class ARBFragmentProgramSliceRenderer : public SliceRenderer
@@ -356,7 +357,7 @@ class VolumeGridRover : public QWidget
   Q_OBJECT
 
     public:
-  VolumeGridRover(QWidget* parent = NULL, const char* name = NULL, Qt::WFlags fl = NULL);
+  VolumeGridRover(QWidget* parent = nullptr, Qt::WindowFlags fl = Qt::WindowFlags());
   ~VolumeGridRover();
 
   SliceCanvas *getCurrentSliceCanvas();
@@ -407,9 +408,9 @@ class VolumeGridRover : public QWidget
 
   void updateGL()
   {
-    m_XYSliceCanvas->updateGL();
-    m_XZSliceCanvas->updateGL();
-    m_ZYSliceCanvas->updateGL();
+    m_XYSliceCanvas->update();
+    m_XZSliceCanvas->update();
+    m_ZYSliceCanvas->update();
   }
 
   public slots:
@@ -459,7 +460,7 @@ class VolumeGridRover : public QWidget
   void showContourInterpolationType(const QString& name);
   void showContourInterpolationSampling(const QString& name);
 
-  void currentObjectSelectionChanged(QListView *lvi);
+  void currentObjectSelectionChanged();
 
   void setCellMarkingMode(int m);
   
@@ -488,7 +489,7 @@ class VolumeGridRover : public QWidget
  protected:
   void hideEvent(QHideEvent *e);
   void showEvent(QShowEvent *e);
-  void customEvent(QCustomEvent *e);
+  void customEvent(QEvent *e);
   void setColorName();
     	  
   //just emits the current page index of the current page in the cell

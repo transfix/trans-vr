@@ -8,12 +8,23 @@ Joe R. -- transfix@ices.utexas.edu -- 04/25/2011
 A. Check external libraries required to build full functionality of VolumeRover 2.0
 (these libraries will be found by cmake if you have ones installed)
 
-1. Boost (1.41.0 has been tested) - required for basic build
-2. GSL (1.15 has been tested)     - required for tiling, volume grid rover, and volutils
-3. HDF5 (1.8.5 has been tested)   - required for heirarchical volume handling
-4. CGAL (4.0 has been tested)     - required for tiling, segmentation, curation, pockettunnel, skeletonization, secondary structure elucidation, tightcocone, super secondary structure elucidation, and volume grid rover.
-5. FFTW (3.2.4 has been tested)   - required for volutils and reconstruction
-6. Cg (Nvidia)                    - required for shaded volume rendering
+Required Libraries:
+1. Qt6 (6.4.2+)                   - required for GUI (Qt6 migration is active)
+2. Boost (1.70.0+)                - required for basic build
+3. GLEW (2.0+)                    - required for OpenGL extensions (now uses system version)
+4. OpenGL (3.3+)                  - required for rendering
+
+Optional Libraries:
+5. GSL (1.15+)                    - required for tiling, volume grid rover, and volutils
+6. HDF5 (1.8.5+)                  - required for heirarchical volume handling
+7. CGAL (4.0+)                    - required for tiling, segmentation, curation, pockettunnel, 
+                                    skeletonization, secondary structure elucidation, tightcocone, 
+                                    super secondary structure elucidation, and volume grid rover
+8. FFTW (3.2.4+)                  - required for volutils and reconstruction
+9. ImageMagick                    - required for some volume utilities
+
+**Note:** GLEW is now a system dependency. Install libglew-dev (Ubuntu/Debian) 
+or glew-devel (Fedora/RHEL). The old bundled GLEW in src/glew/ is no longer used.
 
 *** You can download those libraries here **
 

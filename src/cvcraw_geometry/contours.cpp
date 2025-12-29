@@ -97,14 +97,14 @@ namespace CVCGEOM_NAMESPACE
     _geom.clear();
     LOG4CPLUS_TRACE(logger, "2");
 
-    unordered_map<Point_3, int> p2i;
+    std::unordered_map<Point_3, int> p2i;
     size_t nextIdx = 0;
-    BOOST_FOREACH(const Slice& slice, _slices) {
+    for (const auto& slice : _slices) {
       list<string> components;
       LOG4CPLUS_TRACE(logger, "3");
       slice.components(back_inserter(components));
       LOG4CPLUS_TRACE(logger, "4");
-      BOOST_FOREACH(string component, components) {
+      for (const auto& component : components) {
 	LOG4CPLUS_TRACE(logger, "5");
 	for(Slice::Contour_const_iterator it = slice.begin(component); it != slice.end(component); ++it) {
 	  const Polygon_2& p = (*it)->polygon();

@@ -1,0 +1,257 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>LBIE_dialog</class>
+ <widget class="QDialog" name="LBIE_dialog">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>444</width>
+    <height>362</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>LBIE Meshing</string>
+  </property>
+  <layout class="QGridLayout">
+   <item row="11" column="1">
+    <widget class="QPushButton" name="m_Ok">
+     <property name="text">
+      <string>Ok</string>
+     </property>
+    </widget>
+   </item>
+   <item row="11" column="2">
+    <widget class="QPushButton" name="m_Cancel">
+     <property name="text">
+      <string>Cancel</string>
+     </property>
+    </widget>
+   </item>
+   <item row="1" column="0" rowspan="2" colspan="4">
+    <layout class="QFormLayout" name="formLayout_3">
+     <property name="fieldGrowthPolicy">
+      <enum>QFormLayout::AllNonFixedFieldsGrow</enum>
+     </property>
+     <item row="0" column="0">
+      <widget class="QLabel" name="label_2">
+       <property name="text">
+        <string>Input Data</string>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="1">
+      <widget class="QComboBox" name="volumeList"/>
+     </item>
+     <item row="2" column="0">
+      <widget class="QLabel" name="m_ErrorToleranceText">
+       <property name="text">
+        <string>Error Tolerance</string>
+       </property>
+       <property name="wordWrap">
+        <bool>false</bool>
+       </property>
+      </widget>
+     </item>
+     <item row="2" column="1">
+      <widget class="QLineEdit" name="m_ErrorTolerance"/>
+     </item>
+     <item row="3" column="0">
+      <widget class="QLabel" name="m_InnerErrorToleranceText">
+       <property name="text">
+        <string>Inner Error Tolerance</string>
+       </property>
+       <property name="wordWrap">
+        <bool>false</bool>
+       </property>
+      </widget>
+     </item>
+     <item row="3" column="1">
+      <widget class="QLineEdit" name="m_InnerErrorTolerance"/>
+     </item>
+     <item row="8" column="0">
+      <widget class="QLabel" name="m_MeshTypeText">
+       <property name="text">
+        <string>Mesh Type</string>
+       </property>
+       <property name="wordWrap">
+        <bool>false</bool>
+       </property>
+      </widget>
+     </item>
+     <item row="8" column="1">
+      <widget class="QComboBox" name="m_MeshType">
+       <item>
+        <property name="text">
+         <string>Triangle</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Tetra</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Quad</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Hexa</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Triangle - Double Surface</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Tetra - Double Boundary</string>
+        </property>
+       </item>
+      </widget>
+     </item>
+     <item row="9" column="0">
+      <widget class="QLabel" name="m_IterationsText">
+       <property name="text">
+        <string>Improvement Iterations</string>
+       </property>
+       <property name="wordWrap">
+        <bool>false</bool>
+       </property>
+      </widget>
+     </item>
+     <item row="9" column="1">
+      <widget class="QLineEdit" name="m_Iterations">
+       <property name="text">
+        <string>0</string>
+       </property>
+      </widget>
+     </item>
+     <item row="10" column="0">
+      <widget class="QLabel" name="m_NormalTypeText">
+       <property name="text">
+        <string>Normal Type</string>
+       </property>
+       <property name="wordWrap">
+        <bool>false</bool>
+       </property>
+      </widget>
+     </item>
+     <item row="10" column="1">
+      <widget class="QComboBox" name="m_NormalType">
+       <item>
+        <property name="text">
+         <string>B-Spline Convolution</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Central Difference</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>B-Spline Interpolation</string>
+        </property>
+       </item>
+      </widget>
+     </item>
+     <item row="11" column="0">
+      <widget class="QLabel" name="label_3">
+       <property name="text">
+        <string>Output Name</string>
+       </property>
+      </widget>
+     </item>
+     <item row="11" column="1">
+      <widget class="QLineEdit" name="OutputEdit"/>
+     </item>
+     <item row="5" column="0">
+      <widget class="QLabel" name="m_OuterIsoValueText">
+       <property name="text">
+        <string>Outer iso-value:</string>
+       </property>
+       <property name="wordWrap">
+        <bool>false</bool>
+       </property>
+      </widget>
+     </item>
+     <item row="5" column="1">
+      <widget class="QLineEdit" name="m_OuterIsoValue"/>
+     </item>
+     <item row="6" column="1">
+      <widget class="QLineEdit" name="m_InnerIsoValue">
+       <property name="enabled">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item row="6" column="0">
+      <widget class="QLabel" name="m_InnerIsoValueText">
+       <property name="text">
+        <string>Inner iso-value:</string>
+       </property>
+       <property name="wordWrap">
+        <bool>false</bool>
+       </property>
+      </widget>
+     </item>
+     <item row="4" column="0" colspan="2">
+      <widget class="Line" name="line">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+      </widget>
+     </item>
+     <item row="7" column="0" colspan="2">
+      <widget class="Line" name="line_2">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+  </layout>
+ </widget>
+ <layoutdefault spacing="6" margin="11"/>
+ <pixmapfunction>qPixmapFromMimeSource</pixmapfunction>
+ <resources/>
+ <connections>
+  <connection>
+   <sender>m_Cancel</sender>
+   <signal>clicked()</signal>
+   <receiver>LBIE_dialog</receiver>
+   <slot>reject()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>20</x>
+     <y>20</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>20</x>
+     <y>20</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>m_Ok</sender>
+   <signal>clicked()</signal>
+   <receiver>LBIE_dialog</receiver>
+   <slot>accept()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>20</x>
+     <y>20</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>20</x>
+     <y>20</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
+</ui>

@@ -60,7 +60,7 @@ namespace CVC_NAMESPACE
 
    public:
     Viewers(QWidget *parent = 0,
-                  Qt::WFlags flags = 0);
+                  Qt::WindowFlags flags = Qt::WindowFlags());
     virtual ~Viewers();
 
     VolumeViewer* thumbnailViewer()

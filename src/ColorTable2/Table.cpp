@@ -9,6 +9,7 @@
 #include <cmath>
 #include <cstdlib>
 #include <ColorTable2/Table.h>
+#include <QGLViewer/manipulatedCameraFrame.h>
 
 #if QT_VERSION < 0x040000
 #include <qpopupmenu.h>
@@ -57,16 +58,10 @@ namespace CVCColorTable
 #if QT_VERSION < 0x040000 || defined QT3_SUPPORT
                       const char *name
 #else
-                      Qt::WFlags flags
+                      Qt::WindowFlags flags
 #endif
                       )
-    : QGLViewer(parent,
-#if QT_VERSION < 0x040000 || defined QT3_SUPPORT
-                name, NULL, 0
-#else
-                (QGLWidget*)NULL//, flags
-#endif
-                ), _cti(cti),
+    : QGLViewer(parent, flags), _cti(cti),
       _min(MIN_RANGE), _max(MAX_RANGE),
       _constraint(new qglviewer::WorldConstraint()),
       _selectedObj(-1), _interactiveUpdates(true),
@@ -88,16 +83,10 @@ namespace CVCColorTable
 #if QT_VERSION < 0x040000 || defined QT3_SUPPORT
                       const char *name
 #else
-                      Qt::WFlags flags
+                      Qt::WindowFlags flags
 #endif
                       )
-    : QGLViewer(parent,
-#if QT_VERSION < 0x040000 || defined QT3_SUPPORT
-                name, NULL, 0
-#else
-                (QGLViewer*)NULL//, flags
-#endif
-                ), _cti(cti),
+    : QGLViewer(parent, flags), _cti(cti),
       _min(MIN_RANGE), _max(MAX_RANGE),
       _constraint(new qglviewer::WorldConstraint()),
       _selectedObj(-1), _interactiveUpdates(true),
@@ -120,14 +109,14 @@ namespace CVCColorTable
   {
     _rangeMin = val;
     emit rangeMinChanged(val);
-    updateGL();
+    update();
   }
 
   void Table::rangeMax(double val)
   {
     _rangeMax = val;
     emit rangeMaxChanged(val);
-    updateGL();
+    update();
   }
 
   void Table::interactiveUpdates(bool b)
@@ -138,7 +127,7 @@ namespace CVCColorTable
   void Table::visibleComponents(boost::uint64_t components)
   {
     _visibleComponents = components;
-    updateGL();
+    update();
   }
 
   void Table::setContourVolume(const VolMagick::Volume& vol)
@@ -147,7 +136,7 @@ namespace CVCColorTable
     _dirtyContourTree = true;
     _dirtyContourSpectrum = true;
     _dirtyHistogram = true;
-    updateGL();
+    update();
   }
 
   void Table::setMin(double min)
@@ -158,7 +147,7 @@ namespace CVCColorTable
     double tmp_max = std::max(_min,_max);
     _min = tmp_min;
     _max = tmp_max;
-    updateGL();
+    update();
   }
  
   void Table::setMax(double max)
@@ -169,7 +158,7 @@ namespace CVCColorTable
     double tmp_max = std::max(_min,_max);
     _min = tmp_min;
     _max = tmp_max;
-    updateGL();
+    update();
   }
 
   void Table::showOpacityFunction(bool b)
@@ -177,7 +166,7 @@ namespace CVCColorTable
     visibleComponents(b ?
                       visibleComponents() | OPACITY_NODES :
                       visibleComponents() & ~OPACITY_NODES);
-    updateGL();
+    update();
   }
 
   void Table::showTransferFunction(bool b)
@@ -189,7 +178,7 @@ namespace CVCColorTable
     visibleComponents(b ?
                       visibleComponents() | COLOR_BARS :
                       visibleComponents() & ~COLOR_BARS);
-    updateGL();
+    update();
   }
 
   void Table::showContourTree(bool b)
@@ -197,7 +186,7 @@ namespace CVCColorTable
     visibleComponents(b ?
                       visibleComponents() | CONTOUR_TREE :
                       visibleComponents() & ~CONTOUR_TREE);
-    updateGL();
+    update();
   }
 
   void Table::allocateInformDialg()
@@ -216,7 +205,7 @@ namespace CVCColorTable
     visibleComponents(b ?
                       visibleComponents() | CONTOUR_SPECTRUM :
                       visibleComponents() & ~CONTOUR_SPECTRUM);
-    updateGL();
+    update();
   }
 
   void Table::showHistogram(bool b)
@@ -224,7 +213,7 @@ namespace CVCColorTable
     visibleComponents(b ?
                       visibleComponents() | HISTOGRAM :
                       visibleComponents() & ~HISTOGRAM);
-    updateGL();
+    update();
   }
 
   void Table::init()
@@ -232,7 +221,9 @@ namespace CVCColorTable
     //this is probably not necessary because of the start/stop screen coordinates calls
     _constraint->setRotationConstraintType(qglviewer::AxisPlaneConstraint::FORBIDDEN);
     _constraint->setTranslationConstraintType(qglviewer::AxisPlaneConstraint::FORBIDDEN);
-    camera()->frame()->setConstraint(_constraint.get());
+    // Qt6: camera() returns Camera*, call its manipulatedFrame() method
+    if (camera() && camera()->frame())
+      camera()->frame()->setConstraint(_constraint.get());
   }
 
   void Table::draw()
@@ -251,7 +242,7 @@ namespace CVCColorTable
 
   void Table::drawTable(bool withNames)
   {
-    using namespace boost; //for next() and prior()
+    using namespace boost; //for std::next() and prior()
     const GLfloat color_bar_node_color[3] = { 1.0, 0.0, 0.0 };
     const GLfloat isocontour_bar_node_color[3] = { 0.0, 1.0, 0.0 };
     const GLfloat opacity_node_color[3] = { 0.0, 0.0, 1.0 };
@@ -298,16 +289,16 @@ namespace CVCColorTable
                 i++)
               {
                 double x0 = ((i->position - _min)/(_max - _min))*(width()-1);
-                double x1 = ((next(i)->position - _min)/(_max - _min))*(width()-1);
+                double x1 = ((std::next(i)->position - _min)/(_max - _min))*(width()-1);
 
 		//std::cout << "x0 == " << x0 << std::endl;
 		//std::cout << "x1 == " << x1 << std::endl;
 
                 glColor3f(i->r,i->g,i->b);
                 glVertex3f(x0,0.0, COLOR_BACKGROUND_LAYER);
-                glColor3f(next(i)->r,next(i)->g,next(i)->b);
+                glColor3f(std::next(i)->r,std::next(i)->g,std::next(i)->b);
                 glVertex3f(x1,0.0, COLOR_BACKGROUND_LAYER);
-                glColor3f(next(i)->r,next(i)->g,next(i)->b);
+                glColor3f(std::next(i)->r,std::next(i)->g,std::next(i)->b);
                 glVertex3f(x1,height()-1.0, COLOR_BACKGROUND_LAYER);
                 glColor3f(i->r,i->g,i->b);
                 glVertex3f(x0,height()-1.0, COLOR_BACKGROUND_LAYER);
@@ -432,9 +423,9 @@ namespace CVCColorTable
                 i++)
               {
                 double x0 = ((i->position - _min)/(_max - _min))*(width()-1);
-                double x1 = ((next(i)->position - _min)/(_max - _min))*(width()-1);
+                double x1 = ((std::next(i)->position - _min)/(_max - _min))*(width()-1);
                 double y0 = (1.0 - i->value)*(height()-1);
-                double y1 = (1.0 - next(i)->value)*(height()-1);
+                double y1 = (1.0 - std::next(i)->value)*(height()-1);
 
                 //draw line between these nodes
                 glBegin(GL_LINES);
@@ -870,7 +861,7 @@ namespace CVCColorTable
 	float mymin = *(result.first);
 	float mymax = *(result.second);
 
-        BOOST_FOREACH(float &val, func) {
+        for (auto& val : func) {
           val = (val-mymin)/(mymax-mymin);
         }
      }
@@ -1093,7 +1084,7 @@ namespace CVCColorTable
 	//recalculate _nameMap because select id's probably changed if node order is different
 	select(e->pos());
 
-	updateGL();
+	update();
 	if(_interactiveUpdates) emit changed();
       }
 
@@ -1115,7 +1106,7 @@ namespace CVCColorTable
 
   void Table::contextMenuEvent(QContextMenuEvent *e)
   {
-    using namespace boost; //for next(), prior() & any_cast<>()
+    using namespace boost; //for std::next(), prior() & any_cast<>()
 
     std::cout << BOOST_CURRENT_FUNCTION << ": called!" << std::endl;
 
@@ -1144,7 +1135,7 @@ namespace CVCColorTable
 #if QT_VERSION < 0x040000
             filename.ascii()
 #else
-            filename.toAscii()
+            filename.toUtf8().constData()
 #endif
             ;
 	  info() = ColorTable::read_transfer_function(c_filename);
@@ -1324,7 +1315,7 @@ namespace CVCColorTable
 
     if(modified)
       {
-	updateGL();
+	update();
 	emit changed();
       }
     

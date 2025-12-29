@@ -17,49 +17,50 @@
 
  You should have received a copy of the GNU General Public License
  along with VRender; if not, write to the Free Software Foundation, Inc.,
- 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
+ 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
 */
 
-/****************************************************************************
+/**********************************************************************
 
- Copyright (C) 2002-2008 Gilles Debunne. All rights reserved.
+Copyright (C) 2002-2025 Gilles Debunne. All rights reserved.
 
- This file is part of the QGLViewer library version 2.3.6.
+This file is part of the QGLViewer library version 3.0.0.
 
- http://www.libqglviewer.com - contact@libqglviewer.com
+https://gillesdebunne.github.io/libQGLViewer - contact@libqglviewer.com
 
- This file may be used under the terms of the GNU General Public License 
- versions 2.0 or 3.0 as published by the Free Software Foundation and
- appearing in the LICENSE file included in the packaging of this file.
- In addition, as a special exception, Gilles Debunne gives you certain 
- additional rights, described in the file GPL_EXCEPTION in this package.
+This file is part of a free software; you can redistribute it and/or
+modify it under the terms of the GNU Lesser General Public
+License as published by the Free Software Foundation; either
+version 3 of the License, or (at your option) any later version.
 
- libQGLViewer uses dual licensing. Commercial/proprietary software must
- purchase a libQGLViewer Commercial License.
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+Lesser General Public License for more details.
 
- This file is provided AS IS with NO WARRANTY OF ANY KIND, INCLUDING THE
- WARRANTY OF DESIGN, MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.
+You should have received a copy of the GNU Lesser General Public License
+along with this program; if not, write to the Free Software Foundation,
+Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 
-*****************************************************************************/
+**********************************************************************/
 
-#ifdef WIN32
+#include <qglobal.h>
+
+#ifdef Q_OS_WIN32
 # include <windows.h>
 #endif
 
-#if 0
-#ifdef __APPLE__
+#ifdef Q_OS_MAC
+# define GL_SILENCE_DEPRECATION
 # include <OpenGL/gl.h>
 #else
 # include <GL/gl.h>
 #endif
-#endif
 
-#include <glew/glew.h>
-
-#include <stdio.h>
+#include <cstdio>
 #include <vector>
-#include <stdlib.h>
-#include <string.h>
+#include <cstdlib>
+#include <cstring>
 
 #include <QGLViewer/VRender/VRender.h>
 #include <QGLViewer/VRender/ParserGL.h>
@@ -72,9 +73,9 @@ using namespace std ;
 
 void vrender::VectorialRender(RenderCB render_callback, void *callback_params, VRenderParams& vparams)
 {
-	GLfloat *feedbackBuffer = NULL ;
-	SortMethod *sort_method = NULL ;
-	Exporter *exporter = NULL ;
+	GLfloat *feedbackBuffer = nullptr ;
+	SortMethod *sort_method = nullptr ;
+	Exporter *exporter = nullptr ;
 
 	try
 	{
@@ -88,12 +89,12 @@ void vrender::VectorialRender(RenderCB render_callback, void *callback_params, V
 
 		while(returned < 0)
 		{
-			if(feedbackBuffer != NULL)
+			if(feedbackBuffer != nullptr)
 				delete[] feedbackBuffer ;
 
 			feedbackBuffer = new GLfloat[vparams.size()] ;
 
-			if(feedbackBuffer == NULL)
+			if(feedbackBuffer == nullptr)
 				throw std::runtime_error("Out of memory during feedback buffer allocation.") ;
 
 			glFeedbackBuffer(vparams.size(), GL_3D_COLOR, feedbackBuffer);
@@ -131,10 +132,10 @@ void vrender::VectorialRender(RenderCB render_callback, void *callback_params, V
 		ParserGL parserGL ;
 		parserGL.parseFeedbackBuffer(feedbackBuffer,returned,primitive_tab,vparams) ;
 
-		if(feedbackBuffer != NULL)
+		if(feedbackBuffer != nullptr)
 		{
 			delete[] feedbackBuffer ;
-			feedbackBuffer = NULL ;
+			feedbackBuffer = nullptr ;
 		}
 
 		if(vparams.isEnabled(VRenderParams::OptimizeBackFaceCulling))
@@ -228,16 +229,16 @@ void vrender::VectorialRender(RenderCB render_callback, void *callback_params, V
 		for(unsigned int i=0;i<primitive_tab.size();++i)
 			delete primitive_tab[i] ;
 
-		if(exporter != NULL) delete exporter ;
-		if(sort_method != NULL) delete sort_method ;
+		if(exporter != nullptr) delete exporter ;
+		if(sort_method != nullptr) delete sort_method ;
 	}
 	catch(exception& e)
 	{
 		cout << "Render aborted: " << e.what() << endl ;
 
-		if(exporter != NULL) delete exporter ;
-		if(sort_method != NULL) delete sort_method ;
-		if(feedbackBuffer != NULL) delete[] feedbackBuffer ;
+		if(exporter != nullptr) delete exporter ;
+		if(sort_method != nullptr) delete sort_method ;
+		if(feedbackBuffer != nullptr) delete[] feedbackBuffer ;
 
 		throw e ;
 	}
@@ -248,7 +249,7 @@ VRenderParams::VRenderParams()
 	_options = 0 ;
 	_format = EPS ;
 	_filename = "" ;
-	_progress_function = NULL ;
+	_progress_function = nullptr ;
 	_sortMethod = BSPSort ;
 }
 

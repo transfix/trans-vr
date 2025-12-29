@@ -37,7 +37,7 @@
 #include <iostream> 
 using namespace std;
 
-ReconstructionDialog::ReconstructionDialog(QWidget *parent,Qt::WFlags flags) 
+ReconstructionDialog::ReconstructionDialog(QWidget *parent,Qt::WindowFlags flags) 
   : QDialog(parent, flags) {
 
   _ui = new Ui::ReconstructionDialog;
@@ -87,14 +87,14 @@ ReconstructionDialog::~ReconstructionDialog() {
 void ReconstructionDialog::InitFileSlot() {
   _ui->InitFileEdit->setText(QFileDialog::getOpenFileName(this,
                                                          "Choose a file",
-                                                         QString::null,
+                                                         QString(),
                                                          "rawiv (*.rawiv)"));
 }
 
 void ReconstructionDialog::DataFileSlot() {
   _ui->OpenFileEdit->setText(QFileDialog::getOpenFileName(this,
                                                          "Choose a file",
-                                                         QString::null,
+                                                         QString(),
                                                          "sel (*.sel)"));
 }
 

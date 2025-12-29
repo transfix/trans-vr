@@ -1,4 +1,4 @@
-CMAKE_MINIMUM_REQUIRED (VERSION 2.6)
+cmake_minimum_required(VERSION 3.16)
 
 FILE(GLOB SOURCE_FILES *.cpp)
 FILE(GLOB INCLUDE_FILES ../../inc/SignDistanceFunction/*.[Hh])
@@ -10,7 +10,13 @@ INCLUDE_DIRECTORIES(
   ../../inc
 )
 
-ADD_LIBRARY (SignDistanceFunction STATIC ${SOURCE_FILES} ${INCLUDE_FILES})
+add_library(SignDistanceFunction STATIC ${SOURCE_FILES} ${INCLUDE_FILES})
+
+set_target_properties(SignDistanceFunction PROPERTIES
+  AUTOMOC OFF
+  AUTOUIC OFF
+  AUTORCC OFF
+)
 
 #Make sure we've got boost
 set(Boost_USE_STATIC_LIBS OFF)

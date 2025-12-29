@@ -17,30 +17,32 @@
 
  You should have received a copy of the GNU General Public License
  along with VRender; if not, write to the Free Software Foundation, Inc.,
- 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
+ 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
 */
 
-/****************************************************************************
+/**********************************************************************
 
- Copyright (C) 2002-2008 Gilles Debunne. All rights reserved.
+Copyright (C) 2002-2025 Gilles Debunne. All rights reserved.
 
- This file is part of the QGLViewer library version 2.3.6.
+This file is part of the QGLViewer library version 3.0.0.
 
- http://www.libqglviewer.com - contact@libqglviewer.com
+https://gillesdebunne.github.io/libQGLViewer - contact@libqglviewer.com
 
- This file may be used under the terms of the GNU General Public License 
- versions 2.0 or 3.0 as published by the Free Software Foundation and
- appearing in the LICENSE file included in the packaging of this file.
- In addition, as a special exception, Gilles Debunne gives you certain 
- additional rights, described in the file GPL_EXCEPTION in this package.
+This file is part of a free software; you can redistribute it and/or
+modify it under the terms of the GNU Lesser General Public
+License as published by the Free Software Foundation; either
+version 3 of the License, or (at your option) any later version.
 
- libQGLViewer uses dual licensing. Commercial/proprietary software must
- purchase a libQGLViewer Commercial License.
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+Lesser General Public License for more details.
 
- This file is provided AS IS with NO WARRANTY OF ANY KIND, INCLUDING THE
- WARRANTY OF DESIGN, MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.
+You should have received a copy of the GNU Lesser General Public License
+along with this program; if not, write to the Free Software Foundation,
+Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 
-*****************************************************************************/
+**********************************************************************/
 
 #include <QGLViewer/VRender/NVector3.h>
 #include <QGLViewer/VRender/Vector3.h>

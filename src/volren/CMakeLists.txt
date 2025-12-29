@@ -1,4 +1,4 @@
-CMAKE_MINIMUM_REQUIRED (VERSION 2.6)
+cmake_minimum_required(VERSION 3.16)
 
 #FILE(GLOB SOURCE_FILES *.c)
 set(SOURCE_FILES vr_util.c vr_init.c vr_io.c vr_raytrac.c vr_set.c)
@@ -19,6 +19,12 @@ INCLUDE_DIRECTORIES(
 )
 
 ADD_LIBRARY (volren STATIC ${SOURCE_FILES} ${INCLUDE_FILES})
+
+set_target_properties(volren PROPERTIES
+  AUTOMOC OFF
+  AUTOUIC OFF
+  AUTORCC OFF
+)
 
 target_link_libraries(volren iso m)
 

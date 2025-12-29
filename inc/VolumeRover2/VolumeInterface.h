@@ -26,7 +26,6 @@
 #ifndef __VOLUMEINTERFACE_H__
 #define __VOLUMEINTERFACE_H__
 
-#include <qglobal.h>
 #include <VolumeRover2/DataWidget.h>
 #include <VolMagick/VolMagick.h>
 
@@ -41,8 +40,8 @@ class VolumeInterface : public CVC_NAMESPACE::DataWidget
 
  public:
   VolumeInterface(const VolMagick::VolumeFileInfo &vfi = VolMagick::VolumeFileInfo(),
-                  QWidget* parent = 0, 
-                  Qt::WFlags flags=0);
+                  QWidget* parent = nullptr, 
+                  Qt::WindowFlags flags=Qt::WindowFlags());
   virtual ~VolumeInterface();
 
   virtual void initialize(const boost::any& datum)

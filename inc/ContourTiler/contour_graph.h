@@ -215,7 +215,7 @@ void test_graph(InputIterator start, InputIterator end,
   typedef adjacency_list<vecS, vecS, undirectedS, Entity> Graph;
   typedef typename graph_traits<Graph>::vertex_descriptor Vertex;
   typedef boost::unordered_map<string, list<Contour_handle> > by_name_t;
-  typedef list<tuple<string, string, string> > Synapses;
+  typedef list<boost::tuple<string, string, string> > Synapses;
 
   // Get a map of the contours by name
   by_name_t by_name = contours_by_name(start, end);

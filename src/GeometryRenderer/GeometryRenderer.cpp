@@ -22,6 +22,9 @@
 
 /* $Id: GeometryRenderer.cpp 5883 2012-07-20 19:52:38Z transfix $ */
 
+// GLEW must be included before any OpenGL headers
+#include <GL/glew.h>
+
 #include <GeometryRenderer/GeometryRenderer.h>
 
 #include <cvcraw_geometry/cvcraw_geometry.h>
@@ -29,12 +32,12 @@
 
 #include <QGLViewer/frame.h>
 #include <QGLViewer/camera.h>
-#include <glew/glew.h>
 
 namespace CVC_NAMESPACE
 {
   void GeometryRenderer::defaultConstructor()
   {
+    using namespace boost::placeholders;
     state("rendering_mode")
       .value("filled")
       .comment("The overall geometry rendering mode: 'filled', 'wireframe', 'boundingbox'");

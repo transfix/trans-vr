@@ -1,4 +1,6 @@
-CMAKE_MINIMUM_REQUIRED (VERSION 2.6)
+cmake_minimum_required(VERSION 3.16)
+
+SetupQt()
 
 FILE(GLOB SOURCE_FILES *.cpp)
 FILE(GLOB INCLUDE_FILES ../../../inc/Segmentation/SegMonomer/*.[Hh])

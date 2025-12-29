@@ -24,6 +24,9 @@
 
 #include <CVC/App.h>
 #include <CVC/State.h>
+#include <boost/bind/bind.hpp>
+
+using namespace boost::placeholders;
 
 namespace CVC_NAMESPACE
 {

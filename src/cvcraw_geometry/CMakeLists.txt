@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 2.6)
+cmake_minimum_required(VERSION 3.16)
 
 file(GLOB SOURCE_FILES *.cpp)
 file(GLOB INCLUDE_FILES ../../inc/cvcraw_geometry/*.[Hh])
@@ -30,8 +30,19 @@ source_group("Source Files" FILES ${SOURCE_FILES})
 source_group("Header Files" FILES ${INCLUDE_FILES})
 
 add_library(cvcraw_geometry STATIC ${SOURCE_FILES} ${INCLUDE_FILES})
-SetupBoost(cvcraw_geometry)
+
+set_target_properties(cvcraw_geometry PROPERTIES
+  AUTOMOC OFF
+  AUTOUIC OFF
+  AUTORCC OFF
+)
 
 target_link_libraries(cvcraw_geometry
-  ${LIBS}	
+  PUBLIC
+    Boost::thread
+    Boost::date_time
+    Boost::regex
+    Boost::filesystem
+    Boost::system
+    ${LIBS}
 )

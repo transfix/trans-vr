@@ -41,7 +41,7 @@ class SkeletonizationDialog : public QDialog
   Q_OBJECT
 
  public:
-  SkeletonizationDialog(QWidget *parent=0,Qt::WFlags flags=0);
+  SkeletonizationDialog(QWidget *parent=nullptr,Qt::WindowFlags flags=Qt::WindowFlags());
 
   virtual ~SkeletonizationDialog();
 

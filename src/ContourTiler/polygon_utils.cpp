@@ -981,7 +981,7 @@ bool operator<(const Segment_2& a, const Segment_2& b)
 Point_2 find_start(const std::map<Point_2, set<Segment_2> >& source2sub)
 {
   typedef pair<Point_2, set<Segment_2> > Entry;
-  BOOST_FOREACH (const Entry& entry, source2sub) {
+  for (const auto& entry : source2sub) {
     if (entry.second.size() > 1) return entry.first;
   }
   return source2sub.begin()->first;
@@ -1017,7 +1017,7 @@ void split_nonsimple(const Polygon_2& P, Out_iter out)
   // Index the subsegments by their source and target points.
   std::map<Point_2, set<Segment_2> > source2sub, target2sub;
   std::set<Segment_2> subsegments;
-  BOOST_FOREACH (Segment_2 s, subsegments_list) {
+  for (const auto& s : subsegments_list) {
     // if (segments.find(s.opposite()) != segments.end()) {
     //   s = s.opposite();
     // }
@@ -1180,12 +1180,13 @@ Polygon_2 adjust_nonsimple_polygon(const Polygon_2& P, const Number_type delta, 
 
   if (!old2new.empty()) {
     typedef pair<Point_2, Point_2> Pair;
-    BOOST_FOREACH (const Pair& oldnew, old2new) {
+    for (const auto& oldnew : old2new) {
       LOG4CPLUS_TRACE(logger, "old->new: " << pp(oldnew.first) << " " << pp(oldnew.second));
     }
 
     Polygon_2 new_P;
-    BOOST_FOREACH (const Point_2& p, make_pair(P.vertices_begin(), P.vertices_end())) {
+    for (auto p_it = P.vertices_begin(); p_it != P.vertices_end(); ++p_it) {
+      const Point_2& p = *p_it;
       if (old2new.find(p) != old2new.end()) {
         new_P.push_back(old2new[p]);
       }

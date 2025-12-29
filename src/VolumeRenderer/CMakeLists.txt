@@ -1,6 +1,6 @@
 # 10/07/2011 -- transfix - added libCVC dependency
 
-CMAKE_MINIMUM_REQUIRED (VERSION 2.6)
+cmake_minimum_required(VERSION 3.16)
 
 set(SOURCE_FILES
   ClipCube.cpp
@@ -58,7 +58,6 @@ if(APPLE)
 endif(APPLE)
 if(WIN32)
   add_definitions(-DWIN32)
-  add_definitions(-DGLEW_STATIC)
 endif(WIN32)
 
 find_package(OpenGL)
@@ -109,6 +108,12 @@ endif(CG_FOUND)
 
 ADD_LIBRARY (VolumeRenderer STATIC ${SOURCE_FILES} ${INCLUDE_FILES})
 
+set_target_properties(VolumeRenderer PROPERTIES
+  AUTOMOC OFF
+  AUTOUIC OFF
+  AUTORCC OFF
+)
+
 #Make sure we've got boost
 set(Boost_USE_STATIC_LIBS OFF)
 set(Boost_USE_MULTITHREADED ON)
@@ -121,7 +126,7 @@ else(Boost_FOUND)
           "BOOST_INCLUDEDIR and BOOST_LIBRARYDIR to the appropriate paths")
 endif(Boost_FOUND)
 
-set(LIBS ${LIBS} glew)
+set(LIBS ${LIBS} GLEW::GLEW)
 
 target_link_libraries(VolumeRenderer ${LIBS})
 

@@ -31,7 +31,7 @@
 
 #include <boost/scoped_array.hpp>
 
-#include <glew/glew.h>
+#include <GL/glew.h>
 
 #include <VolumeRenderer/Plane.h>
 #include <VolumeRenderer/Extent.h>

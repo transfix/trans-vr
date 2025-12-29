@@ -31,6 +31,9 @@
 #define USE_XmlRpc
 //*********************
 
+// GLEW must be included before any OpenGL headers
+#include <GL/glew.h>
+
 #include <CVC/Namespace.h>
 #include <CVC/App.h>
 #include <CVC/State.h>
@@ -74,25 +77,9 @@ namespace CVC_NAMESPACE
 
     enum VolumeRenderingType { ColorMapped, RGBA };
 
-    explicit VolumeViewer(QWidget* parent=0, 
-		    const QGLWidget* shareWidget=0, 
-		    Qt::WFlags flags=0)
-    #if QT_VERSION < 0x040000 || defined QT3_SUPPORT
-      : QGLViewer(parent, NULL, shareWidget,flags)
-    #else
-      : QGLViewer(parent, shareWidget,flags)
-    #endif
-    { defaultConstructor(); }
-    
-    explicit VolumeViewer(const QGLFormat& format, 
-		    QWidget* parent=0, 
-		    const QGLWidget* shareWidget=0, 
-		    Qt::WFlags flags=0)
-    #if QT_VERSION < 0x040000 || defined QT3_SUPPORT
-      : QGLViewer(format,parent,NULL,shareWidget,flags)
-    #else
-      : QGLViewer(format,parent,shareWidget,flags)
-    #endif
+    explicit VolumeViewer(QWidget* parent=nullptr, 
+		    Qt::WindowFlags flags=Qt::WindowFlags())
+      : QGLViewer(parent, flags)
     { defaultConstructor(); }
 
     ~VolumeViewer();

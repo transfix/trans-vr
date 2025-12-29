@@ -223,9 +223,9 @@ collinear_has_on(const typename Segment_3_id<R>::Point_3 &p) const
 
 template < class R >
 std::ostream &
-operator<<(std::ostream &os, const Segment_3_id<R> &s)
+operator<<(std::ostream& os, const Segment_3_id<R>& s)
 {
-    switch(os.iword(CGAL::IO::mode)) {
+    switch(CGAL::IO::get_mode(os)) {
     case CGAL::IO::ASCII :
         return os << s.source() << ' ' << s.target();
     case CGAL::IO::BINARY :

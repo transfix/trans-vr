@@ -5,7 +5,7 @@
 #include <ContourTiler/Distance_functor.h>
 
 #include <CGAL/Sweep_line_2_algorithms.h>
-#include <CGAL/Sweep_line_empty_visitor.h>
+// #include <CGAL/Sweep_line_empty_visitor.h>  // Removed in CGAL 5.x - not used in this file
 
 CONTOURTILER_BEGIN_NAMESPACE
 

@@ -1,4 +1,6 @@
-cmake_minimum_required (VERSION 2.6)
+cmake_minimum_required(VERSION 3.16)
+
+SetupQt()
 
 #FILE(GLOB SOURCE_FILES *.cc)
 FILE(GLOB INCLUDE_FILES 

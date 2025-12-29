@@ -14,9 +14,16 @@ include_directories(
 )
 
 add_library(Tiling STATIC ${SOURCE_FILES} ${INCLUDE_FILES})
-SetupBoost(Tiling)
+
+target_link_libraries(Tiling
+  PRIVATE
+    Boost::thread
+    Boost::date_time
+    Boost::regex
+    Boost::filesystem
+    Boost::system
+    cvcraw_geometry # for Geometry class
+)
+
 SetupCGAL(Tiling)
 SetupGSL(Tiling)
-target_link_libraries(Tiling
-  cvcraw_geometry # for Geometry class
-)

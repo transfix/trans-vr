@@ -33,11 +33,12 @@
 #include <qcombobox.h>
 
 sdf_opt::sdf_opt(QWidget *parent, const char *name, bool modal)
+  : QDialog(parent)
 {
-  setCaption("2D SDF Calculation");
+  setWindowTitle("2D SDF Calculation");
 
-  QGridLayout *base_layout = new QGridLayout(this,6,2,11,6);
-  base_layout->setResizeMode(QLayout::Fixed);
+  QGridLayout *base_layout = new QGridLayout(this);
+  base_layout->setSizeConstraint(QLayout::SetFixedSize);
 
   //left side labels
   QLabel *x_sample_res_label = new QLabel("X sample res: ",this);
@@ -57,10 +58,10 @@ sdf_opt::sdf_opt(QWidget *parent, const char *name, bool modal)
   x_sample_res->setText("128"); x_sample_res->setValidator(new QIntValidator(this));
   y_sample_res->setText("128"); y_sample_res->setValidator(new QIntValidator(this));
   sign_method = new QComboBox(this);
-  sign_method->insertItem("Angle Sum"); sign_method->insertItem("Count Edge Intersections");
+  sign_method->insertItem(0, "Angle Sum"); sign_method->insertItem(1, "Count Edge Intersections");
   dist_method = new QComboBox(this);
-  dist_method->insertItem("Brute Force"); dist_method->insertItem("K Neighbor Search");
-  dist_method->setCurrentItem(1);
+  dist_method->insertItem(0, "Brute Force"); dist_method->insertItem(1, "K Neighbor Search");
+  dist_method->setCurrentIndex(1);
   sign_bitmap_only = new QCheckBox(this);
   base_layout->addWidget(x_sample_res,0,1);
   base_layout->addWidget(y_sample_res,1,1);

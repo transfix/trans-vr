@@ -22,6 +22,9 @@
 
 /* $Id: VolumeGridRover.cpp 5276 2012-03-15 18:06:20Z deukhyun $ */
 
+// MUST include GLEW before any OpenGL headers
+#include <GL/glew.h>
+
 #include <stdio.h>
 #include <string.h>
 #include <math.h>
@@ -67,7 +70,7 @@
 
 #include <qpainter.h>
 #include <qcolor.h>
-#include <qstring.h>
+#include <QString>
 #include <qstringlist.h>
 #include <qlayout.h>
 #include <qimage.h>
@@ -77,22 +80,27 @@
 #include <qspinbox.h>
 #include <qcheckbox.h>
 #include <qvalidator.h>
-#include <qfiledialog.h>
-#include <qfileinfo.h>
-#include <qmessagebox.h>
+#include <QFileDialog>
+#include <QFileInfo>
+#include <QMessageBox>
 #include <qprogressdialog.h>
-#include <qfile.h>
-#include <qtextstream.h>
+#include <QFile>
+#include <QTextStream>
 #include <qbuttongroup.h>
 #include <qsettings.h>
-#include <qdir.h>
+#include <QDir>
 #include <qlistview.h>
 
-#include <qxml.h>
+#include <QXmlStreamReader>
+#include <QXmlStreamWriter>
 #include <qdom.h>
 
 #include <XmlRPC/XmlRpc.h>
 #include <Segmentation/GenSeg/genseg.h>
+
+#include <QGLViewer/manipulatedCameraFrame.h>
+#include <QGLViewer/constraint.h>
+#include <QSurfaceFormat>
 
 #include <VolumeGridRover/VolumeGridRover.h>
 #include <VolumeGridRover/bspline_opt.h>
@@ -104,7 +112,7 @@
 #include <VolumeGridRover/medax.h>
 #endif
 
-#include <glew/glew.h>
+#include <GL/glew.h>
 
 // using GSL library for 2D contour interpolation
 #include <gsl/gsl_interp.h>
@@ -246,12 +254,18 @@ GridPoint *PointClass::getClosestPoint(unsigned int x, unsigned int y, unsigned 
 }
 
 SliceCanvas::SliceCanvas(SliceCanvas::SliceAxis a, QWidget * parent, const char * name)
-  : QGLViewer(parent,name), m_Depth(0), m_PointClassList(NULL), 
+  : QGLViewer(parent), m_Depth(0), m_PointClassList(NULL), 
     m_CurrentPointClass(NULL), m_SliceAxis(a), m_PointSize(1), m_Variable(0), m_Timestep(0), m_Drawable(true),
     m_SliceTiles(NULL), m_NumSliceTiles(0), m_MouseIsDown(false), m_SelectionMode(0), m_Drag(false),
     /*m_SliceRenderer(NULL),*/ m_RenderSDF(false), m_RenderControlPoints(true), m_SliceDirty(true),
-    m_MouseZoomStarted(false), m_UpdateSliceOnRelease(false)
+    m_MouseZoomStarted(false), m_UpdateSliceOnRelease(false), m_CameraInitialized(false)
 {
+  // Request OpenGL compatibility profile for ARB fragment program support
+  QSurfaceFormat format;
+  format.setProfile(QSurfaceFormat::CompatibilityProfile);
+  format.setVersion(3, 3);
+  setFormat(format);
+  
   /* initialize the color maps */
   m_Palette = m_ByteMap;
   memset(m_ByteMap,0,256*4);
@@ -271,12 +285,14 @@ SliceCanvas::SliceCanvas(SliceCanvas::SliceAxis a, QWidget * parent, const char 
 
   gsl_set_error_handler_off();
 
-  // Left and right buttons together make a camera zoom: emulates a mouse third button if needed.
-  setMouseBinding(Qt::LeftButton + Qt::RightButton, CAMERA, ZOOM);
+  // Use middle button for camera zoom (Qt6 doesn't support button combinations)
+  setMouseBinding(Qt::NoModifier, Qt::MiddleButton, CAMERA, ZOOM);
 }
 
+// TODO: Qt6 - QGLFormat constructor removed, use the standard constructor instead
+#if 0
 SliceCanvas::SliceCanvas(SliceCanvas::SliceAxis a, const QGLFormat& format, QWidget * parent, const char * name)
-  : QGLViewer(format,parent,name), m_Depth(0), m_PointClassList(NULL), 
+  : QGLViewer(parent), m_Depth(0), m_PointClassList(NULL), 
     m_CurrentPointClass(NULL), m_SliceAxis(a), m_PointSize(1), m_Variable(0), m_Timestep(0), m_Drawable(true),
     m_SliceTiles(NULL), m_NumSliceTiles(0), m_MouseIsDown(false), m_SelectionMode(0), m_Drag(false),
     /*m_SliceRenderer(NULL),*/ m_RenderSDF(false), m_RenderControlPoints(true), m_SliceDirty(true),
@@ -301,9 +317,10 @@ SliceCanvas::SliceCanvas(SliceCanvas::SliceAxis a, const QGLFormat& format, QWid
 
   gsl_set_error_handler_off();
 
-  // Left and right buttons together make a camera zoom: emulates a mouse third button if needed.
-  setMouseBinding(Qt::LeftButton + Qt::RightButton, CAMERA, ZOOM);
+  // Use middle button for camera zoom (Qt6 doesn't support button combinations)
+  setMouseBinding(Qt::NoModifier, Qt::MiddleButton, CAMERA, ZOOM);
 }
+#endif
 
 SliceCanvas::~SliceCanvas()
 {
@@ -322,7 +339,7 @@ void SliceCanvas::setDepth(int d)
 
   m_SliceDirty = true;
 
-  updateGL();
+  update();
   emit depthChanged(static_cast<int>(m_Depth));
 }
 
@@ -332,7 +349,7 @@ void SliceCanvas::setTransferFunction(unsigned char *func)
   memcpy(m_ByteMap,func,256*4);
   makeCurrent();
   uploadColorTable();
-  updateGL();
+  update();
 }
 
 void SliceCanvas::addPoint(unsigned int x, unsigned int y, unsigned int z)
@@ -461,7 +478,7 @@ void SliceCanvas::resetView()
     }
 
   camera()->fitBoundingBox(minPt,maxPt);
-  updateGL();
+  update();
 }
 
 void SliceCanvas::setCellMarkingMode(int m)
@@ -478,7 +495,7 @@ void SliceCanvas::setCurrentContour(const std::string& name)
 void SliceCanvas::setInterpolationType(int interp)
 {
   if(m_CurrentContour != NULL) m_CurrentContour->interpolationType(SurfRecon::InterpolationType(interp));
-  updateGL();
+  update();
 }
 */
 
@@ -740,6 +757,23 @@ void SliceCanvas::updateSlice()
 
   uploadSlice(m_Slice.get(), m_SliceAxis == XY ? imgx : m_SliceAxis == XZ ? imgx : m_SliceAxis == ZY ? imgz : 0,
 	      m_SliceAxis == XY ? imgy : m_SliceAxis == XZ ? imgz : m_SliceAxis == ZY ? imgy : 0);
+  
+  // Update scene bounding box for proper camera framing
+  float centerX = (m_VertCoordMinX + m_VertCoordMaxX) / 2.0;
+  float centerY = (m_VertCoordMinY + m_VertCoordMaxY) / 2.0;
+  float width = m_VertCoordMaxX - m_VertCoordMinX;
+  float height = m_VertCoordMaxY - m_VertCoordMinY;
+  float radius = std::sqrt(width*width + height*height) / 2.0;
+  
+  setSceneCenter(Vec(centerX, centerY, 0.0));
+  setSceneRadius(radius);
+  
+  // Only reset camera view on first slice load, not when changing slices
+  if(!m_CameraInitialized && m_VolumeFileInfo.isSet()) {
+    camera()->showEntireScene();
+    m_CameraInitialized = true;
+  }
+  
   m_SliceDirty = false;
 }
 
@@ -753,7 +787,7 @@ void SliceCanvas::mouseMoveEvent(QMouseEvent *event)
     {
       m_SelectionRectangle.setX(event->x());
       m_SelectionRectangle.setY(event->y());
-      updateGL();
+      update();
     }
 
   //If we started to zoom, tell the slice canvas to update the slice when we're done
@@ -830,7 +864,7 @@ void SliceCanvas::mouseMoveEvent(QMouseEvent *event)
 	  
 	  m_LastPoint = event->pos();
 
-	  updateGL();
+	  update();
 	}
     }
 
@@ -890,7 +924,7 @@ void SliceCanvas::mouseDoubleClickEvent(QMouseEvent *event)
 		removePoint(gp->x,gp->y,gp->z); /* make sure we only delete points that are visible (i.e. on the current slice) */
 	      else
 		addPoint(realx,realy,realz);
-	      updateGL();
+	      update();
 	    }
 	}
 #if 0
@@ -933,25 +967,24 @@ void SliceCanvas::mousePressEvent(QMouseEvent *event)
   m_SelectionRectangle = QRect(event->pos(), event->pos());
   if(event->button() == Qt::LeftButton)
     {
-      switch(event->state())
-	{
-	case Qt::ShiftButton: m_SelectionMode = 2; break; //add to selection
-	case Qt::ControlButton:
-	case Qt::AltButton:
-	  m_SelectionMode = 3; //remove from selection
-	  break;
-	case Qt::ShiftButton | Qt::ControlButton:
-	case Qt::ShiftButton | Qt::AltButton:
-	  m_SelectionMode = 0; // we dont want to select in this case.. instead we want to translate selected points
-	  m_Drag = true;
-	  m_LastPoint = event->pos();
-	  break;
-	default: m_SelectionMode = 1; break; //new selection
-	}
+      Qt::KeyboardModifiers mods = event->modifiers();
+      if(mods & Qt::ShiftModifier && (mods & (Qt::ControlModifier | Qt::AltModifier)))
+      {
+        // we dont want to select in this case.. instead we want to translate selected points
+        m_SelectionMode = 0;
+        m_Drag = true;
+        m_LastPoint = event->pos();
+      }
+      else if(mods & Qt::ShiftModifier)
+        m_SelectionMode = 2; //add to selection
+      else if(mods & (Qt::ControlModifier | Qt::AltModifier))
+        m_SelectionMode = 3; //remove from selection
+      else
+        m_SelectionMode = 1; //new selection
       return;
     }
 
-  if(event->button() == Qt::MidButton ||
+  if(event->button() == Qt::MiddleButton ||
      event->button() == Qt::RightButton)
     m_MouseZoomStarted = true;
   
@@ -967,7 +1000,7 @@ void SliceCanvas::mouseReleaseEvent(QMouseEvent *event)
 //    {
  //     m_SliceDirty = true;
  //     m_UpdateSliceOnRelease = false;
- //     updateGL();
+ //     update();
  //   }
 
 #if 0
@@ -983,7 +1016,7 @@ void SliceCanvas::mouseReleaseEvent(QMouseEvent *event)
       // Backup the current selection
       std::set<SurfRecon::WeakPointPtr> previousSelection(m_SelectedPoints);
 
-      m_SelectionRectangle = m_SelectionRectangle.normalize();
+      m_SelectionRectangle = m_SelectionRectangle.normalized();
       // Define selection window dimensions
       setSelectRegionWidth(m_SelectionRectangle.width());
       setSelectRegionHeight(m_SelectionRectangle.height());
@@ -1117,7 +1150,7 @@ void SliceCanvas::mouseReleaseEvent(QMouseEvent *event)
 	    }
 	}
 
-      updateGL();
+      update();
 
       return;
     }
@@ -1152,7 +1185,7 @@ void SliceCanvas::keyPressEvent(QKeyEvent *event)
 	  break;
 	case Qt::Key_Delete:
 	  deleteSelected();
-	  updateGL();
+	  update();
 	  break;
 	default:
 	  QGLViewer::keyPressEvent(event);
@@ -1166,7 +1199,7 @@ void SliceCanvas::keyPressEvent(QKeyEvent *event)
 void SliceCanvas::setPointSize(int r)
 {
   m_PointSize = r;
-  updateGL();
+  update();
 }
 
 void SliceCanvas::setGreyScale(bool set)
@@ -1182,7 +1215,7 @@ void SliceCanvas::setGreyScale(bool set)
 
   uploadColorTable();
 
-  updateGL();
+  update();
 }
 
 void SliceCanvas::setRenderSDF(bool set)
@@ -1191,7 +1224,7 @@ void SliceCanvas::setRenderSDF(bool set)
 
   m_RenderSDF = set;
 
-  updateGL();
+  update();
 }
 
 void SliceCanvas::setRenderControlPoints(bool set)
@@ -1199,7 +1232,7 @@ void SliceCanvas::setRenderControlPoints(bool set)
   if(!m_Drawable) return;
   m_RenderControlPoints = set;
   //m_SelectedPoints.clear();
-  updateGL();
+  update();
 }
 
 void SliceCanvas::setCurrentVariable(int var)
@@ -1230,27 +1263,34 @@ void SliceCanvas::init()
   glDisable(GL_LIGHTING);
 
   /* initialize the slice renderer */
+  fprintf(stderr, "SliceCanvas::init(): Trying ARB Fragment Program Renderer...\n");
   m_SliceRenderer.reset(new ARBFragmentProgramSliceRenderer(this));
   if(m_SliceRenderer->init())
     {
+      fprintf(stderr, "SliceCanvas::init(): SUCCESS - using ARB Fragment Program Renderer\n");
       cvcapp.log(5, "SliceCanvas::init(): using ARB Fragment Program Renderer");
       goto initscene;
     }
 
+  fprintf(stderr, "SliceCanvas::init(): Trying Paletted Slice Renderer...\n");
   m_SliceRenderer.reset(new PalettedSliceRenderer(this));
   if(m_SliceRenderer->init())
     {
+      fprintf(stderr, "SliceCanvas::init(): SUCCESS - using Paletted Slice Renderer\n");
       cvcapp.log(5, "SliceCanvas::init(): using Paletted Slice Renderer");
       goto initscene;
     }
   
+  fprintf(stderr, "SliceCanvas::init(): Trying SGI Color Table Slice Renderer...\n");
   m_SliceRenderer.reset(new SGIColorTableSliceRenderer(this));
   if(m_SliceRenderer->init())
     {
+      fprintf(stderr, "SliceCanvas::init(): SUCCESS - using SGI Color Table Slice Renderer\n");
       cvcapp.log(5, "SliceCanvas::init(): using SGI Color Table Slice Renderer");
       goto initscene;
     }
 
+  fprintf(stderr, "SliceCanvas::init(): ERROR - could not find suitable slice renderer!\n");
   cvcapp.log(5, "SliceCanvas::init(): could not find suitable slice renderer!");
   if(m_SliceAxis == XY) //only pop up a message box for 1 of the slice canvases
     QMessageBox::critical(this,"Error","Cannot render slices using hardware! No suitable renderer available.",QMessageBox::Ok,QMessageBox::NoButton,QMessageBox::NoButton);
@@ -1274,7 +1314,24 @@ void SliceCanvas::init()
       cvcapp.log(5, boost::str(boost::format("gl: GL Vendor: %s")%glGetString(GL_VENDOR)));
       cvcapp.log(5, boost::str(boost::format("gl: GL Renderer: %s")%glGetString(GL_RENDERER)));
       cvcapp.log(5, boost::str(boost::format("gl: GL Version: %s")%glGetString(GL_VERSION)));
-      cvcapp.log(5, boost::str(boost::format("gl: GL Extensions: %s")%glGetString(GL_EXTENSIONS)));
+      
+      // In OpenGL 3.0+, glGetString(GL_EXTENSIONS) may return NULL
+      // Use glGetStringi instead for modern contexts
+      const GLubyte* extensions = glGetString(GL_EXTENSIONS);
+      if(extensions)
+        cvcapp.log(5, boost::str(boost::format("gl: GL Extensions: %s")%extensions));
+      else
+        {
+          GLint numExtensions = 0;
+          glGetIntegerv(GL_NUM_EXTENSIONS, &numExtensions);
+          std::string extList;
+          for(GLint i = 0; i < numExtensions; i++)
+            {
+              if(i > 0) extList += " ";
+              extList += reinterpret_cast<const char*>(glGetStringi(GL_EXTENSIONS, i));
+            }
+          cvcapp.log(5, boost::str(boost::format("gl: GL Extensions: %s")%extList));
+        }
       
       /* initialize GL extensions */
       cvcapp.log(5, boost::str(boost::format("gl: Initializing GL_VERSION_1_2: %s")%(glewIsSupported("GL_VERSION_1_2") ? "OK" : "FAILED")));
@@ -1871,6 +1928,11 @@ ARBFragmentProgramSliceRenderer::~ARBFragmentProgramSliceRenderer() {}
 bool ARBFragmentProgramSliceRenderer::init()
 {
   /* make sure the proper extensions are initialized */
+  fprintf(stderr, "ARBFragmentProgramSliceRenderer::init(): Checking extensions - ARB_vertex_program=%d ARB_fragment_program=%d ARB_multitexture=%d\n",
+    glewIsSupported("GL_ARB_vertex_program"),
+    glewIsSupported("GL_ARB_fragment_program"), 
+    glewIsSupported("GL_ARB_multitexture"));
+  
   if(//glewIsSupported("GL_VERSION_1_3") &&
      glewIsSupported("GL_ARB_vertex_program") &&
      glewIsSupported("GL_ARB_fragment_program") &&
@@ -1904,6 +1966,9 @@ void ARBFragmentProgramSliceRenderer::draw()
 {
   if(!m_SliceCanvas->m_Drawable || !m_SliceCanvas->m_VolumeFileInfo.isSet()) return;
 
+  fprintf(stderr, "ARBFragmentProgramSliceRenderer::draw(): NumSliceTiles=%u, Drawable=%d, VolumeFileInfo.isSet()=%d\n",
+    m_SliceCanvas->m_NumSliceTiles, m_SliceCanvas->m_Drawable, m_SliceCanvas->m_VolumeFileInfo.isSet());
+
   glColor3f(1.0,1.0,1.0);
   
   glPushAttrib(GL_ENABLE_BIT);
@@ -1913,6 +1978,13 @@ void ARBFragmentProgramSliceRenderer::draw()
   
   glEnable(GL_FRAGMENT_PROGRAM_ARB);
   glBindProgramARB(GL_FRAGMENT_PROGRAM_ARB, m_FragmentProgram);
+  
+  static int debugCount = 0;
+  if(debugCount < 3) {  // Only print first 3 frames to avoid spam
+    fprintf(stderr, "ARBFragmentProgramSliceRenderer::draw(): FragmentProgram=%u, PaletteTexture=%u\n",
+      m_FragmentProgram, m_PaletteTexture);
+    debugCount++;
+  }
   
   for(unsigned int i=0; i<m_SliceCanvas->m_NumSliceTiles; i++)
     {
@@ -1925,6 +1997,19 @@ void ARBFragmentProgramSliceRenderer::draw()
       glActiveTextureARB(GL_TEXTURE0_ARB);
       glEnable(GL_TEXTURE_2D);
       glBindTexture(GL_TEXTURE_2D, m_SliceCanvas->m_SliceTiles[i].texture);
+      
+      if(debugCount <= 3) {
+        fprintf(stderr, "  Tile[%u]: texture=%u, tex_coords=[%.3f,%.3f %.3f,%.3f %.3f,%.3f %.3f,%.3f], vert_coords=[%.3f,%.3f %.3f,%.3f %.3f,%.3f %.3f,%.3f]\n",
+          i, m_SliceCanvas->m_SliceTiles[i].texture,
+          m_SliceCanvas->m_SliceTiles[i].tex_coords[0], m_SliceCanvas->m_SliceTiles[i].tex_coords[1],
+          m_SliceCanvas->m_SliceTiles[i].tex_coords[2], m_SliceCanvas->m_SliceTiles[i].tex_coords[3],
+          m_SliceCanvas->m_SliceTiles[i].tex_coords[4], m_SliceCanvas->m_SliceTiles[i].tex_coords[5],
+          m_SliceCanvas->m_SliceTiles[i].tex_coords[6], m_SliceCanvas->m_SliceTiles[i].tex_coords[7],
+          m_SliceCanvas->m_SliceTiles[i].vert_coords[0], m_SliceCanvas->m_SliceTiles[i].vert_coords[1],
+          m_SliceCanvas->m_SliceTiles[i].vert_coords[2], m_SliceCanvas->m_SliceTiles[i].vert_coords[3],
+          m_SliceCanvas->m_SliceTiles[i].vert_coords[4], m_SliceCanvas->m_SliceTiles[i].vert_coords[5],
+          m_SliceCanvas->m_SliceTiles[i].vert_coords[6], m_SliceCanvas->m_SliceTiles[i].vert_coords[7]);
+      }
 	  
       glBegin(GL_QUADS);
       for(unsigned int j=0; j<4; j++)
@@ -1960,6 +2045,8 @@ void ARBFragmentProgramSliceRenderer::uploadSlice(unsigned char *slice, unsigned
      0.5, -0.5, -0.5, -0.5 };  
 			   
   */
+  fprintf(stderr, "ARBFragmentProgramSliceRenderer::uploadSlice(): dimx=%u, dimy=%u, slice=%p\n", dimx, dimy, slice);
+  
   if(!m_SliceCanvas->m_Drawable) return;
   
   m_SliceCanvas->makeCurrent();
@@ -1987,11 +2074,16 @@ void ARBFragmentProgramSliceRenderer::uploadSlice(unsigned char *slice, unsigned
   m_SliceCanvas->m_SliceTiles[0].vert_coords[6] = m_SliceCanvas->m_VertCoordMinX; m_SliceCanvas->m_SliceTiles[0].vert_coords[7] = m_SliceCanvas->m_VertCoordMinY;  /* bottom left */
   
   glBindTexture(GL_TEXTURE_2D, m_SliceCanvas->m_SliceTiles[0].texture);
-  glTexImage2D(GL_TEXTURE_2D, 0, GL_LUMINANCE8, dimx, dimy, 0, GL_LUMINANCE, GL_UNSIGNED_BYTE, slice);
+  glTexImage2D(GL_TEXTURE_2D, 0, GL_R8, dimx, dimy, 0, GL_RED, GL_UNSIGNED_BYTE, slice);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+  // Set swizzle to replicate red channel to all components for compatibility
+  GLint swizzleMask[] = {GL_RED, GL_RED, GL_RED, GL_ONE};
+  glTexParameteriv(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_RGBA, swizzleMask);
+  
+  uploadColorTable();
 #else
   
   //dimx and dimy must be 2^n so that makes things easier!
@@ -2046,11 +2138,14 @@ void ARBFragmentProgramSliceRenderer::uploadSlice(unsigned char *slice, unsigned
       //extract a tile from the slice to upload, then upload it!
       unsigned char sub_dimx = (x_split+1)*max_dimx - x_split*max_dimx;
 
-      glTexImage2D(GL_TEXTURE_2D, 0, GL_LUMINANCE8, dimx, dimy, 0, GL_LUMINANCE, GL_UNSIGNED_BYTE, slice);
+      glTexImage2D(GL_TEXTURE_2D, 0, GL_R8, dimx, dimy, 0, GL_RED, GL_UNSIGNED_BYTE, slice);
       glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
       glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
       glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
       glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+      // Set swizzle to replicate red channel to all components for compatibility
+      GLint swizzleMask[] = {GL_RED, GL_RED, GL_RED, GL_ONE};
+      glTexParameteriv(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_RGBA, swizzleMask);
     }
 
 #endif
@@ -2279,11 +2374,14 @@ void SGIColorTableSliceRenderer::uploadSlice(unsigned char *slice, unsigned int 
   m_SliceCanvas->m_SliceTiles[0].vert_coords[6] = m_SliceCanvas->m_VertCoordMinX; m_SliceCanvas->m_SliceTiles[0].vert_coords[7] = m_SliceCanvas->m_VertCoordMinY;  /* bottom left */
   
   glBindTexture(GL_TEXTURE_2D, m_SliceCanvas->m_SliceTiles[0].texture);
-  glTexImage2D(GL_TEXTURE_2D, 0, GL_INTENSITY8, dimx, dimy, 0, GL_LUMINANCE, GL_UNSIGNED_BYTE, slice);
+  glTexImage2D(GL_TEXTURE_2D, 0, GL_R8, dimx, dimy, 0, GL_RED, GL_UNSIGNED_BYTE, slice);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+  // Set swizzle to replicate red channel to all components for compatibility
+  GLint swizzleMask[] = {GL_RED, GL_RED, GL_RED, GL_ONE};
+  glTexParameteriv(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_RGBA, swizzleMask);
 
   uploadColorTable();
 }
@@ -2298,8 +2396,8 @@ void SGIColorTableSliceRenderer::uploadColorTable()
 }
 
 /*********** The VolumeGridRover *****************/
-VolumeGridRover::VolumeGridRover(QWidget* parent, const char* name, Qt::WFlags fl)
-  : QWidget(parent, fl), m_PointClassList(NULL),
+VolumeGridRover::VolumeGridRover(QWidget* parent, Qt::WindowFlags fl)
+  : QWidget(parent, fl), m_PointClassList(nullptr),
 #ifdef USING_EM_CLUSTERING
     m_Clusters(256,50), m_HistogramCalculated(false),
 #endif
@@ -2309,13 +2407,17 @@ VolumeGridRover::VolumeGridRover(QWidget* parent, const char* name, Qt::WFlags f
   _ui = new Ui::VolumeGridRoverBase;
   _ui->setupUi( this );
 
-  QGLFormat format;
-  format.setAlpha(true);
-  format.setStencil(true);
+  // TODO: Qt6 - QGLFormat removed, configure OpenGL context via QSurfaceFormat if needed
+  // QGLFormat format;
+  // format.setAlpha(true);
+  // format.setStencil(true);
   
-  m_XYSliceCanvas = new SliceCanvas(SliceCanvas::XY,format,_ui->m_XYSliceFrame,"m_XYSliceCanvas");
-  m_XZSliceCanvas = new SliceCanvas(SliceCanvas::XZ,format,_ui->m_XZSliceFrame,"m_XZSliceCanvas");
-  m_ZYSliceCanvas = new SliceCanvas(SliceCanvas::ZY,format,_ui->m_ZYSliceFrame,"m_ZYSliceCanvas");
+  m_XYSliceCanvas = new SliceCanvas(SliceCanvas::XY,_ui->m_XYSliceFrame);
+  m_XYSliceCanvas->setObjectName("m_XYSliceCanvas");
+  m_XZSliceCanvas = new SliceCanvas(SliceCanvas::XZ,_ui->m_XZSliceFrame);
+  m_XZSliceCanvas->setObjectName("m_XZSliceCanvas");
+  m_ZYSliceCanvas = new SliceCanvas(SliceCanvas::ZY,_ui->m_ZYSliceFrame);
+  m_ZYSliceCanvas->setObjectName("m_ZYSliceCanvas");
 	
   QGridLayout *XYSliceCanvasLayout = new QGridLayout(_ui->m_XYSliceFrame);
   XYSliceCanvasLayout->addWidget(m_XYSliceCanvas);
@@ -2326,19 +2428,19 @@ VolumeGridRover::VolumeGridRover(QWidget* parent, const char* name, Qt::WFlags f
   QGridLayout *ZYSliceCanvasLayout = new QGridLayout(_ui->m_ZYSliceFrame);
   ZYSliceCanvasLayout->addWidget(m_ZYSliceCanvas);
 
-  _ui->m_X->setValidator(new QIntValidator(_ui->m_X,"m_XValidator"));
-  _ui->m_Y->setValidator(new QIntValidator(_ui->m_Y,"m_YValidator"));
-  _ui->m_Z->setValidator(new QIntValidator(_ui->m_Z,"m_ZValidator"));
+  _ui->m_X->setValidator(new QIntValidator(_ui->m_X));
+  _ui->m_Y->setValidator(new QIntValidator(_ui->m_Y));
+  _ui->m_Z->setValidator(new QIntValidator(_ui->m_Z));
   _ui->m_ObjX->setReadOnly(true);
   _ui->m_ObjY->setReadOnly(true);
   _ui->m_ObjZ->setReadOnly(true);
 
-  _ui->m_XYDepthSlide->setMinValue(0);
-  _ui->m_XYDepthSlide->setMaxValue(0);
-  _ui->m_XZDepthSlide->setMinValue(0);
-  _ui->m_XZDepthSlide->setMaxValue(0);
-  _ui->m_ZYDepthSlide->setMinValue(0);
-  _ui->m_ZYDepthSlide->setMaxValue(0);
+  _ui->m_XYDepthSlide->setMinimum(0);
+  _ui->m_XYDepthSlide->setMaximum(0);
+  _ui->m_XZDepthSlide->setMinimum(0);
+  _ui->m_XZDepthSlide->setMaximum(0);
+  _ui->m_ZYDepthSlide->setMinimum(0);
+  _ui->m_ZYDepthSlide->setMaximum(0);
   
   setGridCellInfo(0,0,0,
 		  0.0,0.0,0.0,
@@ -2469,7 +2571,7 @@ VolumeGridRover::VolumeGridRover(QWidget* parent, const char* name, Qt::WFlags f
 
   //-----------------------------------------------------------------------------------------------
 
-  connect(_ui->m_Objects,SIGNAL(currentChanged(QListView*)),SLOT(currentObjectSelectionChanged(QListView*)));
+  connect(_ui->m_Objects,SIGNAL(currentItemChanged(QListWidgetItem*,QListWidgetItem*)),SLOT(currentObjectSelectionChanged()));
   
   _ui->m_ThresholdLow->setValidator(new QIntValidator(0,255, _ui->m_ThresholdLow));
   _ui->m_ThresholdHigh->setValidator(new QIntValidator(0,255, _ui->m_ThresholdHigh));
@@ -2482,16 +2584,17 @@ VolumeGridRover::VolumeGridRover(QWidget* parent, const char* name, Qt::WFlags f
   connect(this,SIGNAL(cellMarkingModeChanged(int)),m_XZSliceCanvas,SLOT(setCellMarkingMode(int)));
   connect(this,SIGNAL(cellMarkingModeChanged(int)),m_ZYSliceCanvas,SLOT(setCellMarkingMode(int)));
 
-  connect(_ui->m_InterpolationType,SIGNAL(activated(int)),m_XYSliceCanvas,SLOT(setInterpolationType(int)));
-  connect(_ui->m_InterpolationType,SIGNAL(activated(int)),m_XZSliceCanvas,SLOT(setInterpolationType(int)));
-  connect(_ui->m_InterpolationType,SIGNAL(activated(int)),m_ZYSliceCanvas,SLOT(setInterpolationType(int)));
+  // TODO: setInterpolationType slot is commented out, uncomment if needed
+  // connect(_ui->m_InterpolationType,SIGNAL(activated(int)),m_XYSliceCanvas,SLOT(setInterpolationType(int)));
+  // connect(_ui->m_InterpolationType,SIGNAL(activated(int)),m_XZSliceCanvas,SLOT(setInterpolationType(int)));
+  // connect(_ui->m_InterpolationType,SIGNAL(activated(int)),m_ZYSliceCanvas,SLOT(setInterpolationType(int)));
 
   setCellMarkingMode(0); //start with point class marking
   m_XYSliceCanvas->setCellMarkingMode(0);
   m_XZSliceCanvas->setCellMarkingMode(0);
   m_ZYSliceCanvas->setCellMarkingMode(0);
 
-  connect(_ui->m_Objects,SIGNAL(selectionChanged()),SLOT(setSelectedContours()));
+  connect(_ui->m_Objects,SIGNAL(itemSelectionChanged()),SLOT(setSelectedContours()));
   connect(_ui->m_Isocontouring,SIGNAL(toggled(bool)),SLOT(doIsocontouring(bool)));
 
   // set varialbles
@@ -2511,7 +2614,7 @@ VolumeGridRover::~VolumeGridRover()
 
 void VolumeGridRover::colorSlot()
 {
-  if( (m_PointClassList == NULL) || (_ui->m_PointClass->currentItem() < 0) ) return;
+  if( (m_PointClassList == NULL) || (_ui->m_PointClass->currentIndex() < 0) ) return;
 
   QPalette palette = _ui->m_PointClassColor->palette();
   QColor color = QColorDialog::getColor( palette.color(QPalette::Button) );
@@ -2519,8 +2622,8 @@ void VolumeGridRover::colorSlot()
     {
       palette.setColor( QPalette::Normal, QPalette::Button, color );
       _ui->m_PointClassColor->setPalette( palette );
-      if(m_PointClassList[_ui->m_Variable->currentItem()][_ui->m_Timestep->value()]->at(_ui->m_PointClass->currentItem()))
-	m_PointClassList[_ui->m_Variable->currentItem()][_ui->m_Timestep->value()]->at(_ui->m_PointClass->currentItem())->setColor(color);
+      if(m_PointClassList[_ui->m_Variable->currentIndex()][_ui->m_Timestep->value()]->at(_ui->m_PointClass->currentIndex()))
+	m_PointClassList[_ui->m_Variable->currentIndex()][_ui->m_Timestep->value()]->at(_ui->m_PointClass->currentIndex())->setColor(color);
     }
 }
 
@@ -2529,14 +2632,14 @@ void VolumeGridRover::addPointClassSlot()
   static int classNum = 0;
   if(m_PointClassList == NULL) return;
 
-  m_PointClassList[_ui->m_Variable->currentItem()][_ui->m_Timestep->value()]->append(new PointClass(_ui->m_PointClassColor->palette().color( QPalette::Button ),QString("Class %1").arg(classNum)));
-  _ui->m_PointClass->insertItem(QString("Class %1").arg(classNum));
-  _ui->m_PointClass->setCurrentItem(_ui->m_PointClass->count()-1);
+  m_PointClassList[_ui->m_Variable->currentIndex()][_ui->m_Timestep->value()]->append(new PointClass(_ui->m_PointClassColor->palette().color( QPalette::Button ),QString("Class %1").arg(classNum)));
+  _ui->m_PointClass->insertItem(_ui->m_PointClass->count(), QString("Class %1").arg(classNum));
+  _ui->m_PointClass->setCurrentIndex(_ui->m_PointClass->count()-1);
 
-  m_XYSliceCanvas->setCurrentClass(_ui->m_PointClass->currentItem());
-  m_XZSliceCanvas->setCurrentClass(_ui->m_PointClass->currentItem());
-  m_ZYSliceCanvas->setCurrentClass(_ui->m_PointClass->currentItem());
-  showColor(_ui->m_PointClass->currentItem() );
+  m_XYSliceCanvas->setCurrentClass(_ui->m_PointClass->currentIndex());
+  m_XZSliceCanvas->setCurrentClass(_ui->m_PointClass->currentIndex());
+  m_ZYSliceCanvas->setCurrentClass(_ui->m_PointClass->currentIndex());
+  showColor(_ui->m_PointClass->currentIndex() );
 
   classNum++;
 }
@@ -2545,10 +2648,10 @@ void VolumeGridRover::deletePointClassSlot()
 {
   if(m_PointClassList == NULL) return;
 
-  m_PointClassList[_ui->m_Variable->currentItem()][_ui->m_Timestep->value()]->removeAt(_ui->m_PointClass->currentItem());
-  _ui->m_PointClass->removeItem(_ui->m_PointClass->currentItem());
+  m_PointClassList[_ui->m_Variable->currentIndex()][_ui->m_Timestep->value()]->removeAt(_ui->m_PointClass->currentIndex());
+  _ui->m_PointClass->removeItem(_ui->m_PointClass->currentIndex());
 
-  int currentItem = _ui->m_PointClass->currentItem();
+  int currentItem = _ui->m_PointClass->currentIndex();
   if( currentItem >= 0 )
   {
     m_XYSliceCanvas->setCurrentClass( currentItem ); /* make sure other objects dont point to the removed point class */
@@ -2557,9 +2660,9 @@ void VolumeGridRover::deletePointClassSlot()
     showColor( currentItem);
   }
 
-  m_XYSliceCanvas->updateGL();
-  m_XZSliceCanvas->updateGL();
-  m_ZYSliceCanvas->updateGL();
+  m_XYSliceCanvas->update();
+  m_XZSliceCanvas->update();
+  m_ZYSliceCanvas->update();
 }
 
 void VolumeGridRover::xChangedSlot()
@@ -2592,43 +2695,43 @@ void VolumeGridRover::backgroundColorSlot()
       m_XZSliceCanvas->setBackgroundColor( color );
       m_ZYSliceCanvas->makeCurrent();
       m_ZYSliceCanvas->setBackgroundColor( color );
-      m_XYSliceCanvas->updateGL();
-      m_XZSliceCanvas->updateGL();
-      m_ZYSliceCanvas->updateGL();
+      m_XYSliceCanvas->update();
+      m_XZSliceCanvas->update();
+      m_ZYSliceCanvas->update();
     }
 }
 
 void VolumeGridRover::addContour(const SurfRecon::Contour& c)
 {
   if(m_Contours.empty()) return;
-  m_Contours[_ui->m_Variable->currentItem()][_ui->m_Timestep->value()][c.name()] = SurfRecon::ContourPtr(new SurfRecon::Contour(c));
+  m_Contours[_ui->m_Variable->currentIndex()][_ui->m_Timestep->value()][c.name()] = SurfRecon::ContourPtr(new SurfRecon::Contour(c));
   _ui->m_Objects->insertItem( _ui->m_Objects->count(), new QListWidgetItem( QString(c.name().data()), _ui->m_Objects, 0));
-  _ui->m_Objects->setCurrentItem(_ui->m_Objects->findItems( QString(c.name().data()), 0).first());
+  _ui->m_Objects->setCurrentItem(_ui->m_Objects->findItems( QString(c.name().data()), Qt::MatchExactly).first());
 
   updateSliceContours();
   showCurrentObject();
-  updateGL();
+  update();
 }
 
 void VolumeGridRover::removeContour(const std::string& name)
 {
-  m_Contours[_ui->m_Variable->currentItem()][_ui->m_Timestep->value()].erase(name);
-  delete _ui->m_Objects->findItems( QString(name.data()) , 0 ).first();
+  m_Contours[_ui->m_Variable->currentIndex()][_ui->m_Timestep->value()].erase(name);
+  delete _ui->m_Objects->findItems( QString(name.data()) , Qt::MatchExactly ).first();
 
   updateSliceContours();
   showCurrentObject();
-  updateGL();
+  update();
 }
 
 void VolumeGridRover::showCurrentObject()
 {
-  m_XYSliceCanvas->setCurrentContour(_ui->m_Objects->currentItem() ? _ui->m_Objects->currentItem()->text().ascii() : "");
-  m_XZSliceCanvas->setCurrentContour(_ui->m_Objects->currentItem() ? _ui->m_Objects->currentItem()->text().ascii() : "");
-  m_ZYSliceCanvas->setCurrentContour(_ui->m_Objects->currentItem() ? _ui->m_Objects->currentItem()->text().ascii() : "");
+  m_XYSliceCanvas->setCurrentContour(_ui->m_Objects->currentItem() ? _ui->m_Objects->currentItem()->text().toStdString().c_str() : "");
+  m_XZSliceCanvas->setCurrentContour(_ui->m_Objects->currentItem() ? _ui->m_Objects->currentItem()->text().toStdString().c_str() : "");
+  m_ZYSliceCanvas->setCurrentContour(_ui->m_Objects->currentItem() ? _ui->m_Objects->currentItem()->text().toStdString().c_str() : "");
 
-  showContourColor(_ui->m_Objects->currentItem() ? _ui->m_Objects->currentItem()->text().ascii() : "");
-  showContourInterpolationType(_ui->m_Objects->currentItem() ? _ui->m_Objects->currentItem()->text().ascii() : "");
-  showContourInterpolationSampling(_ui->m_Objects->currentItem() ? _ui->m_Objects->currentItem()->text().ascii() : "");
+  showContourColor(_ui->m_Objects->currentItem() ? _ui->m_Objects->currentItem()->text().toStdString().c_str() : "");
+  showContourInterpolationType(_ui->m_Objects->currentItem() ? _ui->m_Objects->currentItem()->text().toStdString().c_str() : "");
+  showContourInterpolationSampling(_ui->m_Objects->currentItem() ? _ui->m_Objects->currentItem()->text().toStdString().c_str() : "");
 }
 
 void VolumeGridRover::updateSliceContours()
@@ -2640,12 +2743,9 @@ void VolumeGridRover::updateSliceContours()
 
 QString VolumeGridRover::cacheDir() const
 {
-  QSettings settings;
-  settings.insertSearchPath(QSettings::Windows, "/CCV");
-  bool result;
-  QString cacheDirString = settings.readEntry("/Volume Rover/CacheDir",
-					      QString::null, &result);
-  if(!result) cacheDirString = ".";
+  QSettings settings(QDir::homePath() + "/.CCV/settings.ini", QSettings::IniFormat);
+  QString cacheDirString = settings.value("/Volume Rover/CacheDir", QString()).toString();
+  if(cacheDirString.isEmpty()) cacheDirString = ".";
   cacheDirString += "/VolumeCache";
   return cacheDirString;
 }
@@ -2677,11 +2777,11 @@ void VolumeGridRover::clearIsocontours()
   for( int i=0; i < size; i++ )
   {
       QListWidgetItem *item = _ui->m_Objects->item( i );
-      QStringList split = QStringList::split("_", item->text());
+      QStringList split = item->text().split("_");
      
       if( split[ 0 ] == "isocontour" )
 	{
-	  m_Contours[_ui->m_Variable->currentItem()][_ui->m_Timestep->value()].erase( item->text().ascii());
+	  m_Contours[_ui->m_Variable->currentIndex()][_ui->m_Timestep->value()].erase( item->text().toStdString().c_str());
 	  delete item;
 	}
     }
@@ -2799,7 +2899,7 @@ void VolumeGridRover::generateIsocontours()
       					       i->value);
       SurfRecon::Contour contour(SurfRecon::Color(255.0,255.0,255.0),
 				 boost::str(boost::format("isocontour_%1%")%i->value),
-				 SurfRecon::InterpolationType(_ui->m_InterpolationType->currentItem()),
+				 SurfRecon::InterpolationType(_ui->m_InterpolationType->currentIndex()),
 				 _ui->m_InterpolationSampling->value());
       for(int edge_idx = 0; edge_idx < isocontour->nedge; edge_idx++)
 	{
@@ -2881,16 +2981,17 @@ void VolumeGridRover::saveContoursSlot()
   //cvcapp.log(5, "VolumeGridRover::saveContoursSlot()");
   unsigned int var, time;
 
-  QString filename = QFileDialog::getSaveFileName(QString::null,
+  QString filename = QFileDialog::getSaveFileName(this,
+						  "Choose a filename to save under",
+						  QString(),
 						  "VolumeRover Contour files (*.cnt);;"
 						  "ctr2suf Contour format (*.contour);;"
 						  "Reconstruction point cloud (*.pcd);;"
 						  "B-Spline contours (*.bspline);;"
 						  "MAT-1.0.x Skeletonization Software contours (*.matc);;"
-						  "All Files (*)",
-						  this,"save file dialog","Choose a filename to save under");
+						  "All Files (*)");
   
-  if(filename == QString::null)
+  if(filename == QString())
     {
       cvcapp.log(5, "VolumeGridRover::saveContoursSlot(): save cancelled (or null filename)");
       return;
@@ -3044,7 +3145,7 @@ void VolumeGridRover::saveContoursSlot()
 		    QString new_filename(filename);
 		    new_filename.replace(".pcd",QString("_%1.pcd").arg("%1f").arg( QString((*i).second->name().data() ) ) );
 		    QFile f(new_filename);
-		    if(!f.open(IO_WriteOnly))
+		    if(!f.open(QIODevice::WriteOnly))
 		      {
 			QMessageBox::critical(this,"Error",QString("Could not open the file %1!").arg(new_filename),
 					      QMessageBox::Ok,QMessageBox::NoButton,QMessageBox::NoButton);
@@ -3244,7 +3345,7 @@ void VolumeGridRover::saveContoursSlot()
 		    QString new_filename(filename);
 		    new_filename.replace(".contour",QString("_%1.contour").arg("%lf").arg( QString( (*i).second->name().data()) ) );
 		    QFile f(new_filename);
-		    if(!f.open(IO_WriteOnly))
+		    if(!f.open(QIODevice::WriteOnly))
 		      {
 			QMessageBox::critical(this,"Error",QString("Could not open the file %1!").arg(new_filename),
 					      QMessageBox::Ok,QMessageBox::NoButton,QMessageBox::NoButton);
@@ -3698,7 +3799,7 @@ void VolumeGridRover::saveContoursSlot()
 							 .arg(std::distance((*i).second->curves().begin(),
 									    cur)));
 				    QFile f(new_filename);
-				    if(!f.open(IO_WriteOnly))
+				    if(!f.open(QIODevice::WriteOnly))
 				      {
 					QMessageBox::critical(this,"Error",QString("Could not open the file %1!").arg(new_filename),
 							      QMessageBox::Ok,QMessageBox::NoButton,QMessageBox::NoButton);
@@ -3718,7 +3819,7 @@ void VolumeGridRover::saveContoursSlot()
 		//    QString new_filename(filename);
 		//    new_filename.replace(".bspline",QString("_%1.bspline").arg((*i).second->name()));
 		//    QFile f(new_filename);
-		//    if(!f.open(IO_WriteOnly))
+		//    if(!f.open(QIODevice::WriteOnly))
 		//     {
 		//	QMessageBox::critical(this,"Error",QString("Could not open the file %1!").arg(new_filename),
 		//			      QMessageBox::Ok,QMessageBox::NoButton,QMessageBox::NoButton);
@@ -3987,7 +4088,7 @@ void VolumeGridRover::saveContoursSlot()
 			    //  .arg(std::distance((*i).second->curves().begin(),
 			    //  cur)));
 			    //  QFile f(new_filename);
-			    //  if(!f.open(IO_WriteOnly))
+			    //  if(!f.open(QIODevice::WriteOnly))
 			    //  {
 			    //  QMessageBox::critical(this,"Error",QString("Could not open the file %1!").arg(new_filename),
 			    //  QMessageBox::Ok,QMessageBox::NoButton,QMessageBox::NoButton);
@@ -4007,7 +4108,7 @@ void VolumeGridRover::saveContoursSlot()
 		  //  QString new_filename(filename);
 		  //  new_filename.replace(".bspline",QString("_%1.bspline").arg((*i).second->name()));
 		  //  QFile f(new_filename);
-		  //  if(!f.open(IO_WriteOnly))
+		  //  if(!f.open(QIODevice::WriteOnly))
 		  //   {
 		  //	QMessageBox::critical(this,"Error",QString("Could not open the file %1!").arg(new_filename),
 		  //			      QMessageBox::Ok,QMessageBox::NoButton,QMessageBox::NoButton);
@@ -4022,7 +4123,7 @@ void VolumeGridRover::saveContoursSlot()
 	      }
 
 	  QFile f(filename);
-	  if(!f.open(IO_WriteOnly))
+	  if(!f.open(QIODevice::WriteOnly))
 	    {
 	      QMessageBox::critical(this,"Error",QString("Could not open the file %1!").arg(filename),
 				    QMessageBox::Ok,QMessageBox::NoButton,QMessageBox::NoButton);
@@ -4126,7 +4227,7 @@ void VolumeGridRover::saveContoursSlot()
 	}
       
       QFile f(filename);
-      if(!f.open(IO_WriteOnly))
+      if(!f.open(QIODevice::WriteOnly))
 	{
 	  QMessageBox::critical(this,"Error",QString("Could not open the file %1!").arg(filename),
 				QMessageBox::Ok,QMessageBox::NoButton,QMessageBox::NoButton);
@@ -4146,13 +4247,13 @@ void VolumeGridRover::loadContoursSlot()
 
   // std::list<SurfRecon::ContourPtr> contours;
 
-  QStringList filenames = QFileDialog::getOpenFileNames("Reconstruct series (*.ser);;"
+  QStringList filenames = QFileDialog::getOpenFileNames(this,
+							"Choose a file to open",
+							QString(),
+							"Reconstruct series (*.ser);;"
 							"Contour files (*.cnt);;"
 							"ContourTiler config (*.config);;"
-							"All Files (*)",
-							QString::null,
-							this,"open file dialog",
-							"Choose a file to open");
+							"All Files (*)");
 
   if(filenames.size() == 0)
     {
@@ -4165,7 +4266,7 @@ void VolumeGridRover::loadContoursSlot()
 
   updateSliceContours(); //make sure the slices have a valid m_Contours
 
-  //m_Contours[m_Variable->currentItem()][m_Timestep->value()].clear();
+  //m_Contours[m_Variable->currentIndex()][m_Timestep->value()].clear();
   //m_Contour->clear();
 
   for(QStringList::iterator it = filenames.begin();
@@ -4202,14 +4303,14 @@ void VolumeGridRover::loadContoursSlot()
 	 // //  *
 	   
 
-	 //  contours = SeriesFileReader::readSeries(filename.ascii(),m_VolumeFileInfo);//1.0//,1000.0);
+	 //  contours = SeriesFileReader::readSeries(filename.toStdString().c_str(),m_VolumeFileInfo);//1.0//,1000.0);
 	 //  //cvcapp.log(5, "contours.size(): %d", contours.size());
 
 	 //  for(std::list<SurfRecon::ContourPtr>::iterator i = contours.begin();
 	 //      i != contours.end();
 	 //      i++)
 	 //    {
-	 //      m_Contours[m_Variable->currentItem()][m_Timestep->value()][(*i)->name()] = *i;
+	 //      m_Contours[m_Variable->currentIndex()][m_Timestep->value()][(*i)->name()] = *i;
 	 //      //m_Contour->insertItem((*i)->name());
 	 //      QListViewItem *tmp = m_Objects->findItem((*i)->name().c_str(),0);
 	 //      if(tmp) delete tmp;
@@ -4243,7 +4344,7 @@ void VolumeGridRover::loadContoursSlot()
 
 	  for (set<string>::const_iterator it = component_names.begin(); it != component_names.end(); ++it) {
 	    string name = *it;
-	    // m_Contours[m_Variable->currentItem()][m_Timestep->value()][name] = *i;
+	    // m_Contours[m_Variable->currentIndex()][m_Timestep->value()][name] = *i;
 	    // QListWidgetItem *tmp = _ui->m_Objects->findItem(name.c_str(),0);
 	    // if(tmp) delete tmp;
 	    // _ui->m_Objects->insertItem(new QListWidgetItem(QString(name.c_str()), _ui->m_Objects, 0));
@@ -4268,9 +4369,9 @@ void VolumeGridRover::loadContoursSlot()
 	    {
 	      int linenum = 0;
 	      string config_file_contents;
-	      ifstream config_file(filename.ascii());
+	      ifstream config_file(filename.toStdString().c_str());
 	      if(!config_file)
-		throw runtime_error(str(format("Could not open file %1%") % filename.ascii()));
+		throw runtime_error(str(format("Could not open file %1%") % filename.toStdString().c_str()));
 	  
 	      while(!config_file.eof())
 		{
@@ -4279,7 +4380,7 @@ void VolumeGridRover::loadContoursSlot()
 		  linenum++;
 		  if(!config_file && !config_file.eof())
 		    throw runtime_error(str(format("Could not read file %1% at line %2%")
-					    % filename.ascii()
+					    % filename.toStdString().c_str()
 					    % linenum));
 		  //remove comments
 		  line.replace(std::find(line.begin(), line.end(), '#'),
@@ -4312,7 +4413,7 @@ void VolumeGridRover::loadContoursSlot()
 	      section_tokens.insert(config_file_contents.end());
 
 	      if(section_tokens.size() <= 1)
-		throw runtime_error(str(format("Invalid config file %1%") % filename.ascii()));
+		throw runtime_error(str(format("Invalid config file %1%") % filename.toStdString().c_str()));
 	  
 	      //iterate through each section and collect the input
 	      bool seen_prefix = false, seen_suffix = false, seen_range = false;
@@ -4323,10 +4424,10 @@ void VolumeGridRover::loadContoursSlot()
 		  i++)
 		{
 		  //find where the colon is and move 1 past it
-		  string::iterator colon = std::find(*i,*next(i),':');
-		  assert(colon != *next(i)); //this must be the case because of the regex above
+		  string::iterator colon = std::find(*i,*std::next(i),':');
+		  assert(colon != *std::next(i)); //this must be the case because of the regex above
 		  string param(*i,colon);
-		  string arg(next(colon),*next(i));
+		  string arg(std::next(colon),*std::next(i));
 		  trim(arg);
 		  //cout << "lolz: '" << arg << "'" << endl;
 
@@ -4347,7 +4448,7 @@ void VolumeGridRover::loadContoursSlot()
 		      split(split_arg,arg,is_any_of(" "));
 		      if(split_arg.size() != 2)
 			throw runtime_error(str(format("Invalid config file %1% - bad slice range")
-						% filename.ascii()));
+						% filename.toStdString().c_str()));
 		      try
 			{
 			  low_range = lexical_cast<int>(split_arg[0]);
@@ -4356,7 +4457,7 @@ void VolumeGridRover::loadContoursSlot()
 		      catch(bad_lexical_cast& e)
 			{
 			  throw runtime_error(str(format("Invalid config file %1% - %2%")
-						  % filename.ascii()
+						  % filename.toStdString().c_str()
 						  % e.what()));
 			}
 		      seen_range = true;
@@ -4365,13 +4466,13 @@ void VolumeGridRover::loadContoursSlot()
 
 	      if(!seen_prefix || !seen_suffix || !seen_range)
 		throw runtime_error(str(format("Invalid config file %1% - must have at least prefix, suffix, and range")
-					% filename.ascii()));
+					% filename.toStdString().c_str()));
 	  
 	      cout << "Prefix: " << prefix << endl;
 	      cout << "Suffix: " << suffix << endl;
 	      cout << "Slice range: " << low_range << " " << high_range << endl;
 
-	      int var = _ui->m_Variable->currentItem();
+	      int var = _ui->m_Variable->currentIndex();
 	      int time = _ui->m_Timestep->value();
 
 	      m_Contours[var][time][prefix] =
@@ -4389,7 +4490,7 @@ void VolumeGridRover::loadContoursSlot()
 		  if(QFileInfo(pts_filename.c_str()).isRelative())
 		    {
 		      pts_filename = string((QFileInfo(filename)
-					     .dirPath(true) + "/" + pts_filename.c_str()).ascii());
+					     .absolutePath() + "/" + pts_filename.c_str()).toStdString().c_str());
 		      //cout << "abs filename: " << pts_filename << endl;
 		    }
 
@@ -4481,10 +4582,10 @@ void VolumeGridRover::loadContoursSlot()
 		    }
 		}
 	
-	      if( _ui->m_Objects->findItems( QString(prefix.data()) ,0).size() == 0)
+	      if( _ui->m_Objects->findItems( QString(prefix.data()) ,Qt::MatchExactly).size() == 0)
 		_ui->m_Objects->insertItem(_ui->m_Objects->count(), new QListWidgetItem( QString( prefix.data() ), _ui->m_Objects, 0 ));
 
-	      _ui->m_Objects->setCurrentItem( _ui->m_Objects->findItems( QString(prefix.data()), 0 ).first() );
+	      _ui->m_Objects->setCurrentItem( _ui->m_Objects->findItems( QString(prefix.data()), Qt::MatchExactly ).first() );
 	    }
 	  catch(std::exception& e)
 	    {
@@ -4502,7 +4603,7 @@ void VolumeGridRover::loadContoursSlot()
 	  //default with cnt file
 	  QDomDocument doc("contourdoc");
 	  QFile file(filename);
-	  if(!file.open(IO_ReadOnly))
+	  if(!file.open(QIODevice::ReadOnly))
 	    {
 	      QMessageBox::critical(this,"Error","Unable to open contour data file!",
 				    QMessageBox::Ok,QMessageBox::NoButton,QMessageBox::NoButton);
@@ -4520,7 +4621,7 @@ void VolumeGridRover::loadContoursSlot()
 	  file.close();
 
 	  QDomElement contours = doc.documentElement();
-	  //if(!contours.isNull()) cvcapp.log(5, "contours.tagName() == %s",contours.tagName().ascii());
+	  //if(!contours.isNull()) cvcapp.log(5, "contours.tagName() == %s",contours.tagName().toStdString().c_str());
 	  unsigned int numCurves = contours.elementsByTagName("curve").count();
 
 	  QProgressDialog progressDialog( QString("Building contours from XML input..."), QString("Cancel"), 0, numCurves, this);
@@ -4534,7 +4635,7 @@ void VolumeGridRover::loadContoursSlot()
 		  QDomElement contour = contourNode.toElement();
 		  if(!contour.isNull() && contour.tagName() == "contour")
 		    {
-		      //cvcapp.log(5, "contour.tagName() == %s", contour.tagName().ascii());
+		      //cvcapp.log(5, "contour.tagName() == %s", contour.tagName().toStdString().c_str());
 		  
 		      unsigned int time = contour.attribute("timestep").toInt();
 		      unsigned int var = contour.attribute("variable").toInt();
@@ -4557,15 +4658,15 @@ void VolumeGridRover::loadContoursSlot()
 		      QString sampstring = contour.attribute("numSamples");
 		      int samples = sampstring.isEmpty() ? 5 : sampstring.toInt();
 		  
-		      m_Contours[var][time][name.ascii()] =
+		      m_Contours[var][time][name.toStdString().c_str()] =
 			SurfRecon::ContourPtr(new SurfRecon::Contour(SurfRecon::Color(color.red()/255.0,
 										      color.green()/255.0,
 										      color.blue()/255.0),
-								     std::string(name.ascii()),
-								     SurfRecon::getInterpolationTypeFromString( std::string(contour.attribute("interpolationType").ascii()) ),
+								     std::string(name.toStdString().c_str()),
+								     SurfRecon::getInterpolationTypeFromString( std::string(contour.attribute("interpolationType").toStdString().c_str()) ),
 								     samples));
 		  
-		      if( _ui->m_Objects->findItems( name,0).size() == 0 )
+		      if( _ui->m_Objects->findItems( name,Qt::MatchExactly).size() == 0 )
  			 _ui->m_Objects->insertItem( _ui->m_Objects->count(), new QListWidgetItem(name, _ui->m_Objects, 0) );
 		      _ui->m_Objects->setCurrentItem( _ui->m_Objects->findItems( name, 0 ).first() );
 		  
@@ -4584,8 +4685,8 @@ void VolumeGridRover::loadContoursSlot()
 			      QString orientationstr = curve.attribute("orientation");
 			      QString curvenamestr = curve.attribute("name");
 
-			      //cvcapp.log(5, "curve.tagName()=%s, slice=%s, orientation=%s, curvenamestr=%s",curve.tagName().ascii(),
-			      //	 slicestr.ascii(),orientationstr.ascii(),curvenamestr.ascii());
+			      //cvcapp.log(5, "curve.tagName()=%s, slice=%s, orientation=%s, curvenamestr=%s",curve.tagName().toStdString().c_str(),
+			      //	 slicestr.toStdString().c_str(),orientationstr.toStdString().c_str(),curvenamestr.toStdString().c_str());
 
 			      if(slicestr.isEmpty() || orientationstr.isEmpty())
 				{
@@ -4604,7 +4705,7 @@ void VolumeGridRover::loadContoursSlot()
 										SurfRecon::PointPtrList(),
 										curvenamestr));
 			  
-			      m_Contours[var][time][name.ascii()]->add(curveptr);
+			      m_Contours[var][time][name.toStdString().c_str()]->add(curveptr);
 			  
 			      QDomNode pointNode = curve.firstChild();
 			      while(!pointNode.isNull())
@@ -4726,25 +4827,23 @@ void VolumeGridRover::loadContoursSlot()
       QString newfilename;
       try
 	{
-	  QSettings settings;
-	  settings.insertSearchPath(QSettings::Windows, "/CCV");
+	  QSettings settings(QDir::homePath() + "/.CCV/settings.ini", QSettings::IniFormat);
 	  VolMagick::Volume empty_vol;
 	  empty_vol.boundingBox(globalbox);
 	  empty_vol.dimension(globaldim);
-	  bool result;
-	  QString cacheDirString = settings.readEntry("/Volume Rover/CacheDir", QString::null, &result);
-	  if(!result) cacheDirString = ".";
+	  QString cacheDirString = settings.value("/Volume Rover/CacheDir", QString()).toString();
+	  if(cacheDirString.isEmpty()) cacheDirString = ".";
 	  QDir tmpdir(cacheDirString + "/VolumeCache/tmp");
-	  if(!tmpdir.exists()) tmpdir.mkdir(tmpdir.absPath());
-	  QFileInfo tmpfile(tmpdir,"tmp.rawiv");
-	  cvcapp.log(5, boost::str(boost::format("Creating volume %s")%tmpfile.absFilePath().ascii()));
-	  newfilename = QDir::convertSeparators(tmpfile.absFilePath());
-	  cvcapp.log(5, boost::str(boost::format("newfilename = %s")%newfilename.ascii()));
-	  VolMagick::createVolumeFile(newfilename.ascii(),
+	  if(!tmpdir.exists()) tmpdir.mkpath(tmpdir.absolutePath());
+	  QFileInfo tmpfile(tmpdir.absolutePath(),"tmp.rawiv");
+	  cvcapp.log(5, boost::str(boost::format("Creating volume %s")%tmpfile.absoluteFilePath().toStdString().c_str()));
+	  newfilename = QDir::toNativeSeparators(tmpfile.absoluteFilePath());
+	  cvcapp.log(5, boost::str(boost::format("newfilename = %s")%newfilename.toStdString().c_str()));
+	  VolMagick::createVolumeFile(newfilename.toStdString().c_str(),
 				      empty_vol.boundingBox(),
 				      empty_vol.dimension(),
 				      vector<VolMagick::VoxelType>(1, empty_vol.voxelType()));
-	  VolMagick::writeVolumeFile(empty_vol,newfilename.ascii());
+	  VolMagick::writeVolumeFile(empty_vol,newfilename.toStdString().c_str());
 	}
       catch(const VolMagick::Exception& e)
 	{
@@ -4778,7 +4877,7 @@ void VolumeGridRover::loadContoursSlot()
 
   updateSliceContours();
   showCurrentObject();
-  updateGL();
+  update();
 }
 
 void VolumeGridRover::sdfOptionsSlot()
@@ -4853,14 +4952,14 @@ void VolumeGridRover::sdfOptionsSlot()
       while(it.current()!=NULL)
 	{
 	  SurfRecon::CurvePtrVector 
-	    curves(m_Contours[m_Variable->currentItem()][m_Timestep->value()][it.current()->text(0).ascii()]->curves());
+	    curves(m_Contours[m_Variable->currentIndex()][m_Timestep->value()][it.current()->text(0).toStdString().c_str()]->curves());
 	  
 	  const gsl_interp_type *interp;
 	  
 	  switch(m_Contours
-		 [m_Variable->currentItem()]
+		 [m_Variable->currentIndex()]
 		 [m_Timestep->value()]
-		 [it.current()->text(0).ascii()]->interpolationType())
+		 [it.current()->text(0).toStdString().c_str()]->interpolationType())
 	    {
 	    case 0: interp = gsl_interp_linear; break;
 	    case 1: interp = gsl_interp_polynomial; break;
@@ -4922,9 +5021,9 @@ void VolumeGridRover::sdfOptionsSlot()
 		  
 		  //Just sample some number of points for non-linear interpolation for now.
 		  interval = 1.0/(1+m_Contours
-				  [m_Variable->currentItem()]
+				  [m_Variable->currentIndex()]
 				  [m_Timestep->value()]
-				  [it.current()->text(0).ascii()]->numberOfSamples());
+				  [it.current()->text(0).toStdString().c_str()]->numberOfSamples());
 		  //In the future, sample according to the spline's curvature between 2
 		  // control points...
 		  
@@ -5002,8 +5101,8 @@ void VolumeGridRover::sdfOptionsSlot()
       try
 	{
 	  sdf = SDF2D::signedDistanceFunction(polygons,dim,bbox,
-					      SDF2D::SignMethod(sdfd.sign_method->currentItem()),
-					      SDF2D::DistanceMethod(sdfd.dist_method->currentItem()));
+					      SDF2D::SignMethod(sdfd.sign_method->currentIndex()),
+					      SDF2D::DistanceMethod(sdfd.dist_method->currentIndex()));
 	
 	  //output a B&W image showing inside or out
 	  for(SDF2D::ImageIndex i = 0; i < sdf.shape()[0]; i++)
@@ -5078,14 +5177,14 @@ void VolumeGridRover::medialAxisSlot()
   while(it.current()!=NULL)
     {
       SurfRecon::CurvePtrVector 
-	curves(m_Contours[m_Variable->currentItem()][m_Timestep->value()][it.current()->text(0).ascii()]->curves());
+	curves(m_Contours[m_Variable->currentIndex()][m_Timestep->value()][it.current()->text(0).toStdString().c_str()]->curves());
 	  
       const gsl_interp_type *interp;
 	  
       switch(m_Contours
-	     [m_Variable->currentItem()]
+	     [m_Variable->currentIndex()]
 	     [m_Timestep->value()]
-	     [it.current()->text(0).ascii()]->interpolationType())
+	     [it.current()->text(0).toStdString().c_str()]->interpolationType())
 	{
 	case 0: interp = gsl_interp_linear; break;
 	case 1: interp = gsl_interp_polynomial; break;
@@ -5157,9 +5256,9 @@ void VolumeGridRover::medialAxisSlot()
 		  
 		  //Just sample some number of points for non-linear interpolation for now.
 		  interval = 1.0/(1+m_Contours
-				  [m_Variable->currentItem()]
+				  [m_Variable->currentIndex()]
 				  [m_Timestep->value()]
-				  [it.current()->text(0).ascii()]->numberOfSamples());
+				  [it.current()->text(0).toStdString().c_str()]->numberOfSamples());
 		  //In the future, sample according to the spline's curvature between 2
 		  // control points...
 		  
@@ -5245,7 +5344,7 @@ void VolumeGridRover::medialAxisSlot()
 						    m_ContourColor->paletteBackgroundColor().green()/255.0,
 						    m_ContourColor->paletteBackgroundColor().blue()/255.0),
 				   "medax",
-				   SurfRecon::InterpolationType(m_InterpolationType->currentItem()),
+				   SurfRecon::InterpolationType(m_InterpolationType->currentIndex()),
 				   m_InterpolationSampling->value());
   
   //1 curve per halfedge for now... TODO: combine half edges into curves to reduce overhead
@@ -5320,7 +5419,7 @@ void VolumeGridRover::curateContoursSlot()
   cvcapp.log(5, "VolumeGridRover::curateContoursSlot()");
 }
 
-inline const QList<PointClass*>* VolumeGridRover::getPointClassList() const { return m_PointClassList[_ui->m_Variable->currentItem()][_ui->m_Timestep->value()]; }
+inline const QList<PointClass*>* VolumeGridRover::getPointClassList() const { return m_PointClassList[_ui->m_Variable->currentIndex()][_ui->m_Timestep->value()]; }
 
 void VolumeGridRover::addContourSlot()
 {
@@ -5339,12 +5438,12 @@ void VolumeGridRover::addContourSlot()
   //cvcapp.log(5, "VolumeGridRover::addContourSlot()");
   QColor color = _ui->m_ContourColor->palette().color( QPalette::Button );
 
-  m_Contours[_ui->m_Variable->currentItem()][_ui->m_Timestep->value()][name.ascii()] =
+  m_Contours[_ui->m_Variable->currentIndex()][_ui->m_Timestep->value()][name.toStdString().c_str()] =
     SurfRecon::ContourPtr(new SurfRecon::Contour(SurfRecon::Color( color.red()/255.0,
 								   color.green()/255.0,
 								   color.blue()/255.0),
-						 std::string(name.ascii()),
-						 SurfRecon::InterpolationType(_ui->m_InterpolationType->currentItem()),
+						 std::string(name.toStdString().c_str()),
+						 SurfRecon::InterpolationType(_ui->m_InterpolationType->currentIndex()),
 						 _ui->m_InterpolationSampling->value()));
   //m_Contour->insertItem(name);
   _ui->m_Objects->insertItem( _ui->m_Objects->count(), new QListWidgetItem(name, _ui->m_Objects, 0));
@@ -5354,18 +5453,18 @@ void VolumeGridRover::addContourSlot()
   m_ZYSliceCanvas->setContours(m_Contours);
 
   //m_Contour->setCurrentItem(m_Contour->count()-1);
-  _ui->m_Objects->setCurrentItem( _ui->m_Objects->findItems(name,0).first() );
+  _ui->m_Objects->setCurrentItem( _ui->m_Objects->findItems(name,Qt::MatchExactly).first() );
 
-  m_XYSliceCanvas->setCurrentContour(name.ascii());
-  m_XZSliceCanvas->setCurrentContour(name.ascii());
-  m_ZYSliceCanvas->setCurrentContour(name.ascii());
-  showContourColor(name.ascii());
-  showContourInterpolationType(name.ascii());
-  showContourInterpolationSampling(name.ascii());
+  m_XYSliceCanvas->setCurrentContour(name.toStdString().c_str());
+  m_XZSliceCanvas->setCurrentContour(name.toStdString().c_str());
+  m_ZYSliceCanvas->setCurrentContour(name.toStdString().c_str());
+  showContourColor(name.toStdString().c_str());
+  showContourInterpolationType(name.toStdString().c_str());
+  showContourInterpolationSampling(name.toStdString().c_str());
 
-  m_XYSliceCanvas->updateGL();
-  m_XZSliceCanvas->updateGL();
-  m_ZYSliceCanvas->updateGL();
+  m_XYSliceCanvas->update();
+  m_XZSliceCanvas->update();
+  m_ZYSliceCanvas->update();
 
 }
 
@@ -5379,7 +5478,7 @@ void VolumeGridRover::deleteContourSlot()
   for( int i=0; i<size; i++ )
   {
       QListWidgetItem *item = _ui->m_Objects->item( i );
-      m_Contours[_ui->m_Variable->currentItem()][_ui->m_Timestep->value()].erase( item->text().ascii());
+      m_Contours[_ui->m_Variable->currentIndex()][_ui->m_Timestep->value()].erase( item->text().toStdString().c_str());
       delete item;
   }
     
@@ -5387,16 +5486,16 @@ void VolumeGridRover::deleteContourSlot()
   m_XZSliceCanvas->setContours(m_Contours);
   m_ZYSliceCanvas->setContours(m_Contours);
 
-  m_XYSliceCanvas->setCurrentContour(_ui->m_Objects->currentItem() ? _ui->m_Objects->currentItem()->text().ascii() : "");
-  m_XZSliceCanvas->setCurrentContour(_ui->m_Objects->currentItem() ? _ui->m_Objects->currentItem()->text().ascii() : "");
-  m_ZYSliceCanvas->setCurrentContour(_ui->m_Objects->currentItem() ? _ui->m_Objects->currentItem()->text().ascii() : "");
-  showContourColor(_ui->m_Objects->currentItem() ? _ui->m_Objects->currentItem()->text().ascii() : "");
-  showContourInterpolationType(_ui->m_Objects->currentItem() ? _ui->m_Objects->currentItem()->text().ascii() : "");
-  showContourInterpolationSampling(_ui->m_Objects->currentItem() ? _ui->m_Objects->currentItem()->text().ascii() : "");
+  m_XYSliceCanvas->setCurrentContour(_ui->m_Objects->currentItem() ? _ui->m_Objects->currentItem()->text().toStdString().c_str() : "");
+  m_XZSliceCanvas->setCurrentContour(_ui->m_Objects->currentItem() ? _ui->m_Objects->currentItem()->text().toStdString().c_str() : "");
+  m_ZYSliceCanvas->setCurrentContour(_ui->m_Objects->currentItem() ? _ui->m_Objects->currentItem()->text().toStdString().c_str() : "");
+  showContourColor(_ui->m_Objects->currentItem() ? _ui->m_Objects->currentItem()->text().toStdString().c_str() : "");
+  showContourInterpolationType(_ui->m_Objects->currentItem() ? _ui->m_Objects->currentItem()->text().toStdString().c_str() : "");
+  showContourInterpolationSampling(_ui->m_Objects->currentItem() ? _ui->m_Objects->currentItem()->text().toStdString().c_str() : "");
 
-  m_XYSliceCanvas->updateGL();
-  m_XZSliceCanvas->updateGL();
-  m_ZYSliceCanvas->updateGL();
+  m_XYSliceCanvas->update();
+  m_XZSliceCanvas->update();
+  m_ZYSliceCanvas->update();
 
 }
 
@@ -5416,17 +5515,17 @@ void VolumeGridRover::contourColorSlot()
       {
           QListWidgetItem *item = _ui->m_Objects->item( i );
  
-	  if(m_Contours[_ui->m_Variable->currentItem()][_ui->m_Timestep->value()][item->text().ascii()] != NULL)
-	    m_Contours[_ui->m_Variable->currentItem()][_ui->m_Timestep->value()][item->text().ascii()]->
+	  if(m_Contours[_ui->m_Variable->currentIndex()][_ui->m_Timestep->value()][item->text().toStdString().c_str()] != NULL)
+	    m_Contours[_ui->m_Variable->currentIndex()][_ui->m_Timestep->value()][item->text().toStdString().c_str()]->
 	      color(SurfRecon::Color(color.red()/255.0,
 				     color.green()/255.0,
 				     color.blue()/255.0));
       }
     }
 
-  m_XYSliceCanvas->updateGL();
-  m_XZSliceCanvas->updateGL();
-  m_ZYSliceCanvas->updateGL();
+  m_XYSliceCanvas->update();
+  m_XZSliceCanvas->update();
+  m_ZYSliceCanvas->update();
 
 }
 
@@ -5438,14 +5537,14 @@ void VolumeGridRover::setInterpolationTypeSlot(int t)
   for( int i=0; i < size; i++ )
   {
       QListWidgetItem *item = _ui->m_Objects->item( i );
-      if(m_Contours[_ui->m_Variable->currentItem()][_ui->m_Timestep->value()][item->text().ascii()] != NULL)
-	m_Contours[_ui->m_Variable->currentItem()][_ui->m_Timestep->value()][item->text().ascii()]->
+      if(m_Contours[_ui->m_Variable->currentIndex()][_ui->m_Timestep->value()][item->text().toStdString().c_str()] != NULL)
+	m_Contours[_ui->m_Variable->currentIndex()][_ui->m_Timestep->value()][item->text().toStdString().c_str()]->
 	  interpolationType(SurfRecon::InterpolationType(t));
   }
    
-  m_XYSliceCanvas->updateGL();
-  m_XZSliceCanvas->updateGL();
-  m_ZYSliceCanvas->updateGL();
+  m_XYSliceCanvas->update();
+  m_XZSliceCanvas->update();
+  m_ZYSliceCanvas->update();
 }
 
 void VolumeGridRover::setInterpolationSamplingSlot(int s)
@@ -5456,14 +5555,14 @@ void VolumeGridRover::setInterpolationSamplingSlot(int s)
   for( int i=0; i<size; i++ )
   {
     QListWidgetItem *item = _ui->m_Objects->item( i );
-    if(m_Contours[_ui->m_Variable->currentItem()][_ui->m_Timestep->value()][item->text().ascii()] != NULL)
-	m_Contours[_ui->m_Variable->currentItem()][_ui->m_Timestep->value()][item->text().ascii()]->
+    if(m_Contours[_ui->m_Variable->currentIndex()][_ui->m_Timestep->value()][item->text().toStdString().c_str()] != NULL)
+	m_Contours[_ui->m_Variable->currentIndex()][_ui->m_Timestep->value()][item->text().toStdString().c_str()]->
 	  numberOfSamples(s);
   }
 
-  m_XYSliceCanvas->updateGL();
-  m_XZSliceCanvas->updateGL();
-  m_ZYSliceCanvas->updateGL();
+  m_XYSliceCanvas->update();
+  m_XZSliceCanvas->update();
+  m_ZYSliceCanvas->update();
 
 }
 
@@ -5489,7 +5588,7 @@ void VolumeGridRover::tilingRunSlot()
       QListViewItemIterator it(m_Objects, QListViewItemIterator::Selected);
       while(it.current()!=NULL)
 	{
-	  names.push_back(it.current()->text(0).ascii());
+	  names.push_back(it.current()->text(0).toStdString().c_str());
 	  ++it;
 	}
 
@@ -5505,7 +5604,7 @@ void VolumeGridRover::getTilingOutputDirectorySlot()
 {
   cvcapp.log(5, "VolumeGridRover::getTilingOutputDirectorySlot()");
 /*
-  m_TilingOutputDirectory->setText(QFileDialog::getExistingDirectory(QString::null,this,"get existing directory","Choose a directory",TRUE));
+  m_TilingOutputDirectory->setText(QFileDialog::getExistingDirectory(QString(),this,"get existing directory","Choose a directory",TRUE));
 */
 }
 
@@ -5579,7 +5678,7 @@ void VolumeGridRover::sdfCurationSlot()
 #if 0
       //for every curve belonging to this contour, convert that curve into a CGAL polygon and run 2D SDF on that polygon
       SurfRecon::CurvePtrVector 
-	curves(m_Contours[m_Variable->currentItem()][m_Timestep->value()][it.current()->text(0).ascii()]->curves());
+	curves(m_Contours[m_Variable->currentIndex()][m_Timestep->value()][it.current()->text(0).toStdString().c_str()]->curves());
       for(SurfRecon::CurvePtrVector::iterator j = curves.begin();
 	  j != curves.end();
 	  j++)
@@ -5639,7 +5738,7 @@ void VolumeGridRover::sdfCurationSlot()
       //for every curve belonging to this contour that's on the current drawn slice, 
       //convert that curve into a CGAL polygon and run 2D SDF on all polygons
       SurfRecon::CurvePtrVector 
-	curves(m_Contours[m_Variable->currentItem()][m_Timestep->value()][it.current()->text(0).ascii()]->curves());
+	curves(m_Contours[m_Variable->currentIndex()][m_Timestep->value()][it.current()->text(0).toStdString().c_str()]->curves());
 
       for(SurfRecon::CurvePtrVector::iterator j = curves.begin();
 	  j != curves.end();
@@ -5770,28 +5869,28 @@ bool VolumeGridRover::setVolume(const VolMagick::VolumeFileInfo& vfi)
 
   _ui->m_Variable->clear();
   for(i=0; i<m_VolumeFileInfo.numVariables(); i++)
-     _ui->m_Variable->insertItem(QString(m_VolumeFileInfo.name(i).data()));
+     _ui->m_Variable->insertItem(i, QString(m_VolumeFileInfo.name(i).data()));
 
-  _ui->m_Variable->setCurrentItem(0);
-  _ui->m_Timestep->setMinValue(0);
-  _ui->m_Timestep->setMaxValue(m_VolumeFileInfo.numTimesteps()-1);
+  _ui->m_Variable->setCurrentIndex(0);
+  _ui->m_Timestep->setMinimum(0);
+  _ui->m_Timestep->setMaximum(m_VolumeFileInfo.numTimesteps()-1);
   _ui->m_Timestep->setValue(0);
 
 
-  setMinValue(m_VolumeFileInfo.min(_ui->m_Variable->currentItem(),_ui->m_Timestep->value()));
-  setMaxValue(m_VolumeFileInfo.max(_ui->m_Variable->currentItem(),_ui->m_Timestep->value()));
+  setMinValue(m_VolumeFileInfo.min(_ui->m_Variable->currentIndex(),_ui->m_Timestep->value()));
+  setMaxValue(m_VolumeFileInfo.max(_ui->m_Variable->currentIndex(),_ui->m_Timestep->value()));
 
-  _ui->m_XYDepthSlide->setMaxValue(m_VolumeFileInfo.ZDim()-1);
+  _ui->m_XYDepthSlide->setMaximum(m_VolumeFileInfo.ZDim()-1);
   m_XYSliceCanvas->setVolume(m_VolumeFileInfo);
   m_XYSliceCanvas->setPointClassList(m_PointClassList);
 //  m_XYSliceCanvas->setContours(m_Contours);
 
-  _ui->m_XZDepthSlide->setMaxValue(m_VolumeFileInfo.YDim()-1);
+  _ui->m_XZDepthSlide->setMaximum(m_VolumeFileInfo.YDim()-1);
   m_XZSliceCanvas->setVolume(m_VolumeFileInfo);
   m_XZSliceCanvas->setPointClassList(m_PointClassList);
 //  m_XZSliceCanvas->setContours(m_Contours);
  
-  _ui->m_ZYDepthSlide->setMaxValue(m_VolumeFileInfo.XDim()-1);
+  _ui->m_ZYDepthSlide->setMaximum(m_VolumeFileInfo.XDim()-1);
   m_ZYSliceCanvas->setVolume(m_VolumeFileInfo);
   m_ZYSliceCanvas->setPointClassList(m_PointClassList);
 //  m_ZYSliceCanvas->setContours(m_Contours);
@@ -5821,20 +5920,20 @@ void VolumeGridRover::unsetVolume()
   m_XZSliceCanvas->unsetVolume();
   m_ZYSliceCanvas->unsetVolume();
   _ui->m_Variable->clear();
-  _ui->m_Timestep->setMinValue(0);
-  _ui->m_Timestep->setMaxValue(0);
+  _ui->m_Timestep->setMinimum(0);
+  _ui->m_Timestep->setMaximum(0);
   _ui->m_Timestep->setValue(0);
   _ui->m_PointClass->clear(); /* clear the combo box */
   /* reset the depth sliders */
   _ui->m_XYDepthSlide->setValue(0);
   _ui->m_XZDepthSlide->setValue(0);
   _ui->m_ZYDepthSlide->setValue(0);
-  _ui->m_XYDepthSlide->setMinValue(0);
-  _ui->m_XYDepthSlide->setMaxValue(0);
-  _ui->m_XZDepthSlide->setMinValue(0);
-  _ui->m_XZDepthSlide->setMaxValue(0);
-  _ui->m_ZYDepthSlide->setMinValue(0);
-  _ui->m_ZYDepthSlide->setMaxValue(0);
+  _ui->m_XYDepthSlide->setMinimum(0);
+  _ui->m_XYDepthSlide->setMaximum(0);
+  _ui->m_XZDepthSlide->setMinimum(0);
+  _ui->m_XZDepthSlide->setMaximum(0);
+  _ui->m_ZYDepthSlide->setMinimum(0);
+  _ui->m_ZYDepthSlide->setMaximum(0);
   _ui->m_X->setReadOnly(true);
   _ui->m_Y->setReadOnly(true);
   _ui->m_Z->setReadOnly(true);
@@ -5865,9 +5964,10 @@ bool VolumeGridRover::hasVolume(void)
 
 void VolumeGridRover::getLocalOutputFileSlot()
 {
-  _ui->m_LocalOutputFile->setText(QFileDialog::getSaveFileName(QString(m_VolumeFileInfo.filename().data()),
-							  "RawIV Volumes (*.rawiv)",this,
-							  "Save file dialog","Choose a filename to save under"));
+  _ui->m_LocalOutputFile->setText(QFileDialog::getSaveFileName(this,
+							  "Choose a filename to save under",
+							  QString(m_VolumeFileInfo.filename().data()),
+							  "RawIV Volumes (*.rawiv)"));
 }
 
 void VolumeGridRover::getRemoteFileSlot()
@@ -5876,8 +5976,10 @@ void VolumeGridRover::getRemoteFileSlot()
 			   "File selection acts only upon the local filesystem. "
 			   "Ensure that a filename you select is correct for the remote server.",
 			   QMessageBox::Ok);
-  _ui->m_RemoteFile->setText(QFileDialog::getOpenFileName(QString::null,"RawIV Volumes (*.rawiv)",this,
-						     "Remote file dialog","Choose a file to load remotely"));
+  _ui->m_RemoteFile->setText(QFileDialog::getOpenFileName(this,
+						     "Choose a file to load remotely",
+						     QString(),
+						     "RawIV Volumes (*.rawiv)"));
 }
 
 void VolumeGridRover::localSegmentationRunSlot()
@@ -5889,7 +5991,7 @@ void VolumeGridRover::localSegmentationRunSlot()
       return;
     }
   
-  if(m_LocalGenSegThread.running())
+  if(m_LocalGenSegThread.isRunning())
     QMessageBox::critical(this,"Error","Local segmentation thread already running!",
 			  QMessageBox::Ok,QMessageBox::NoButton,QMessageBox::NoButton);
   else
@@ -5905,7 +6007,7 @@ void VolumeGridRover::remoteSegmentationRunSlot()
       return;
     }
   
-  if(m_RemoteGenSegThread.running())
+  if(m_RemoteGenSegThread.isRunning())
     QMessageBox::critical(this,"Error","Remote segmentation thread already running!",
 			  QMessageBox::Ok,QMessageBox::NoButton,QMessageBox::NoButton);
   else
@@ -6139,16 +6241,18 @@ void VolumeGridRover::savePointClassesSlot()
     }
 
   
-  QString filename = QFileDialog::getSaveFileName(QString::null,"Point Class Files (*.vgr);;All Files (*)",
-						  this,"save file dialog","Choose a filename to save under");
-  if(filename == QString::null)
+  QString filename = QFileDialog::getSaveFileName(this,
+						  "Choose a filename to save under",
+						  QString(),
+						  "Point Class Files (*.vgr);;All Files (*)");
+  if(filename.isEmpty())
     {
       cvcapp.log(5, "VolumeGridRover::savePointClassesSlot(): save cancelled (or null filename)");
       return;
     }
   
   QFile f(filename);
-  if(!f.open(IO_WriteOnly))
+  if(!f.open(QIODevice::WriteOnly))
     {
       QMessageBox::critical(this,"Error",QString("Could not open the file %1!").arg(filename),
 			    QMessageBox::Ok,QMessageBox::NoButton,QMessageBox::NoButton);
@@ -6159,7 +6263,7 @@ void VolumeGridRover::savePointClassesSlot()
   stream << doc.toString();
   f.close();
   
-  //printf("%s\n",doc.toString().ascii());
+  //printf("%s\n",doc.toString().toStdString().c_str());
 }
 
 void VolumeGridRover::loadPointClassesSlot()
@@ -6171,10 +6275,11 @@ void VolumeGridRover::loadPointClassesSlot()
       return;
     }
   
-  QString filename = QFileDialog::getOpenFileName(QString::null,
-						  "Point Class Files (*.vgr);;Point List Files (*.pts);;All Files (*)",
-						  this,"open file doalog","Choose a file to open");
-  if(filename == QString::null)
+  QString filename = QFileDialog::getOpenFileName(this,
+						  "Choose a file to open",
+						  QString(),
+						  "Point Class Files (*.vgr);;Point List Files (*.pts);;All Files (*)");
+  if(filename.isEmpty())
     {
       QMessageBox::critical(this,"Error","Filename must be specified!",
 			    QMessageBox::Ok,QMessageBox::NoButton,QMessageBox::NoButton);
@@ -6193,7 +6298,7 @@ void VolumeGridRover::loadPointClassesSlot()
       srand(time(NULL));
 
       QFile f(filename);
-      if(!f.open(IO_ReadOnly))
+      if(!f.open(QIODevice::ReadOnly))
 	{
 	  QMessageBox::critical(this,"Error",QString("Could not open the file %1!").arg(filename),
 				QMessageBox::Ok,QMessageBox::NoButton,QMessageBox::NoButton);
@@ -6218,7 +6323,7 @@ void VolumeGridRover::loadPointClassesSlot()
 	  classcolor = QColor(rand()%255,rand()%255,rand()%255);
 
 	  //now insert the point class according to the current variable and timestep
-	  m_PointClassList[_ui->m_Variable->currentItem()][_ui->m_Timestep->value()]->append(currentPointClass = new PointClass(classcolor,classname));
+	  m_PointClassList[_ui->m_Variable->currentIndex()][_ui->m_Timestep->value()]->append(currentPointClass = new PointClass(classcolor,classname));
 
 	  stream >> numpts;
 	  for(i=0; i<numpts; i++)
@@ -6246,20 +6351,28 @@ void VolumeGridRover::loadPointClassesSlot()
     }
   else // interpret the file as *.vgr by default
     {
+      // TODO: Qt6 migration - QXmlSimpleReader/QXmlDefaultHandler removed
+      // Need to rewrite using QXmlStreamReader (pull-based API)
+      QMessageBox::warning(this, "Not Implemented", 
+                          "VGR file loading requires Qt6 XML migration.\n"
+                          "Please use .pts files for now.",
+                          QMessageBox::Ok);
+      /*
       QFile f(filename);
       QXmlInputSource qxis(f);
       QXmlSimpleReader xsr;
       PointClassFileContentHandler pcfch(this);
       xsr.setContentHandler(&pcfch);
       if(!xsr.parse(&qxis,false))
-	cvcapp.log(5, boost::str(boost::format("VolumeGridRover::loadPointClassesSlot(): Parse error: %s")%pcfch.errorString().ascii()));
+	cvcapp.log(5, boost::str(boost::format("VolumeGridRover::loadPointClassesSlot(): Parse error: %s")%pcfch.errorString().toStdString().c_str()));
+      */
     }
   
-  m_XYSliceCanvas->updateGL();
-  m_XZSliceCanvas->updateGL();
-  m_ZYSliceCanvas->updateGL();
+  m_XYSliceCanvas->update();
+  m_XZSliceCanvas->update();
+  m_ZYSliceCanvas->update();
 
-  setCurrentData(_ui->m_Variable->currentItem(),_ui->m_Timestep->value()); //reset the point class combo box and load the new values for it
+  setCurrentData(_ui->m_Variable->currentIndex(),_ui->m_Timestep->value()); //reset the point class combo box and load the new values for it
 }
 
 void VolumeGridRover::setCurrentVariable(int variable)
@@ -6269,7 +6382,7 @@ void VolumeGridRover::setCurrentVariable(int variable)
 
 void VolumeGridRover::setCurrentTimestep(int timestep)
 {
-  setCurrentData(_ui->m_Variable->currentItem(),timestep);
+  setCurrentData(_ui->m_Variable->currentIndex(),timestep);
 }
 
 void VolumeGridRover::setCurrentData(int variable, int timestep)
@@ -6283,14 +6396,14 @@ void VolumeGridRover::setCurrentData(int variable, int timestep)
 
   int size = m_PointClassList[variable][timestep]->size();
   for(i=0; i<size; i++)
-    _ui->m_PointClass->insertItem(QString(m_PointClassList[variable][timestep]->at(i)->getName()));
+    _ui->m_PointClass->insertItem(i, QString(m_PointClassList[variable][timestep]->at(i)->getName()));
 
-  _ui->m_PointClass->setCurrentItem(0);
+  _ui->m_PointClass->setCurrentIndex(0);
 /*
   //m_Contour->clear();
   m_Objects->clear();
-  for(SurfRecon::ContourPtrMap::iterator i = m_Contours[m_Variable->currentItem()][m_Timestep->value()].begin();
-      i != m_Contours[m_Variable->currentItem()][m_Timestep->value()].end();
+  for(SurfRecon::ContourPtrMap::iterator i = m_Contours[m_Variable->currentIndex()][m_Timestep->value()].begin();
+      i != m_Contours[m_Variable->currentIndex()][m_Timestep->value()].end();
       i++)
     {
       if(i->second.get() == NULL) continue;
@@ -6306,12 +6419,12 @@ void VolumeGridRover::setCurrentData(int variable, int timestep)
   m_ZYSliceCanvas->setCurrentClass(0);
   showColor(0);
 /*
-  m_XYSliceCanvas->setCurrentContour(m_Objects->currentItem() ? m_Objects->currentItem()->text(0).ascii() : "");
-  m_XZSliceCanvas->setCurrentContour(m_Objects->currentItem() ? m_Objects->currentItem()->text(0).ascii() : "");
-  m_ZYSliceCanvas->setCurrentContour(m_Objects->currentItem() ? m_Objects->currentItem()->text(0).ascii() : "");
-  showContourColor(m_Objects->currentItem() ? m_Objects->currentItem()->text(0).ascii() : "");
-  showContourInterpolationType(m_Objects->currentItem() ? m_Objects->currentItem()->text(0).ascii() : "");
-  showContourInterpolationSampling(m_Objects->currentItem() ? m_Objects->currentItem()->text(0).ascii() : "");
+  m_XYSliceCanvas->setCurrentContour(m_Objects->currentItem() ? m_Objects->currentItem()->text(0).toStdString().c_str() : "");
+  m_XZSliceCanvas->setCurrentContour(m_Objects->currentItem() ? m_Objects->currentItem()->text(0).toStdString().c_str() : "");
+  m_ZYSliceCanvas->setCurrentContour(m_Objects->currentItem() ? m_Objects->currentItem()->text(0).toStdString().c_str() : "");
+  showContourColor(m_Objects->currentItem() ? m_Objects->currentItem()->text(0).toStdString().c_str() : "");
+  showContourInterpolationType(m_Objects->currentItem() ? m_Objects->currentItem()->text(0).toStdString().c_str() : "");
+  showContourInterpolationSampling(m_Objects->currentItem() ? m_Objects->currentItem()->text(0).toStdString().c_str() : "");
 */
 }
 
@@ -6390,13 +6503,13 @@ void VolumeGridRover::setRGBA(int r, int g, int b, int a)
 void VolumeGridRover::setValue(double value)
 {
   _ui->m_Value->setText(QString("%1").arg(value));
-  if(m_VolumeFileInfo.isSet() && m_VolumeFileInfo.voxelTypes(_ui->m_Variable->currentItem()) != VolMagick::UChar)
+  if(m_VolumeFileInfo.isSet() && m_VolumeFileInfo.voxelTypes(_ui->m_Variable->currentIndex()) != VolMagick::UChar)
     {
       _ui->m_MappedValue->setText(QString("%1")
 			     .arg((unsigned char)(255.0*
-						  ((value - m_VolumeFileInfo.min(_ui->m_Variable->currentItem(),_ui->m_Timestep->value()))/
-						   (m_VolumeFileInfo.max(_ui->m_Variable->currentItem(),_ui->m_Timestep->value()) - 
-						    m_VolumeFileInfo.min(_ui->m_Variable->currentItem(),_ui->m_Timestep->value()))))));
+						  ((value - m_VolumeFileInfo.min(_ui->m_Variable->currentIndex(),_ui->m_Timestep->value()))/
+						   (m_VolumeFileInfo.max(_ui->m_Variable->currentIndex(),_ui->m_Timestep->value()) - 
+						    m_VolumeFileInfo.min(_ui->m_Variable->currentIndex(),_ui->m_Timestep->value()))))));
     }
   else
     _ui->m_MappedValue->setText(QString("%1").arg(value));
@@ -6422,55 +6535,55 @@ void VolumeGridRover::setGridCellInfo(int x, int y, int z,
 void VolumeGridRover::showColor(int i)
 {
   // if there are no point classes, do nothig and return without a warning message
-  if (m_PointClassList[_ui->m_Variable->currentItem()][_ui->m_Timestep->value()]->size() == 0) {
+  if (m_PointClassList[_ui->m_Variable->currentIndex()][_ui->m_Timestep->value()]->size() == 0) {
     return;
   }
 
 
-  if( m_PointClassList[_ui->m_Variable->currentItem()][_ui->m_Timestep->value()]->size() <= i ) {
+  if( m_PointClassList[_ui->m_Variable->currentIndex()][_ui->m_Timestep->value()]->size() <= i ) {
      fprintf( stderr, "VolumeGridRover::showColor(int i): i is larger than point class list size\n");
      return;
   }
 
-  if(m_PointClassList[_ui->m_Variable->currentItem()][_ui->m_Timestep->value()]->at(i))
-    _ui->m_PointClassColor->setPalette( QPalette(m_PointClassList[_ui->m_Variable->currentItem()][_ui->m_Timestep->value()]->at(i)->getColor()) );
+  if(m_PointClassList[_ui->m_Variable->currentIndex()][_ui->m_Timestep->value()]->at(i))
+    _ui->m_PointClassColor->setPalette( QPalette(m_PointClassList[_ui->m_Variable->currentIndex()][_ui->m_Timestep->value()]->at(i)->getColor()) );
 }
 
 void VolumeGridRover::showContourColor(const QString& name)
 {
 /*
-  if(m_Contours[m_Variable->currentItem()][m_Timestep->value()][name.ascii()] != NULL)
-    m_ContourColor->setPaletteBackgroundColor(QColor(m_Contours[m_Variable->currentItem()][m_Timestep->value()][name.ascii()]->color().get<0>()*255.0,
-						     m_Contours[m_Variable->currentItem()][m_Timestep->value()][name.ascii()]->color().get<1>()*255.0,
-						     m_Contours[m_Variable->currentItem()][m_Timestep->value()][name.ascii()]->color().get<2>()*255.0));
+  if(m_Contours[m_Variable->currentIndex()][m_Timestep->value()][name.toStdString().c_str()] != NULL)
+    m_ContourColor->setPaletteBackgroundColor(QColor(m_Contours[m_Variable->currentIndex()][m_Timestep->value()][name.toStdString().c_str()]->color().get<0>()*255.0,
+						     m_Contours[m_Variable->currentIndex()][m_Timestep->value()][name.toStdString().c_str()]->color().get<1>()*255.0,
+						     m_Contours[m_Variable->currentIndex()][m_Timestep->value()][name.toStdString().c_str()]->color().get<2>()*255.0));
 */
 }
 
 void VolumeGridRover::showContourInterpolationType(const QString& name)
 {
 /*
-  if(m_Contours[m_Variable->currentItem()][m_Timestep->value()][name.ascii()] != NULL)
-    m_InterpolationType->setCurrentItem(int(m_Contours[m_Variable->currentItem()][m_Timestep->value()][name.ascii()]->interpolationType()));
+  if(m_Contours[m_Variable->currentIndex()][m_Timestep->value()][name.toStdString().c_str()] != NULL)
+    m_InterpolationType->setCurrentItem(int(m_Contours[m_Variable->currentIndex()][m_Timestep->value()][name.toStdString().c_str()]->interpolationType()));
 */
 }
 
 void VolumeGridRover::showContourInterpolationSampling(const QString& name)
 {
 /*
-   if(m_Contours[m_Variable->currentItem()][m_Timestep->value()][name.ascii()] != NULL)
-     m_InterpolationSampling->setValue(m_Contours[m_Variable->currentItem()][m_Timestep->value()][name.ascii()]->numberOfSamples());
+   if(m_Contours[m_Variable->currentIndex()][m_Timestep->value()][name.toStdString().c_str()] != NULL)
+     m_InterpolationSampling->setValue(m_Contours[m_Variable->currentIndex()][m_Timestep->value()][name.toStdString().c_str()]->numberOfSamples());
 */
 }
 
-void VolumeGridRover::currentObjectSelectionChanged(QListView *lvi)
+void VolumeGridRover::currentObjectSelectionChanged()
 {
 /*
-  m_XYSliceCanvas->setCurrentContour(lvi ? lvi->text(0).ascii() : "");
-  m_XZSliceCanvas->setCurrentContour(lvi ? lvi->text(0).ascii() : "");
-  m_ZYSliceCanvas->setCurrentContour(lvi ? lvi->text(0).ascii() : "");
-  showContourColor(lvi ? lvi->text(0).ascii() : "");
-  showContourInterpolationType(lvi ? lvi->text(0).ascii() : "");
-  showContourInterpolationSampling(lvi ? lvi->text(0).ascii() : "");
+  m_XYSliceCanvas->setCurrentContour(lvi ? lvi->text(0).toStdString().c_str() : "");
+  m_XZSliceCanvas->setCurrentContour(lvi ? lvi->text(0).toStdString().c_str() : "");
+  m_ZYSliceCanvas->setCurrentContour(lvi ? lvi->text(0).toStdString().c_str() : "");
+  showContourColor(lvi ? lvi->text(0).toStdString().c_str() : "");
+  showContourInterpolationType(lvi ? lvi->text(0).toStdString().c_str() : "");
+  showContourInterpolationSampling(lvi ? lvi->text(0).toStdString().c_str() : "");
 */
 }
 
@@ -6535,49 +6648,49 @@ void VolumeGridRover::setSelectedContours()
   while((tmp=it.current())!=NULL)
     {
       ++it;
-      m_Contours[m_Variable->currentItem()][m_Timestep->value()][tmp->text(0).ascii()]->selected(true);
+      m_Contours[m_Variable->currentIndex()][m_Timestep->value()][tmp->text(0).toStdString().c_str()]->selected(true);
     }
 
   QListViewItemIterator it2(m_Objects, QListViewItemIterator::Unselected);
   while((tmp=it2.current())!=NULL)
     {
       ++it2;
-      m_Contours[m_Variable->currentItem()][m_Timestep->value()][tmp->text(0).ascii()]->selected(false);
+      m_Contours[m_Variable->currentIndex()][m_Timestep->value()][tmp->text(0).toStdString().c_str()]->selected(false);
     }
 
-  m_XYSliceCanvas->updateGL();
-  m_XZSliceCanvas->updateGL();
-  m_ZYSliceCanvas->updateGL();
+  m_XYSliceCanvas->update();
+  m_XZSliceCanvas->update();
+  m_ZYSliceCanvas->update();
 */
 }
 
 /***** segmentation stuff (Similar to the segmentation code in VolumeProperties.cpp) ******/
 
 /* Need these to signal the GUI thread the segmentation result so it can popup a message to the user */
-class SegmentationFailedEvent : public QCustomEvent
+class SegmentationFailedEvent : public QEvent
 {
 public:
 #ifdef WIN32
-  SegmentationFailedEvent(const QString &m) : QCustomEvent(1100), msg(m) {}
+  SegmentationFailedEvent(const QString &m) : QEvent(QEvent::Type(1100)), msg(m) {}
 #else
-  SegmentationFailedEvent(const QString &m) : QCustomEvent(QEvent::User+100), msg(m) {}
+  SegmentationFailedEvent(const QString &m) : QEvent(QEvent::Type(QEvent::User+100)), msg(m) {}
 #endif
   QString message() const { return msg; }
 private:
   QString msg;
 };
 
-class SegmentationFinishedEvent : public QCustomEvent
+class SegmentationFinishedEvent : public QEvent
 {
 public:
 #ifdef WIN32
   SegmentationFinishedEvent(const QString &m,
-			    const QString& newvol = QString::null)
-    : QCustomEvent(1101), _msg(m), _newvol(newvol) {}
+			    const QString& newvol = QString())
+    : QEvent(QEvent::Type(1101)), _msg(m), _newvol(newvol) {}
 #else
   SegmentationFinishedEvent(const QString &m,
-			    const QString& newvol = QString::null)
-    : QCustomEvent(QEvent::User+101), _msg(m), _newvol(newvol) {}
+			    const QString& newvol = QString())
+    : QEvent(QEvent::Type(QEvent::User+101)), _msg(m), _newvol(newvol) {}
 #endif
   QString message() const { return _msg; }
   QString outputVolumeFilename() const { return _newvol; }
@@ -6586,26 +6699,26 @@ private:
   QString _newvol;
 };
 
-class TilingFailedEvent : public QCustomEvent
+class TilingFailedEvent : public QEvent
 {
 public:
 #ifdef WIN32
-  TilingFailedEvent(const QString &m) : QCustomEvent(1102), msg(m) {}
+  TilingFailedEvent(const QString &m) : QEvent(QEvent::Type(1102)), msg(m) {}
 #else
-  TilingFailedEvent(const QString &m) : QCustomEvent(QEvent::User+102), msg(m) {}
+  TilingFailedEvent(const QString &m) : QEvent(QEvent::Type(QEvent::User+102)), msg(m) {}
 #endif
   QString message() const { return msg; }
 private:
   QString msg;
 };
 
-class TilingFinishedEvent : public QCustomEvent
+class TilingFinishedEvent : public QEvent
 {
 public:
 #ifdef WIN32
-  TilingFinishedEvent(const QString &m) : QCustomEvent(1103), msg(m) {}
+  TilingFinishedEvent(const QString &m) : QEvent(QEvent::Type(1103)), msg(m) {}
 #else
-  TilingFinishedEvent(const QString &m) : QCustomEvent(QEvent::User+103), msg(m) {}
+  TilingFinishedEvent(const QString &m) : QEvent(QEvent::Type(QEvent::User+103)), msg(m) {}
 #endif
   QString message() const { return msg; }
 private:
@@ -6635,27 +6748,27 @@ void VolumeGridRover::RemoteGenSegThread::run()
     }
  
   XmlRpc::setVerbosity(5);
-  XmlRpcClient c(m_VolumeGridRover->_ui->m_Hostname->text(), m_VolumeGridRover->_ui->m_Port->text().toInt());
+  XmlRpcClient c(m_VolumeGridRover->_ui->m_Hostname->text().toStdString().c_str(), m_VolumeGridRover->_ui->m_Port->text().toInt());
   XmlRpcValue args, result;
  
-  cvcapp.log(5, boost::str(boost::format("VolumeGridRover::remoteSegmentationRunSlot(): segmenting '%s', loading '%s' remotely.")%m_VolumeGridRover->m_VolumeFileInfo.filename().c_str()%m_VolumeGridRover->_ui->m_RemoteFile->text().ascii()));
+  cvcapp.log(5, boost::str(boost::format("VolumeGridRover::remoteSegmentationRunSlot(): segmenting '%s', loading '%s' remotely.")%m_VolumeGridRover->m_VolumeFileInfo.filename().c_str()%m_VolumeGridRover->_ui->m_RemoteFile->text().toStdString().c_str()));
   /*
     GenSegmentation( filename, threshold low, threshold high, number of seed point classes
     num of points in class1, class1 seed points x y z ... ,
     num of points in class2, class2 seed points x y z ... )
   */
-  args[0] = m_VolumeGridRover->_ui->m_RemoteFile->text().ascii();
+  args[0] = m_VolumeGridRover->_ui->m_RemoteFile->text().toStdString().c_str();
   args[1] = m_VolumeGridRover->_ui->m_ThresholdLow->text().toInt();
   args[2] = m_VolumeGridRover->_ui->m_ThresholdHigh->text().toInt();
-  args[3] = int(m_VolumeGridRover->m_PointClassList[m_VolumeGridRover->_ui->m_Variable->currentItem()][m_VolumeGridRover->_ui->m_Timestep->value()]->count());
-  args[4] = m_VolumeGridRover->_ui->m_RemoteFile->text().ascii();
+  args[3] = int(m_VolumeGridRover->m_PointClassList[m_VolumeGridRover->_ui->m_Variable->currentIndex()][m_VolumeGridRover->_ui->m_Timestep->value()]->count());
+  args[4] = m_VolumeGridRover->_ui->m_RemoteFile->text().toStdString().c_str();
   index = 5;
-  for(i=0; i<m_VolumeGridRover->m_PointClassList[m_VolumeGridRover->_ui->m_Variable->currentItem()][m_VolumeGridRover->_ui->m_Timestep->value()]->count(); i++)
+  for(i=0; i<m_VolumeGridRover->m_PointClassList[m_VolumeGridRover->_ui->m_Variable->currentIndex()][m_VolumeGridRover->_ui->m_Timestep->value()]->count(); i++)
     {
 #ifdef DEBUG
-      cvcapp.log(5, boost::str(boost::format("%s")%m_VolumeGridRover->m_PointClassList[m_VolumeGridRover->_ui->m_Variable->currentItem()][m_VolumeGridRover->_ui->m_Timestep->value()]->at(i)->getName().ascii()));
+      cvcapp.log(5, boost::str(boost::format("%s")%m_VolumeGridRover->m_PointClassList[m_VolumeGridRover->_ui->m_Variable->currentIndex()][m_VolumeGridRover->_ui->m_Timestep->value()]->at(i)->getName().toStdString().c_str()));
 #endif
-      QList<GridPoint*> points(m_VolumeGridRover->m_PointClassList[m_VolumeGridRover->_ui->m_Variable->currentItem()][m_VolumeGridRover->_ui->m_Timestep->value()]->at(i)->getPointList());
+      QList<GridPoint*> points(m_VolumeGridRover->m_PointClassList[m_VolumeGridRover->_ui->m_Variable->currentIndex()][m_VolumeGridRover->_ui->m_Timestep->value()]->at(i)->getPointList());
 #ifdef DEBUG
       cvcapp.log(5, boost::str(boost::format("Num points: %d")%points.count());
 #endif
@@ -6706,25 +6819,25 @@ void VolumeGridRover::LocalGenSegThread::run()
   XmlRpc::setVerbosity(5);
   XmlRpcValue args, result;
   
-  cvcapp.log(5, boost::str(boost::format("VolumeGridRover::localSegmentationRunSlot(): segmenting '%s', loading '%s' locally.")%m_VolumeGridRover->m_VolumeFileInfo.filename().c_str()%m_VolumeGridRover->_ui->m_RemoteFile->text().ascii()));
+  cvcapp.log(5, boost::str(boost::format("VolumeGridRover::localSegmentationRunSlot(): segmenting '%s', loading '%s' locally.")%m_VolumeGridRover->m_VolumeFileInfo.filename().c_str()%m_VolumeGridRover->_ui->m_RemoteFile->text().toStdString().c_str()));
   /*
     GenSegmentation( filename, threshold low, threshold high, number of seed point classes
     num of points in class1, class1 seed points x y z ... ,
     num of points in class2, class2 seed points x y z ... )
   */
-  args[0] = m_VolumeGridRover->_ui->m_LocalOutputFile->text().ascii();
+  args[0] = m_VolumeGridRover->_ui->m_LocalOutputFile->text().toStdString().c_str();
   args[1] = m_VolumeGridRover->_ui->m_ThresholdLow->text().toInt();
   args[2] = m_VolumeGridRover->_ui->m_ThresholdHigh->text().toInt();
-  args[3] = int(m_VolumeGridRover->m_PointClassList[m_VolumeGridRover->_ui->m_Variable->currentItem()][m_VolumeGridRover->_ui->m_Timestep->value()]->count());
-  //args[4] = std::string(QString(m_VolumeGridRover->cacheDir() + "/tmp/tmp.rawiv").ascii());
-  args[4] = std::string(QString("SegTmp.rawiv").ascii());
+  args[3] = int(m_VolumeGridRover->m_PointClassList[m_VolumeGridRover->_ui->m_Variable->currentIndex()][m_VolumeGridRover->_ui->m_Timestep->value()]->count());
+  //args[4] = std::string(QString(m_VolumeGridRover->cacheDir() + "/tmp/tmp.rawiv").toStdString().c_str());
+  args[4] = std::string(QString("SegTmp.rawiv").toStdString().c_str());
   index = 5;
-  for(i=0; i<m_VolumeGridRover->m_PointClassList[m_VolumeGridRover->_ui->m_Variable->currentItem()][m_VolumeGridRover->_ui->m_Timestep->value()]->count(); i++)
+  for(i=0; i<m_VolumeGridRover->m_PointClassList[m_VolumeGridRover->_ui->m_Variable->currentIndex()][m_VolumeGridRover->_ui->m_Timestep->value()]->count(); i++)
     {
 #ifdef DEBUG
-      cvcapp.log(5, boost::str(boost::format("%s")%m_VolumeGridRover->m_PointClassList[m_VolumeGridRover->_ui->m_Variable->currentItem()][m_VolumeGridRover->_ui->m_Timestep->value()]->at(i)->getName().ascii()));
+      cvcapp.log(5, boost::str(boost::format("%s")%m_VolumeGridRover->m_PointClassList[m_VolumeGridRover->_ui->m_Variable->currentIndex()][m_VolumeGridRover->_ui->m_Timestep->value()]->at(i)->getName().toStdString().c_str()));
 #endif
-      QList<GridPoint*> points(m_VolumeGridRover->m_PointClassList[m_VolumeGridRover->_ui->m_Variable->currentItem()][m_VolumeGridRover->_ui->m_Timestep->value()]->at(i)->getPointList());
+      QList<GridPoint*> points(m_VolumeGridRover->m_PointClassList[m_VolumeGridRover->_ui->m_Variable->currentIndex()][m_VolumeGridRover->_ui->m_Timestep->value()]->at(i)->getPointList());
 #ifdef DEBUG
       cvcapp.log(5, boost::str(boost::format("Num points: %d")%points.count()));
 #endif
@@ -6762,28 +6875,28 @@ void VolumeGridRover::LocalGenSegThread::run()
       int point_class_idx = 0;
       for(int i = 0; i < d.count(); i++)
 	{
-	  if(regex_match(d[i].ascii(),what,expression))
+	  if(regex_match(d[i].toStdString().c_str(),what,expression))
 	    {
-	      //cvcapp.log(5, "Found: %s",d.absFilePath(d[i]).ascii());
-	      std::cout << d.absFilePath(d[i]).ascii() << std::endl;
+	      //cvcapp.log(5, "Found: %s",d.absFilePath(d[i]).toStdString().c_str());
+              std::cout << d.absoluteFilePath(d[i]).toStdString() << std::endl;
 
 	      VolMagick::Volume vol;
-	      VolMagick::readVolumeFile(vol,d.absFilePath(d[i]).ascii());
+	      VolMagick::readVolumeFile(vol,d.absoluteFilePath(d[i]).toStdString().c_str());
 	      //set each volume's description to whatever the point class was named in the VGR UI
-	      vol.desc(m_VolumeGridRover->_ui->m_PointClass->text(point_class_idx).ascii());
+	      vol.desc(m_VolumeGridRover->_ui->m_PointClass->itemText(point_class_idx).toStdString().c_str());
 	      volumes.push_back(vol);
-	      filesystem::remove(d.absFilePath(d[i]).ascii());
+	      boost::filesystem::remove(d.absoluteFilePath(d[i]).toStdString().c_str());
 	      point_class_idx++;
 	    }
 	}
 
       //QString newvol_filename(m_VolumeGridRover->cacheDir() + "/tmp/tmp.rawv");
       QString newvol_filename("SegTmp.rawv");
-      VolMagick::writeVolumeFile(volumes,string(newvol_filename.ascii()));
+      VolMagick::writeVolumeFile(volumes,string(newvol_filename.toStdString().c_str()));
 
       QApplication::postEvent(m_VolumeGridRover,
 			      new SegmentationFinishedEvent("Local general segmentation finished.",newvol_filename));
-      std::cout << "Local general segmentation finished: " << newvol_filename.ascii() << std::endl;
+      std::cout << "Local general segmentation finished: " << newvol_filename.toStdString() << std::endl;
     }
 }
 
@@ -6803,7 +6916,7 @@ void VolumeGridRover::TilingThread::run()
   // settings.insertSearchPath(QSettings::Windows, "/CCV");
   
   // bool result;
-  // QString dirString = settings.readEntry("/Volume Rover/CacheDir", QString::null, &result);
+  // QString dirString = settings.readEntry("/Volume Rover/CacheDir", QString(), &result);
   // if(!result) dirString = ".";
   // QDir dir(dirString);
   // dir.cd("VolumeCache"); //write intermediate files to VolumeCache dir
@@ -6818,7 +6931,7 @@ void VolumeGridRover::TilingThread::run()
 // #ifdef USING_TILING
 //       geometries->push_back(GeometryPkg(*i,
 // 					Tiling::surfaceFromContour(m_VolumeGridRover->
-// 								   m_Contours[m_VolumeGridRover->m_Variable->currentItem()][m_VolumeGridRover->m_Timestep->value()][*i],
+// 								   m_Contours[m_VolumeGridRover->m_Variable->currentIndex()][m_VolumeGridRover->m_Timestep->value()][*i],
 // 								   m_VolumeGridRover->m_VolumeFileInfo,
 // 								   dir.absPath())));
 // #endif
@@ -6834,14 +6947,14 @@ void VolumeGridRover::TilingThread::run()
 }
 
 
-void VolumeGridRover::customEvent(QCustomEvent *e)
+void VolumeGridRover::customEvent(QEvent *e)
 {
   if(e->type() == QEvent::User+100) /* SegmentationFailedEvent */
     QMessageBox::critical(this,"Error",static_cast<SegmentationFailedEvent*>(e)->message(),QMessageBox::Ok,QMessageBox::NoButton,QMessageBox::NoButton);
   else if(e->type() == QEvent::User+101) /* SegmentationFinishedEvent */
     {
       SegmentationFinishedEvent *event = static_cast<SegmentationFinishedEvent*>(e);
-      if(event->outputVolumeFilename() != QString::null)
+      if(event->outputVolumeFilename() != QString())
 	emit volumeGenerated(event->outputVolumeFilename());
       QMessageBox::information(this,"Notice",event->message(),QMessageBox::Ok);
     }
@@ -6871,8 +6984,8 @@ void VolumeGridRover::customEvent(QCustomEvent *e)
   // 	    for(it = geometries->begin(); it != geometries->end(); ++it)
   // 	      {
   // 		//if for some reason the object's name is a whole path, then reduce it down to just a filename
-  // 		std::string filename(QFileInfo(QString((*it).get<0>().c_str())).fileName().ascii());
-  // 		if(!loader.saveFile(outputDir.absFilePath(filename + ".rawc").ascii(),
+  // 		std::string filename(QFileInfo(QString((*it).get<0>().c_str())).fileName().toStdString().c_str());
+  // 		if(!loader.saveFile(outputDir.absFilePath(filename + ".rawc").toStdString().c_str(),
   // 				    "Rawc files (*.rawc)",
   // 				    (*it).get<1>().get()))
   // 		  cvcapp.log(5, "Error: Could not save %s!",(filename + ".rawc").c_str());

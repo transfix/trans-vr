@@ -32,7 +32,7 @@ namespace CVC_NAMESPACE
   {
     try
       {
-        QApplication::notify(receiver,e);
+        return QApplication::notify(receiver,e);
       }
     catch(std::exception& e)
       {
@@ -40,6 +40,7 @@ namespace CVC_NAMESPACE
         cvcapp.log(2,str(format("%s :: Exception: %s\n")
                          % BOOST_CURRENT_FUNCTION
                          % e.what()));
+        return false;
       }
   }
 }

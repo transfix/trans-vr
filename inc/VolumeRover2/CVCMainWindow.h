@@ -227,7 +227,7 @@ namespace CVC_NAMESPACE
 #endif
 
   protected:
-    CVCMainWindow(QWidget *parent = NULL, Qt::WFlags flags=0);
+    CVCMainWindow(QWidget *parent = nullptr, Qt::WindowFlags flags=Qt::WindowFlags());
 
     void customEvent(QEvent *event);
     void initializePropertyMapWidget();

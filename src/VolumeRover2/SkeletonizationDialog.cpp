@@ -38,7 +38,7 @@
 #include <iostream> 
 using namespace std;
 
-SkeletonizationDialog::SkeletonizationDialog(QWidget *parent,Qt::WFlags flags) 
+SkeletonizationDialog::SkeletonizationDialog(QWidget *parent,Qt::WindowFlags flags) 
   : QDialog(parent, flags) {
 
   _ui = new Ui::SkeletonizationDialog;
@@ -58,7 +58,7 @@ SkeletonizationDialog::SkeletonizationDialog(QWidget *parent,Qt::WFlags flags)
   
   std::vector<std::string> geoms = 
     cvcapp.data<cvcraw_geometry::cvcgeom_t>();
-  BOOST_FOREACH(std::string key, geoms)
+  for (const auto& key : geoms)
     _ui->GeometryList->addItem(QString::fromStdString(key));  
 
 }
@@ -117,7 +117,7 @@ public:
     // convert results for the viewer...
     CVCGEOM_NAMESPACE::cvcgeom_t  final_result;
 
-    BOOST_FOREACH(Skeletonization::Simple_line_strip strip, result.get<0>()) {
+    for (const auto& strip : result.get<0>()) {
       for (int i=0; i<strip.size(); i++) {
 	Skeletonization::Point p = strip[i].get<0>();
 	Skeletonization::Simple_color c = strip[i].get<1>();
@@ -139,7 +139,7 @@ public:
     }         
 
     // TODO: still need to handle the polygonal regions
-    //BOOST_FOREACH(Skeletonization::Polygon_set polyset, result.get<1>()) {
+    //for (const auto& polyset : result.get<1>()) {
     //
     //}    
 

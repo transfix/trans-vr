@@ -28,7 +28,7 @@
 #if !defined(AFX_FRAGMENTPROGRAMIMPL_H__D8FF5B4D_CD18_4685_A07C_EFD3D788F54A__INCLUDED_)
 #define AFX_FRAGMENTPROGRAMIMPL_H__D8FF5B4D_CD18_4685_A07C_EFD3D788F54A__INCLUDED_
 
-#include <glew/glew.h>
+#include <GL/glew.h>
 
 #include <VolumeRenderer/UnshadedBase.h>
 

@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 2.6)
+cmake_minimum_required(VERSION 3.16)
 
 file(GLOB INCLUDE_FILES ../../inc/CVC/*.[Hh])
 set(SOURCE_FILES
@@ -15,12 +15,12 @@ mark_as_advanced(CVC_NAMESPACE)
 add_definitions(-DCVC_NAMESPACE=${CVC_NAMESPACE})
 
 # The libCVC version number.
-SET(CVC_VERSION_MAJOR 1)
-SET(CVC_VERSION_MINOR 0)
-SET(CVC_VERSION_PATCH ${CVC_SVN_REVISION})
+set(CVC_VERSION_MAJOR 1)
+set(CVC_VERSION_MINOR 0)
+set(CVC_VERSION_PATCH ${CVC_GIT_REVISION})
 
 # The full version string
-SET(CVC_VERSION ${CVC_VERSION_MAJOR}.${CVC_VERSION_MINOR}.${CVC_VERSION_PATCH})
+set(CVC_VERSION ${CVC_VERSION_MAJOR}.${CVC_VERSION_MINOR}.${CVC_VERSION_PATCH})
 message(STATUS "libCVC version: ${CVC_VERSION}")
 
 add_definitions(-DCVC_VERSION_STRING=\"${CVC_VERSION}\")
@@ -49,7 +49,17 @@ if(CVC_USING_HDF5)
        HDF5_Utilities.cpp
     )
 
-    include_directories(${HDF5_INCLUDE_DIR})
+    # Collect all HDF5 include directories
+    # Modern FindHDF5 uses HDF5_INCLUDE_DIRS, but also check legacy HDF5_INCLUDE_DIR
+    # On some systems, manually add the serial path
+    set(CVC_HDF5_INCLUDE_DIRS ${HDF5_INCLUDE_DIRS} ${HDF5_C_INCLUDE_DIRS} ${HDF5_CXX_INCLUDE_DIRS} ${HDF5_INCLUDE_DIR})
+    if(EXISTS "/usr/include/hdf5/serial")
+      list(APPEND CVC_HDF5_INCLUDE_DIRS "/usr/include/hdf5/serial")
+    endif()
+    # Remove duplicates
+    if(CVC_HDF5_INCLUDE_DIRS)
+      list(REMOVE_DUPLICATES CVC_HDF5_INCLUDE_DIRS)
+    endif()
 
     set(CVC_LINK_LIBS ${CVC_LINK_LIBS} ${HDF5_LIBRARIES})
   else(HDF5_FOUND)
@@ -93,9 +103,26 @@ source_group("Header Files" FILES ${INCLUDE_FILES})
 
 add_library(CVC STATIC ${SOURCE_FILES} ${INCLUDE_FILES})
 
-SetupBoost(CVC)
+# Add HDF5 include directories if enabled
+if(CVC_USING_HDF5 AND HDF5_FOUND)
+  target_include_directories(CVC PUBLIC ${CVC_HDF5_INCLUDE_DIRS})
+endif()
 
-target_link_libraries(CVC ${CVC_LINK_LIBS})
+set_target_properties(CVC PROPERTIES
+  AUTOMOC OFF
+  AUTOUIC OFF
+  AUTORCC OFF
+)
+
+target_link_libraries(CVC
+  PUBLIC
+    Boost::thread
+    Boost::date_time
+    Boost::regex
+    Boost::filesystem
+    Boost::system
+    ${CVC_LINK_LIBS}
+)
 
 # Enable the following later once we figure out how to do component installs
 # to separate runtime and development distributions. - Joe R. 5/20/2011

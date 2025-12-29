@@ -74,7 +74,7 @@ int main(int argc, char **argv)
 
 #if 1
   std::vector<std::string> children = cvcstate().children();
-  BOOST_FOREACH(std::string child, children)
+  for (const auto& child : children)
     cvcapp.log(1,child+" = "+cvcstate(child).value()+"\n");
 #endif
 

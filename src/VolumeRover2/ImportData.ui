@@ -1,0 +1,312 @@
+<ui version="4.0" >
+ <class>ImportData</class>
+ <widget class="QDialog" name="ImportData" >
+  <property name="geometry" >
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>377</width>
+    <height>326</height>
+   </rect>
+  </property>
+  <property name="windowTitle" >
+   <string>Import Data</string>
+  </property>
+  <layout class="QGridLayout" name="gridLayout_5" >
+   <item row="0" column="0" >
+    <widget class="QLabel" name="_importFileLabel" >
+     <property name="text" >
+      <string>Filename: </string>
+     </property>
+     <property name="wordWrap" >
+      <bool>false</bool>
+     </property>
+    </widget>
+   </item>
+   <item row="0" column="1" colspan="3" >
+    <widget class="QLineEdit" name="_importFile" />
+   </item>
+   <item row="0" column="4" >
+    <widget class="QPushButton" name="_importFileButton" >
+     <property name="text" >
+      <string>...</string>
+     </property>
+    </widget>
+   </item>
+   <item row="1" column="0" colspan="5" >
+    <widget class="QGroupBox" name="_fileTypeGroup" >
+     <property name="title" >
+      <string>File Type</string>
+     </property>
+     <layout class="QGridLayout" name="gridLayout_3" >
+      <item row="0" column="0" >
+       <widget class="QRadioButton" name="_rawDataButton" >
+        <property name="text" >
+         <string>Raw Data</string>
+        </property>
+        <property name="checked" >
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="1" >
+       <widget class="QRadioButton" name="_volumeDataButton" >
+        <property name="text" >
+         <string>Volume File</string>
+        </property>
+        <property name="checked" >
+         <bool>false</bool>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item row="2" column="0" colspan="5" >
+    <widget class="QStackedWidget" name="_importDataStack" >
+     <property name="currentIndex" >
+      <number>0</number>
+     </property>
+     <widget class="QWidget" name="page" >
+      <layout class="QGridLayout" name="gridLayout" >
+       <item row="0" column="0" >
+        <widget class="QLabel" name="_offsetLabel" >
+         <property name="text" >
+          <string>Byte Offset:</string>
+         </property>
+         <property name="wordWrap" >
+          <bool>false</bool>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="1" >
+        <widget class="QLineEdit" name="_offset" >
+         <property name="text" >
+          <string>0</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="2" >
+        <layout class="QGridLayout" >
+         <item row="0" column="1" >
+          <widget class="QComboBox" name="_dataType" >
+           <item>
+            <property name="text" >
+             <string>uchar</string>
+            </property>
+           </item>
+           <item>
+            <property name="text" >
+             <string>ushort</string>
+            </property>
+           </item>
+           <item>
+            <property name="text" >
+             <string>uint</string>
+            </property>
+           </item>
+           <item>
+            <property name="text" >
+             <string>float</string>
+            </property>
+           </item>
+           <item>
+            <property name="text" >
+             <string>double</string>
+            </property>
+           </item>
+          </widget>
+         </item>
+         <item row="0" column="0" >
+          <widget class="QLabel" name="_dataTypeLabel" >
+           <property name="text" >
+            <string>Data Type:</string>
+           </property>
+           <property name="wordWrap" >
+            <bool>false</bool>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item row="1" column="0" colspan="3" >
+        <layout class="QGridLayout" >
+         <item row="0" column="3" >
+          <widget class="QLineEdit" name="_dimensionY" >
+           <property name="text" >
+            <string>0</string>
+           </property>
+           <property name="readOnly" >
+            <bool>false</bool>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="4" >
+          <widget class="QLineEdit" name="_dimensionZ" >
+           <property name="text" >
+            <string>0</string>
+           </property>
+           <property name="readOnly" >
+            <bool>false</bool>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="2" >
+          <widget class="QLineEdit" name="_dimensionX" >
+           <property name="text" >
+            <string>0</string>
+           </property>
+           <property name="readOnly" >
+            <bool>false</bool>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="1" >
+          <widget class="QLabel" name="_dimensionLabel" >
+           <property name="text" >
+            <string>Dimension:</string>
+           </property>
+           <property name="wordWrap" >
+            <bool>false</bool>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item row="2" column="0" colspan="3" >
+        <widget class="QGroupBox" name="_endianGroup" >
+         <property name="title" >
+          <string/>
+         </property>
+         <layout class="QGridLayout" name="gridLayout_4" >
+          <item row="0" column="0" >
+           <widget class="QRadioButton" name="_littleEndian" >
+            <property name="text" >
+             <string>Little Endian</string>
+            </property>
+            <property name="checked" >
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="1" >
+           <widget class="QRadioButton" name="_bigEndian" >
+            <property name="text" >
+             <string>Big Endian</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QWidget" name="page_2" >
+      <layout class="QGridLayout" name="gridLayout_2" >
+       <item row="0" column="0" colspan="2" >
+        <widget class="QLabel" name="_variableLabel" >
+         <property name="text" >
+          <string>Variable Index:</string>
+         </property>
+         <property name="wordWrap" >
+          <bool>false</bool>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="2" >
+        <widget class="QLineEdit" name="_variable" >
+         <property name="text" >
+          <string>0</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="0" >
+        <widget class="QLabel" name="_timestepLabel" >
+         <property name="text" >
+          <string>Timestep:</string>
+         </property>
+         <property name="wordWrap" >
+          <bool>false</bool>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="1" colspan="2" >
+        <widget class="QLineEdit" name="_timestep" >
+         <property name="text" >
+          <string>0</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+    </widget>
+   </item>
+   <item row="3" column="0" colspan="2" >
+    <spacer name="spacer3" >
+     <property name="orientation" >
+      <enum>Qt::Horizontal</enum>
+     </property>
+     <property name="sizeType" >
+      <enum>QSizePolicy::Expanding</enum>
+     </property>
+     <property name="sizeHint" stdset="0" >
+      <size>
+       <width>161</width>
+       <height>31</height>
+      </size>
+     </property>
+    </spacer>
+   </item>
+   <item row="3" column="2" >
+    <widget class="QPushButton" name="_cancel" >
+     <property name="text" >
+      <string>Cancel</string>
+     </property>
+    </widget>
+   </item>
+   <item row="3" column="3" colspan="2" >
+    <widget class="QPushButton" name="_ok" >
+     <property name="text" >
+      <string>Ok</string>
+     </property>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <layoutdefault spacing="6" margin="11" />
+ <pixmapfunction>qPixmapFromMimeSource</pixmapfunction>
+ <tabstops>
+  <tabstop>_importFile</tabstop>
+  <tabstop>_importFileButton</tabstop>
+  <tabstop>_rawDataButton</tabstop>
+  <tabstop>_offset</tabstop>
+  <tabstop>_dataType</tabstop>
+  <tabstop>_dimensionX</tabstop>
+  <tabstop>_dimensionY</tabstop>
+  <tabstop>_dimensionZ</tabstop>
+  <tabstop>_variable</tabstop>
+  <tabstop>_timestep</tabstop>
+  <tabstop>_littleEndian</tabstop>
+  <tabstop>_cancel</tabstop>
+  <tabstop>_ok</tabstop>
+ </tabstops>
+ <resources/>
+ <connections>
+  <connection>
+   <sender>_cancel</sender>
+   <signal>clicked()</signal>
+   <receiver>ImportData</receiver>
+   <slot>reject()</slot>
+   <hints>
+    <hint type="sourcelabel" >
+     <x>20</x>
+     <y>20</y>
+    </hint>
+    <hint type="destinationlabel" >
+     <x>20</x>
+     <y>20</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
+</ui>

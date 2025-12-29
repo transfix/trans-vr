@@ -78,7 +78,7 @@ vector<T> myreadline(istream& in)
   getline(in, line);
   tokenizer tok(line, sep);
   vector<T> v;
-  BOOST_FOREACH(string s, tok) {
+  for (const auto& s : tok) {
     v.push_back(boost::lexical_cast<T>(s));
   }
   return v;
@@ -480,7 +480,7 @@ void triangulate(Polygon_2* boundaries, int plane_idx, vector<Point_3>& verts, v
   cdt.insert(boundaries[plane_idx].vertices_begin(), boundaries[plane_idx].vertices_end());
 
   LOG4CPLUS_TRACE(logger, "  Adding constraints");
-  BOOST_FOREACH(const Segment_2& s, segments) {
+  for (const auto& s : segments) {
     cdt.insert_constraint(s.source(), s.target());
   }
 
@@ -503,7 +503,7 @@ void triangulate(Polygon_2* boundaries, int plane_idx, vector<Point_3>& verts, v
       // while (!triangles.empty()) {
       LOG4CPLUS_TRACE(logger, "Triangles to check: " << triangles.size());
       keep_going = false;
-      BOOST_FOREACH(const Triangle_2& t, triangles) {
+      for (const auto& t : triangles) {
 	Keep k = keep(t, segments);
 	if (k == KEEP) {
 	  keepers.push_back(t);
@@ -522,7 +522,7 @@ void triangulate(Polygon_2* boundaries, int plane_idx, vector<Point_3>& verts, v
   }
   keepers.insert(keepers.end(), triangles.begin(), triangles.end());
 
-  BOOST_FOREACH(const Triangle_2& t, keepers) {
+  for (const auto& t : keepers) {
     tri tr(3);
     for (int i = 0; i < 3; ++i) {
       Point_2 p2 = t[i];
@@ -665,7 +665,7 @@ void process_ecs(const vector<string>& filenames, string outfn, ecs_Bbox_3 bb, b
 
   // Read each file and process triangles
   list<tri> to_process;
-  BOOST_FOREACH(string filename, filenames) {
+  for (const auto& filename : filenames) {
     bool success = true;
     try {
       LOG4CPLUS_INFO(logger, "Reading " << filename);
@@ -715,7 +715,7 @@ void process_ecs(const vector<string>& filenames, string outfn, ecs_Bbox_3 bb, b
   create_boundaries(boundaries, bb);
 
   LOG4CPLUS_INFO(logger, "Processing meshes");
-  BOOST_FOREACH(tri t, to_process) {
+  for (auto t : to_process) {
     LOG4CPLUS_TRACE(logger, "Processing triangle: " << t[0] << " " << t[1] << " " << t[2]);
     process(t, verts, tris, bb, segments, i2i, v2i);
   }
@@ -755,7 +755,7 @@ void process_ecs(const vector<string>& filenames, string outfn, ecs_Bbox_3 bb, b
       num_write_verts++;
     }
   }
-  BOOST_FOREACH(tri t, tris) {
+  for (const auto& t : tris) {
     // Skip if i2i is -2 (vertex is nan)
     if (i2i[t[0]] >= 0 && i2i[t[1]] >= 0 && i2i[t[2]] >= 0) {
       num_write_tris++;
@@ -778,7 +778,7 @@ void process_ecs(const vector<string>& filenames, string outfn, ecs_Bbox_3 bb, b
       ss << v.x() << " " << v.y() << " " << v.z() << endl;
     }
   }
-  BOOST_FOREACH(tri t, tris) {
+  for (const auto& t : tris) {
     // Skip if i2i is -2 (vertex is nan)
     if (i2i[t[0]] >= 0 && i2i[t[1]] >= 0 && i2i[t[2]] >= 0) {
       if (crop_only) {

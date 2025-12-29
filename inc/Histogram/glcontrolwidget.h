@@ -22,7 +22,6 @@
 #define GLCONTROLWIDGET_H
 
 #include <qgl.h>
-//Added by qt3to4:
 #include <QShowEvent>
 #include <QWheelEvent>
 #include <QHideEvent>

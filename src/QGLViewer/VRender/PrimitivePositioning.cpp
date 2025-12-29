@@ -17,79 +17,41 @@
 
  You should have received a copy of the GNU General Public License
  along with VRender; if not, write to the Free Software Foundation, Inc.,
- 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
+ 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
 */
 
-/****************************************************************************
+/**********************************************************************
 
- Copyright (C) 2002-2008 Gilles Debunne. All rights reserved.
+Copyright (C) 2002-2025 Gilles Debunne. All rights reserved.
 
- This file is part of the QGLViewer library version 2.3.6.
+This file is part of the QGLViewer library version 3.0.0.
 
- http://www.libqglviewer.com - contact@libqglviewer.com
+https://gillesdebunne.github.io/libQGLViewer - contact@libqglviewer.com
 
- This file may be used under the terms of the GNU General Public License 
- versions 2.0 or 3.0 as published by the Free Software Foundation and
- appearing in the LICENSE file included in the packaging of this file.
- In addition, as a special exception, Gilles Debunne gives you certain 
- additional rights, described in the file GPL_EXCEPTION in this package.
+This file is part of a free software; you can redistribute it and/or
+modify it under the terms of the GNU Lesser General Public
+License as published by the Free Software Foundation; either
+version 3 of the License, or (at your option) any later version.
 
- libQGLViewer uses dual licensing. Commercial/proprietary software must
- purchase a libQGLViewer Commercial License.
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+Lesser General Public License for more details.
 
- This file is provided AS IS with NO WARRANTY OF ANY KIND, INCLUDING THE
- WARRANTY OF DESIGN, MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.
+You should have received a copy of the GNU Lesser General Public License
+along with this program; if not, write to the Free Software Foundation,
+Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 
-*****************************************************************************/
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+**********************************************************************/
 
 #include <QGLViewer/VRender/Primitive.h>
 #include <QGLViewer/VRender/AxisAlignedBox.h>
 #include <QGLViewer/VRender/PrimitivePositioning.h>
-#include "math.h"
+#include <cmath>
+#include <algorithm>
 #include <QGLViewer/VRender/Vector2.h>
+
+#include <algorithm>
 
 using namespace vrender ;
 using namespace std ;
@@ -168,7 +130,7 @@ int PrimitivePositioning::computeRelativePosition(const Polygone *P,const Segmen
 
 	double t1,t2 ;
 
-	for(int i=0;i<P->nbVertices();++i)
+		for(size_t i=0;i<P->nbVertices();++i)
 		if(intersectSegments_XY(Vector2(S->vertex(0)),Vector2(S->vertex(1)),Vector2(P->vertex(i)),Vector2(P->vertex(i+1)),_EPS,t1,t2))
 			intersections.push_back(t1) ;
 
@@ -180,8 +142,8 @@ int PrimitivePositioning::computeRelativePosition(const Polygone *P,const Segmen
 
 	for(unsigned int j=0;j<intersections.size();++j)
 	{
-		tmin = min(tmin,intersections[j]) ;
-		tmax = max(tmax,intersections[j]) ;
+		tmin = std::min(tmin,intersections[j]) ;
+		tmax = std::max(tmax,intersections[j]) ;
 	}
 
 	if(tmax - tmin < 2*_EPS)
@@ -235,9 +197,9 @@ int PrimitivePositioning::computeRelativePosition(const Polygone *P1,const Polyg
 
 	if (gpc_int.num_contours != 1) // There is some numerical error in gpc. Let's skip.
 	  {
-	    gpc_free_polygon(&gpc_int) ;
-	    return res ;
-	    // throw runtime_error("Intersection with more than 1 contour ! Non convex polygons ?") ;
+		gpc_free_polygon(&gpc_int) ;
+		return res ;
+		// throw runtime_error("Intersection with more than 1 contour ! Non convex polygons ?") ;
 	  }
 
 	// 2 - polygons are not independent. Compute their relative position.
@@ -245,7 +207,7 @@ int PrimitivePositioning::computeRelativePosition(const Polygone *P1,const Polyg
 	//   support plane of each polygon. The epsilon-signs of each point toward
 	//   both planes give the relative position of the polygons.
 
-	for(int i=0;i<gpc_int.contour[0].num_vertices && (res < (Upper | Lower));++i)
+	for(long i=0;i<gpc_int.contour[0].num_vertices && (res < (Upper | Lower));++i)
 	{
 		if(P1->normal().z() == 0.0) throw runtime_error("could not project point. Unexpected case !") ;
 		if(P2->normal().z() == 0.0) throw runtime_error("could not project point. Unexpected case !") ;
@@ -298,21 +260,21 @@ int PrimitivePositioning::computeRelativePosition(const Segment *S1,const Segmen
 
 bool PrimitivePositioning::pointOutOfPolygon_XY(const Vector3& P,const Polygone *Q,double I_EPS)
 {
-	int nq = Q->nbVertices() ;
+	size_t nq = Q->nbVertices() ;
 	Vector2 p = Vector2(P) ;
 
 	FLOAT MaxZ = -FLT_MAX ;
 	FLOAT MinZ =  FLT_MAX ;
 
-	for(int j=0;j<nq;j++)  				//  Regarde si P.(x,y) est a l'interieur
+	for(size_t j=0;j<nq;j++)  				//  Regarde si P.(x,y) est a l'interieur
 	{                               	// ou a l'exterieur du polygone.
 		Vector2 q1 = Vector2(Q->vertex(j)) ;
 		Vector2 q2 = Vector2(Q->vertex(j+1)) ;
 
 		double Z = (q1-p)^(q2-p) ;
 
-		MinZ = min(Z,MinZ) ;
-		MaxZ = max(Z,MaxZ) ;
+		MinZ = std::min(Z,MinZ) ;
+		MaxZ = std::max(Z,MaxZ) ;
 	}
 
 	if((MaxZ <= -I_EPS*I_EPS)||(MinZ >= I_EPS*I_EPS))	// the point is inside the polygon
@@ -392,8 +354,8 @@ bool PrimitivePositioning::intersectSegments_XY(const Vector2& P1,const Vector2&
 			return false ;
 		}
 
-		double tPQM = max(tP1,tQ1) ;
-		double tPQm = min(tP1,tQ1) ;
+		double tPQM = std::max(tP1,tQ1) ;
+		double tPQm = std::min(tP1,tQ1) ;
 
 		if(( tPQM < -I_EPS) || (tPQm > 1.0+I_EPS))
 			return false ;
@@ -439,15 +401,15 @@ gpc_polygon PrimitivePositioning::createGPCPolygon_XY(const Polygone *P)
 	gpc_polygon p ;
 
 	p.num_contours = 0 ;
-	p.hole = NULL ;
-	p.contour = NULL ;
+	p.hole = nullptr ;
+	p.contour = nullptr ;
 
 	gpc_vertex_list *gpc_p_verts = new gpc_vertex_list ;
 
 	gpc_p_verts->num_vertices = P->nbVertices() ;
 	gpc_p_verts->vertex = new gpc_vertex[P->nbVertices()] ;
 
-	for(int i=0;i<P->nbVertices();++i)
+		for(size_t i=0;i<P->nbVertices();++i)
 	{
 		gpc_p_verts->vertex[i].x = P->vertex(i).x() ;
 		gpc_p_verts->vertex[i].y = P->vertex(i).y() ;
@@ -461,10 +423,10 @@ gpc_polygon PrimitivePositioning::createGPCPolygon_XY(const Polygone *P)
 void PrimitivePositioning::getsigns(const Primitive *P,const NVector3& v,double C,
 												vector<int>& signs,vector<double>& zvals,int& Smin,int& Smax,double I_EPS)
 {
-	if(P == NULL)
+	if(P == nullptr)
 		throw runtime_error("Null primitive in getsigns !") ;
 
-	int n = P->nbVertices() ;
+	size_t n = P->nbVertices() ;
 
 	Smin =  1 ;
 	Smax = -1 ;
@@ -475,7 +437,7 @@ void PrimitivePositioning::getsigns(const Primitive *P,const NVector3& v,double 
 	double zmin =  FLT_MAX ;
 	zvals.resize(n) ;
 
-	for(int i=0;i<n;i++)
+	for(size_t i=0;i<n;i++)
 	{
 		double Z = P->vertex(i) * v - C ;
 
@@ -487,7 +449,7 @@ void PrimitivePositioning::getsigns(const Primitive *P,const NVector3& v,double 
 
 	signs.resize(n) ;
 
-	for(int j=0;j<n;j++)
+	for(size_t j=0;j<n;j++)
 	{
 		if(zvals[j] < -I_EPS)
 			signs[j] = -1 ;
@@ -506,22 +468,22 @@ void PrimitivePositioning::split(Polygone *P,const NVector3& v,double C,Primitiv
 	vector<int> Signs ;
 	vector<double> Zvals ;
 
-	P_plus = NULL ;
-	P_moins = NULL ;
+	P_plus = nullptr ;
+	P_moins = nullptr ;
 
 	int Smin = 1 ;
 	int Smax = -1 ;
 
 	getsigns(P,v,C,Signs,Zvals,Smin,Smax,_EPS) ;
 
-	int n = P->nbVertices() ;
+	size_t n = P->nbVertices() ;
 
-	if((Smin == 0)&&(Smax == 0)){ P_moins = P ; P_plus = NULL ; return ; }	// Polygone inclus dans le plan
-	if(Smin == 1) 					{ P_plus = P ; P_moins = NULL ; return ; }	// Polygone tout positif
-	if(Smax == -1) 					{ P_plus = NULL ; P_moins = P ; return ; }	// Polygone tout negatif
+	if((Smin == 0)&&(Smax == 0)){ P_moins = P ; P_plus = nullptr ; return ; }	// Polygone inclus dans le plan
+	if(Smin == 1) 					{ P_plus = P ; P_moins = nullptr ; return ; }	// Polygone tout positif
+	if(Smax == -1) 					{ P_plus = nullptr ; P_moins = P ; return ; }	// Polygone tout negatif
 
-	if((Smin == -1)&&(Smax == 0)) { P_plus = NULL ; P_moins = P ; return ; }	// Polygone tout negatif ou null
-	if((Smin == 0)&&(Smax == 1))  { P_plus = P ; P_moins = NULL ; return ; }	// Polygone tout positif ou null
+	if((Smin == -1)&&(Smax == 0)) { P_plus = nullptr ; P_moins = P ; return ; }	// Polygone tout negatif ou null
+	if((Smin == 0)&&(Smax == 1))  { P_plus = P ; P_moins = nullptr ; return ; }	// Polygone tout positif ou null
 
 	// Reste le cas Smin = -1 et Smax = 1. Il faut couper
 
@@ -533,7 +495,7 @@ void PrimitivePositioning::split(Polygone *P,const NVector3& v,double C,Primitiv
 	int nZero = 0 ;
 	int nconsZero = 0 ;
 
-	for(int i=0;i<n;i++)
+	for(size_t i=0;i<n;i++)
 	{
 		if(Signs[i] == 0)
 		{
@@ -545,12 +507,12 @@ void PrimitivePositioning::split(Polygone *P,const NVector3& v,double C,Primitiv
 	}
 
 	// Ils y a des imprecisions numeriques dues au fait que le poly estpres du plan.
-	if((nZero > 2)||(nconsZero > 0)) { P_moins = P ; P_plus  = NULL ; return ; }
+	if((nZero > 2)||(nconsZero > 0)) { P_moins = P ; P_plus  = nullptr ; return ; }
 
 	int dep=0 ; while(Signs[dep] == 0) dep++ ;
 	int prev_sign = Signs[dep] ;
 
-	for(int j=1;j<=n;j++)
+	for(size_t j=1;j<=n;j++)
 	{
 		int sign = Signs[(j+dep)%n] ;
 
@@ -623,12 +585,12 @@ void PrimitivePositioning::split(Point *P,const NVector3& v,double C,Primitive *
 	if(v*P->vertex(0)-C > -_EPS)
 	{
 		P_plus = P ;
-		P_moins = NULL ;
+		P_moins = nullptr ;
 	}
 	else
 	{
 		P_moins = P ;
-		P_plus = NULL ;
+		P_plus = nullptr ;
 	}
 }
 
@@ -637,22 +599,22 @@ void PrimitivePositioning::split(Segment *S,const NVector3& v,double C,Primitive
 	vector<int> Signs ;
 	vector<double> Zvals ;
 
-	P_plus = NULL ;
-	P_moins = NULL ;
+	P_plus = nullptr ;
+	P_moins = nullptr ;
 
 	int Smin = 1 ;
 	int Smax = -1 ;
 
 	getsigns(S,v,C,Signs,Zvals,Smin,Smax,_EPS) ;
 
-	int n = S->nbVertices() ;
+	size_t n = S->nbVertices() ;
 
-	if((Smin == 0)&&(Smax == 0)) 	{ P_moins = S ; P_plus = NULL ; return ; }	// Polygone inclus dans le plan
-	if(Smin == 1) 						{ P_plus = S ; P_moins = NULL ; return ; }	// Polygone tout positif
-	if(Smax == -1) 					{ P_plus = NULL ; P_moins = S ; return ; }	// Polygone tout negatif
+	if((Smin == 0)&&(Smax == 0)) 	{ P_moins = S ; P_plus = nullptr ; return ; }	// Polygone inclus dans le plan
+	if(Smin == 1) 						{ P_plus = S ; P_moins = nullptr ; return ; }	// Polygone tout positif
+	if(Smax == -1) 					{ P_plus = nullptr ; P_moins = S ; return ; }	// Polygone tout negatif
 
-	if((Smin == -1)&&(Smax == 0)) { P_plus = NULL ; P_moins = S ; return ; }	// Polygone tout negatif ou null
-	if((Smin == 0)&&(Smax == 1))  { P_plus = S ; P_moins = NULL ; return ; }	// Polygone tout positif ou null
+	if((Smin == -1)&&(Smax == 0)) { P_plus = nullptr ; P_moins = S ; return ; }	// Polygone tout negatif ou null
+	if((Smin == 0)&&(Smax == 1))  { P_plus = S ; P_moins = nullptr ; return ; }	// Polygone tout positif ou null
 
 	// Reste le cas Smin = -1 et Smax = 1. Il faut couper
 	// On teste la coherence des signes.
@@ -660,7 +622,7 @@ void PrimitivePositioning::split(Segment *S,const NVector3& v,double C,Primitive
 	int nZero = 0 ;
 	int nconsZero = 0 ;
 
-	for(int i=0;i<n;i++)
+	for(size_t i=0;i<n;i++)
 	{
 		if(Signs[i] == 0)
 		{
@@ -672,7 +634,7 @@ void PrimitivePositioning::split(Segment *S,const NVector3& v,double C,Primitive
 	}
 
 	// Ils y a des imprecisions numeriques dues au fait que le poly estpres du plan.
-	if((nZero > 2)||(nconsZero > 0)) { P_moins = S ; P_plus  = NULL ; return ; }
+	if((nZero > 2)||(nconsZero > 0)) { P_moins = S ; P_plus  = nullptr ; return ; }
 
 	double Z1 = Zvals[0] ;
 	double Z2 = Zvals[1] ;
@@ -704,8 +666,8 @@ void PrimitivePositioning::split(Segment *S,const NVector3& v,double C,Primitive
 
 void PrimitivePositioning::splitPrimitive(Primitive *P,const NVector3& v,double c, Primitive *& prim_up,Primitive *& prim_lo)
 {
-	Polygone *p1 = dynamic_cast<Polygone *>(P) ; if(p1 != NULL) PrimitivePositioning::split(p1,v,c,prim_up,prim_lo) ;
-	Segment  *p2 = dynamic_cast<Segment  *>(P) ; if(p2 != NULL) PrimitivePositioning::split(p2,v,c,prim_up,prim_lo) ;
-	Point    *p3 = dynamic_cast<Point    *>(P) ; if(p3 != NULL) PrimitivePositioning::split(p3,v,c,prim_up,prim_lo) ;
+	Polygone *p1 = dynamic_cast<Polygone *>(P) ; if(p1 != nullptr) PrimitivePositioning::split(p1,v,c,prim_up,prim_lo) ;
+	Segment  *p2 = dynamic_cast<Segment  *>(P) ; if(p2 != nullptr) PrimitivePositioning::split(p2,v,c,prim_up,prim_lo) ;
+	Point    *p3 = dynamic_cast<Point    *>(P) ; if(p3 != nullptr) PrimitivePositioning::split(p3,v,c,prim_up,prim_lo) ;
 }
 

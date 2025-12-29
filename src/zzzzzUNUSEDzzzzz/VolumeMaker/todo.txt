@@ -1,6 +1,0 @@
-5/8/2008 -joe r
-
-- catch exceptions thrown by volmagick - DONE (5/15/2008)
-- show something descriptive on the main frame when nothing is loaded
-- implement add/remove variables&timesteps - DONE (5/15/2008)
-- allow user to see raw header info (probably need to modify volmagick)

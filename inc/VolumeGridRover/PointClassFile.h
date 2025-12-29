@@ -23,12 +23,14 @@
 #ifndef __POINTCLASSFILE_H__
 #define __POINTCLASSFILE_H__
 
-#include <qxml.h>
+#include <QXmlStreamReader>
+#include <QXmlStreamWriter>
 
 class VolumeGridRover;
 class PointClass;
 
 /* The content handler for reading a point class file */
+/* TODO: Qt6 migration - needs rewrite to use QXmlStreamReader instead of SAX API
 class PointClassFileContentHandler : public QXmlDefaultHandler
 {
  public:
@@ -57,5 +59,6 @@ class PointClassFileContentHandler : public QXmlDefaultHandler
   
   QXmlLocator *m_Locator;
 };
+*/
 
 #endif

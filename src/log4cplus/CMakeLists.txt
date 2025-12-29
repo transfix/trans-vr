@@ -1,5 +1,5 @@
 #project (log4cplus CXX C)
-cmake_minimum_required (VERSION 2.6)
+cmake_minimum_required(VERSION 3.16)
 #set (CMAKE_VERBOSE_MAKEFILE on)
 
 set (log4cplus_version_major 1)
@@ -133,6 +133,12 @@ include_directories (
 set (log4cplus_all_sources ${log4cplus_sources} ${log4cplus_headers})
 
 add_library (log4cplus STATIC ${log4cplus_all_sources})
+
+set_target_properties(log4cplus PROPERTIES
+  AUTOMOC OFF
+  AUTOUIC OFF
+  AUTORCC OFF
+)
 #add_library (log4cplus SHARED ${log4cplus_all_sources})
 target_link_libraries (log4cplus ${CMAKE_THREAD_LIBS_INIT})
 

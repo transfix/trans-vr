@@ -37,7 +37,7 @@
 #include <iostream> 
 using namespace std;
 
-LBIEQualityImprovementDialog::LBIEQualityImprovementDialog(QWidget *parent,Qt::WFlags flags) 
+LBIEQualityImprovementDialog::LBIEQualityImprovementDialog(QWidget *parent,Qt::WindowFlags flags) 
   : QDialog(parent, flags) {
 
   _ui = new Ui::LBIEQualityImprovementDialogBase;
@@ -55,7 +55,7 @@ LBIEQualityImprovementDialog::LBIEQualityImprovementDialog(QWidget *parent,Qt::W
       return;
     }
   
-  BOOST_FOREACH(std::string key, keys)
+  for (const auto& key : keys)
     _ui->GeometryList->addItem(QString::fromStdString(key)); 
 
 }

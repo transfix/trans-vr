@@ -41,7 +41,7 @@ class LBIEQualityImprovementDialog : public QDialog
   Q_OBJECT
 
  public:
-  LBIEQualityImprovementDialog(QWidget *parent=0,Qt::WFlags flags=0);
+  LBIEQualityImprovementDialog(QWidget *parent=nullptr,Qt::WindowFlags flags=Qt::WindowFlags());
 
   virtual ~LBIEQualityImprovementDialog();
 

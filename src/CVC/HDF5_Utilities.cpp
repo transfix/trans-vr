@@ -215,16 +215,11 @@ namespace CVC_NAMESPACE
             }
         }
 
-      const CommonFG *handle = &file;
-      if(cvc_group) handle = cvc_group.get();
-
-      cvc_dataset.reset(
-        new DataSet(
-          handle->openDataSet(
-            dataSetName
-          )
-        )
-      );
+      // HDF5 1.10+ removed CommonFG, use H5File or Group directly
+      if(cvc_group)
+        cvc_dataset.reset(new DataSet(cvc_group->openDataSet(dataSetName)));
+      else
+        cvc_dataset.reset(new DataSet(file.openDataSet(dataSetName)));
       
       return cvc_dataset;
     }
@@ -574,13 +569,14 @@ namespace CVC_NAMESPACE
 
             //if we found a group, add to the group.  Else it must be at the root,
             //so add via the file itself.
-            H5::CommonFG *cfg;
-            if(cvc_group) cfg = cvc_group.get();
-            else cfg = file.get();
+            // HDF5 1.10+ removed CommonFG, use H5File or Group directly
       
             try
               {
-                cfg->unlink(dataSetName);
+                if(cvc_group)
+                  cvc_group->unlink(dataSetName);
+                else
+                  file->unlink(dataSetName);
               }
             catch(H5::Exception& e)
               {}
@@ -591,6 +587,15 @@ namespace CVC_NAMESPACE
                 std::min(maxdim[1],dimension[1]), 
                 std::min(maxdim[0],dimension[0]) 
               };
+
+            // HDF5 1.10+ removed CommonFG, use helper lambda for createDataSet
+            auto createDataSet = [&](const std::string& name, const H5::DataType& dtype, 
+                                     const H5::DataSpace& space, const H5::DSetCreatPropList& plist) -> H5::DataSet {
+              if(cvc_group)
+                return cvc_group->createDataSet(name, dtype, space, plist);
+              else
+                return file->createDataSet(name, dtype, space, plist);
+            };
 
             shared_ptr<H5::DataSet> dataset;
 		
@@ -613,7 +618,7 @@ namespace CVC_NAMESPACE
                 
                   dataset.reset(
                     new DataSet(
-                      cfg->createDataSet(
+                      createDataSet(
                         dataSetName,
                         PredType::NATIVE_UCHAR,
                         dataspace,
@@ -640,7 +645,7 @@ namespace CVC_NAMESPACE
                 
                   dataset.reset(
                     new DataSet(
-                      cfg->createDataSet(
+                      createDataSet(
                         dataSetName,
                         PredType::NATIVE_USHORT,
                         dataspace,
@@ -667,7 +672,7 @@ namespace CVC_NAMESPACE
                 
                   dataset.reset(
                     new DataSet(
-                      cfg->createDataSet(
+                      createDataSet(
                         dataSetName,
                         PredType::NATIVE_UINT,
                         dataspace,
@@ -694,7 +699,7 @@ namespace CVC_NAMESPACE
             
                   dataset.reset(
                     new DataSet(
-                      cfg->createDataSet(
+                      createDataSet(
                         dataSetName,
                         PredType::NATIVE_FLOAT,
                         dataspace,
@@ -721,7 +726,7 @@ namespace CVC_NAMESPACE
                 
                   dataset.reset(
                     new DataSet(
-                      cfg->createDataSet(
+                      createDataSet(
                         dataSetName,
                         PredType::NATIVE_DOUBLE,
                         dataspace,
@@ -748,7 +753,7 @@ namespace CVC_NAMESPACE
             
                   dataset.reset(
                     new DataSet(
-                      cfg->createDataSet(
+                      createDataSet(
                         dataSetName,
                         PredType::NATIVE_UINT64,
                         dataspace,
@@ -775,7 +780,7 @@ namespace CVC_NAMESPACE
             
                   dataset.reset(
                     new DataSet(
-                      cfg->createDataSet(
+                      createDataSet(
                         dataSetName,
                         PredType::C_S1,
                         dataspace,

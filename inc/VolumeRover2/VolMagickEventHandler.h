@@ -1,47 +1,47 @@
 #ifndef __VOLMAGICKEVENTHANDLER_H__
 #define __VOLMAGICKEVENTHANDLER_H__
 
-#include <qapplication.h>
-#include <qprogressdialog.h>
-#include <qevent.h>
+#include <QApplication>
+#include <QProgressDialog>
+#include <QEvent>
 #include <VolMagick/VolMagick.h>
 
-class VolMagickOpStartEvent : public QCustomEvent
+class VolMagickOpStartEvent : public QEvent
 {
  public:
-  static const int id = 60000;
+  static const int id = QEvent::User + 60000;
 
   VolMagickOpStartEvent(const VolMagick::Voxels *vox, 
 			VolMagick::VoxelOperationStatusMessenger::Operation op, 
 			VolMagick::uint64 numSteps) : 
-    QCustomEvent(id), voxels(vox), operation(op), steps(numSteps) {}
+    QEvent(static_cast<QEvent::Type>(id)), voxels(vox), operation(op), steps(numSteps) {}
   const VolMagick::Voxels *voxels;
   VolMagick::VoxelOperationStatusMessenger::Operation operation;
   VolMagick::uint64 steps;
 };
 
-class VolMagickOpStepEvent : public QCustomEvent
+class VolMagickOpStepEvent : public QEvent
 {
  public:
-  static const int id = 60001;
+  static const int id = QEvent::User + 60001;
 
   VolMagickOpStepEvent(const VolMagick::Voxels *vox, 
 			VolMagick::VoxelOperationStatusMessenger::Operation op, 
 			VolMagick::uint64 curStep) : 
-    QCustomEvent(id), voxels(vox), operation(op), currentStep(curStep) {}
+    QEvent(static_cast<QEvent::Type>(id)), voxels(vox), operation(op), currentStep(curStep) {}
   const VolMagick::Voxels *voxels;
   VolMagick::VoxelOperationStatusMessenger::Operation operation;
   VolMagick::uint64 currentStep;
 };
 
-class VolMagickOpEndEvent : public QCustomEvent
+class VolMagickOpEndEvent : public QEvent
 {
  public:
-  static const int id = 60002;
+  static const int id = QEvent::User + 60002;
 
   VolMagickOpEndEvent(const VolMagick::Voxels *vox, 
 		       VolMagick::VoxelOperationStatusMessenger::Operation op) : 
-    QCustomEvent(id), voxels(vox), operation(op) {}
+    QEvent(static_cast<QEvent::Type>(id)), voxels(vox), operation(op) {}
   const VolMagick::Voxels *voxels;
   VolMagick::VoxelOperationStatusMessenger::Operation operation;
 };
@@ -51,17 +51,17 @@ class VolMagickEventBasedOpStatus : public VolMagick::VoxelOperationStatusMessen
 public:
   void start(const VolMagick::Voxels *vox, Operation op, VolMagick::uint64 numSteps) const
   {
-    QApplication::postEvent(qApp->mainWidget(),new VolMagickOpStartEvent(vox,op,numSteps));
+    QApplication::postEvent(qApp, new VolMagickOpStartEvent(vox,op,numSteps));
   }
   
   void step(const VolMagick::Voxels *vox, Operation op, VolMagick::uint64 curStep) const
   {
-    QApplication::postEvent(qApp->mainWidget(),new VolMagickOpStepEvent(vox,op,curStep));
+    QApplication::postEvent(qApp, new VolMagickOpStepEvent(vox,op,curStep));
   }
   
   void end(const VolMagick::Voxels *vox, Operation op) const
   {
-    QApplication::postEvent(qApp->mainWidget(),new VolMagickOpEndEvent(vox,op));
+    QApplication::postEvent(qApp, new VolMagickOpEndEvent(vox,op));
   }
 };
 
@@ -82,22 +82,13 @@ public:
     
     _numSteps = numSteps;
     
-#if QT_VERSION < 0x040000
-    pd = new QProgressDialog(opStrings[op],"Abort",numSteps,NULL,NULL,TRUE);
-#else
     pd = new QProgressDialog(opStrings[op],"Abort",0,numSteps);
     pd->setWindowModality(Qt::WindowModal);
-#endif
   }
   
   void step(const VolMagick::Voxels *vox, Operation op, VolMagick::uint64 curStep) const
   {
-    //fprintf(stderr,"%s: %5.2f %%\r",opStrings[op],(((float)curStep)/((float)((int)(_numSteps-1))))*100.0);
-#if QT_VERSION < 0x040000
-    pd->setProgress(curStep);
-#else
     pd->setValue(curStep);
-#endif
     
     qApp->processEvents();
     if(pd->wasCancelled())
@@ -106,11 +97,7 @@ public:
   
   void end(const VolMagick::Voxels *vox, Operation op) const
   {
-#if QT_VERSION < 0x040000
-    pd->setProgress(_numSteps);
-#else
     pd->setValue(_numSteps);
-#endif
   }
   
 private:

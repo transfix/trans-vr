@@ -43,7 +43,7 @@ class MultiTileServerDialog : public QDialog
   Q_OBJECT
 
  public:
-  MultiTileServerDialog(QWidget *parent=0,Qt::WFlags flags=0);
+  MultiTileServerDialog(QWidget *parent=nullptr,Qt::WindowFlags flags=Qt::WindowFlags());
 
   virtual ~MultiTileServerDialog();
 

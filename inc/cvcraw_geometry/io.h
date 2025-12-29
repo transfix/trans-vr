@@ -124,19 +124,19 @@ namespace cvcraw_geometry
 
 	if(haveNormals && printNormals)
 	  outf << " " 
-	       << normals[distance(points.begin(),i)][0] << " " 
-	       << normals[distance(points.begin(),i)][1] << " " 
-	       << normals[distance(points.begin(),i)][2];
+	       << normals[std::distance(points.begin(),i)][0] << " " 
+	       << normals[std::distance(points.begin(),i)][1] << " " 
+	       << normals[std::distance(points.begin(),i)][2];
 	if(haveColors && printColors)
 	  outf << " " 
-	       << colors[distance(points.begin(),i)][0] << " " 
-	       << colors[distance(points.begin(),i)][1] << " " 
-	       << colors[distance(points.begin(),i)][2];
+	       << colors[std::distance(points.begin(),i)][0] << " " 
+	       << colors[std::distance(points.begin(),i)][1] << " " 
+	       << colors[std::distance(points.begin(),i)][2];
 	if(boundary.size() == points.size())
-	  outf << " " << boundary[distance(points.begin(),i)];
+	  outf << " " << boundary[std::distance(points.begin(),i)];
 	outf << endl;
 	if(!outf)
-	  throw runtime_error(str(format("Error writing vertex %1%") % distance(points.begin(),i)));
+	  throw runtime_error(str(format("Error writing vertex %1%") % std::distance(points.begin(),i)));
       }
     
     if(lines.size() != 0)
@@ -147,12 +147,12 @@ namespace cvcraw_geometry
 	    for(typename cell_type::const_iterator j = i->begin(); j != i->end(); j++)
 	      {
 		outf << *j;
-		if(next(j) == i->end()) outf << endl;
+		if(std::next(j) == i->end()) outf << endl;
 		else outf << " ";
 	      }
 
 	    if(!outf)
-	      throw runtime_error(str(format("Error writing line %1%") % distance(lines.begin(),i)));
+	      throw runtime_error(str(format("Error writing line %1%") % std::distance(lines.begin(),i)));
 	  }
       }
     else if(tris.size() != 0)
@@ -165,12 +165,12 @@ namespace cvcraw_geometry
 		for(typename cell_type::const_iterator j = i->begin(); j != i->end(); j++)
 		  {
 		    outf << *j;
-		    if(next(j) == i->end()) outf << endl;
+		    if(std::next(j) == i->end()) outf << endl;
 		    else outf << " ";
 		  }
 		
 		if(!outf)
-		  throw runtime_error(str(format("Error writing triangle %1%") % distance(tris.begin(),i)));
+		  throw runtime_error(str(format("Error writing triangle %1%") % std::distance(tris.begin(),i)));
 	      }
 	  }
 	else
@@ -194,12 +194,12 @@ namespace cvcraw_geometry
 		for(typename cell_type::const_iterator j = i->begin(); j != i->end(); j++)
 		  {
 		    outf << *j;
-		    if(next(j) == i->end()) outf << endl;
+		    if(std::next(j) == i->end()) outf << endl;
 		    else outf << " ";
 		  }
 		
 		if(!outf)
-		  throw runtime_error(str(format("Error writing quad %1%") % distance(quads.begin(),i)));
+		  throw runtime_error(str(format("Error writing quad %1%") % std::distance(quads.begin(),i)));
 	      }
 	  }
 	else

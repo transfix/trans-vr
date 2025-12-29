@@ -153,7 +153,7 @@ namespace
       {
         CVC::ThreadInfo ti("sleeping");
         boost::xtime xt;
-        boost::xtime_get( &xt, boost::TIME_UTC );
+        boost::xtime_get( &xt, boost::TIME_UTC_ );
         xt.sec++;
         boost::thread::sleep( xt );
       }
@@ -662,8 +662,7 @@ namespace VolMagick
         std::string hierarchy_object = hierarchy_objects[0];
 
         //find the first non dirty dataset
-        BOOST_FOREACH(std::string obj, hierarchy_objects)
-          {
+        for (const auto& obj : hierarchy_objects) {
             int isDirty = 0;
             try
               {
@@ -680,8 +679,7 @@ namespace VolMagick
           }
 
         //now select a dataset
-        BOOST_FOREACH(std::string obj, hierarchy_objects)
-          {
+        for (const auto& obj : hierarchy_objects) {
             cvcapp.log(3,str(format("%s: %s\n")
                              % BOOST_CURRENT_FUNCTION
                              % obj));
@@ -967,7 +965,7 @@ namespace VolMagick
       {
         std::vector<std::string> children = getChildObjects(actualFileName,
                                                             objectName);
-        BOOST_FOREACH(std::string val, children)
+        for (const auto& val : children)
           setObjectBoundingBox(actualFileName, objectName + "/" + val, bbox);
       }
 

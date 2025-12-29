@@ -20,39 +20,5 @@
   Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
-#include <VolumeGridRover/ContourFile.h>
-#include <VolumeGridRover/VolumeGridRover.h>
-#include <CVC/App.h>
-#include <boost/format.hpp>
-
-ContourFileContentHandler::ContourFileContentHandler(VolumeGridRover *vgr) 
-  : m_VolumeGridRover(vgr) {}
-void ContourFileContentHandler::setDocumentLocator(QXmlLocator *locator) { m_Locator = locator; }
-//bool ContourFileContentHandler::startDocument() { return true; }
-bool ContourFileContentHandler::endDocument() { /*if(m_CurrentPointClass) delete m_CurrentPointClass;*/ return true; }
-//bool ContourFileContentHandler::startPrefixMapping(const QString &prefix, const QString &uri) { return true; }
-//bool ContourFileContentHandler::endPrefixMapping(const QString &prefix) { return true; }
-bool ContourFileContentHandler::startElement(const QString &namespaceURI, const QString &localName, const QString &qName, const QXmlAttributes &atts)
-{
-  if(!namespaceURI.isNull()) cvcapp.log(5, boost::str(boost::format("Using namespace: %s")%namespaceURI.ascii()));
-  cvcapp.log(5, boost::str(boost::format("Qualified name: %s")%qName.ascii()));
-
-  //if(localName == "contours");
-
-  return true;
-}
-bool ContourFileContentHandler::endElement(const QString &namespaceURI, const QString &localName, const QString &qName)
-{
-  return true;
-}
-bool ContourFileContentHandler::characters(const QString &ch)
-{
-  return false;
-}
-//bool ContourFileContentHandler::ignorableWhitespace(const QString &ch) { return true; }
-//bool ContourFileContentHandler::processingInstruction(const QString &target, const QString &data) { return true; }
-//bool ContourFileContentHandler::skippedEntity(const QString &name) { return true; }
-QString ContourFileContentHandler::errorString()
-{ 
-  return QString("Error");
-}
+// TODO: Qt6 migration - ContourFileContentHandler needs rewrite to use QXmlStreamReader
+// Stubbed out for now as it uses deprecated QXmlDefaultHandler SAX API

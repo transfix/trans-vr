@@ -90,7 +90,7 @@ void sweetMesh::writeRAWfile(sweetMesh::hexMesh& mesh, std::ofstream& ostream){
 		ostream << vertexItr->X() << " " << vertexItr->Y() << " " << vertexItr->Z() << "\n";
 	}
 	for(std::list<hexahedron>::iterator hexItr=mesh.hexahedra.begin(); hexItr!=mesh.hexahedra.end(); hexItr++){
-		ostream << hexItr->cornerItrs[0]->myVertexItr->OrderIndex() << " " << ostream << hexItr->cornerItrs[1]->myVertexItr->OrderIndex() << " " << ostream << hexItr->cornerItrs[2]->myVertexItr->OrderIndex() << " " << ostream << hexItr->cornerItrs[3]->myVertexItr->OrderIndex() << " " << ostream << hexItr->cornerItrs[4]->myVertexItr->OrderIndex() << " " << ostream << hexItr->cornerItrs[5]->myVertexItr->OrderIndex() << " " << ostream << hexItr->cornerItrs[6]->myVertexItr->OrderIndex() << " " << ostream << hexItr->cornerItrs[7]->myVertexItr->OrderIndex() << "\n";
+		ostream << hexItr->cornerItrs[0]->myVertexItr->OrderIndex() << " " << hexItr->cornerItrs[1]->myVertexItr->OrderIndex() << " " << hexItr->cornerItrs[2]->myVertexItr->OrderIndex() << " " << hexItr->cornerItrs[3]->myVertexItr->OrderIndex() << " " << hexItr->cornerItrs[4]->myVertexItr->OrderIndex() << " " << hexItr->cornerItrs[5]->myVertexItr->OrderIndex() << " " << hexItr->cornerItrs[6]->myVertexItr->OrderIndex() << " " << hexItr->cornerItrs[7]->myVertexItr->OrderIndex() << "\n";
 	}
 }
 
@@ -105,7 +105,7 @@ void sweetMesh::writeRAWSfile(sweetMesh::hexMesh& mesh, std::ofstream& ostream){
 		else	ostream << " 0\n";
 	}
 	for(std::list<hexahedron>::iterator hexItr=mesh.hexahedra.begin(); hexItr!=mesh.hexahedra.end(); hexItr++){
-		ostream << hexItr->cornerItrs[0]->myVertexItr->OrderIndex() << " " << ostream << hexItr->cornerItrs[1]->myVertexItr->OrderIndex() << " " << ostream << hexItr->cornerItrs[2]->myVertexItr->OrderIndex() << " " << ostream << hexItr->cornerItrs[3]->myVertexItr->OrderIndex() << " " << ostream << hexItr->cornerItrs[4]->myVertexItr->OrderIndex() << " " << ostream << hexItr->cornerItrs[5]->myVertexItr->OrderIndex() << " " << ostream << hexItr->cornerItrs[6]->myVertexItr->OrderIndex() << " " << ostream << hexItr->cornerItrs[7]->myVertexItr->OrderIndex() << "\n";
+		ostream << hexItr->cornerItrs[0]->myVertexItr->OrderIndex() << " " << hexItr->cornerItrs[1]->myVertexItr->OrderIndex() << " " << hexItr->cornerItrs[2]->myVertexItr->OrderIndex() << " " << hexItr->cornerItrs[3]->myVertexItr->OrderIndex() << " " << hexItr->cornerItrs[4]->myVertexItr->OrderIndex() << " " << hexItr->cornerItrs[5]->myVertexItr->OrderIndex() << " " << hexItr->cornerItrs[6]->myVertexItr->OrderIndex() << " " << hexItr->cornerItrs[7]->myVertexItr->OrderIndex() << "\n";
 	}
 }
 

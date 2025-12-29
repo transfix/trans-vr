@@ -37,7 +37,7 @@ namespace CVC_NAMESPACE
   class DataWidget : public QFrame
   {
   public:
-    DataWidget(QWidget *parent = 0, Qt::WFlags flags=0) : QFrame(parent,flags) {}
+    DataWidget(QWidget *parent = nullptr, Qt::WindowFlags flags=Qt::WindowFlags()) : QFrame(parent,flags) {}
     virtual ~DataWidget() {}
 
     virtual void initialize(const std::string& datakey)

@@ -53,7 +53,7 @@ namespace CVCColorTable
 #if QT_VERSION < 0x040000 || defined QT3_SUPPORT
               const char *name=0
 #else
-              Qt::WFlags flags=0
+              Qt::WindowFlags flags={}
 #endif
               );
 
@@ -62,7 +62,7 @@ namespace CVCColorTable
 #if QT_VERSION < 0x040000 || defined QT3_SUPPORT
               const char *name=0
 #else
-              Qt::WFlags flags=0
+              Qt::WindowFlags flags={}
 #endif
               );
 

@@ -25,7 +25,7 @@
 #ifndef __SDF_OPT_H__
 #define __SDF_OPT_H__
 
-#include <qdialog.h>
+#include <QDialog>
 
 class QLineEdit;
 class QComboBox;
@@ -36,7 +36,7 @@ class sdf_opt : public QDialog
   Q_OBJECT
 
  public:
-  sdf_opt(QWidget *parent = 0, const char *name = 0, bool modal = FALSE);
+  sdf_opt(QWidget *parent = 0, const char *name = 0, bool modal = false);
   ~sdf_opt();
 
  public:

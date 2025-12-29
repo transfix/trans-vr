@@ -17,30 +17,32 @@
 
  You should have received a copy of the GNU General Public License
  along with VRender; if not, write to the Free Software Foundation, Inc.,
- 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
+ 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
 */
 
-/****************************************************************************
+/**********************************************************************
 
- Copyright (C) 2002-2008 Gilles Debunne. All rights reserved.
+Copyright (C) 2002-2025 Gilles Debunne. All rights reserved.
 
- This file is part of the QGLViewer library version 2.3.6.
+This file is part of the QGLViewer library version 3.0.0.
 
- http://www.libqglviewer.com - contact@libqglviewer.com
+https://gillesdebunne.github.io/libQGLViewer - contact@libqglviewer.com
 
- This file may be used under the terms of the GNU General Public License 
- versions 2.0 or 3.0 as published by the Free Software Foundation and
- appearing in the LICENSE file included in the packaging of this file.
- In addition, as a special exception, Gilles Debunne gives you certain 
- additional rights, described in the file GPL_EXCEPTION in this package.
+This file is part of a free software; you can redistribute it and/or
+modify it under the terms of the GNU Lesser General Public
+License as published by the Free Software Foundation; either
+version 3 of the License, or (at your option) any later version.
 
- libQGLViewer uses dual licensing. Commercial/proprietary software must
- purchase a libQGLViewer Commercial License.
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+Lesser General Public License for more details.
 
- This file is provided AS IS with NO WARRANTY OF ANY KIND, INCLUDING THE
- WARRANTY OF DESIGN, MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.
+You should have received a copy of the GNU Lesser General Public License
+along with this program; if not, write to the Free Software Foundation,
+Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 
-*****************************************************************************/
+**********************************************************************/
 
 #include <assert.h>
 #include <math.h>
@@ -137,7 +139,7 @@ void ParserGL::parseFeedbackBuffer(	GLfloat *buffer,int size,
 
 					primitive_tab.push_back(ParserUtils::checkSegment(S)) ;
 
-					if(S == NULL)
+					if(S == nullptr)
 						nb_degenerated_lines++ ;
 
 					nb_lines++ ;
@@ -159,7 +161,7 @@ void ParserGL::parseFeedbackBuffer(	GLfloat *buffer,int size,
 
 					primitive_tab.push_back(ParserUtils::checkPolygon(P)) ;
 
-					if(P == NULL)
+					if(P == nullptr)
 						nb_degenerated_polys++ ;
 
 					nb_polys++ ;
@@ -172,7 +174,7 @@ void ParserGL::parseFeedbackBuffer(	GLfloat *buffer,int size,
 
 					primitive_tab.push_back(Pt);//ParserUtils::checkPoint(Pt)) ;
 
-					if(Pt == NULL)
+					if(Pt == nullptr)
 						nb_degenerated_points++ ;
 
 					nb_points++ ;
@@ -200,7 +202,7 @@ PtrPrimitive ParserUtils::checkSegment(Segment *& P)
 	{
 		Point *pp = new Point(P->sommet3DColor(0)) ;
 		delete P ;
-		P = NULL ;
+		P = nullptr ;
 
 		return checkPoint(pp) ;
 	}
@@ -214,28 +216,28 @@ PtrPrimitive ParserUtils::checkPolygon(Polygone *& P)
 	{
 		cout << "unexpected case: Polygon with " << P->nbVertices() << " vertices !" << endl ;
 		delete P ;
-		return NULL ;
+		return nullptr ;
 	}
 
 	if(P->FlatFactor() < FLAT_POLYGON_EPS)
 	{
 		// On ne traite que le cas du triangle plat, vu qu'on est sur d'avoir un triangle
 
-		int n = P->nbVertices() ;
+		size_t n = P->nbVertices() ;
 
-		for(int i=0;i<n;++i)
+		for(size_t i=0;i<n;++i)
 			if( (P->vertex(i) - P->vertex((i+1)%n)).norm() > EGALITY_EPS)
 			{
 				Segment *pp = new Segment(P->sommet3DColor((i+1)%n),P->sommet3DColor((i+2)%n)) ;
 				delete P ;
-				P = NULL ;
+				P = nullptr ;
 
 				return checkSegment(pp) ;
 			}
 
 		Point *pp = new Point(P->sommet3DColor(0)) ;
 		delete P ;
-		P = NULL ;
+		P = nullptr ;
 
 		return checkPoint(pp) ;
 	}
@@ -250,10 +252,8 @@ PtrPrimitive ParserUtils::checkPolygon(Polygone *& P)
 
 void ParserUtils::print3DcolorVertex(GLint size, GLint * count, GLfloat * buffer)
 {
-	int i;
-
 	printf("  ");
-	for (i = 0; i < Feedback3DColor::sizeInBuffer(); i++)
+	for (size_t i = 0; i < Feedback3DColor::sizeInBuffer(); i++)
 	{
 		printf("%4.2f ", buffer[size - (*count)]);
 		*count = *count - 1;

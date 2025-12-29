@@ -55,7 +55,7 @@ ImportData::ImportData(QWidget* parent,
 #if QT_VERSION < 0x040000
                                  const char* name, WFlags f
 #else
-                                 Qt::WFlags flags
+                                 Qt::WindowFlags flags
 #endif
                                  )
   : QDialog(parent,
@@ -93,14 +93,14 @@ ImportData::~ImportData()
 void ImportData::importFileSlot()
 {
 #if QT_VERSION < 0x040000
-  _ui->_importFile->setText(QFileDialog::getOpenFileName(QString::null,
+  _ui->_importFile->setText(QFileDialog::getOpenFileName(QString(),
                                                          "RawIV (*.rawiv);;"
                                                          "RawV (*.rawv)"
                                                          , this));
 #else
   _ui->_importFile->setText(QFileDialog::getOpenFileName(this,
                                                          "Copy file",
-                                                         QString::null,
+                                                         QString(),
                                                          "RawIV (*.rawiv);;"
                                                          "RawV (*.rawv)"));
 #endif
@@ -129,7 +129,7 @@ void ImportData::okSlot()
 #if QT_VERSION < 0x040000
       VolMagick::VolumeFileInfo vfi(_ui->_importFile->text().ascii());
 #else
-      VolMagick::VolumeFileInfo vfi((const char *)_ui->_importFile->text().toAscii());
+      VolMagick::VolumeFileInfo vfi(_ui->_importFile->text().toUtf8().constData());
 #endif
 
       if(_ui->_variable->text().toInt() >= int(vfi.numVariables()))

@@ -1,11 +1,19 @@
-CMAKE_MINIMUM_REQUIRED (VERSION 2.6)
+cmake_minimum_required(VERSION 3.16)
 
-SetupQt()
+# Setup Qt6 or Qt4
+if(USE_QT6)
+  find_package(Qt6 REQUIRED COMPONENTS Core Gui Widgets Xml OpenGL OpenGLWidgets)
+  set(CMAKE_AUTOMOC ON)
+  set(CMAKE_AUTOUIC ON)
+  set(QT_LIBRARIES Qt6::Core Qt6::Gui Qt6::Widgets Qt6::Xml Qt6::OpenGL Qt6::OpenGLWidgets)
+else()
+  SetupQt()
+endif()
 
-#Ensure large file support
-ADD_DEFINITIONS(-D_FILE_OFFSET_BITS=64)
+# Ensure large file support
+add_definitions(-D_FILE_OFFSET_BITS=64)
 
-SET(SOURCE_FILES
+set(SOURCE_FILES
   VolumeGridRover.cpp
   PointClassFile.cpp
   ContourFile.cpp
@@ -15,7 +23,7 @@ SET(SOURCE_FILES
   sdf_opt.cpp
 )
 
-SET(INCLUDE_FILES
+set(INCLUDE_FILES
   ../../inc/VolumeGridRover/VolumeGridRover.h
   ../../inc/VolumeGridRover/SurfRecon.h
   ../../inc/VolumeGridRover/PointClassFile.h
@@ -25,16 +33,15 @@ SET(INCLUDE_FILES
   ../../inc/VolumeGridRover/sdf_opt.h
 )
 
-FILE(GLOB UI3_FORMS *.Qt3.ui)
-FILE(GLOB UI4_FORMS *.Qt4.ui)
+file(GLOB UI_FORMS *.ui)
 
-SOURCE_GROUP("Source Files" FILES ${SOURCE_FILES})
-SOURCE_GROUP("Header Files" FILES ${INCLUDE_FILES})
+source_group("Source Files" FILES ${SOURCE_FILES})
+source_group("Header Files" FILES ${INCLUDE_FILES})
+source_group("UI Files" FILES ${UI_FORMS})
 
-INCLUDE_DIRECTORIES(
+include_directories(
   ../../inc
   ${CMAKE_BINARY_DIR}/src/VolumeGridRover  #for generated headers
-  C:/include
 )
 
 OPTION(VOLUMEGRIDROVER_USING_MEDAX "Compile VolumeGridRover using the medial axis code" ON)
@@ -72,31 +79,20 @@ IF(VOLUMEGRIDROVER_EM_CLUSTERING)
   ADD_DEFINITIONS(-DUSING_EM_CLUSTERING)
 ENDIF(VOLUMEGRIDROVER_EM_CLUSTERING)
 
-SET(MOC_HEADERS
+set(MOC_HEADERS
   ../../inc/VolumeGridRover/VolumeGridRover.h
   ../../inc/VolumeGridRover/bspline_opt.h
   ../../inc/VolumeGridRover/sdf_opt.h
 )
 
-if(QT3_FOUND)
-  SET(UI_FORMS ${UI3_FORMS})
-  SOURCE_GROUP("UI Files" FILES ${UI_FORMS})
-
-  QT_WRAP_CPP(VolumeGridRover MOC_SOURCES ${MOC_HEADERS})
-  QT_WRAP_UI(VolumeGridRover UI_H UI_CPP ${UI_FORMS})
-
-  ADD_LIBRARY (VolumeGridRover STATIC 
-    ${MOC_SOURCES}
-    ${UI_H}
-    ${UI_CPP}
+# Create the library (Qt6 uses AUTOMOC/AUTOUIC, Qt4 uses manual wrapping)
+if(USE_QT6)
+  add_library(VolumeGridRover STATIC
     ${SOURCE_FILES}
     ${INCLUDE_FILES}
+    ${UI_FORMS}
   )
-
-else(QT4_FOUND)
-  SET(UI_FORMS ${UI4_FORMS})
-  SOURCE_GROUP("UI Files" FILES ${UI_FORMS})
-
+elseif(QT4_FOUND)
   qt4_wrap_cpp(MOC_SOURCES ${MOC_HEADERS})
   qt4_wrap_ui(UI_FILES ${UI_FORMS})
 
@@ -106,10 +102,10 @@ else(QT4_FOUND)
     ${MOC_SOURCES}
     ${UI_FILES}
   )
+else()
+  message(FATAL_ERROR "VolumeGridRover requires Qt4 or Qt6.")
+endif()
 
-endif(QT3_FOUND)
-
-SetupBoost(VolumeGridRover)
 SetupCGAL(VolumeGridRover)
 SetupGSL(VolumeGridRover)
 
@@ -151,52 +147,55 @@ if(VOLUMEGRIDROVER_ISOCONTOURING)
   )
 endif(VOLUMEGRIDROVER_ISOCONTOURING)
 
-target_link_libraries(VolumeGridRover ${LINK_LIBS})
+target_link_libraries(VolumeGridRover
+  PRIVATE
+    Boost::thread
+    Boost::date_time
+    Boost::regex
+    Boost::filesystem
+    Boost::system
+    ${LINK_LIBS}
+)
 
-OPTION(BUILD_VOLUMEGRIDROVER_STANDALONE "Build standalone VolumeGridRover app." OFF)
-IF(BUILD_VOLUMEGRIDROVER_STANDALONE)
-  SET(INCLUDE_FILES
+option(BUILD_VOLUMEGRIDROVER_STANDALONE "Build standalone VolumeGridRover app." OFF)
+if(BUILD_VOLUMEGRIDROVER_STANDALONE)
+  set(STANDALONE_INCLUDE_FILES
     ../../inc/VolumeGridRover/VolumeGridRoverMainWindow.h
   )
-  SET(SOURCE_FILES
+  set(STANDALONE_SOURCE_FILES
     VolumeGridRoverMainWindow.cpp
     main.cpp
   )
-  SET(UI_FORMS
+  set(STANDALONE_UI_FORMS
     VolumeGridRoverMainWindowBase.ui
   )
 
-  SOURCE_GROUP("Source Files" FILES ${SOURCE_FILES})
-  SOURCE_GROUP("UI Files" FILES ${UI_FORMS})
-  SOURCE_GROUP("Header Files" FILES ${INCLUDE_FILES})
+  source_group("Source Files" FILES ${STANDALONE_SOURCE_FILES})
+  source_group("UI Files" FILES ${STANDALONE_UI_FORMS})
+  source_group("Header Files" FILES ${STANDALONE_INCLUDE_FILES})
 
-  if(QT3_FOUND)
-    QT_WRAP_CPP(GridRover MOC_SOURCES ${INCLUDE_FILES})
-    QT_WRAP_UI(GridRover UI_H UI_CPP ${UI_FORMS})
-    ADD_EXECUTABLE(GridRover 
-       ${INCLUDE_FILES}
-       ${SOURCE_FILES}
-       ${UI_H}
-       ${UI_CPP}
-       ${MOC_SOURCES}
+  # Qt6 uses AUTOMOC/AUTOUIC, Qt4 uses manual wrapping
+  if(USE_QT6)
+    add_executable(GridRover 
+       ${STANDALONE_INCLUDE_FILES}
+       ${STANDALONE_SOURCE_FILES}
+       ${STANDALONE_UI_FORMS}
     )
-
-    TARGET_LINK_LIBRARIES(GridRover VolumeGridRover)
-  else(QT3_FOUND)
-
-  QT_WRAP_CPP(GridRover MOC_SOURCES ${MOC_HEADERS})
-
-    ADD_EXECUTABLE(GridRover 
-       ${INCLUDE_FILES}
-       ${SOURCE_FILES}
-       ${UI_H}
-       ${UI_CPP}
-       ${MOC_SOURCES}
+  elseif(QT4_FOUND)
+    set(STANDALONE_MOC_HEADERS
+      ../../inc/VolumeGridRover/VolumeGridRoverMainWindow.h
     )
+    qt4_wrap_cpp(STANDALONE_MOC_SOURCES ${STANDALONE_MOC_HEADERS})
 
+    add_executable(GridRover 
+       ${STANDALONE_INCLUDE_FILES}
+       ${STANDALONE_SOURCE_FILES}
+       ${STANDALONE_MOC_SOURCES}
+       ${STANDALONE_UI_FORMS}
+    )
+  else()
+    message(FATAL_ERROR "GridRover requires Qt4 or Qt6.")
+  endif()
 
-  TARGET_LINK_LIBRARIES(GridRover VolumeGridRover)
-
-
-  endif(QT3_FOUND)
-ENDIF(BUILD_VOLUMEGRIDROVER_STANDALONE)
+  target_link_libraries(GridRover VolumeGridRover ${QT_LIBRARIES})
+endif(BUILD_VOLUMEGRIDROVER_STANDALONE)

@@ -39,7 +39,7 @@
 #include <iostream> 
 using namespace std;
 
-SuperSecondaryStructuresDialog::SuperSecondaryStructuresDialog(QWidget *parent,Qt::WFlags flags) 
+SuperSecondaryStructuresDialog::SuperSecondaryStructuresDialog(QWidget *parent,Qt::WindowFlags flags) 
   : QDialog(parent, flags) {
 
   _ui = new Ui::SuperSecondaryStructuresDialog;
@@ -59,7 +59,7 @@ SuperSecondaryStructuresDialog::SuperSecondaryStructuresDialog(QWidget *parent,Q
   
   std::vector<std::string> geoms = 
     cvcapp.data<cvcraw_geometry::cvcgeom_t>();
-  BOOST_FOREACH(std::string key, geoms)
+  for (const auto& key : geoms)
     _ui->GeometryList->addItem(QString::fromStdString(key));  
 
 }

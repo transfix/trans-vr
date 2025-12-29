@@ -45,8 +45,8 @@ private:
   std::vector<int>               path_parameter;
   std::vector<double>    uniform_path_parameter;
   std::vector<double> final_radius_of_curvature;
-  static const double integration_ratio = 0.333333333333333333333333;// 1.0/3.0;
-  static const double spline_ratio = 0.1666666666666666666667; //1.0/6.0;
+  static constexpr double integration_ratio = 0.333333333333333333333333;// 1.0/3.0;
+  static constexpr double spline_ratio = 0.1666666666666666666667; //1.0/6.0;
 public:
   Contour (char * const str, int sec);
   Contour &  operator =  (Contour const &);

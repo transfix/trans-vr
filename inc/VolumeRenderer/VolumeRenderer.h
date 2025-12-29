@@ -32,7 +32,7 @@
 #include <windows.h>
 #endif
 
-#include <glew/glew.h>
+#include <GL/glew.h>
 
 namespace OpenGLVolumeRendering {
 	class Renderer;

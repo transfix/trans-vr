@@ -314,19 +314,19 @@ private:
 namespace CVC_NAMESPACE
 {
   /* Need these to signal the GUI thread the segmentation result so it can popup a message to the user */
-  class SegmentationFailedEvent : public QCustomEvent
+  class SegmentationFailedEvent : public QEvent
   {
     public:
-      SegmentationFailedEvent(const QString &m) : QCustomEvent(QEvent::User+100), msg(m) {}
+      SegmentationFailedEvent(const QString &m) : QEvent(static_cast<QEvent::Type>(QEvent::User+100)), msg(m) {}
       QString message() const { return msg; }
     private:
       QString msg;
   };
 
-  class SegmentationFinishedEvent : public QCustomEvent
+  class SegmentationFinishedEvent : public QEvent
   {
     public:
-      SegmentationFinishedEvent(const QString &m) : QCustomEvent(QEvent::User+101), msg(m) {}
+      SegmentationFinishedEvent(const QString &m) : QEvent(static_cast<QEvent::Type>(QEvent::User+101)), msg(m) {}
       QString message() const { return msg; }
     private:
       QString msg;
@@ -345,6 +345,7 @@ namespace CVC_NAMESPACE
         //Set up slot connections in this factory function because
         //objects cannot be set up to track themselves in their
         //constructor.
+        using namespace boost::placeholders;
         cvcapp.propertiesChanged.connect(
           MapChangeSignal::slot_type(
             &CVCMainWindow::propertyMapChanged, _instance.get(), _1
@@ -378,7 +379,7 @@ namespace CVC_NAMESPACE
     _instance.reset();
   }
 
-  CVCMainWindow::CVCMainWindow(QWidget *parent, Qt::WFlags flags)
+  CVCMainWindow::CVCMainWindow(QWidget *parent, Qt::WindowFlags flags)
     : QMainWindow(parent,flags),
       _centralWidget(NULL),
       _dataMap(NULL),
@@ -495,8 +496,8 @@ namespace CVC_NAMESPACE
     dataTabLayout->addWidget(dataTabSplitter);
     _dataMap = new QTreeWidget;
     QTreeWidgetItem *dataitem = _dataMap->headerItem();
-    dataitem->setText(1, QApplication::translate("CVCMainWidget", "Type", 0, QApplication::UnicodeUTF8));
-    dataitem->setText(0, QApplication::translate("CVCMainWidget", "Object Key", 0, QApplication::UnicodeUTF8));
+    dataitem->setText(1, QApplication::translate("CVCMainWidget", "Type"));
+    dataitem->setText(0, QApplication::translate("CVCMainWidget", "Object Key"));
     dataTabSplitter->addWidget(_dataMap);
     _dataWidgetStack = new QStackedWidget;
     dataTabSplitter->addWidget(_dataWidgetStack);
@@ -504,8 +505,7 @@ namespace CVC_NAMESPACE
     _ui->_tabs->
       setTabText(_ui->_tabs->indexOf(dataTab),
                  QApplication::translate("CVCMainWidget", 
-                                         "Data", 0, 
-                                         QApplication::UnicodeUTF8));
+                                         "Data"));
 
     connect(_ui->_propertyMap,
             SIGNAL(itemChanged(QTreeWidgetItem*,int)),
@@ -663,7 +663,7 @@ namespace CVC_NAMESPACE
   {
     QList<QTreeWidgetItem*> items = _ui->_propertyMap->selectedItems();
     PropertyMap map = cvcapp.properties();
-    BOOST_FOREACH(QTreeWidgetItem* item, items)
+    for (const auto& item : items)
       map[item->text(0).toStdString()] = "";
     cvcapp.properties(map);
   }
@@ -704,8 +704,7 @@ namespace CVC_NAMESPACE
 
     std::vector<std::string> extensions = VolMagick::VolumeFile_IO::getExtensions();
     QString list("volume (");
-    BOOST_FOREACH(std::string ext, extensions)
-      {
+    for (const auto& ext : extensions) {
         list += QString("*%1 ").arg(QString::fromStdString(ext));
       }
     list += ");;";
@@ -748,7 +747,7 @@ namespace CVC_NAMESPACE
 
     bool found = false;
     DataMap map = cvcapp.data();
-    BOOST_FOREACH(DataMap::value_type val, map) { 
+    for (const auto& val : map) { 
       std::string myname(val.first);
       std::string mytype(val.second.type().name());
       // only deal with geometry files for now...
@@ -892,7 +891,7 @@ namespace CVC_NAMESPACE
 
     bool found = false;
     DataMap map = cvcapp.data();
-    BOOST_FOREACH(DataMap::value_type val, map) { 
+    for (const auto& val : map) { 
       std::string myname(val.first);
 
   if (cvcapp.isData<VolMagick::Volume>(myname) || 
@@ -991,7 +990,7 @@ namespace CVC_NAMESPACE
   {
     QString filename = QFileDialog::getSaveFileName(this,
                                                     tr("Save Property Map"),
-                                                    QString::null,
+                                                    QString(),
                                                     "VolumeRover Property Map (*.vpm *.xml *.info);;"
                                                     "All Files (*)");
     if(filename.isEmpty()) return;
@@ -1013,13 +1012,13 @@ namespace CVC_NAMESPACE
   {
     QStringList filenames = QFileDialog::getOpenFileNames(this,
                                                           tr("Load Property Map"),
-                                                          QString::null,
+                                                          QString(),
                                                           "VolumeRover Property Map (*.vpm *.xml *.info);;"
                                                           "All Files (*)");
     if(filenames.isEmpty()) return;
     try
       {
-        BOOST_FOREACH(QString& str, filenames)
+        for (auto& str : filenames)
           cvcapp.readPropertyMap(str.toStdString());
 
 	// load datafiles
@@ -1154,7 +1153,7 @@ namespace CVC_NAMESPACE
 	return;
       }
     
-    BOOST_FOREACH(std::string key, keys) {
+    for (const auto& key : keys) {
       if (key.compare("zoomed_volume") != 0  && 
 	  key.compare("thumbnail_volume") != 0  )
       ui.VolumeList->addItem(QString::fromStdString(key));
@@ -1393,8 +1392,7 @@ QMessageBox::warning(this,"Warning", "here it is");
     //re-initialize the TreeWidget with the newest contents of the propertymap
     PropertyMap map = cvcapp.properties();
     QList<QTreeWidgetItem*> items;
-    BOOST_FOREACH(PropertyMap::value_type val, map)
-    {    
+    for (const auto& val : map) {    
       QStringList slval;
       slval.append(QString::fromStdString(val.first));
       slval.append(QString::fromStdString(val.second));
@@ -1417,8 +1415,7 @@ QMessageBox::warning(this,"Warning", "here it is");
     //re-initialize the TreeWidget with the newest contents of the datamap
     DataMap map = cvcapp.data();
     QList<QTreeWidgetItem*> items;
-    BOOST_FOREACH(DataMap::value_type & val, map)
-    {    
+    for (auto& val : map) {    
       QStringList slval;
       slval.append(QString::fromStdString(val.first));
       slval.append(QString(QString::fromStdString(cvcapp.dataTypeName(val.first))));
@@ -1442,8 +1439,7 @@ QMessageBox::warning(this,"Warning", "here it is");
     //re-initialize the TreeWidget with the newest contents of the thread map
     ThreadMap map = cvcapp.threads();
     QList<QTreeWidgetItem*> items;
-    BOOST_FOREACH(ThreadMap::value_type val, map)
-    {    
+    for (const auto& val : map) {    
       QStringList slval;
 
       //First column
@@ -1485,7 +1481,7 @@ QMessageBox::warning(this,"Warning", "here it is");
      std::string volSelected;
 
      CVC_NAMESPACE::DataMap map = cvcapp.data();
-     BOOST_FOREACH(CVC_NAMESPACE::DataMap::value_type val, map) { 
+     for (const auto& val : map) { 
        std::string myname(val.first);
        // only deal with files for now...
        if (cvcapp.isData<VolMagick::VolumeFileInfo>(myname)) {
@@ -1606,7 +1602,7 @@ QMessageBox::warning(this,"Warning", "here it is");
 
      bool hasSource = false;
      DataMap map = cvcapp.data();
-     BOOST_FOREACH(DataMap::value_type val, map) { 
+     for (const auto& val : map) { 
        //std::cout << val.first << " " << val.second.type().name() << std::endl;
        std::string myname(val.first);
        std::string mytype(val.second.type().name());
@@ -1630,7 +1626,7 @@ QMessageBox::warning(this,"Warning", "here it is");
 			{
 				if( m_LocalSegThread )
 				{
-                                        if( m_LocalSegThread->running() )
+                                        if( m_LocalSegThread->isRunning() )
 						QMessageBox::critical(this,"Error","Local Segmentation thread already running!",QMessageBox::Ok,Qt::NoButton,Qt::NoButton);
 					else
 					{
@@ -1647,7 +1643,7 @@ QMessageBox::warning(this,"Warning", "here it is");
 			}
                         else
 			{
-				if(m_RemoteSegThread && m_RemoteSegThread->running())
+				if(m_RemoteSegThread && m_RemoteSegThread->isRunning())
 					QMessageBox::critical(this,"Error","Remote Segmentation thread already running!",QMessageBox::Ok,Qt::NoButton,Qt::NoButton);
 				else
 				{
@@ -1752,7 +1748,7 @@ void CVCMainWindow::showHistogramDialogSlot() {
     DataMap map = App::instance().data();
 
     bool Isgeom = 0;
-    BOOST_FOREACH(DataMap::value_type val, map) { 
+    for (const auto& val : map) { 
     //  std::cout << val.first << " " << val.second.type().name() << std::endl;
       std::string myname(val.first);
       std::string mytype(val.second.type().name());
@@ -2004,7 +2000,7 @@ void CVCMainWindow::showHistogramDialogSlot() {
     ui.MaxDimEdit->insert("100");
 
    DataMap map = cvcapp.data();
-    BOOST_FOREACH(DataMap::value_type val, map) { 
+    for (const auto& val : map) { 
       //std::cout << val.first << " " << val.second.type().name() << std::endl;
       std::string myname(val.first);
       std::string mytype(val.second.type().name());
@@ -2063,7 +2059,7 @@ void CVCMainWindow::showHistogramDialogSlot() {
 	if(!tmpdir.exists()) tmpdir.mkdir(tmpdir.absPath());
 	QFileInfo tmpfile(tmpdir,"tmp.rawiv");
 	std::stringstream ss;
-	ss << "Creating volume " << tmpfile.absFilePath().ascii() <<std::endl;
+	ss << "Creating volume " << tmpfile.absFilePath().toStdString().c_str() <<std::endl;
 	cvcapp.log(5,ss.str());
 	QString newfilename = QDir::convertSeparators(tmpfile.absFilePath());
 	VolMagick::createVolumeFile(newfilename.toStdString(),
@@ -2187,7 +2183,7 @@ void CVCMainWindow::showHistogramDialogSlot() {
     DataMap map = cvcapp.data();
 
     bool found = false;
-    BOOST_FOREACH(DataMap::value_type val, map){
+    for (const auto& val : map) {
       std::string myname(val.first);
       std::string mytype(val.second.type().name());
       if(cvcapp.isData<VolMagick::VolumeFileInfo>(myname)) {
@@ -2213,7 +2209,7 @@ void CVCMainWindow::showHistogramDialogSlot() {
       ui.m_InnerIsoValue->setText("0.0");
     }else{
       std::vector<double> values;
-      BOOST_FOREACH(CVCColorTable::ColorTable::isocontour_node node, cti.isocontourNodes() ){
+      for (const auto& node : cti.isocontourNodes()) {
 	//cout << "Iso " << node.position << endl;
 	values.push_back(vfi.min() + node.position*(vfi.max()-vfi.min()));
       }
@@ -2239,11 +2235,11 @@ void CVCMainWindow::showHistogramDialogSlot() {
 #ifdef USING_SWEETMESH
     CVCGEOM_NAMESPACE::cvcgeom_t geometry;
     sweetMesh::hexMesh hMesh;
-    sweetMesh::runLBIE(vfi, outer_isoval, inner_isoval, ui.m_ErrorTolerance->text().toDouble(), ui.m_InnerErrorTolerance->text().toDouble(), LBIE::Mesher::MeshType(ui.m_MeshType->currentItem()), LBIE::Mesher::NormalType(ui.m_NormalType->currentItem()), ui.m_Iterations->text().toUInt(), outputMessage, geometry, hMesh);
+    sweetMesh::runLBIE(vfi, outer_isoval, inner_isoval, ui.m_ErrorTolerance->text().toDouble(), ui.m_InnerErrorTolerance->text().toDouble(), LBIE::Mesher::MeshType(ui.m_MeshType->currentIndex()), LBIE::Mesher::NormalType(ui.m_NormalType->currentIndex()), ui.m_Iterations->text().toUInt(), outputMessage, geometry, hMesh);
     cvcapp.data(resultName, geometry);
     cvcapp.listPropertyAppend("thumbnail.geometries", resultName);
     cvcapp.listPropertyAppend("zoomed.geometries", resultName);
-    if(LBIE::Mesher::MeshType(ui.m_MeshType->currentItem() == LBIE::geoframe::HEXA)){
+    if(LBIE::Mesher::MeshType(ui.m_MeshType->currentIndex() == LBIE::geoframe::HEXA)){
       cvcapp.data(meshName, hMesh);
       cvcapp.listPropertyAppend("thumbnail.geometries", meshName);
       cvcapp.listPropertyAppend("zoomed.geometries", meshName);
@@ -2461,7 +2457,7 @@ void CVCMainWindow::showHistogramDialogSlot() {
     
     DataMap map = cvcapp.data();
     bool found = false;
-    BOOST_FOREACH(DataMap::value_type val, map) { 
+    for (const auto& val : map) { 
       //std::cout << val.first << " " << val.second.type().name() << std::endl;
       std::string myname(val.first);
       std::string mytype(val.second.type().name());
@@ -2674,7 +2670,7 @@ void CVCMainWindow::generateRawVSlot() {
 	DataMap map = App::instance().data();
 
 
-    BOOST_FOREACH(DataMap::value_type val, map) { 
+    for (const auto& val : map) { 
   //    std::cout << val.first << " " << val.second.type().name() << std::endl;
       std::string myname(val.first);
       std::string mytype(val.second.type().name());
@@ -2783,7 +2779,7 @@ void CVCMainWindow::MSLevelSetSlot()
   DataMap map = App::instance().data();
   VolMagick::VolumeFileInfo vif;
 
-  BOOST_FOREACH(DataMap::value_type val, map){
+  for (const auto& val : map) {
   	std::string myname(val.first);
 	std::string mytype(val.second.type().name());
 	if(mytype.compare("N9VolMagick14VolumeFileInfoE") == 0) {
@@ -2901,7 +2897,7 @@ void CVCMainWindow::MSLevelSetSlot()
 
 	      if(!tmpdir.exists()) tmpdir.mkdir(tmpdir.absPath());
 	      QFileInfo tmpfile(tmpdir,QFileInfo("MSLevelSet_outputPhi.rawiv").fileName());
-	      qDebug("Writting volume %s to %s (%s)", "MSLevelSet_outputPhi.rawiv", tmpfile.absFilePath().ascii(), QString::fromStdString(originalName).ascii());
+	      qDebug("Writting volume %s to %s (%s)", "MSLevelSet_outputPhi.rawiv", tmpfile.absFilePath().toStdString().c_str(), QString::fromStdString(originalName).toStdString().c_str());
 	      QString newfilename = QDir::convertSeparators(tmpfile.absFilePath());
 	      if(tmpfile.exists()) QFile::remove(newfilename);	    
 	        VolMagick::createVolumeFile(vol,
@@ -2980,7 +2976,7 @@ void CVCMainWindow::HOSegmentationSlot()
   	DataMap map = App::instance().data();
 	VolMagick::VolumeFileInfo vif;
 
-  	BOOST_FOREACH(DataMap::value_type val, map){
+  	for (const auto& val : map) {
   		std::string myname(val.first);
 		std::string mytype(val.second.type().name());
 		if(mytype.compare("N9VolMagick14VolumeFileInfoE") == 0) {
@@ -3080,7 +3076,7 @@ void CVCMainWindow::HOSegmentationSlot()
 
 		      if(!tmpdir.exists()) tmpdir.mkdir(tmpdir.absPath());
 	    	  QFileInfo tmpfile(tmpdir,QFileInfo("HOLevelSet_outputPhi.rawiv").fileName());
-		      qDebug("Writting volume %s to %s (%s)", "HOLevelSet_outputPhi.rawiv", tmpfile.absFilePath().ascii(), QString::fromStdString(originalName).ascii());
+		      qDebug("Writting volume %s to %s (%s)", "HOLevelSet_outputPhi.rawiv", tmpfile.absFilePath().toStdString().c_str(), QString::fromStdString(originalName).toStdString().c_str());
 		      QString newfilename = QDir::convertSeparators(tmpfile.absFilePath());
 	    	  if(tmpfile.exists()) QFile::remove(newfilename);	    
 	        	VolMagick::createVolumeFile(vol,
@@ -3149,11 +3145,11 @@ void CVCMainWindow::HOSegmentationSlot()
 void CVCMainWindow::on_UserSegReadButton_clickedSlot()
 {
     QString s =  QFileDialog::getOpenFileName(this, tr("open File"), "./", tr("All (*.*)"));
-	if(s == QString::null)
+	if(s == QString())
 		strcpy(MPLSParams->userSegFileName, "");
 	else
 	{
-		strncpy(MPLSParams->userSegFileName, s.ascii(), s.length());
+		strncpy(MPLSParams->userSegFileName, s.toStdString().c_str(), s.length());
 		MPLSParams->userSegFileName[s.length()]='\0';
 	}
 	MPLevelSetDialogUi->m_userSegFileEdit->setText(QString("%1").arg(MPLSParams->userSegFileName));
@@ -3188,7 +3184,7 @@ void CVCMainWindow::MPSegmentationSlot()
   	DataMap map = App::instance().data();
 	VolMagick::VolumeFileInfo vif;
 
-  	BOOST_FOREACH(DataMap::value_type val, map){
+  	for (const auto& val : map) {
   		std::string myname(val.first);
 		std::string mytype(val.second.type().name());
 		if(mytype.compare("N9VolMagick14VolumeFileInfoE") == 0) {
@@ -3325,7 +3321,7 @@ void CVCMainWindow::MPSegmentationSlot()
 	 	
 		  //Dump all the implicit functions
 	      QFileInfo tmpfile(tmpdir,QFileInfo("MPLevelSet_outputPhi.rawv").fileName());
-	      qDebug("Writting volume %s to %s (%s)", "MPLevelSet_outputPhi.rawv", tmpfile.absFilePath().ascii(), QString::fromStdString(originalName).ascii());
+	      qDebug("Writting volume %s to %s (%s)", "MPLevelSet_outputPhi.rawv", tmpfile.absFilePath().toStdString().c_str(), QString::fromStdString(originalName).toStdString().c_str());
 	      QString newfilename = QDir::convertSeparators(tmpfile.absFilePath());
 	      if(tmpfile.exists()) QFile::remove(newfilename);	    
 		  std::vector<VolMagick::Volume> implicit_vols(nvols);
@@ -3549,13 +3545,13 @@ void CVCMainWindow::unimplementedSlot() {
    }
 
    RemoteSegThread::RemoteSegThread(Ui::SegmentVirusMapDialog *dialog, CVCMainWindow *nvmw, unsigned int stackSize)
-    : QThread(nvmw), m_CVCMainWindow(nvmw),m_XmlRpcClient(dialog->m_RemoteSegmentationHostname->text(), dialog->m_RemoteSegmentationPort->text().toInt())
+    : QThread(nvmw), m_CVCMainWindow(nvmw),m_XmlRpcClient(dialog->m_RemoteSegmentationHostname->text().toUtf8().constData(), dialog->m_RemoteSegmentationPort->text().toInt())
    {
 
 #ifdef USING_SEGMENTATION
 	 type = dialog->m_TabSegmentationType->currentIndex();
 	 
-	 m_Params[0] = std::string(dialog->m_RemoteSegmentationFilename->text().ascii());
+	 m_Params[0] = std::string(dialog->m_RemoteSegmentationFilename->text().toStdString().c_str());
 	 
 	 switch(dialog->m_TabSegmentationType->currentIndex())
 	 {

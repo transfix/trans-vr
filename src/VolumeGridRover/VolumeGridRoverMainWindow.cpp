@@ -42,11 +42,11 @@ static inline unsigned char mapToChar(double val)
 }
 
 
-VolumeGridRoverMainWindow::VolumeGridRoverMainWindow(QWidget* parent, const char *name, Qt::WFlags fl)
+VolumeGridRoverMainWindow::VolumeGridRoverMainWindow(QWidget* parent, Qt::WindowFlags fl)
   : QWidget(parent,fl)
 {
   m_VolumeGridRoverLayout = new QGridLayout( this );
-  m_VolumeGridRover = new VolumeGridRover( this,"m_VolumeGridRover");
+  m_VolumeGridRover = new VolumeGridRover( this);
   m_VolumeGridRoverLayout->addWidget(m_VolumeGridRover);
 
   m_ColorToolbar = new QToolBar("Transfer Function",this);

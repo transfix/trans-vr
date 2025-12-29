@@ -19,9 +19,12 @@ if(FFTW_FOUND)
   target_link_libraries(Reconstruction
     ${FFTW_LIB}
     ${QT_LIBRARIES}
+    Boost::thread
+    Boost::date_time
+    Boost::regex
+    Boost::filesystem
+    Boost::system
   )
-
-  SetupBoost(Reconstruction)
 else(FFTW_FOUND)
   message(SEND_ERROR "Reconstruction requires FFTW!")
 endif(FFTW_FOUND)

@@ -97,10 +97,19 @@ std::ostream& Composite_tiling_region::print(std::ostream& out) const
 
 std::ostream& operator<<(std::ostream& out, const Composite_tiling_region& region)
 {
-  if (region._and)
-    out << "[" << region._A->print(out) << "] AND [" << region._B->print(out) << "]";
-  else
-    out << "[" << region._A->print(out) << "] OR [" << region._B->print(out) << "]";
+  if (region._and) {
+    out << "[";
+    region._A->print(out);
+    out << "] AND [";
+    region._B->print(out);
+    out << "]";
+  } else {
+    out << "[";
+    region._A->print(out);
+    out << "] OR [";
+    region._B->print(out);
+    out << "]";
+  }
   return out;
 }
 

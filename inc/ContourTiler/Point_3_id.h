@@ -81,7 +81,7 @@ public:
   std::ostream& insert(std::ostream &os) const
   {
     const Point_3_id &p(*this);
-    switch(os.iword(CGAL::IO::mode)) {
+    switch(CGAL::IO::get_mode(os)) {
     case CGAL::IO::ASCII :
       return os << p.x() << ' ' << p.y() << ' ' << p.z();// << ' ' << p.color();
     case CGAL::IO::BINARY :
@@ -97,7 +97,7 @@ public:
   friend std::ostream &
   operator<<(std::ostream &os, const Point_3_id &p)
   {
-    switch(os.iword(CGAL::IO::mode)) {
+    switch(CGAL::IO::get_mode(os)) {
     case CGAL::IO::ASCII :
       return os << p.x() << ' ' << p.y() << ' ' << p.z();
     case CGAL::IO::BINARY :
@@ -114,7 +114,7 @@ public:
   operator>>(std::istream &is, Point_3_id &p)
   {
     double x, y, z;
-    switch(is.iword(CGAL::IO::mode)) {
+    switch(CGAL::IO::get_mode(is)) {
     case CGAL::IO::ASCII :
       is >> x >> y >> z;
       break;

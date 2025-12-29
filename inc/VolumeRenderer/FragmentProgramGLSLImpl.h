@@ -31,7 +31,7 @@
 #include <boost/format.hpp>
 #include <boost/array.hpp>
 
-#include <glew/glew.h>
+#include <GL/glew.h>
 
 #include <VolumeRenderer/UnshadedBase.h>
 

@@ -34,7 +34,7 @@
 #include <iostream> 
 using namespace std;
 
-GDTVFilterDialog::GDTVFilterDialog(QWidget *parent,Qt::WFlags flags) 
+GDTVFilterDialog::GDTVFilterDialog(QWidget *parent,Qt::WindowFlags flags) 
   : QDialog(parent, flags) {
 
   int idx = -1;
@@ -70,23 +70,23 @@ GDTVFilterDialog::GDTVFilterDialog(QWidget *parent,Qt::WFlags flags)
       return;
     }
   
-  BOOST_FOREACH(std::string key, keys)
+  for (const auto& key : keys)
     _ui->VolumeList->addItem(QString::fromStdString(key));    
   
   std::vector<std::string> extensions = VolMagick::VolumeFile_IO::getExtensions();
-  BOOST_FOREACH(std::string ext, extensions)
+  for (const auto& ext : extensions)
     _ui->FileTypeComboBox->addItem(QString::fromStdString(ext));
   
   //default to .cvc type if available
   idx = _ui->FileTypeComboBox->findText(".cvc");
   if(idx != -1)
-    _ui->FileTypeComboBox->setCurrentItem(idx);
+    _ui->FileTypeComboBox->setCurrentIndex(idx);
   else
     {
       //if .cvc isn't available (no HDF5), then default to .rawiv
       idx = _ui->FileTypeComboBox->findText(".rawiv");
       if(idx != -1)
-        _ui->FileTypeComboBox->setCurrentItem(idx);
+        _ui->FileTypeComboBox->setCurrentIndex(idx);
     }
 
   //Default to zoomed_volume if it is in the list
@@ -94,7 +94,7 @@ GDTVFilterDialog::GDTVFilterDialog(QWidget *parent,Qt::WFlags flags)
   if(idx != -1)
     {
       _ui->tabWidget->setCurrentIndex(1); //preview tab
-      _ui->VolumeList->setCurrentItem(idx);
+      _ui->VolumeList->setCurrentIndex(idx);
       _ui->DataSetName->setText("zoomed_volume");
     }
 }
@@ -211,14 +211,14 @@ void GDTVFilterDialog::RunGDTVFilter() {
   double nhood = _ui->NhoodEdit->displayText().toDouble();
   if(nhood < 1.0) {
     QMessageBox::warning(this, tr("GDTV Filter"),
-			 tr("Neighborhood size should be at least 1.0."), 0,0);
+			 tr("Neighborhood size should be at least 1.0."));
     return;
   }
   
   double exp = _ui->ExpEdit->displayText().toDouble();
   if(exp < 0.0 || exp > 2.0) {
     QMessageBox::warning(this, tr("GDTV Filter"),
-			 tr("Exponent value must be between 0.0 and 2.0."), 0,0);
+			 tr("Exponent value must be between 0.0 and 2.0."));
     return;
   }
 
